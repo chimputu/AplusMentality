@@ -1,6 +1,6 @@
 'use client';
 import { useUser } from '@clerk/nextjs';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Megaphone, Video, Calendar, Clock, User, ArrowRight, Sparkles, Bell } from 'lucide-react';
@@ -27,7 +27,8 @@ interface Video {
   };
 }
 
-export default function StudentDashboard() {
+// ✅ Component that uses useSearchParams - wrapped in Suspense later
+function StudentContent() {
   const { isLoaded, isSignedIn, user } = useUser();
   const searchParams = useSearchParams();
   const searchQuery = searchParams?.get('search') || '';
@@ -307,5 +308,20 @@ export default function StudentDashboard() {
         )}
       </div>
     </DashboardLayout>
+  );
+}
+
+// ✅ Main export with Suspense boundary
+export default function StudentPage() {
+  return (
+    <Suspense fallback={
+      <DashboardLayout role="STUDENT">
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="animate-pulse text-gray-500">Loading...</div>
+        </div>
+      </DashboardLayout>
+    }>
+      <StudentContent />
+    </Suspense>
   );
 }
