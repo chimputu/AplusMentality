@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+model User {
+  id             String         @id @default(cuid())
+  clerkId        String         @unique
+  email          String         @unique
+  name           String?
+  role           Role           @default(STUDENT)
+  announcements  Announcement[]
+  videos         Video[]        // ✅ Added: Relation to videos
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [clerkId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ✅ NEW: Video model
+model Video {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  cloudinaryId String   // Cloudinary's public_id
+  url          String   // Cloudinary's secure_url
+  thumbnail    String?  // Optional thumbnail URL
+  uploadedBy   String   // clerkId of uploader
+  uploader     User     @relation(fields: [uploadedBy], references: [clerkId])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
