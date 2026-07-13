@@ -8,31 +8,24 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   await requireAuth(['ADMIN']);
-
   const { id } = await params;
 
-  const video = await prisma.video.findUnique({
-    where: { id },
-  });
-
+  const video = await prisma.video.findUnique({ where: { id } });
   if (!video) {
     return NextResponse.json({ error: 'Video not found' }, { status: 404 });
   }
 
-  // Delete from Cloudinary
-  try {
-    await cloudinary.uploader.destroy(video.cloudinaryId, {
-      resource_type: 'video',
-    });
-  } catch (error) {
-    console.error('Cloudinary delete error:', error);
-    // Continue with database deletion even if Cloudinary fails
+  // If it's a Cloudinary video, delete from Cloudinary
+  if (video.source === 'cloudinary' && video.cloudinaryId) {
+    try {
+      await cloudinary.uploader.destroy(video.cloudinaryId, {
+        resource_type: 'video',
+      });
+    } catch (e) {
+      console.error('Cloudinary delete error:', e);
+    }
   }
 
-  // Delete from database
-  await prisma.video.delete({
-    where: { id },
-  });
-
+  await prisma.video.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }
