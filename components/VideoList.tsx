@@ -72,18 +72,21 @@ export default function VideoList({ videos, isAdmin = false }: VideoListProps) {
   };
 
   if (videos.length === 0) {
-    return <p className="text-gray-500 text-center py-8">No videos uploaded yet.</p>;
+    return <p className="text-gray-500 text-center py-8 text-sm md:text-base">No videos uploaded yet.</p>;
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
       {videos.map((video) => {
         const isYoutube = isYouTube(video);
         const youtubeId = video.youtubeId || extractYouTubeId(video.url);
         const hasFailed = failedVideos.has(video.id);
 
         return (
-          <div key={video.id} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+          <div
+            key={video.id}
+            className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+          >
             {isYoutube && youtubeId ? (
               <div className="relative w-full aspect-video bg-black">
                 <iframe
@@ -97,17 +100,16 @@ export default function VideoList({ videos, isAdmin = false }: VideoListProps) {
             ) : (
               <div className="relative w-full aspect-video bg-black">
                 {!video.url ? (
-                  <div className="flex items-center justify-center h-full text-white bg-red-500/20">
-                    <p className="text-sm">⚠️ No video URL</p>
+                  <div className="flex items-center justify-center h-full text-white bg-red-500/20 p-2 text-center">
+                    <p className="text-xs md:text-sm">⚠️ No video URL</p>
                   </div>
                 ) : hasFailed ? (
-                  <div className="flex items-center justify-center h-full text-white bg-red-500/20">
-                    <p className="text-sm">❌ Video unavailable</p>
+                  <div className="flex items-center justify-center h-full text-white bg-red-500/20 p-2 text-center">
+                    <p className="text-xs md:text-sm">❌ Video unavailable</p>
                   </div>
                 ) : (
-                  // ✅ KEY FIX: use a unique key so React re-creates the element
                   <video
-                    key={video.url} // Force re-mount on URL change
+                    key={video.url}
                     controls
                     preload="metadata"
                     className="w-full h-full"
@@ -119,33 +121,35 @@ export default function VideoList({ videos, isAdmin = false }: VideoListProps) {
                 )}
               </div>
             )}
-            <div className="p-4">
-              <div className="flex justify-between items-start">
-                <h3 className="text-lg font-semibold">{video.title}</h3>
+            <div className="p-3 md:p-4">
+              <div className="flex justify-between items-start gap-2">
+                <h3 className="text-sm md:text-lg font-semibold break-words">{video.title}</h3>
                 {isAdmin && (
                   <button
                     onClick={() => handleDelete(video.id)}
-                    className="text-red-600 hover:text-red-800 text-sm font-medium"
+                    className="text-red-600 hover:text-red-800 text-xs md:text-sm font-medium flex-shrink-0"
                   >
                     Delete
                   </button>
                 )}
               </div>
               {video.description && (
-                <p className="text-gray-600 text-sm mt-1">{video.description}</p>
+                <p className="text-gray-600 text-xs md:text-sm mt-1">{video.description}</p>
               )}
-              <div className="mt-2 text-xs text-gray-500">
+              <div className="mt-2 text-xs text-gray-500 flex flex-wrap items-center gap-1">
                 {isYoutube && (
-                  <span className="bg-red-500 text-white px-2 py-0.5 rounded text-xs mr-2">
+                  <span className="bg-red-500 text-white px-1.5 py-0.5 rounded text-[10px] md:text-xs">
                     YouTube
                   </span>
                 )}
-                Uploaded by {video.uploader?.name || 'Unknown'} •{' '}
-                {new Date(video.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                <span>
+                  Uploaded by {video.uploader?.name || 'Unknown'} •{' '}
+                  {new Date(video.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </span>
               </div>
             </div>
           </div>
