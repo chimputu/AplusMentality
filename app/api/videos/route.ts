@@ -3,101 +3,105 @@ import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import cloudinary from '@/lib/cloudinary';
 
+function extractYouTubeId(url: string): string | null {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([\w-]+)/,
+    /(?:youtu\.be\/)([\w-]+)/,
+    /(?:youtube\.com\/embed\/)([\w-]+)/,
+  ];
+  for (const p of patterns) {
+    const match = url.match(p);
+    if (match) return match[1];
+  }
+  return null;
+}
+
 export async function POST(req: NextRequest) {
+  const { userId } = await requireAuth(['ADMIN']);
+  const formData = await req.formData();
+
+  const title = formData.get('title') as string;
+  const description = formData.get('description') as string;
+  const source = formData.get('source') as string; // 'upload' or 'youtube'
+
+  if (!title) {
+    return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+  }
+
   try {
-    const { userId } = await requireAuth(['ADMIN']);
-    
-    const formData = await req.formData();
-    const file = formData.get('file') as File;
-    const title = formData.get('title') as string;
-    const description = formData.get('description') as string;
+    let videoData: any = {
+      title,
+      description: description || null,
+      uploadedBy: userId,
+    };
 
-    if (!file || !title) {
-      return NextResponse.json(
-        { error: 'File and title are required' },
-        { status: 400 }
-      );
-    }
-
-    // ✅ Change: Increased from 100MB to 50MB (or whatever you want)
-    // Max 50MB for this specific check (you can adjust)
-    if (file.size > 50 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: 'Video file must be less than 50MB' },
-        { status: 400 }
-      );
-    }
-
-    if (!file.type.startsWith('video/')) {
-      return NextResponse.json(
-        { error: 'File must be a video' },
-        { status: 400 }
-      );
-    }
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Upload to Cloudinary with chunked upload for large files
-    const uploadResult = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: 'video',
-          folder: 'amentality/videos',
-          use_filename: true,
-          unique_filename: true,
-          overwrite: true,
-          // ✅ Add this for better handling of large files
-          chunk_size: 6000000, // 6MB chunks (Cloudinary recommended)
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      uploadStream.end(buffer);
-    });
-
-    const { public_id, secure_url } = uploadResult as any;
-
-    const video = await prisma.video.create({
-      data: {
-        title,
-        description,
-        cloudinaryId: public_id,
+    if (source === 'youtube') {
+      const youtubeUrl = formData.get('youtubeUrl') as string;
+      if (!youtubeUrl) {
+        return NextResponse.json({ error: 'YouTube URL is required' }, { status: 400 });
+      }
+      const youtubeId = extractYouTubeId(youtubeUrl);
+      if (!youtubeId) {
+        return NextResponse.json({ error: 'Invalid YouTube URL' }, { status: 400 });
+      }
+      videoData = {
+        ...videoData,
+        url: youtubeUrl,
+        source: 'youtube',
+        youtubeId,
+        cloudinaryId: null,
+        thumbnail: `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`,
+      };
+    } else {
+      // Cloudinary upload
+      const file = formData.get('file') as File;
+      if (!file) {
+        return NextResponse.json({ error: 'Video file is required' }, { status: 400 });
+      }
+      if (file.size > 50 * 1024 * 1024) {
+        return NextResponse.json({ error: 'Video must be less than 50MB' }, { status: 400 });
+      }
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'video',
+            folder: 'amentality/videos',
+            use_filename: true,
+            unique_filename: true,
+            overwrite: true,
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(buffer);
+      });
+      const { public_id, secure_url } = uploadResult as any;
+      videoData = {
+        ...videoData,
         url: secure_url,
-        uploadedBy: userId,
-      },
-    });
+        source: 'cloudinary',
+        cloudinaryId: public_id,
+        youtubeId: null,
+      };
+    }
 
+    const video = await prisma.video.create({ data: videoData });
     return NextResponse.json(video, { status: 201 });
   } catch (error) {
     console.error('Upload error:', error);
-    return NextResponse.json(
-      { error: 'Failed to upload video: ' + (error instanceof Error ? error.message : 'Unknown error') },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to add video' }, { status: 500 });
   }
 }
 
 export async function GET() {
-  try {
-    await requireAuth();
-
-    const videos = await prisma.video.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        uploader: {
-          select: { name: true },
-        },
-      },
-    });
-
-    return NextResponse.json(videos);
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch videos' },
-      { status: 500 }
-    );
-  }
+  await requireAuth();
+  const videos = await prisma.video.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { uploader: { select: { name: true } } },
+  });
+  return NextResponse.json(videos);
 }
