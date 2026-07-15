@@ -1,5 +1,15 @@
-import { ClerkProvider } from '@clerk/nextjs';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
+import { Providers } from './providers';
+import { ClerkProvider } from '@clerk/nextjs';
+
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'A+ Mentality',
+  description: 'Learning Management System',
+};
 
 export default function RootLayout({
   children,
@@ -7,18 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider
-      appearance={{
-        elements: {
-          formButtonPrimary: 'bg-blue-600 hover:bg-blue-700 text-sm normal-case',
-          footerActionLink: 'text-blue-600 hover:text-blue-700',
-        },
-      }}
-    >
-      <html lang="en">
-        <body>
-        
-          <main className="container mx-auto px-4 py-8">{children}</main>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={inter.className}>
+          <Providers>
+            {children}
+          </Providers>
         </body>
       </html>
     </ClerkProvider>

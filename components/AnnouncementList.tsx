@@ -1,14 +1,14 @@
 'use client';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Trash2, Calendar, User } from 'lucide-react';
 
 interface Announcement {
   id: string;
   title: string;
   content: string;
-  createdAt: string;
-  author: {
-    name: string | null;
-  };
+  createdAt: string; // ✅ Changed to string
+  author: { name: string | null };
 }
 
 interface AnnouncementListProps {
@@ -18,57 +18,80 @@ interface AnnouncementListProps {
 
 export default function AnnouncementList({ announcements, isAdmin = false }: AnnouncementListProps) {
   const router = useRouter();
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this announcement?')) return;
 
+    setDeleting(id);
     try {
       const res = await fetch(`/api/announcements/${id}`, {
         method: 'DELETE',
       });
+
       if (res.ok) {
-        // ✅ Refresh the page to fetch fresh data
         router.refresh();
-        // ✅ Also reload the page to clear any cached search results
-        window.location.reload();
       } else {
-        alert('Failed to delete');
+        const error = await res.json();
+        alert(error.error || 'Failed to delete announcement');
       }
     } catch (error) {
-      console.error(error);
+      console.error('Delete error:', error);
       alert('An error occurred');
+    } finally {
+      setDeleting(null);
     }
   };
 
   if (announcements.length === 0) {
-    return <p className="text-gray-500 text-center py-8">No announcements yet.</p>;
+    return (
+      <div className="text-center py-8 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+        <p className="text-gray-500 dark:text-gray-400 text-sm">No announcements yet.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {announcements.map((announcement) => (
-        <div key={announcement.id} className="border border-gray-200 rounded-lg p-6 shadow-sm">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="text-xl font-semibold">{announcement.title}</h3>
+        <div
+          key={announcement.id}
+          className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition dark:bg-gray-800"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-lg">
+                {announcement.title}
+              </h3>
+              <div className="flex items-center gap-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <span className="flex items-center gap-1">
+                  <User className="w-3 h-3" />
+                  {announcement.author.name || 'Unknown'}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3" />
+                  {new Date(announcement.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm whitespace-pre-wrap">
+                {announcement.content}
+              </p>
+            </div>
             {isAdmin && (
               <button
                 onClick={() => handleDelete(announcement.id)}
-                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                disabled={deleting === announcement.id}
+                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition flex-shrink-0 disabled:opacity-50"
               >
-                Delete
+                <Trash2 className="w-4 h-4" />
               </button>
             )}
-          </div>
-          <p className="text-gray-700 whitespace-pre-wrap">{announcement.content}</p>
-          <div className="mt-3 text-sm text-gray-500">
-            Posted by {announcement.author.name || 'Unknown'} •{' '}
-            {new Date(announcement.createdAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
           </div>
         </div>
       ))}

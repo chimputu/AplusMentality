@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-interface Video {
+export interface Video {
   id: string;
   title: string;
   description: string | null;
@@ -50,7 +50,6 @@ export default function VideoList({ videos, isAdmin = false }: VideoListProps) {
       const res = await fetch(`/api/videos/${id}`, { method: 'DELETE' });
       if (res.ok) {
         router.refresh();
-        window.location.reload();
       } else {
         alert('Failed to delete');
       }

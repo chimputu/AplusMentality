@@ -10,23 +10,58 @@ datasource db {
   provider = "postgresql"
 }
 
+// ============================================
+// ENUMS
+// ============================================
 enum Role {
   ADMIN
   STUDENT
 }
 
+enum FormType {
+  QUIZ
+  TEST
+  ASSIGNMENT
+}
+
+enum SubmissionStatus {
+  PENDING
+  GRADED
+  RETURNED
+}
+
+// ============================================
+// USERS (with all reverse relations)
+// ============================================
 model User {
   id             String         @id @default(cuid())
   clerkId        String         @unique
   email          String         @unique
   name           String?
   role           Role           @default(STUDENT)
+  
+  // Relations
   announcements  Announcement[]
   videos         Video[]
+  courses        Course[]       // Courses created by user
+  enrollments    Enrollment[]   // Courses enrolled in
+  
+  // ✅ Reverse relations for all models
+  lectureSlides  LectureSlide[]
+  quizzes        Quiz[]
+  tests          Test[]
+  assignments    Assignment[]
+  quizSubmissions QuizSubmission[]
+  testSubmissions TestSubmission[]
+  assignmentSubmissions AssignmentSubmission[]
+  
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 }
 
+// ============================================
+// ANNOUNCEMENTS
+// ============================================
 model Announcement {
   id        String   @id @default(cuid())
   title     String
@@ -37,18 +72,251 @@ model Announcement {
   updatedAt DateTime @updatedAt
 }
 
-// ✅ Updated Video model with YouTube support
+// ============================================
+// VIDEOS (YouTube only)
+// ============================================
 model Video {
   id           String   @id @default(cuid())
   title        String
   description  String?
-  cloudinaryId String?  // Made optional: only for Cloudinary uploads
-  url          String   // Cloudinary URL OR YouTube URL
-  thumbnail    String?  // Optional thumbnail URL
-  source       String?  // 'cloudinary' or 'youtube' (to differentiate)
-  youtubeId    String?  // YouTube video ID (if source is youtube)
+  cloudinaryId String?
+  url          String
+  thumbnail    String?
+  source       String?  // 'cloudinary' or 'youtube'
+  youtubeId    String?
   uploadedBy   String
   uploader     User     @relation(fields: [uploadedBy], references: [clerkId])
+  
+  // Relation to lessons
+  lessons      Lesson[]
+  
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// ============================================
+// COURSE STRUCTURE
+// ============================================
+
+// ✅ Courses
+model Course {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  title       String
+  description String?
+  thumbnail   String?
+  category    String?
+  level       String?
+  
+  // Relations
+  modules     Module[]
+  enrollments Enrollment[]
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [clerkId])
+  
+  // Metadata
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ✅ Modules
+model Module {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  order       Int      @default(0)
+  
+  // Relations
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ✅ Lessons
+model Lesson {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  order       Int      @default(0)
+  
+  // Relations
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  
+  // Content (optional)
+  videoId     String?
+  video       Video?   @relation(fields: [videoId], references: [id])
+  slidesId    String?
+  slides      LectureSlide? @relation(fields: [slidesId], references: [id])
+  quizId      String?
+  quiz        Quiz?    @relation(fields: [quizId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================
+// LECTURE SLIDES (Google Slides)
+// ============================================
+model LectureSlide {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  embedUrl    String
+  order       Int      @default(0)
+  
+  // Relations
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [clerkId])
+  lessons     Lesson[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================
+// QUIZZES (Google Forms)
+// ============================================
+model Quiz {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  embedUrl    String
+  formUrl     String
+  dueDate     DateTime?
+  
+  // Relations
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [clerkId])
+  lessons     Lesson[]
+  submissions QuizSubmission[]
+  
+  // Metadata
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model QuizSubmission {
+  id          String   @id @default(cuid())
+  quizId      String
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [clerkId])
+  
+  score       Int?
+  total       Int?
+  feedback    String?
+  
+  status      SubmissionStatus @default(PENDING)
+  submittedAt DateTime @default(now())
+  gradedAt    DateTime?
+  gradedBy    String?
+  
+  responseId  String?  // Google Forms response ID
+}
+
+// ============================================
+// TESTS (Google Forms)
+// ============================================
+model Test {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  embedUrl    String
+  formUrl     String
+  dueDate     DateTime?
+  maxScore    Int?
+  
+  // Relations
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [clerkId])
+  submissions TestSubmission[]
+  
+  // Metadata
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TestSubmission {
+  id          String   @id @default(cuid())
+  testId      String
+  test        Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [clerkId])
+  
+  score       Int?
+  total       Int?
+  feedback    String?
+  
+  status      SubmissionStatus @default(PENDING)
+  submittedAt DateTime @default(now())
+  gradedAt    DateTime?
+  gradedBy    String?
+  
+  responseId  String?
+}
+
+// ============================================
+// ASSIGNMENTS (Google Forms)
+// ============================================
+model Assignment {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  embedUrl    String
+  formUrl     String
+  dueDate     DateTime?
+  maxScore    Int?
+  
+  // Relations
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [clerkId])
+  submissions AssignmentSubmission[]
+  
+  // Metadata
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AssignmentSubmission {
+  id          String   @id @default(cuid())
+  assignmentId String
+  assignment  Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [clerkId])
+  
+  score       Int?
+  total       Int?
+  feedback    String?
+  
+  status      SubmissionStatus @default(PENDING)
+  submittedAt DateTime @default(now())
+  gradedAt    DateTime?
+  gradedBy    String?
+  
+  responseId  String?  // Google Forms response ID
+  fileUrl     String?  // Optional file upload
+}
+
+// ============================================
+// ENROLLMENT (Students in courses)
+// ============================================
+model Enrollment {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [clerkId])
+  
+  progress    Int      @default(0) // 0-100%
+  enrolledAt  DateTime @default(now())
+  
+  @@unique([courseId, userId])
 }
