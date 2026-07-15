@@ -1,6 +1,4 @@
-import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import DashboardLayout from '@/components/DashboardLayout';
 import AdminContent from '@/components/AdminContent';
 
 interface SearchParams {
@@ -12,12 +10,11 @@ export default async function AdminPage({
 }: {
   searchParams?: Promise<SearchParams>;
 }) {
-  const { user, role } = await requireAuth(['ADMIN']);
   const params = await searchParams;
   const activeTab = params?.tab || 'dashboard';
 
-  // Fetch data on the server
-  const [announcementsData, videosData, usersData] = await Promise.all([
+  // ✅ Fetch data - NO AUTH needed (layout handles it)
+  const [announcementsData, videosData, usersData, coursesData] = await Promise.all([
     prisma.announcement.findMany({
       orderBy: { createdAt: 'desc' },
       include: { author: { select: { name: true } } },
@@ -37,9 +34,23 @@ export default async function AdminPage({
       },
       orderBy: { createdAt: 'desc' },
     }),
+    prisma.course.findMany({
+      include: {
+        modules: {
+          include: {
+            lessons: true,
+          },
+        },
+        enrollments: true,
+        creator: {
+          select: { name: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
   ]);
 
-  // Serialize dates
+  // ✅ Serialize dates
   const announcements = announcementsData.map((a) => ({
     ...a,
     createdAt: a.createdAt.toISOString(),
@@ -55,19 +66,36 @@ export default async function AdminPage({
     createdAt: u.createdAt.toISOString(),
   }));
 
-  // Get user's display name
-  const displayName = user?.name || user?.email?.split('@')[0] || 'Admin';
+  const courses = coursesData.map((c) => ({
+    ...c,
+    createdAt: c.createdAt.toISOString(),
+    updatedAt: c.updatedAt.toISOString(),
+    modules: c.modules.map((m) => ({
+      ...m,
+      createdAt: m.createdAt.toISOString(),
+      updatedAt: m.updatedAt.toISOString(),
+      lessons: m.lessons.map((l) => ({
+        ...l,
+        createdAt: l.createdAt.toISOString(),
+        updatedAt: l.updatedAt.toISOString(),
+      })),
+    })),
+    enrollments: c.enrollments.map((e) => ({
+      ...e,
+      enrolledAt: e.enrolledAt.toISOString(),
+    })),
+  }));
 
+  // ✅ Return content only - NO DashboardLayout wrapper
   return (
-    <DashboardLayout role={role}>
-      <AdminContent
-        announcements={announcements}
-        videos={videos}
-        users={users}
-        activeTab={activeTab}
-        displayName={displayName}
-        role={role}
-      />
-    </DashboardLayout>
+    <AdminContent
+      announcements={announcements}
+      videos={videos}
+      users={users}
+      courses={courses}
+      activeTab={activeTab}
+      displayName="Admin"
+      role="ADMIN"
+    />
   );
 }
