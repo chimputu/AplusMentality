@@ -2,14 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET - Get a single test
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
     await requireAuth();
-    const { id } = params;
+    const { id } = await params;  // ✅ Await
 
     const test = await prisma.test.findUnique({
       where: { id },

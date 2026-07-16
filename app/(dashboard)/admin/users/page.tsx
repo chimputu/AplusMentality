@@ -5,7 +5,7 @@ import UserManagement from '@/components/UserManagement';
 export default async function AdminUsersPage() {
   await requireAuth(['ADMIN']);
 
-  const users = await prisma.user.findMany({
+  const usersData = await prisma.user.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
       enrollments: {
@@ -35,6 +35,18 @@ export default async function AdminUsersPage() {
       },
     },
   });
+
+  // ✅ Convert Date to string for user (NOT enrolledAt - it's nested)
+  const users = usersData.map((user) => ({
+    ...user,
+    createdAt: user.createdAt.toISOString(),
+    // ✅ Only convert top-level dates
+    // enrolledAt is inside enrollments, not on user directly
+    enrollments: user.enrollments.map((enrollment) => ({
+      ...enrollment,
+      enrolledAt: enrollment.enrolledAt.toISOString(),
+    })),
+  }));
 
   return (
     <div className="max-w-7xl mx-auto">

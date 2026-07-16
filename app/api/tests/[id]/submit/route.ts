@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// POST - Submit a quiz
+// POST - Submit a test
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -13,36 +13,36 @@ export async function POST(
     const body = await req.json();
     const { score, total, responseId } = body;
 
-    // Check if quiz exists
-    const quiz = await prisma.quiz.findUnique({
+    // Check if test exists
+    const test = await prisma.test.findUnique({
       where: { id },
     });
 
-    if (!quiz) {
+    if (!test) {
       return NextResponse.json(
-        { error: 'Quiz not found' },
+        { error: 'Test not found' },
         { status: 404 }
       );
     }
 
     // Check if already submitted
-    const existingSubmission = await prisma.quizSubmission.findFirst({
+    const existingSubmission = await prisma.testSubmission.findFirst({
       where: {
-        quizId: id,
+        testId: id,
         userId,
       },
     });
 
     if (existingSubmission) {
       return NextResponse.json(
-        { error: 'You have already submitted this quiz' },
+        { error: 'You have already submitted this test' },
         { status: 400 }
       );
     }
 
-    const submission = await prisma.quizSubmission.create({
+    const submission = await prisma.testSubmission.create({
       data: {
-        quizId: id,
+        testId: id,
         userId,
         score: score || null,
         total: total || null,
@@ -54,9 +54,9 @@ export async function POST(
 
     return NextResponse.json(submission, { status: 201 });
   } catch (error: any) {
-    console.error('Error submitting quiz:', error);
+    console.error('Error submitting test:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to submit quiz' },
+      { error: error.message || 'Failed to submit test' },
       { status: 500 }
     );
   }

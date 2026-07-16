@@ -4,7 +4,13 @@ import './globals.css';
 import { Providers } from './providers';
 import { ClerkProvider } from '@clerk/nextjs';
 
-const inter = Inter({ subsets: ['latin'] });
+// ✅ Add fallback and display options
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap', // ✅ Prevents layout shift
+  fallback: ['system-ui', 'Arial', 'sans-serif'], // ✅ Fallback fonts
+  adjustFontFallback: true, // ✅ Adjusts fallback font size
+});
 
 export const metadata: Metadata = {
   title: 'A+ Mentality',
@@ -19,7 +25,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
+        <body className={`${inter.className} antialiased`}>
           <Providers>
             {children}
           </Providers>

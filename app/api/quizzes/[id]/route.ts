@@ -2,14 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET - Get a single quiz
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
     await requireAuth();
-    const { id } = params;
+    const { id } = await params;  // ✅ Await
 
     const quiz = await prisma.quiz.findUnique({
       where: { id },
@@ -24,7 +23,6 @@ export async function GET(
             },
           },
         },
-        lessons: true,
       },
     });
 

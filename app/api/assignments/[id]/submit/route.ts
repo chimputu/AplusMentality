@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// POST - Submit a quiz
+// POST - Submit an assignment
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -11,41 +11,40 @@ export async function POST(
     const { userId } = await requireAuth(['STUDENT']);
     const { id } = await params;
     const body = await req.json();
-    const { score, total, responseId } = body;
+    const { fileUrl, responseId } = body;
 
-    // Check if quiz exists
-    const quiz = await prisma.quiz.findUnique({
+    // Check if assignment exists
+    const assignment = await prisma.assignment.findUnique({
       where: { id },
     });
 
-    if (!quiz) {
+    if (!assignment) {
       return NextResponse.json(
-        { error: 'Quiz not found' },
+        { error: 'Assignment not found' },
         { status: 404 }
       );
     }
 
     // Check if already submitted
-    const existingSubmission = await prisma.quizSubmission.findFirst({
+    const existingSubmission = await prisma.assignmentSubmission.findFirst({
       where: {
-        quizId: id,
+        assignmentId: id,
         userId,
       },
     });
 
     if (existingSubmission) {
       return NextResponse.json(
-        { error: 'You have already submitted this quiz' },
+        { error: 'You have already submitted this assignment' },
         { status: 400 }
       );
     }
 
-    const submission = await prisma.quizSubmission.create({
+    const submission = await prisma.assignmentSubmission.create({
       data: {
-        quizId: id,
+        assignmentId: id,
         userId,
-        score: score || null,
-        total: total || null,
+        fileUrl: fileUrl || null,
         responseId: responseId || null,
         status: 'PENDING',
         submittedAt: new Date(),
@@ -54,9 +53,9 @@ export async function POST(
 
     return NextResponse.json(submission, { status: 201 });
   } catch (error: any) {
-    console.error('Error submitting quiz:', error);
+    console.error('Error submitting assignment:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to submit quiz' },
+      { error: error.message || 'Failed to submit assignment' },
       { status: 500 }
     );
   }
