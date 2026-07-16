@@ -1,7 +1,6 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import DashboardLayout from '@/components/DashboardLayout';
 import StudentContent from '@/components/StudentContent';
 
 interface SearchParams {
@@ -13,23 +12,15 @@ export default async function StudentPage({
 }: {
   searchParams?: Promise<SearchParams>;
 }) {
-  // Protect route + get Clerk user
   const { userId } = await auth();
-  
-  if (!userId) {
-    redirect('/sign-in');
-  }
+  if (!userId) redirect('/sign-in');
 
   const clerkUser = await currentUser();
-  
-  if (!clerkUser) {
-    redirect('/sign-in');
-  }
+  if (!clerkUser) redirect('/sign-in');
 
-  // Check role from your database
   const dbUser = await prisma.user.findUnique({
     where: { clerkId: userId },
-    select: { role: true, name: true, email: true },
+    select: { role: true },
   });
 
   if (!dbUser || dbUser.role !== 'STUDENT') {
@@ -39,7 +30,6 @@ export default async function StudentPage({
   const params = await searchParams;
   const searchQuery = params?.search || '';
 
-  // Fetch content data
   const [announcementsData, videosData] = await Promise.all([
     prisma.announcement.findMany({
       orderBy: { createdAt: 'desc' },
@@ -61,21 +51,19 @@ export default async function StudentPage({
     createdAt: v.createdAt.toISOString(),
   }));
 
-  // ✅ Get name from Clerk (firstName > fullName > email > fallback)
   const displayName =
     clerkUser.firstName ||
     clerkUser.fullName ||
     clerkUser.emailAddresses?.[0]?.emailAddress?.split('@')[0] ||
     'Student';
 
+  // ❌ Removed DashboardLayout — layout.tsx already provides it
   return (
-    <DashboardLayout role={dbUser.role}>
-      <StudentContent
-        announcements={announcements}
-        videos={videos}
-        displayName={displayName}
-        searchQuery={searchQuery}
-      />
-    </DashboardLayout>
+    <StudentContent
+      announcements={announcements}
+      videos={videos}
+      displayName={displayName}
+      searchQuery={searchQuery}
+    />
   );
 }
