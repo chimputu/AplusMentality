@@ -5,13 +5,40 @@ import { prisma } from '@/lib/prisma';
 // POST - Submit a quiz
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await requireAuth(['STUDENT']);
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
     const { score, total, responseId } = body;
+
+    // Check if quiz exists
+    const quiz = await prisma.quiz.findUnique({
+      where: { id },
+    });
+
+    if (!quiz) {
+      return NextResponse.json(
+        { error: 'Quiz not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if already submitted
+    const existingSubmission = await prisma.quizSubmission.findFirst({
+      where: {
+        quizId: id,
+        userId,
+      },
+    });
+
+    if (existingSubmission) {
+      return NextResponse.json(
+        { error: 'You have already submitted this quiz' },
+        { status: 400 }
+      );
+    }
 
     const submission = await prisma.quizSubmission.create({
       data: {
@@ -29,7 +56,7 @@ export async function POST(
   } catch (error: any) {
     console.error('Error submitting quiz:', error);
     return NextResponse.json(
-      { error: 'Failed to submit quiz' },
+      { error: error.message || 'Failed to submit quiz' },
       { status: 500 }
     );
   }

@@ -5,11 +5,11 @@ import { prisma } from '@/lib/prisma';
 // GET - Get a single video
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }  // ✅ Changed to Promise
 ) {
   try {
     await requireAuth();
-    const { id } = params;
+    const { id } = await params;  // ✅ Added await
 
     const video = await prisma.video.findUnique({
       where: { id },
@@ -58,11 +58,11 @@ export async function GET(
 // PUT - Update a video
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }  // ✅ Changed to Promise
 ) {
   try {
     await requireAuth(['ADMIN']);
-    const { id } = params;
+    const { id } = await params;  // ✅ Added await
     const body = await req.json();
     const { title, description, thumbnail } = body;
 
@@ -92,7 +92,54 @@ export async function PUT(
     }
 
     return NextResponse.json(
-      { error: 'Failed to update video' },
+      { error: error.message || 'Failed to update video' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Delete a video
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }  // ✅ Changed to Promise
+) {
+  try {
+    await requireAuth(['ADMIN']);
+    const { id } = await params;  // ✅ Added await
+
+    // Check if video exists
+    const video = await prisma.video.findUnique({
+      where: { id },
+    });
+
+    if (!video) {
+      return NextResponse.json(
+        { error: 'Video not found' },
+        { status: 404 }
+      );
+    }
+
+    // Delete from database
+    await prisma.video.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Video deleted successfully'
+    });
+  } catch (error: any) {
+    console.error('Error deleting video:', error);
+
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'Video not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: error.message || 'Failed to delete video' },
       { status: 500 }
     );
   }

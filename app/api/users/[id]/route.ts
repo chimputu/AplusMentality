@@ -2,16 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET - Get a single user
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
     const { userId, role } = await requireAuth();
-    const { id } = await params;
+    const { id } = await params;  // ✅ Await
 
-    // Users can only view themselves unless admin
     if (role !== 'ADMIN' && id !== userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -29,14 +27,6 @@ export async function GET(
         role: true,
         createdAt: true,
         updatedAt: true,
-        _count: {
-          select: {
-            enrollments: true,
-            courses: true,
-            announcements: true,
-            videos: true,
-          },
-        },
       },
     });
 
@@ -57,19 +47,15 @@ export async function GET(
   }
 }
 
-// PUT - Update a user
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
     const { userId, role } = await requireAuth();
-    const { id } = await params;
+    const { id } = await params;  // ✅ Await
     const body = await req.json();
 
-    console.log('🔵 PUT request received:', { id, userId, role, body });
-
-    // Only admins can change roles
     if (body.role && role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Only admins can change roles' },
@@ -77,7 +63,6 @@ export async function PUT(
       );
     }
 
-    // Users can only update themselves unless admin
     if (role !== 'ADMIN' && id !== userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -85,21 +70,7 @@ export async function PUT(
       );
     }
 
-    // Check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { clerkId: id },
-    });
-
-    if (!existingUser) {
-      console.log('❌ User not found:', id);
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Update user
-    const updatedUser = await prisma.user.update({
+    const user = await prisma.user.update({
       where: { clerkId: id },
       data: {
         name: body.name,
@@ -107,18 +78,10 @@ export async function PUT(
       },
     });
 
-    console.log('✅ User updated:', updatedUser);
-
     return NextResponse.json({
       success: true,
       message: 'User updated successfully',
-      user: {
-        id: updatedUser.id,
-        clerkId: updatedUser.clerkId,
-        email: updatedUser.email,
-        name: updatedUser.name,
-        role: updatedUser.role,
-      },
+      user,
     });
   } catch (error: any) {
     console.error('Error updating user:', error);
@@ -129,30 +92,19 @@ export async function PUT(
   }
 }
 
-// DELETE - Delete a user
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
     await requireAuth(['ADMIN']);
-    const { id } = await params;
+    const { id } = await params;  // ✅ Await
 
-    const user = await prisma.user.delete({
+    await prisma.user.delete({
       where: { clerkId: id },
     });
 
-    return NextResponse.json({
-      success: true,
-      message: 'User deleted successfully',
-      user: {
-        id: user.id,
-        clerkId: user.clerkId,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      },
-    });
+    return NextResponse.json({ message: 'User deleted successfully' });
   } catch (error: any) {
     console.error('Error deleting user:', error);
     return NextResponse.json(

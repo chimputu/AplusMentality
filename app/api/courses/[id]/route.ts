@@ -2,40 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET - Get a single course with all details
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
     await requireAuth();
-    const { id } = params;
+    const { id } = await params;  // ✅ Await
 
     const course = await prisma.course.findUnique({
       where: { id },
       include: {
         modules: {
-          orderBy: { order: 'asc' },
           include: {
-            lessons: {
-              orderBy: { order: 'asc' },
-              include: {
-                video: true,
-                slides: true,
-                quiz: true,
-              },
-            },
+            lessons: true,
           },
         },
-        enrollments: {
-          include: {
-            user: {
-              select: { name: true, email: true },
-            },
-          },
-        },
+        enrollments: true,
         creator: {
-          select: { name: true, email: true },
+          select: { name: true },
         },
       },
     });
