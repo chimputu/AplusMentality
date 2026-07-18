@@ -62,8 +62,18 @@ export default async function StudentLessonPage({ params }: PageProps) {
     );
   }
 
+  // ✅ Check if this lesson is already completed by the user
+  const completion = await prisma.lessonCompletion.findUnique({
+    where: {
+      userId_lessonId: {
+        userId,
+        lessonId: lesson.id,
+      },
+    },
+  });
+  const isCompleted = !!completion;
+
   // ── Compute next lesson ──
-  // Fetch the course with all modules and lessons (to find next lesson)
   const courseWithModules = await prisma.course.findUnique({
     where: { id: course.id },
     include: {
@@ -82,11 +92,6 @@ export default async function StudentLessonPage({ params }: PageProps) {
 
   if (courseWithModules) {
     const modules = courseWithModules.modules;
-    let foundCurrent = false;
-    let currentModuleOrder = lesson.module.order;
-    let currentLessonOrder = lesson.order;
-
-    // Find the next lesson in the same module
     const currentModule = modules.find((m) => m.id === lesson.moduleId);
     if (currentModule) {
       const lessons = currentModule.lessons;
@@ -94,7 +99,6 @@ export default async function StudentLessonPage({ params }: PageProps) {
       if (currentIndex !== -1 && currentIndex + 1 < lessons.length) {
         nextLessonId = lessons[currentIndex + 1].id;
       } else {
-        // No more lessons in this module → find first lesson of next module
         const moduleIndex = modules.findIndex((m) => m.id === lesson.moduleId);
         if (moduleIndex !== -1 && moduleIndex + 1 < modules.length) {
           const nextModule = modules[moduleIndex + 1];
@@ -124,7 +128,6 @@ export default async function StudentLessonPage({ params }: PageProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Back button */}
       <Link
         href={`/student/courses/${course.id}`}
         className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
@@ -133,7 +136,6 @@ export default async function StudentLessonPage({ params }: PageProps) {
         Back to {course.title}
       </Link>
 
-      {/* Lesson Header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
@@ -152,9 +154,8 @@ export default async function StudentLessonPage({ params }: PageProps) {
         )}
       </div>
 
-      {/* Lesson Content */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        {/* Video Content */}
+        {/* Video */}
         {lesson.video && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
@@ -183,7 +184,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Slides Content */}
+        {/* Slides */}
         {lesson.slides && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
@@ -204,7 +205,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Quiz Content */}
+        {/* Quiz */}
         {lesson.quiz && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
@@ -225,7 +226,6 @@ export default async function StudentLessonPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* No Content */}
         {!lesson.video && !lesson.slides && !lesson.quiz && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📝</div>
@@ -242,6 +242,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
             courseId={course.id}
             lessonId={lesson.id}
             nextLessonId={nextLessonId}
+            isCompleted={isCompleted}
           />
         </div>
       </div>
