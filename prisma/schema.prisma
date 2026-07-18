@@ -31,7 +31,7 @@ enum SubmissionStatus {
 }
 
 // ============================================
-// USERS (with all reverse relations)
+// USERS
 // ============================================
 model User {
   id             String         @id @default(cuid())
@@ -39,14 +39,12 @@ model User {
   email          String         @unique
   name           String?
   role           Role           @default(STUDENT)
-  
+
   // Relations
   announcements  Announcement[]
   videos         Video[]
   courses        Course[]       // Courses created by user
   enrollments    Enrollment[]   // Courses enrolled in
-  
-  // ✅ Reverse relations for all models
   lectureSlides  LectureSlide[]
   quizzes        Quiz[]
   tests          Test[]
@@ -54,9 +52,13 @@ model User {
   quizSubmissions QuizSubmission[]
   testSubmissions TestSubmission[]
   assignmentSubmissions AssignmentSubmission[]
-  
+  lessonCompletions LessonCompletion[]
+
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+
+  @@index([role])
+  @@index([email])
 }
 
 // ============================================
@@ -70,10 +72,13 @@ model Announcement {
   author    User     @relation(fields: [authorId], references: [clerkId])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([authorId])
 }
 
 // ============================================
-// VIDEOS (YouTube only)
+// VIDEOS
 // ============================================
 model Video {
   id           String   @id @default(cuid())
@@ -82,23 +87,24 @@ model Video {
   cloudinaryId String?
   url          String
   thumbnail    String?
-  source       String?  // 'cloudinary' or 'youtube'
+  source       String?
   youtubeId    String?
   uploadedBy   String
   uploader     User     @relation(fields: [uploadedBy], references: [clerkId])
-  
-  // Relation to lessons
   lessons      Lesson[]
-  
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([uploadedBy])
+  @@index([source])
 }
 
 // ============================================
 // COURSE STRUCTURE
 // ============================================
 
-// ✅ Courses
 model Course {
   id          String   @id @default(cuid())
   code        String   @unique
@@ -107,60 +113,67 @@ model Course {
   thumbnail   String?
   category    String?
   level       String?
-  
-  // Relations
+
   modules     Module[]
   enrollments Enrollment[]
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
-  
-  // Metadata
+
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([isPublished])
+  @@index([createdAt])
+  @@index([createdBy])
 }
 
-// ✅ Modules
 model Module {
   id          String   @id @default(cuid())
   title       String
   description String?
   order       Int      @default(0)
-  
-  // Relations
+
   courseId    String
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessons     Lesson[]
-  
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([courseId])
+  @@index([order])
+  @@index([courseId, order])
 }
 
-// ✅ Lessons
 model Lesson {
   id          String   @id @default(cuid())
   title       String
   description String?
   order       Int      @default(0)
-  
-  // Relations
+
   moduleId    String
   module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  
-  // Content (optional)
+
   videoId     String?
   video       Video?   @relation(fields: [videoId], references: [id])
   slidesId    String?
   slides      LectureSlide? @relation(fields: [slidesId], references: [id])
   quizId      String?
   quiz        Quiz?    @relation(fields: [quizId], references: [id])
-  
+
+  completions LessonCompletion[]
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([moduleId])
+  @@index([order])
+  @@index([moduleId, order])
 }
 
 // ============================================
-// LECTURE SLIDES (Google Slides)
+// LECTURE SLIDES
 // ============================================
 model LectureSlide {
   id          String   @id @default(cuid())
@@ -168,18 +181,20 @@ model LectureSlide {
   description String?
   embedUrl    String
   order       Int      @default(0)
-  
-  // Relations
+
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
   lessons     Lesson[]
-  
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([createdBy])
 }
 
 // ============================================
-// QUIZZES (Google Forms)
+// QUIZZES
 // ============================================
 model Quiz {
   id          String   @id @default(cuid())
@@ -188,17 +203,18 @@ model Quiz {
   embedUrl    String
   formUrl     String
   dueDate     DateTime?
-  
-  // Relations
+
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
   lessons     Lesson[]
   submissions QuizSubmission[]
-  
-  // Metadata
+
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([isPublished])
 }
 
 model QuizSubmission {
@@ -207,21 +223,24 @@ model QuizSubmission {
   quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
   userId      String
   user        User     @relation(fields: [userId], references: [clerkId])
-  
+
   score       Int?
   total       Int?
   feedback    String?
-  
+
   status      SubmissionStatus @default(PENDING)
   submittedAt DateTime @default(now())
   gradedAt    DateTime?
   gradedBy    String?
-  
-  responseId  String?  // Google Forms response ID
+
+  responseId  String?
+
+  @@index([userId])
+  @@index([quizId])
 }
 
 // ============================================
-// TESTS (Google Forms)
+// TESTS
 // ============================================
 model Test {
   id          String   @id @default(cuid())
@@ -231,16 +250,17 @@ model Test {
   formUrl     String
   dueDate     DateTime?
   maxScore    Int?
-  
-  // Relations
+
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
   submissions TestSubmission[]
-  
-  // Metadata
+
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([isPublished])
 }
 
 model TestSubmission {
@@ -249,21 +269,24 @@ model TestSubmission {
   test        Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
   userId      String
   user        User     @relation(fields: [userId], references: [clerkId])
-  
+
   score       Int?
   total       Int?
   feedback    String?
-  
+
   status      SubmissionStatus @default(PENDING)
   submittedAt DateTime @default(now())
   gradedAt    DateTime?
   gradedBy    String?
-  
+
   responseId  String?
+
+  @@index([userId])
+  @@index([testId])
 }
 
 // ============================================
-// ASSIGNMENTS (Google Forms)
+// ASSIGNMENTS
 // ============================================
 model Assignment {
   id          String   @id @default(cuid())
@@ -273,16 +296,17 @@ model Assignment {
   formUrl     String
   dueDate     DateTime?
   maxScore    Int?
-  
-  // Relations
+
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
   submissions AssignmentSubmission[]
-  
-  // Metadata
+
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([isPublished])
 }
 
 model AssignmentSubmission {
@@ -291,22 +315,25 @@ model AssignmentSubmission {
   assignment  Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   userId      String
   user        User     @relation(fields: [userId], references: [clerkId])
-  
+
   score       Int?
   total       Int?
   feedback    String?
-  
+
   status      SubmissionStatus @default(PENDING)
   submittedAt DateTime @default(now())
   gradedAt    DateTime?
   gradedBy    String?
-  
-  responseId  String?  // Google Forms response ID
-  fileUrl     String?  // Optional file upload
+
+  responseId  String?
+  fileUrl     String?
+
+  @@index([userId])
+  @@index([assignmentId])
 }
 
 // ============================================
-// ENROLLMENT (Students in courses)
+// ENROLLMENT
 // ============================================
 model Enrollment {
   id          String   @id @default(cuid())
@@ -314,9 +341,28 @@ model Enrollment {
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   userId      String
   user        User     @relation(fields: [userId], references: [clerkId])
-  
-  progress    Int      @default(0) // 0-100%
+
+  progress    Int      @default(0)
   enrolledAt  DateTime @default(now())
-  
+
   @@unique([courseId, userId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([enrolledAt])
+}
+
+// ============================================
+// ✅ NEW: LESSON COMPLETIONS
+// ============================================
+model LessonCompletion {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
 }
