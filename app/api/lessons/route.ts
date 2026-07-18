@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST - Create a new lesson
+// ✅ FIXED POST - Create a new lesson (converts empty strings to null)
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await requireAuth(['ADMIN']);
@@ -58,15 +58,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // ✅ Convert empty strings to null to avoid foreign key errors
     const lesson = await prisma.lesson.create({
       data: {
         title,
         description,
         order: order || 0,
         moduleId,
-        videoId,
-        slidesId,
-        quizId,
+        videoId: videoId || null,
+        slidesId: slidesId || null,
+        quizId: quizId || null,
       },
       include: {
         video: true,
@@ -85,7 +86,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PUT - Update a lesson
+// PUT - Update a lesson (no changes needed, but keep consistency)
 export async function PUT(req: NextRequest) {
   try {
     await requireAuth(['ADMIN']);
@@ -113,9 +114,9 @@ export async function PUT(req: NextRequest) {
         title,
         description,
         order,
-        videoId,
-        slidesId,
-        quizId,
+        videoId: videoId || null,
+        slidesId: slidesId || null,
+        quizId: quizId || null,
       },
       include: {
         video: true,
