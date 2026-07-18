@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// PUT - Update lesson progress
 export async function PUT(req: NextRequest) {
   try {
     const { userId } = await requireAuth(['STUDENT']);
@@ -16,24 +15,32 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Get enrollment
-    const enrollment = await prisma.enrollment.findUnique({
+    // Check if already completed
+    const existing = await prisma.lessonCompletion.findUnique({
       where: {
-        courseId_userId: {
-          courseId,
+        userId_lessonId: {
           userId,
+          lessonId,
         },
       },
     });
 
-    if (!enrollment) {
+    if (existing) {
       return NextResponse.json(
-        { error: 'Not enrolled in this course' },
-        { status: 404 }
+        { message: 'Lesson already completed' },
+        { status: 200 }
       );
     }
 
-    // Get total lessons in the course
+    // Create completion record
+    await prisma.lessonCompletion.create({
+      data: {
+        userId,
+        lessonId,
+      },
+    });
+
+    // Recalculate progress for this course
     const totalLessons = await prisma.lesson.count({
       where: {
         module: {
@@ -42,33 +49,34 @@ export async function PUT(req: NextRequest) {
       },
     });
 
-    if (totalLessons === 0) {
-      return NextResponse.json(
-        { error: 'No lessons in this course' },
-        { status: 400 }
-      );
-    }
+    const completedLessons = await prisma.lessonCompletion.count({
+      where: {
+        userId,
+        lesson: {
+          module: {
+            courseId,
+          },
+        },
+      },
+    });
 
-    // Get completed lessons count
-    // You'll need a LessonCompletion model for this
-    // For now, we'll just update progress by 10%
-    // In a real implementation, you'd track which lessons are completed
+    const progress = totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100);
 
-    const newProgress = Math.min(enrollment.progress + 10, 100);
-
-    const updated = await prisma.enrollment.update({
+    // Update enrollment progress
+    await prisma.enrollment.update({
       where: {
         courseId_userId: {
           courseId,
           userId,
         },
       },
-      data: { progress: newProgress },
+      data: { progress },
     });
 
     return NextResponse.json({
       message: 'Progress updated',
-      progress: updated.progress,
+      progress,
+      completed: true,
     });
   } catch (error: any) {
     console.error('Error updating progress:', error);

@@ -2,24 +2,28 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CheckCircle } from 'lucide-react';
 
 interface MarkLessonCompleteButtonProps {
   courseId: string;
   lessonId: string;
   nextLessonId: string | null;
+  isCompleted: boolean;
 }
 
 export default function MarkLessonCompleteButton({
   courseId,
   lessonId,
   nextLessonId,
+  isCompleted,
 }: MarkLessonCompleteButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [completed, setCompleted] = useState(false);
+  const [completed, setCompleted] = useState(isCompleted);
 
   const handleMarkComplete = async () => {
+    if (completed) return;
+
     setLoading(true);
     try {
       const res = await fetch('/api/enrollments/progress', {
@@ -30,7 +34,7 @@ export default function MarkLessonCompleteButton({
 
       if (res.ok) {
         setCompleted(true);
-        // Wait 1.5 seconds, then auto‑navigate if next lesson exists
+        router.refresh();
         setTimeout(() => {
           if (nextLessonId) {
             router.push(`/student/lessons/${nextLessonId}`);
@@ -53,7 +57,9 @@ export default function MarkLessonCompleteButton({
   if (completed) {
     return (
       <div className="flex flex-col items-center gap-3">
-        <div className="text-green-600 font-medium">✅ Lesson marked as complete!</div>
+        <div className="text-green-600 font-medium flex items-center gap-2">
+          <CheckCircle className="w-5 h-5" /> Lesson completed!
+        </div>
         {nextLessonId ? (
           <button
             onClick={() => router.push(`/student/lessons/${nextLessonId}`)}
@@ -69,7 +75,6 @@ export default function MarkLessonCompleteButton({
             Back to Course
           </button>
         )}
-        <p className="text-sm text-gray-500">Redirecting automatically…</p>
       </div>
     );
   }
