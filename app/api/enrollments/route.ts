@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET - Get user's enrollments
+// GET – Get user's enrollments
 export async function GET(req: NextRequest) {
   try {
     const { userId } = await requireAuth();
@@ -10,21 +10,15 @@ export async function GET(req: NextRequest) {
     const courseId = searchParams.get('courseId');
 
     const where: any = { userId };
-    if (courseId) {
-      where.courseId = courseId;
-    }
+    if (courseId) where.courseId = courseId;
 
     const enrollments = await prisma.enrollment.findMany({
       where,
       include: {
         course: {
           include: {
-            modules: {
-              include: { lessons: true },
-            },
-            creator: {
-              select: { name: true, email: true },
-            },
+            modules: { include: { lessons: true } },
+            creator: { select: { name: true, email: true } },
           },
         },
       },
@@ -41,11 +35,23 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST - Enroll in a course
+// POST – Enroll in a course (supports JSON + FormData)
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await requireAuth(['STUDENT']);
-    const { courseId } = await req.json();
+
+    // ✅ Detect content type and parse accordingly
+    let courseId: string;
+    const contentType = req.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      const body = await req.json();
+      courseId = body.courseId;
+    } else {
+      // form-data or urlencoded
+      const formData = await req.formData();
+      courseId = formData.get('courseId') as string;
+    }
 
     if (!courseId) {
       return NextResponse.json(
@@ -66,18 +72,42 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const enrollment = await prisma.enrollment.create({
+    // Prevent duplicate enrollment
+    const existing = await prisma.enrollment.findUnique({
+      where: {
+        courseId_userId: {
+          courseId,
+          userId,
+        },
+      },
+    });
+
+    if (existing) {
+      return NextResponse.json(
+        { error: 'Already enrolled in this course' },
+        { status: 400 }
+      );
+    }
+
+    // Create enrollment
+    await prisma.enrollment.create({
       data: {
         courseId,
         userId,
         progress: 0,
       },
-      include: {
-        course: true,
-      },
     });
 
-    return NextResponse.json(enrollment, { status: 201 });
+    // ✅ For form submissions: redirect back to courses page
+    // If the request was JSON, return a 201 with a success message
+    if (contentType.includes('application/json')) {
+      return NextResponse.json(
+        { message: 'Enrolled successfully' },
+        { status: 201 }
+      );
+    }
+
+    return NextResponse.redirect(new URL('/student/courses', req.url));
   } catch (error: any) {
     console.error('Error enrolling in course:', error);
 
@@ -95,7 +125,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE - Unenroll from a course
+// DELETE – Unenroll from a course
 export async function DELETE(req: NextRequest) {
   try {
     const { userId } = await requireAuth();
