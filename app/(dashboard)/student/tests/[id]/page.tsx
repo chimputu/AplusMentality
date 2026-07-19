@@ -48,13 +48,13 @@ export default async function StudentTakeTestPage({ params }: PageProps) {
   }
 
   const isExpired = test.dueDate && new Date(test.dueDate) < new Date();
-  // ✅ FIX: Coerce to boolean
   const isGoogleForm = !!(
     test.contentType === 'google_form' ||
     (!test.contentType && test.embedUrl)
   );
   const isPDF = test.contentType === 'pdf';
   const isImage = test.contentType === 'image';
+  const isPastPaper = test.contentType === 'past_paper';  // ✅ NEW
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -101,9 +101,33 @@ export default async function StudentTakeTestPage({ params }: PageProps) {
                 : 'Review the content above, then click the button below to submit.'}
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <TestSubmitButton testId={test.id} formUrl={test.formUrl || ''} isGoogleForm={isGoogleForm} />
-          </div>
+
+          {!isPastPaper && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+              <TestSubmitButton
+                testId={test.id}
+                formUrl={test.formUrl || ''}
+                isGoogleForm={isGoogleForm}
+              />
+            </div>
+          )}
+          {isPastPaper && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 text-center">
+              <p className="text-blue-700 dark:text-blue-300 font-medium">
+                📄 This is a past paper. Use it for revision.
+              </p>
+              {test.fileUrl && (
+                <a
+                  href={test.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                >
+                  📥 Open Past Paper
+                </a>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>
