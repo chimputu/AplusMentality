@@ -62,17 +62,6 @@ export default async function StudentLessonPage({ params }: PageProps) {
     );
   }
 
-  // ✅ Check if this lesson is already completed by the user
-  const completion = await prisma.lessonCompletion.findUnique({
-    where: {
-      userId_lessonId: {
-        userId,
-        lessonId: lesson.id,
-      },
-    },
-  });
-  const isCompleted = !!completion;
-
   // ── Compute next lesson ──
   const courseWithModules = await prisma.course.findUnique({
     where: { id: course.id },
@@ -110,6 +99,17 @@ export default async function StudentLessonPage({ params }: PageProps) {
     }
   }
 
+  // Check if already completed
+  const completion = await prisma.lessonCompletion.findUnique({
+    where: {
+      userId_lessonId: {
+        userId,
+        lessonId: lesson.id,
+      },
+    },
+  });
+  const isCompleted = !!completion;
+
   // Helper: extract YouTube ID
   function extractYouTubeId(url: string): string | null {
     const patterns = [
@@ -128,6 +128,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* Back button */}
       <Link
         href={`/student/courses/${course.id}`}
         className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
@@ -136,6 +137,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
         Back to {course.title}
       </Link>
 
+      {/* Lesson Header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
@@ -154,8 +156,9 @@ export default async function StudentLessonPage({ params }: PageProps) {
         )}
       </div>
 
+      {/* Lesson Content */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        {/* Video */}
+        {/* Video Content */}
         {lesson.video && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
@@ -184,8 +187,8 @@ export default async function StudentLessonPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Slides */}
-        {lesson.slides && (
+        {/* Slides Content – ✅ ONLY render when embedUrl exists */}
+        {lesson.slides && lesson.slides.embedUrl && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
               <Presentation className="w-5 h-5 text-blue-500" />
@@ -205,7 +208,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Quiz */}
+        {/* Quiz Content */}
         {lesson.quiz && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
@@ -226,6 +229,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
           </div>
         )}
 
+        {/* No Content */}
         {!lesson.video && !lesson.slides && !lesson.quiz && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📝</div>
