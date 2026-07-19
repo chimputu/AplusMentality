@@ -119,6 +119,9 @@ model Course {
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
 
+  // Reverse relation for lecture slides
+  lectureSlides LectureSlide[]
+
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -173,22 +176,27 @@ model Lesson {
 }
 
 // ============================================
-// LECTURE SLIDES
+// ✅ UPDATED LECTURE SLIDES (with file support)
 // ============================================
 model LectureSlide {
   id          String   @id @default(cuid())
   title       String
   description String?
-  embedUrl    String
+  embedUrl    String?   // Google Slides embed URL (optional, only for Google Slides)
+  fileUrl     String?   // URL for uploaded PDF (optional)
+  contentType String?   // 'google_slides' or 'pdf'
   order       Int      @default(0)
-
+  category    String?   // e.g., "Computer Science", "Mathematics"
+  courseId    String?   // optional link to a course
+  course      Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
   lessons     Lesson[]
-
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([courseId])
+  @@index([category])
   @@index([createdAt])
   @@index([createdBy])
 }
@@ -203,8 +211,8 @@ model Quiz {
   embedUrl    String
   formUrl     String
   dueDate     DateTime?
-  fileUrl     String?   // ✅ NEW: URL for uploaded file (PDF/Image)
-  contentType String?   // ✅ NEW: 'google_form', 'pdf', 'image'
+  fileUrl     String?
+  contentType String?   // 'google_form', 'pdf', 'image', 'past_paper'
 
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
@@ -252,8 +260,8 @@ model Test {
   formUrl     String
   dueDate     DateTime?
   maxScore    Int?
-  fileUrl     String?   // ✅ NEW: URL for uploaded file (PDF/Image)
-  contentType String?   // ✅ NEW: 'google_form', 'pdf', 'image'
+  fileUrl     String?
+  contentType String?   // 'google_form', 'pdf', 'image', 'past_paper'
 
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
@@ -300,8 +308,8 @@ model Assignment {
   formUrl     String
   dueDate     DateTime?
   maxScore    Int?
-  fileUrl     String?   // ✅ NEW: URL for uploaded file (PDF/Image)
-  contentType String?   // ✅ NEW: 'google_form', 'pdf', 'image'
+  fileUrl     String?
+  contentType String?   // 'google_form', 'pdf', 'image', 'past_paper'
 
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])

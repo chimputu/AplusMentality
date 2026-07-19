@@ -11,11 +11,15 @@ export async function GET(
     const { id } = await params;
     const slide = await prisma.lectureSlide.findUnique({
       where: { id },
-      include: { creator: { select: { name: true, email: true } } },
+      include: {
+        creator: { select: { name: true, email: true } },
+        course: { select: { id: true, title: true, code: true } },
+      },
     });
     if (!slide) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(slide);
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 });
   }
 }
@@ -28,12 +32,24 @@ export async function PUT(
     await requireAuth(['ADMIN']);
     const { id } = await params;
     const body = await req.json();
+    const { title, description, embedUrl, fileUrl, contentType, order, category, courseId } = body;
+
     const slide = await prisma.lectureSlide.update({
       where: { id },
-      data: body,
+      data: {
+        title,
+        description,
+        embedUrl: embedUrl || null,
+        fileUrl: fileUrl || null,
+        contentType: contentType || 'google_slides',
+        order,
+        category: category || null,
+        courseId: courseId || null,
+      },
     });
     return NextResponse.json(slide);
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
   }
 }
@@ -48,6 +64,7 @@ export async function DELETE(
     await prisma.lectureSlide.delete({ where: { id } });
     return NextResponse.json({ message: 'Deleted successfully' });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
   }
 }
