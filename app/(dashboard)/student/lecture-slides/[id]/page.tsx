@@ -187,7 +187,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Slides Content – ✅ ONLY render when embedUrl exists */}
+        {/* Slides Content – FIXED: only render if embedUrl exists */}
         {lesson.slides && lesson.slides.embedUrl && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
