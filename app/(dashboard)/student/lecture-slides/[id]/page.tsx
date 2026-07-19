@@ -2,50 +2,253 @@ import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Video, Presentation, FileQuestion } from 'lucide-react';
+import MarkLessonCompleteButton from '@/components/MarkLessonCompleteButton';
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{
+    id: string;
+  }>;
 }
 
-export default async function StudentLectureSlidePage({ params }: PageProps) {
-  await requireAuth(['STUDENT']);
+export default async function StudentLessonPage({ params }: PageProps) {
+  const { userId } = await requireAuth(['STUDENT']);
   const { id } = await params;
-  const slide = await prisma.lectureSlide.findUnique({
+
+  // Fetch the current lesson with its module and course
+  const lesson = await prisma.lesson.findUnique({
     where: { id },
     include: {
-      course: { select: { title: true, code: true } },
-      creator: { select: { name: true } },
+      video: true,
+      slides: true,
+      quiz: true,
+      module: {
+        include: {
+          course: {
+            include: {
+              enrollments: {
+                where: { userId },
+                select: { id: true, progress: true },
+              },
+            },
+          },
+        },
+      },
     },
   });
-  if (!slide) notFound();
+
+  if (!lesson) {
+    notFound();
+  }
+
+  const course = lesson.module.course;
+  const enrollment = course.enrollments[0];
+
+  // Check if student is enrolled
+  if (!enrollment) {
+    return (
+      <div className="max-w-4xl mx-auto text-center py-12">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Not Enrolled</h2>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">
+          You need to be enrolled in this course to access the lesson.
+        </p>
+        <Link
+          href={`/student/courses/${course.id}`}
+          className="inline-block mt-4 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          ← Back to Course
+        </Link>
+      </div>
+    );
+  }
+
+  // ── Compute next lesson ──
+  const courseWithModules = await prisma.course.findUnique({
+    where: { id: course.id },
+    include: {
+      modules: {
+        orderBy: { order: 'asc' },
+        include: {
+          lessons: {
+            orderBy: { order: 'asc' },
+          },
+        },
+      },
+    },
+  });
+
+  let nextLessonId: string | null = null;
+
+  if (courseWithModules) {
+    const modules = courseWithModules.modules;
+    const currentModule = modules.find((m) => m.id === lesson.moduleId);
+    if (currentModule) {
+      const lessons = currentModule.lessons;
+      const currentIndex = lessons.findIndex((l) => l.id === lesson.id);
+      if (currentIndex !== -1 && currentIndex + 1 < lessons.length) {
+        nextLessonId = lessons[currentIndex + 1].id;
+      } else {
+        const moduleIndex = modules.findIndex((m) => m.id === lesson.moduleId);
+        if (moduleIndex !== -1 && moduleIndex + 1 < modules.length) {
+          const nextModule = modules[moduleIndex + 1];
+          if (nextModule.lessons.length > 0) {
+            nextLessonId = nextModule.lessons[0].id;
+          }
+        }
+      }
+    }
+  }
+
+  // Check if already completed
+  const completion = await prisma.lessonCompletion.findUnique({
+    where: {
+      userId_lessonId: {
+        userId,
+        lessonId: lesson.id,
+      },
+    },
+  });
+  const isCompleted = !!completion;
+
+  // Helper: extract YouTube ID
+  function extractYouTubeId(url: string): string | null {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=)([\w-]+)/,
+      /(?:youtu\.be\/)([\w-]+)/,
+      /(?:youtube\.com\/embed\/)([\w-]+)/,
+    ];
+    for (const p of patterns) {
+      const match = url.match(p);
+      if (match) return match[1];
+    }
+    return null;
+  }
+
+  const videoId = lesson.video?.youtubeId || extractYouTubeId(lesson.video?.url || '');
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <Link href="/student/lecture-slides" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Back to Slides
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Back button */}
+      <Link
+        href={`/student/courses/${course.id}`}
+        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to {course.title}
       </Link>
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
-        <h1 className="text-2xl font-bold">{slide.title}</h1>
-        {slide.description && <p className="text-gray-600 dark:text-gray-300 mt-2">{slide.description}</p>}
-        <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
-          {slide.category && <span>Category: {slide.category}</span>}
-          {slide.course && <span>Course: {slide.course.title}</span>}
-          {slide.creator && <span>Uploaded by: {slide.creator.name}</span>}
+
+      {/* Lesson Header */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
+            {lesson.module.title}
+          </span>
+          <span>•</span>
+          <span>Lesson {lesson.order + 1}</span>
         </div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">
+          {lesson.title}
+        </h1>
+        {lesson.description && (
+          <p className="text-gray-600 dark:text-gray-300 mt-2">
+            {lesson.description}
+          </p>
+        )}
       </div>
-      <div className="aspect-video w-full bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-        {slide.contentType === 'google_slides' && slide.embedUrl && (
-          <iframe src={slide.embedUrl} className="w-full h-full" allowFullScreen />
-        )}
-        {slide.contentType === 'pdf' && slide.fileUrl && (
-          <iframe src={slide.fileUrl} className="w-full h-full" />
-        )}
-        {!slide.embedUrl && !slide.fileUrl && (
-          <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
-            No content available
+
+      {/* Lesson Content */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        {/* Video Content */}
+        {lesson.video && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Video className="w-5 h-5 text-red-500" />
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Video</h2>
+            </div>
+            <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+              {videoId ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title={lesson.video.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute top-0 left-0 w-full h-full"
+                />
+              ) : (
+                <video controls className="w-full h-full">
+                  <source src={lesson.video.url} />
+                  Your browser does not support the video tag.
+                </video>
+              )}
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              {lesson.video.title}
+            </p>
           </div>
         )}
+
+        {/* Slides Content – FIXED: only render if embedUrl exists */}
+        {lesson.slides && lesson.slides.embedUrl && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Presentation className="w-5 h-5 text-blue-500" />
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Lecture Slides</h2>
+            </div>
+            <div className="relative w-full aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+              <iframe
+                src={lesson.slides.embedUrl}
+                title={lesson.slides.title}
+                className="absolute top-0 left-0 w-full h-full"
+                allowFullScreen
+              />
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              {lesson.slides.title}
+            </p>
+          </div>
+        )}
+
+        {/* Quiz Content */}
+        {lesson.quiz && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <FileQuestion className="w-5 h-5 text-purple-500" />
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Quiz</h2>
+            </div>
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 text-center">
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                {lesson.quiz.title}
+              </p>
+              <Link
+                href={`/student/quizzes/${lesson.quiz.id}`}
+                className="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+              >
+                Take Quiz
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* No Content */}
+        {!lesson.video && !lesson.slides && !lesson.quiz && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📝</div>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">No content yet</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+              This lesson doesn't have any content attached yet.
+            </p>
+          </div>
+        )}
+
+        {/* Mark as Complete Button */}
+        <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
+          <MarkLessonCompleteButton
+            courseId={course.id}
+            lessonId={lesson.id}
+            nextLessonId={nextLessonId}
+            isCompleted={isCompleted}
+          />
+        </div>
       </div>
     </div>
   );
