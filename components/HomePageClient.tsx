@@ -245,7 +245,7 @@ export default function HomePageClient() {
               </Link>
               <span className="w-px h-5 bg-gray-300 mx-1"></span>
               <div className="bg-gray-100 text-gray-700 text-[10px] font-medium px-2.5 py-1 rounded-full border border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.5),0_0_30px_rgba(147,51,234,0.3)] animate-pulse">
-                🇿🇲 Zambia
+                SmartCorp
               </div>
             </div>
 
@@ -262,7 +262,7 @@ export default function HomePageClient() {
             <Link href="/sign-up" className="block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center" onClick={() => setIsMenuOpen(false)}>
               Get Started
             </Link>
-            <div className="text-xs text-gray-500 text-center">🇿🇲 Zambia</div>
+            <div className="text-xs text-gray-500 text-center">Owned by SmartCorp</div>
           </div>
         )}
       </nav>
