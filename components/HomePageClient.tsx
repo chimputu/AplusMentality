@@ -5,27 +5,23 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 import {
   Menu, X, Mail, Phone, MapPin, Send,
   Share2, Globe, AtSign, Link as LinkIcon,
-  ChevronLeft, ChevronRight, Quote, Star,
+  Quote, Star,
   Users, BookOpen, Award, Heart, Sparkles,
   GraduationCap, Target, Users as UsersIcon, CheckCircle,
   FileText, Book, Video, ClipboardList, MessageCircle, Briefcase, Crown,
   Compass, TrendingUp, PlayCircle, Megaphone, UserPlus,
 } from 'lucide-react';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
 
-// ✅ Fixed animation variants - TypeScript safe
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { 
     opacity: 1, 
     y: 0, 
-    transition: { 
-      duration: 0.6 
-    } 
+    transition: { duration: 0.6 } 
   },
 };
 
@@ -33,9 +29,7 @@ const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { 
-      staggerChildren: 0.15 
-    },
+    transition: { staggerChildren: 0.15 },
   },
 };
 
@@ -45,6 +39,7 @@ export default function HomePageClient() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [learnerCount, setLearnerCount] = useState(0);
   const [videoCount, setVideoCount] = useState(0);
@@ -87,45 +82,52 @@ export default function HomePageClient() {
     return () => observer.disconnect();
   }, [hasAnimated]);
 
-  const [institutionRef] = useEmblaCarousel(
-    { loop: true, align: 'start', containScroll: 'trimSnaps' },
-    [Autoplay({ delay: 4000, stopOnInteraction: false })]
-  );
-  const [wisdomRef, wisdomApi] = useEmblaCarousel({ loop: true }, [
-    Autoplay({ delay: 5000, stopOnInteraction: false }),
-  ]);
+  // ============================================================
+  // ZAMBIA 2026 DATA — Based on HEA Gazette & University Websites
+  // ============================================================
 
-  // ---- DATA ----
-  const staticCourses = [
-    { id: '1', code: 'BIO101', title: 'Introduction to Biology', description: 'Cell biology, genetics, and ecology.', year: 1, faculty: 'Natural Sciences', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, interested: 12000 },
-    { id: '2', code: 'CHEM101', title: 'General Chemistry I', description: 'Atomic structure, bonding, and stoichiometry.', year: 1, faculty: 'Natural Sciences', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.7, interested: 9500 },
-    { id: '3', code: 'PHY101', title: 'General Physics I', description: 'Mechanics, thermodynamics, and waves.', year: 1, faculty: 'Natural Sciences', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.6, interested: 8200 },
-    { id: '4', code: 'MAT101', title: 'Calculus I', description: 'Limits, derivatives, and integrals.', year: 1, faculty: 'Natural Sciences', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, interested: 15000 },
-    { id: '5', code: 'STA101', title: 'Introductory Statistics', description: 'Descriptive and inferential statistics.', year: 1, faculty: 'Natural Sciences', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, interested: 6500 },
-    { id: '6', code: 'EVS101', title: 'Environmental Science', description: 'Ecosystems, biodiversity, and sustainability.', year: 1, faculty: 'Natural Sciences', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&h=200&fit=crop', rating: 4.4, interested: 5400 },
-    { id: '7', code: 'CSC101', title: 'Introduction to Computer Science', description: 'Foundations of computing, algorithms, and programming.', year: 1, faculty: 'Computer Science', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.9, interested: 22000 },
-    { id: '8', code: 'CSC102', title: 'Programming Fundamentals', description: 'Introduction to programming using Python.', year: 1, faculty: 'Computer Science', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.8, interested: 18000 },
-    { id: '9', code: 'CSC103', title: 'Discrete Mathematics', description: 'Logic, sets, relations, and combinatorial mathematics.', year: 1, faculty: 'Computer Science', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.6, interested: 10200 },
-    { id: '10', code: 'CSC104', title: 'Data Structures and Algorithms', description: 'Basic data structures and algorithm analysis.', year: 1, faculty: 'Computer Science', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.7, interested: 13500 },
-    { id: '11', code: 'CSC105', title: 'Web Development Basics', description: 'HTML, CSS, and JavaScript fundamentals.', year: 1, faculty: 'Computer Science', image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=400&h=200&fit=crop', rating: 4.5, interested: 7800 },
-    { id: '12', code: 'CSC106', title: 'Database Systems', description: 'Introduction to relational databases and SQL.', year: 1, faculty: 'Computer Science', image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=200&fit=crop', rating: 4.6, interested: 9100 },
+  const topPublicUniversities = [
+    { name: 'University of Zambia', location: 'Lusaka', tier: 'ZQF Level 10' },
+    { name: 'Copperbelt University', location: 'Kitwe', tier: 'ZQF Level 10' },
+    { name: 'Mulungushi University', location: 'Kabwe', tier: 'ZQF Level 10' },
+    { name: 'Kwame Nkrumah University', location: 'Kabwe', tier: 'ZQF Level 10' },
+    { name: 'Chalimbana University', location: 'Lusaka', tier: 'ZQF Level 10' },
+  ];
+
+  const aLevelPathways = [
+    { name: 'STEM', subjects: 'Physics, Chemistry, Biology, Mathematics, Further Mathematics', color: 'bg-blue-100 text-blue-800' },
+    { name: 'Social Sciences & Languages', subjects: 'History, Geography, Civic Education, English, Literature', color: 'bg-green-100 text-green-800' },
+    { name: 'Business Studies', subjects: 'Business, Economics, Accounting, Entrepreneurship', color: 'bg-yellow-100 text-yellow-800' },
+    { name: 'Sports Science', subjects: 'Physical Education, Sports Science, Health Education', color: 'bg-orange-100 text-orange-800' },
+    { name: 'Creative & Performing Arts', subjects: 'Art, Music, Drama, Dance, Creative Writing', color: 'bg-purple-100 text-purple-800' },
   ];
 
   const aLevelCourses = [
-    { id: 'al1', code: 'AL-BIO', title: 'A-Level Biology', description: 'Advanced cell biology, genetics, and physiology.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.9, interested: 8500 },
-    { id: 'al2', code: 'AL-CHEM', title: 'A-Level Chemistry', description: 'Advanced organic, inorganic, and physical chemistry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.8, interested: 7200 },
-    { id: 'al3', code: 'AL-PHY', title: 'A-Level Physics', description: 'Advanced mechanics, electromagnetism, and quantum physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.7, interested: 6800 },
-    { id: 'al4', code: 'AL-MATH', title: 'A-Level Mathematics', description: 'Pure mathematics, statistics, and mechanics.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, interested: 12000 },
-    { id: 'al5', code: 'AL-FMATH', title: 'A-Level Further Mathematics', description: 'Advanced pure mathematics and further mechanics.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.6, interested: 4500 },
-    { id: 'al6', code: 'AL-ENG', title: 'A-Level English Literature', description: 'Advanced literary analysis and critical theory.', image: 'https://images.unsplash.com/photo-1544717305-996b815c338b?w=400&h=200&fit=crop', rating: 4.5, interested: 5600 },
-    { id: 'al7', code: 'AL-HIST', title: 'A-Level History', description: 'Advanced historical analysis and historiography.', image: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=400&h=200&fit=crop', rating: 4.4, interested: 4900 },
-    { id: 'al8', code: 'AL-GEO', title: 'A-Level Geography', description: 'Advanced physical and human geography.', image: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=400&h=200&fit=crop', rating: 4.3, interested: 3800 },
+    { id: 'al1', code: 'AL-BIO', title: 'A-Level Biology', description: 'Advanced cell biology, genetics, physiology, and ecology.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.9, students: 850 },
+    { id: 'al2', code: 'AL-CHEM', title: 'A-Level Chemistry', description: 'Advanced organic, inorganic, and physical chemistry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.8, students: 720 },
+    { id: 'al3', code: 'AL-PHY', title: 'A-Level Physics', description: 'Advanced mechanics, electromagnetism, and quantum physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.7, students: 680 },
+    { id: 'al4', code: 'AL-MATH', title: 'A-Level Mathematics', description: 'Pure mathematics, statistics, and mechanics.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, students: 1200 },
+    { id: 'al5', code: 'AL-FMATH', title: 'A-Level Further Mathematics', description: 'Advanced pure mathematics and further mechanics.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.6, students: 450 },
+    { id: 'al6', code: 'AL-ENG', title: 'A-Level English Literature', description: 'Advanced literary analysis and critical theory.', image: 'https://images.unsplash.com/photo-1544717305-996b815c338b?w=400&h=200&fit=crop', rating: 4.5, students: 560 },
+    { id: 'al7', code: 'AL-HIST', title: 'A-Level History', description: 'Advanced historical analysis and historiography.', image: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=400&h=200&fit=crop', rating: 4.4, students: 490 },
+    { id: 'al8', code: 'AL-GEOG', title: 'A-Level Geography', description: 'Advanced physical geography, human geography, and GIS.', image: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=400&h=200&fit=crop', rating: 4.3, students: 380 },
+  ];
+
+  const institutions = [
+    { name: 'University of Zambia', logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&h=150&fit=crop' },
+    { name: 'Copperbelt University', logo: 'https://images.unsplash.com/photo-1562774053-701939374585?w=150&h=150&fit=crop' },
+    { name: 'Mulungushi University', logo: 'https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=150&h=150&fit=crop' },
+    { name: 'Kwame Nkrumah University', logo: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=150&h=150&fit=crop' },
+    { name: 'Chalimbana University', logo: 'https://images.unsplash.com/photo-1544717305-996b815c338b?w=150&h=150&fit=crop' },
+    { name: 'Cavendish University Zambia', logo: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=150&h=150&fit=crop' },
+    { name: 'University of Lusaka', logo: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=150&h=150&fit=crop' },
+    { name: 'ZCAS University', logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&h=150&fit=crop' },
   ];
 
   const offerings = [
     { icon: <Users className="w-8 h-8 text-blue-600" />, title: 'Expert Tutors', description: 'Learn from qualified professionals and industry experts.' },
     { icon: <FileText className="w-8 h-8 text-blue-600" />, title: 'Lecture Slides', description: 'Access comprehensive slide decks for each course.' },
-    { icon: <ClipboardList className="w-8 h-8 text-blue-600" />, title: 'Past Exam Papers', description: 'Practice with past papers to ace your exams.' },
+    { icon: <ClipboardList className="w-8 h-8 text-blue-600" />, title: 'Past Exam Papers', description: 'Practice with past papers from Zambian universities.' },
     { icon: <Book className="w-8 h-8 text-blue-600" />, title: 'E-Books & Notes', description: 'Download curated e-books and study notes.' },
     { icon: <Video className="w-8 h-8 text-blue-600" />, title: 'Video Lessons', description: 'Engaging video tutorials on every topic.' },
     { icon: <Award className="w-8 h-8 text-blue-600" />, title: 'Interactive Quizzes', description: 'Test your knowledge with instant feedback.' },
@@ -134,80 +136,53 @@ export default function HomePageClient() {
   ];
 
   const testimonials = [
-    { id: 1, name: 'Sarah Mwansa', role: 'Medical Student', quote: 'A+ Mentality has completely transformed how I learn. The curated videos and announcements keep me ahead of my peers.', rating: 5 },
-    { id: 2, name: 'David Banda', role: 'Engineering Graduate', quote: 'The mentorship platform is a game-changer. I finally feel supported in my academic journey.', rating: 5 },
-    { id: 3, name: 'Grace Phiri', role: 'High School Student', quote: 'The announcements are always timely, and the videos make complex topics easy to understand.', rating: 4 },
-  ];
-
-  const institutions = [
-    { name: 'University of Zambia', logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&h=150&fit=crop' },
-    { name: 'Copperbelt University', logo: 'https://images.unsplash.com/photo-1562774053-701939374585?w=150&h=150&fit=crop' },
-    { name: 'Mulungushi University', logo: 'https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=150&h=150&fit=crop' },
-    { name: 'Lusaka Apex Medical University', logo: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=150&h=150&fit=crop' },
-    { name: 'Zambia Open University', logo: 'https://images.unsplash.com/photo-1544717305-996b815c338b?w=150&h=150&fit=crop' },
-    { name: 'Cavendish University', logo: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=150&h=150&fit=crop' },
-  ];
-
-  const aLevelSubjects = [
-    { name: 'Biology', grade: 'A+', color: 'bg-green-100 text-green-800' },
-    { name: 'Chemistry', grade: 'A+', color: 'bg-blue-100 text-blue-800' },
-    { name: 'Physics', grade: 'A+', color: 'bg-purple-100 text-purple-800' },
-    { name: 'Mathematics', grade: 'A+', color: 'bg-yellow-100 text-yellow-800' },
-    { name: 'Further Mathematics', grade: 'A+', color: 'bg-red-100 text-red-800' },
-    { name: 'English Literature', grade: 'A*', color: 'bg-pink-100 text-pink-800' },
-    { name: 'History', grade: 'A+', color: 'bg-indigo-100 text-indigo-800' },
-    { name: 'Geography', grade: 'A+', color: 'bg-teal-100 text-teal-800' },
-    { name: 'Economics', grade: 'A+', color: 'bg-orange-100 text-orange-800' },
-    { name: 'Psychology', grade: 'A+', color: 'bg-cyan-100 text-cyan-800' },
-  ];
-
-  const carouselSlides = [
-    {
-      title: 'Isaac Newton',
-      description: '"What we know is a drop, what we don\'t know is an ocean."',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/GodfreyKneller-IsaacNewton-1689.jpg/440px-GodfreyKneller-IsaacNewton-1689.jpg',
-      role: 'Physicist & Mathematician',
-    },
-    {
-      title: 'Albert Einstein',
-      description: '"Imagination is more important than knowledge. Knowledge is limited. Imagination encircles the world."',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/440px-Albert_Einstein_Head.jpg',
-      role: 'Theoretical Physicist',
-    },
-    {
-      title: 'Steve Jobs',
-      description: '"Stay hungry, stay foolish."',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Steve_Jobs_Headshot_2010-CROP.jpg/440px-Steve_Jobs_Headshot_2010-CROP.jpg',
-      role: 'Entrepreneur & Inventor',
-    },
-    {
-      title: 'Marie Curie',
-      description: '"Nothing in life is to be feared, it is only to be understood."',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Marie_Curie_c._1920s.jpg/440px-Marie_Curie_c._1920s.jpg',
-      role: 'Physicist & Chemist',
-    },
-    {
-      title: 'Nelson Mandela',
-      description: '"Education is the most powerful weapon which you can use to change the world."',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Nelson_Mandela_1994.jpg/440px-Nelson_Mandela_1994.jpg',
-      role: 'Statesman & Activist',
-    },
+    { id: 1, name: 'Sarah Mwansa', role: 'Medical Student, UNZA', quote: 'A+ Mentality has completely transformed how I learn. The curated videos and past papers keep me ahead of my peers.', rating: 5 },
+    { id: 2, name: 'David Banda', role: 'Engineering Graduate, CBU', quote: 'The mentorship platform is a game-changer. I finally feel supported in my academic journey.', rating: 5 },
+    { id: 3, name: 'Grace Phiri', role: 'A-Level Student, Lusaka', quote: 'The A-Level resources are amazing. The subject pathways make it easy to focus on what I need for university entrance.', rating: 5 },
   ];
 
   const exploreItems = [
-    { icon: <TrendingUp className="w-6 h-6" />, title: 'Trending Now', description: 'Discover what\'s popular among learners this week.', color: 'hover:bg-red-50 hover:border-red-300 hover:shadow-red-100' },
-    { icon: <PlayCircle className="w-6 h-6" />, title: 'Watch Videos', description: 'Access thousands of educational videos and tutorials.', color: 'hover:bg-blue-50 hover:border-blue-300 hover:shadow-blue-100' },
-    { icon: <Compass className="w-6 h-6" />, title: 'GfG Coding Contest', description: 'Participate in coding challenges and win prizes.', color: 'hover:bg-green-50 hover:border-green-300 hover:shadow-green-100' },
-    { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach thousands of students and educators.', color: 'hover:bg-yellow-50 hover:border-yellow-300 hover:shadow-yellow-100' },
-    { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on career paths and opportunities.', color: 'hover:bg-purple-50 hover:border-purple-300 hover:shadow-purple-100' },
+    { icon: <TrendingUp className="w-6 h-6" />, title: 'Trending Now', description: 'Discover what\'s popular among Zambian learners.', color: 'hover:bg-red-50 hover:border-red-300' },
+    { icon: <PlayCircle className="w-6 h-6" />, title: 'Watch Videos', description: 'Access educational videos aligned with the Zambian curriculum.', color: 'hover:bg-blue-50 hover:border-blue-300' },
+    { icon: <Compass className="w-6 h-6" />, title: 'A-Level Pathways', description: 'Explore STEM, Social Sciences, Business, and more.', color: 'hover:bg-green-50 hover:border-green-300' },
+    { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach thousands of students across Zambia.', color: 'hover:bg-yellow-50 hover:border-yellow-300' },
+    { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-purple-50 hover:border-purple-300' },
   ];
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  // ============================================================
+  // EMAILJS SUBSCRIPTION HANDLER
+  // ============================================================
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (!email) return;
+
+    setIsLoading(true);
+
+    try {
+      emailjs.init('lq3xCtY4KtS7Z-3Wf');
+
+      const templateParams = {
+        user_email: email,
+        to_email: 'kafiswegchimputu@gmail.com',
+        subject: 'New A+ Mentality Subscriber!',
+        message: `A new student has subscribed with email: ${email}`,
+      };
+
+      const response = await emailjs.send(
+        'service_fadklbd',
+        '__ejs-test-mail-service__',
+        templateParams
+      );
+
+      console.log('Email sent successfully:', response);
       setIsSubscribed(true);
       setEmail('');
-      setTimeout(() => setIsSubscribed(false), 4000);
+      setTimeout(() => setIsSubscribed(false), 5000);
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      alert('Something went wrong. Please try again later.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -268,7 +243,7 @@ export default function HomePageClient() {
               </Link>
               <span className="w-px h-5 bg-gray-300 mx-1"></span>
               <div className="bg-gray-100 text-gray-700 text-[10px] font-medium px-2.5 py-1 rounded-full border border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.5),0_0_30px_rgba(147,51,234,0.3)] animate-pulse">
-                Owned by SmartCorp
+                🇿🇲 Zambia
               </div>
             </div>
 
@@ -285,12 +260,12 @@ export default function HomePageClient() {
             <Link href="/sign-up" className="block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center" onClick={() => setIsMenuOpen(false)}>
               Get Started
             </Link>
-            <div className="text-xs text-gray-500 text-center">Owned by SmartCorp</div>
+            <div className="text-xs text-gray-500 text-center">🇿🇲 Zambia</div>
           </div>
         )}
       </nav>
 
-      {/* ===== HERO ===== */}
+      {/* ===== HERO WITH STACKED/STAGGERED TITLE — STRAIGHT ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -301,29 +276,40 @@ export default function HomePageClient() {
         <div className="w-full px-2 sm:px-4">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
             <div className="flex-[2] text-center lg:text-left">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-4">
-                <Sparkles className="w-4 h-4 mr-1" /> Empowering Lifelong Learning
+              {/* Badge - Build Better Habits. Achieve Higher Goals. */}
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-6">
+                <Sparkles className="w-4 h-4 mr-1" /> ⭐ Build Better Habits. Achieve Higher Goals.
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Learn, Grow, and <span className="text-blue-600">Thrive</span>
-              </h1>
-              <p className="mt-3 text-lg md:text-xl font-semibold text-blue-700">
-                From being a C student to an A+ student, clear with excellent results –{' '}
-                <span className="text-blue-600">your academic journey of A+'s begins here.</span>
-              </p>
-              <p className="mt-4 text-lg text-gray-600">
-                A+ Mentality provides curated educational content, mentorship, and a supportive community
-                to help you achieve your academic and career goals.
+
+              {/* 🔥 STACKED/STAGGERED TITLE — STRAIGHT (no rotation) 🔥 */}
+              <div className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.3]">
+                <div className="flex items-start">
+                  <span>Your Goals.</span>
+                </div>
+                <div className="flex items-start pl-6 sm:pl-8 lg:pl-10">
+                  <span className="text-blue-600">Our Tools.</span>
+                </div>
+                <div className="flex items-start pl-12 sm:pl-16 lg:pl-20">
+                  <span>
+                    A+ <span className="text-blue-600">Results.</span>
+                  </span>
+                </div>
+              </div>
+
+              <p className="mt-6 text-lg text-gray-600 max-w-2xl">
+                A+ Mentality helps students study smarter, stay organized, and track progress — 
+                so you can achieve more and stress less.
               </p>
               <div className="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
                 <Link href="/sign-up" className="bg-blue-600 text-white px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl">
-                  Start Learning Free
+                  Get Started Free
                 </Link>
-                <Link href="/sign-in" className="bg-gray-200 text-gray-800 px-8 py-3 rounded-full font-medium hover:bg-gray-300 transition">
-                  Sign In
+                <Link href="#explore" className="bg-gray-200 text-gray-800 px-8 py-3 rounded-full font-medium hover:bg-gray-300 transition">
+                  Explore Features
                 </Link>
               </div>
             </div>
+
             <div className="flex-1 flex justify-center lg:justify-end">
               <div className="relative w-full max-w-sm lg:max-w-md">
                 <div className="absolute -inset-4 bg-gradient-to-r from-blue-300 to-blue-400 rounded-2xl blur-3xl opacity-30" />
@@ -358,6 +344,9 @@ export default function HomePageClient() {
                         <p className="text-2xl font-bold text-gray-900">{mentorCount}+</p>
                       </div>
                     </div>
+                    <div className="border-t border-gray-100 pt-3 text-center text-xs text-gray-500">
+                      Based on HEA 2026 registered institutions data 
+                    </div>
                   </div>
                 </div>
               </div>
@@ -366,13 +355,151 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== MUST EXPLORE ===== */}
+      {/* ===== FOUR PILLARS ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         variants={staggerContainer}
-        className="py-16 bg-white"
+        className="py-12 bg-white border-b border-gray-100"
+      >
+        <div className="w-full px-2 sm:px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            <motion.div variants={fadeInUp} className="text-center p-4">
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <BookOpen className="w-7 h-7 text-blue-600" />
+              </div>
+              <h3 className="font-bold text-gray-800 text-sm">Study Smarter</h3>
+            </motion.div>
+            <motion.div variants={fadeInUp} className="text-center p-4">
+              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <TrendingUp className="w-7 h-7 text-green-600" />
+              </div>
+              <h3 className="font-bold text-gray-800 text-sm">Track Progress</h3>
+            </motion.div>
+            <motion.div variants={fadeInUp} className="text-center p-4">
+              <div className="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Target className="w-7 h-7 text-yellow-600" />
+              </div>
+              <h3 className="font-bold text-gray-800 text-sm">Reach Your Goals</h3>
+            </motion.div>
+            <motion.div variants={fadeInUp} className="text-center p-4">
+              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Crown className="w-7 h-7 text-purple-600" />
+              </div>
+              <h3 className="font-bold text-gray-800 text-sm">Build an A+ Mindset</h3>
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* ===== MONTHLY OVERVIEW ===== */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeInUp}
+        className="py-12 bg-gray-50"
+      >
+        <div className="w-full px-2 sm:px-4">
+          <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-lg border border-gray-200 p-8 md:p-12">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <div>
+                <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full mb-2">
+                  📊 Welcome back, Future Achiever!
+                </span>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                  Keep going. Great things take time.
+                </h2>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                <p className="text-xs font-medium text-gray-500">Courses</p>
+                <p className="text-2xl font-bold text-gray-900">6</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                <p className="text-xs font-medium text-gray-500">Completed</p>
+                <p className="text-2xl font-bold text-gray-900">3</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                <p className="text-xs font-medium text-gray-500">Study Hours</p>
+                <p className="text-2xl font-bold text-gray-900">24.5</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                <p className="text-xs font-medium text-gray-500">Average Score</p>
+                <p className="text-2xl font-bold text-yellow-600">87%</p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-sm font-medium text-gray-600">Study Planner:</span>
+                <button className="text-sm px-3 py-1 rounded-full bg-blue-600 text-white">Today</button>
+                <button className="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition">This Week</button>
+                <button className="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition">This Month</button>
+                <button className="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition">This Year</button>
+              </div>
+              <Link
+                href="/sign-up"
+                className="text-blue-600 font-medium hover:text-blue-800 transition inline-flex items-center gap-1 text-sm"
+              >
+                Continue Learning <span className="text-lg">→</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* ===== TOP ZAMBIAN UNIVERSITIES ===== */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={staggerContainer}
+        className="py-12 bg-white"
+      >
+        <div className="w-full px-2 sm:px-4">
+          <motion.div variants={fadeInUp} className="text-center mb-10">
+            <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-gray-900">Top Zambian Universities</h2>
+            <p className="mt-2 text-gray-600">
+              Institutions classified at ZQF Level 10 – approved to offer doctoral degree programmes 
+            </p>
+          </motion.div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {topPublicUniversities.map((uni, idx) => (
+              <motion.div
+                key={idx}
+                variants={fadeInUp}
+                className="bg-gray-50 rounded-xl p-4 text-center border border-gray-200 hover:shadow-md transition hover:border-blue-300"
+              >
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <span className="text-blue-600 font-bold text-lg">{uni.name.charAt(0)}</span>
+                </div>
+                <h3 className="font-bold text-gray-800 text-sm">{uni.name}</h3>
+                <p className="text-xs text-gray-500">{uni.location}</p>
+                <span className="inline-block mt-1 text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                  {uni.tier}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+          <motion.p variants={fadeInUp} className="text-center text-sm text-gray-500 mt-4">
+            Plus 12 private universities also classified at ZQF Level 10 
+          </motion.p>
+        </div>
+      </motion.section>
+
+      {/* ===== MUST EXPLORE ===== */}
+      <motion.section
+        id="explore"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={staggerContainer}
+        className="py-16 bg-gray-50"
       >
         <div className="w-full px-2 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-12">
@@ -434,38 +561,78 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         variants={fadeInUp}
-        className="py-12 bg-gray-50"
+        className="py-12 bg-white"
       >
         <div className="w-full px-2 sm:px-4">
           <div className="text-center mb-10">
             <Target className="w-12 h-12 text-blue-600 mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-gray-900">Our Aim</h2>
             <p className="mt-2 text-gray-600 max-w-3xl mx-auto">
-              At <span className="font-semibold text-blue-600">A+ Mentality</span>, we believe that every student deserves access to high-quality education and mentorship.
-              Our mission is to bridge the gap between traditional learning and modern technology by providing:
+              At <span className="font-semibold text-blue-600">A+ Mentality</span>, we believe that every Zambian student
+              deserves access to high-quality education and mentorship. Our mission is to bridge the gap between
+              traditional learning and modern technology by providing:
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="bg-white rounded-xl p-6 text-center hover:shadow-lg transition">
+            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition border border-gray-100">
               <CheckCircle className="w-10 h-10 text-blue-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-800">Curated Content</h3>
-              <p className="text-gray-600 text-sm mt-2">Handpicked videos, courses, and resources tailored to the Zambian curriculum and beyond.</p>
+              <h3 className="text-lg font-semibold text-gray-800">Curriculum-Aligned Content</h3>
+              <p className="text-gray-600 text-sm mt-2">Handpicked videos, courses, and resources tailored to the Zambian curriculum and HEA standards.</p>
             </div>
-            <div className="bg-white rounded-xl p-6 text-center hover:shadow-lg transition">
+            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition border border-gray-100">
               <CheckCircle className="w-10 h-10 text-blue-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-800">Expert Mentorship</h3>
               <p className="text-gray-600 text-sm mt-2">Learn from experienced professionals, industry leaders, and academic scholars who guide you every step of the way.</p>
             </div>
-            <div className="bg-white rounded-xl p-6 text-center hover:shadow-lg transition">
+            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition border border-gray-100">
               <CheckCircle className="w-10 h-10 text-blue-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-800">Community Support</h3>
-              <p className="text-gray-600 text-sm mt-2">Join a vibrant community of learners, share ideas, collaborate, and grow together.</p>
+              <p className="text-gray-600 text-sm mt-2">Join a vibrant community of Zambian learners, share ideas, collaborate, and grow together.</p>
             </div>
           </div>
         </div>
       </motion.section>
 
-      {/* ===== A-LEVEL COURSES (Quick Badges) ===== */}
+      {/* ===== A-LEVEL PATHWAYS ===== */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={staggerContainer}
+        className="py-12 bg-blue-50"
+      >
+        <div className="w-full px-2 sm:px-4">
+          <motion.div variants={fadeInUp} className="text-center mb-10">
+            <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-gray-900">A-Level Pathways</h2>
+            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
+              Based on the 2023 Zambia Education Curriculum Framework – five specialised pathways for Forms 5 & 6 
+            </p>
+          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {aLevelPathways.map((pathway, idx) => (
+              <motion.div
+                key={idx}
+                variants={fadeInUp}
+                className={`${pathway.color} rounded-xl p-5 text-center shadow-sm hover:shadow-md transition`}
+              >
+                <h3 className="text-lg font-bold text-gray-800">{pathway.name}</h3>
+                <p className="text-xs text-gray-600 mt-1">{pathway.subjects}</p>
+                <div className="mt-3 text-blue-600 font-medium text-sm cursor-pointer" onClick={handleExplore}>
+                  Explore →
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <motion.p variants={fadeInUp} className="text-center text-xs text-gray-500 mt-4">
+            A-Levels run from Form 5 to Form 6. Students specialise in one pathway. 
+          </motion.p>
+        </div>
+      </motion.section>
+
+      {/* ============================================================== */}
+      {/* ===== COURSES BY YEAR & SEMESTER (WITH IMAGES) ===== */}
+      {/* ============================================================== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -476,26 +643,246 @@ export default function HomePageClient() {
         <div className="w-full px-2 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
             <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900">All A-Level Courses</h2>
-            <p className="mt-2 text-gray-600">Offering the highest quality tuition for A-Level subjects</p>
+            <h2 className="text-3xl font-bold text-gray-900">Your Course Journey</h2>
+            <p className="mt-2 text-gray-600 max-w-3xl mx-auto">
+              From Natural Sciences to Computer Science – a complete academic pathway
+              aligned with Zambian university standards.
+            </p>
           </motion.div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {aLevelSubjects.map((subject, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeInUp}
-                className={`${subject.color} rounded-xl p-4 text-center shadow-sm hover:shadow-md transition flex flex-col items-center`}
-                onClick={handleExplore}
-              >
-                <span className="text-sm font-bold text-gray-800">{subject.name}</span>
-                <span className="text-2xl font-extrabold text-gray-900">{subject.grade}</span>
-              </motion.div>
-            ))}
-          </div>
+
+          {/* ===== YEAR 1 - SEMESTER 1 ===== */}
+          <motion.div variants={fadeInUp} className="mb-12">
+            <div className="flex flex-wrap items-center justify-between mb-4">
+              <div>
+                <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
+                  2023/2024 - Semester 1
+                </span>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">Natural Sciences Foundation</h3>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {[
+                { code: 'CHE111', title: 'Introductory Chemistry', description: 'Atomic structure, bonding, and stoichiometry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.7, students: 950 },
+                { code: 'BIO111', title: 'Bio-molecules and Cells', description: 'Cell biology, genetics, and molecular foundations.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1200 },
+                { code: 'PHY101', title: 'Fundamentals of Physics', description: 'Mechanics, thermodynamics, and waves.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.6, students: 820 },
+                { code: 'MSM111', title: 'Mathematical Methods I', description: 'Limits, derivatives, and integrals.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, students: 1500 },
+              ].map((course, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={fadeInUp}
+                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  onClick={() => handleEnroll(course.code)}
+                >
+                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {course.code}
+                    </div>
+                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                      Natural Sciences
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500">★</span>
+                        <span className="font-semibold text-gray-800">{course.rating}</span>
+                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnroll(course.code);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                      >
+                        Explore now
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ===== YEAR 1 - SEMESTER 2 ===== */}
+          <motion.div variants={fadeInUp} className="mb-12">
+            <div className="flex flex-wrap items-center justify-between mb-4">
+              <div>
+                <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
+                  2023/2024 - Semester 2
+                </span>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">Natural Sciences Advanced</h3>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {[
+                { code: 'BIO112', title: 'Molecular Biology and Genetics', description: 'DNA replication, transcription, and inheritance.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1100 },
+                { code: 'PHY102', title: 'Introductory Physics II', description: 'Electromagnetism, optics, and modern physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.5, students: 780 },
+                { code: 'MSM112', title: 'Mathematical Methods II', description: 'Differential equations, vectors, and matrices.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1300 },
+                { code: 'CHE112', title: 'Introductory Chemistry II', description: 'Organic chemistry, acids, and bases.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.6, students: 880 },
+              ].map((course, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={fadeInUp}
+                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  onClick={() => handleEnroll(course.code)}
+                >
+                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {course.code}
+                    </div>
+                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                      Natural Sciences
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500">★</span>
+                        <span className="font-semibold text-gray-800">{course.rating}</span>
+                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnroll(course.code);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                      >
+                        Explore now
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ===== YEAR 2 - SEMESTER 1 ===== */}
+          <motion.div variants={fadeInUp} className="mb-12">
+            <div className="flex flex-wrap items-center justify-between mb-4">
+              <div>
+                <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
+                  2024/2025 - Semester 1
+                </span>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">Computer Science Foundation</h3>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+              {[
+                { code: 'ICT402', title: 'Statistics and Empirical Methods for Computing', description: 'Statistical analysis, regression, and data interpretation.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 650 },
+                { code: 'ICT261', title: 'Intro to OOP and JAVA', description: 'Object-oriented programming principles with Java.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.8, students: 1800 },
+                { code: 'ICT221', title: 'Computer Architecture', description: 'CPU design, memory hierarchy, and instruction sets.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 920 },
+                { code: 'ICT241', title: 'Digital Design', description: 'Logic gates, flip-flops, and combinational circuits.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.4, students: 540 },
+                { code: 'ICT201', title: 'Discrete Mathematics', description: 'Logic, sets, relations, and graph theory.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1020 },
+              ].map((course, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={fadeInUp}
+                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  onClick={() => handleEnroll(course.code)}
+                >
+                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {course.code}
+                    </div>
+                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                      Computer Science
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500">★</span>
+                        <span className="font-semibold text-gray-800">{course.rating}</span>
+                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnroll(course.code);
+                        }}
+                        className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                      >
+                        Explore now
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ===== YEAR 2 - SEMESTER 2 ===== */}
+          <motion.div variants={fadeInUp}>
+            <div className="flex flex-wrap items-center justify-between mb-4">
+              <div>
+                <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
+                  2024/2025 - Semester 2
+                </span>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">Computer Science Advanced</h3>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+              {[
+                { code: 'ICT222', title: 'Operating Systems', description: 'Process management, memory, and file systems.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 850 },
+                { code: 'ICT242', title: 'Networking and Communication', description: 'OSI model, TCP/IP, and network security.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 720 },
+                { code: 'ICT202', title: 'Data Structures and Algorithms', description: 'Stacks, queues, trees, and sorting algorithms.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.9, students: 2200 },
+                { code: 'ICT262', title: 'Intermediate Java Programming', description: 'Advanced OOP, collections, and multithreading.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.7, students: 1350 },
+                { code: 'ICT271', title: 'Databases', description: 'SQL, database design, and transaction management.', image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=200&fit=crop', rating: 4.8, students: 1600 },
+              ].map((course, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={fadeInUp}
+                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  onClick={() => handleEnroll(course.code)}
+                >
+                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {course.code}
+                    </div>
+                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                      Computer Science
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500">★</span>
+                        <span className="font-semibold text-gray-800">{course.rating}</span>
+                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnroll(course.code);
+                        }}
+                        className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                      >
+                        Explore now
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </motion.section>
 
-      {/* ===== FIRST-YEAR COURSES ===== */}
+      {/* ===== A-LEVEL COURSES ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -506,74 +893,8 @@ export default function HomePageClient() {
         <div className="w-full px-2 sm:px-4">
           <div className="flex flex-wrap items-center justify-between mb-8">
             <motion.div variants={fadeInUp}>
-              <h2 className="text-3xl font-bold text-gray-900">First-Year Courses</h2>
-              <p className="text-gray-600">Foundational courses in Natural Sciences and Computer Science</p>
-            </motion.div>
-            <motion.div variants={fadeInUp}>
-              <button
-                onClick={handleViewAllCourses}
-                className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
-              >
-                View All <span className="text-lg">→</span>
-              </button>
-            </motion.div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {staticCourses.slice(0, 8).map((course) => (
-              <motion.div
-                key={course.id}
-                variants={fadeInUp}
-                className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
-                onClick={handleExplore}
-              >
-                <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                  <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
-                  <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                    {course.code}
-                  </div>
-                  <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                    {course.faculty}
-                  </div>
-                </div>
-                <div className="p-4 flex flex-col flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                  <div className="flex items-center justify-between mt-3">
-                    <div className="flex items-center gap-1">
-                      <span className="text-yellow-500">★</span>
-                      <span className="font-semibold text-gray-800">{course.rating}</span>
-                      <span className="text-gray-400 text-sm">({course.interested.toLocaleString()} interested)</span>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEnroll(course.code);
-                      }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
-                    >
-                      Explore now
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ===== A-LEVEL COURSES (Detailed Cards) ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={staggerContainer}
-        className="py-12 bg-white"
-      >
-        <div className="w-full px-2 sm:px-4">
-          <div className="flex flex-wrap items-center justify-between mb-8">
-            <motion.div variants={fadeInUp}>
               <h2 className="text-3xl font-bold text-gray-900">A-Level Courses</h2>
-              <p className="text-gray-600">Advanced courses for higher education and university preparation</p>
+              <p className="text-gray-600">Advanced courses for university preparation and higher education</p>
             </motion.div>
             <motion.div variants={fadeInUp}>
               <button
@@ -608,7 +929,7 @@ export default function HomePageClient() {
                     <div className="flex items-center gap-1">
                       <span className="text-yellow-500">★</span>
                       <span className="font-semibold text-gray-800">{course.rating}</span>
-                      <span className="text-gray-400 text-sm">({course.interested.toLocaleString()} interested)</span>
+                      <span className="text-gray-400 text-sm">({course.students} students)</span>
                     </div>
                     <button
                       onClick={(e) => {
@@ -627,7 +948,54 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== SIGN UP AS A TUTOR ===== */}
+      {/* ===== ZAMBIAN GRADING SYSTEM ===== */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeInUp}
+        className="py-12 bg-white"
+      >
+        <div className="w-full px-2 sm:px-4">
+          <div className="text-center mb-10">
+            <Award className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-gray-900">Zambian University Grading System</h2>
+            <p className="mt-2 text-gray-600">Based on the University of Zambia grading scale </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
+            <div className="bg-green-50 rounded-xl p-4 text-center border border-green-200">
+              <span className="text-2xl font-bold text-green-700">A+</span>
+              <p className="text-xs text-gray-600">86–100%</p>
+              <span className="text-[10px] text-green-600 font-medium">Distinction</span>
+            </div>
+            <div className="bg-green-50 rounded-xl p-4 text-center border border-green-200">
+              <span className="text-2xl font-bold text-green-700">A</span>
+              <p className="text-xs text-gray-600">76–85%</p>
+              <span className="text-[10px] text-green-600 font-medium">Distinction</span>
+            </div>
+            <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-200">
+              <span className="text-2xl font-bold text-blue-700">B+</span>
+              <p className="text-xs text-gray-600">66–75%</p>
+              <span className="text-[10px] text-blue-600 font-medium">Meritorius</span>
+            </div>
+            <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-200">
+              <span className="text-2xl font-bold text-blue-700">B</span>
+              <p className="text-xs text-gray-600">56–65%</p>
+              <span className="text-[10px] text-blue-600 font-medium">Very Satisfactory</span>
+            </div>
+            <div className="bg-yellow-50 rounded-xl p-4 text-center border border-yellow-200">
+              <span className="text-2xl font-bold text-yellow-700">C+</span>
+              <p className="text-xs text-gray-600">46–55%</p>
+              <span className="text-[10px] text-yellow-600 font-medium">Definite Pass</span>
+            </div>
+          </div>
+          <p className="text-center text-xs text-gray-500 mt-4">
+            Minimum passing grade: C (36–39%) · Compensatory pass: CP (30–35%) 
+          </p>
+        </div>
+      </motion.section>
+
+      {/* ===== SIGN UP AS A TUTOR (WITH WHATSAPP) ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -640,18 +1008,30 @@ export default function HomePageClient() {
             <UserPlus className="w-16 h-16 text-blue-600 mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-gray-900">Become a Tutor</h2>
             <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
-              Share your knowledge and expertise with thousands of students. Join our community of professional tutors and make a difference.
+              Share your knowledge and expertise with thousands of Zambian students.
+              Join our community of professional tutors and make a difference.
             </p>
-            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
               <div className="flex items-center gap-2 bg-gray-100 rounded-full px-6 py-3">
                 <Phone className="w-5 h-5 text-blue-600" />
-                <span className="font-medium text-gray-800">+260 97 123 4567</span>
+                <span className="font-medium text-gray-800">+260 954 953 610</span>
               </div>
+              <a
+                href="https://wa.me/260772231300"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white rounded-full px-6 py-3 transition shadow-md"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                <span className="font-medium">WhatsApp</span>
+              </a>
               <Link
-                href="/contact"
+                href="mailto:kafiswegchimputu@gmail.com"
                 className="bg-blue-600 text-white px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
               >
-                Contact Us <span className="text-lg">→</span>
+                <Mail className="w-5 h-5" /> Email Us
               </Link>
             </div>
           </div>
@@ -669,7 +1049,7 @@ export default function HomePageClient() {
         <div className="w-full px-2 sm:px-4 flex flex-col md:flex-row items-center justify-between bg-white rounded-2xl shadow-md border border-gray-200 p-8 md:p-12">
           <div className="text-center md:text-left">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Interested in advertising with us?</h2>
-            <p className="text-gray-600 mt-1">Get in touch and reach thousands of students and educators.</p>
+            <p className="text-gray-600 mt-1">Reach thousands of Zambian students and educators.</p>
           </div>
           <div className="mt-4 md:mt-0">
             <Link
@@ -678,54 +1058,6 @@ export default function HomePageClient() {
             >
               Get in touch <span className="text-lg">→</span>
             </Link>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ===== WORDS OF WISDOM ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={fadeInUp}
-        className="relative py-16 bg-cover bg-center bg-fixed"
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&h=800&fit=crop')",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/60" />
-        <div className="relative w-full px-2 sm:px-4 z-10">
-          <div className="text-center mb-10 text-white">
-            <h2 className="text-3xl font-bold">Words of Wisdom from Great Minds</h2>
-            <p className="mt-2 text-blue-200">Stay inspired with timeless wisdom from history's greatest thinkers</p>
-          </div>
-          <div className="relative">
-            <div className="overflow-hidden" ref={wisdomRef}>
-              <div className="flex">
-                {carouselSlides.map((slide, index) => (
-                  <div key={index} className="flex-[0_0_100%] min-w-0 px-2">
-                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-white/20 text-center flex flex-col items-center text-white">
-                      <div className="flex justify-center mb-4">
-                        <img
-                          src={slide.image}
-                          alt={slide.title}
-                          className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-white/50 shadow-xl"
-                        />
-                      </div>
-                      <h3 className="text-2xl font-bold">{slide.title}</h3>
-                      <p className="text-sm text-blue-200 font-medium">{slide.role}</p>
-                      <p className="mt-3 text-lg italic max-w-2xl">"{slide.description}"</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <button onClick={() => wisdomApi?.scrollPrev()} className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 bg-white/20 backdrop-blur-sm rounded-full p-2 shadow-md hover:bg-white/40 transition z-10">
-              <ChevronLeft className="w-5 h-5 text-white" />
-            </button>
-            <button onClick={() => wisdomApi?.scrollNext()} className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 bg-white/20 backdrop-blur-sm rounded-full p-2 shadow-md hover:bg-white/40 transition z-10">
-              <ChevronRight className="w-5 h-5 text-white" />
-            </button>
           </div>
         </div>
       </motion.section>
@@ -741,7 +1073,7 @@ export default function HomePageClient() {
         <div className="w-full px-2 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
             <h2 className="text-3xl font-bold text-gray-900">What Our Community Says</h2>
-            <p className="mt-2 text-gray-600">Real stories from real learners</p>
+            <p className="mt-2 text-gray-600">Real stories from real Zambian learners</p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {testimonials.map((t) => (
@@ -759,6 +1091,87 @@ export default function HomePageClient() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* ============================================================== */}
+      {/* ===== MOTIVATIONAL SECTION: LEFT TEXT + RIGHT VIDEO ===== */}
+      {/* ============================================================== */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeInUp}
+        className="py-12 bg-white"
+      >
+        <div className="w-full px-2 sm:px-4">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Why Choose <span className="text-blue-600">A+ Mentality</span>?
+              </h2>
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span><strong>Curriculum-Aligned Content</strong> – All materials follow the Zambian syllabus and HEA standards.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span><strong>Expert Mentors</strong> – Learn from qualified professionals who guide you every step.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span><strong>Community Support</strong> – Join thousands of like‑minded Zambian learners.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span><strong>Progress Tracking</strong> – See your growth in real time and stay motivated.</span>
+                </li>
+              </ul>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href="/sign-up"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
+                >
+                  Join Now <span className="text-lg">→</span>
+                </Link>
+                <a
+                  href="https://wa.me/260772231300"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full font-medium transition shadow-md inline-flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                  Chat on WhatsApp
+                </a>
+              </div>
+            </div>
+
+            <div className="flex-1 w-full">
+              <div className="relative w-full rounded-2xl overflow-hidden shadow-xl border border-gray-200" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full"
+                  src="https://www.youtube.com/embed/g6BtbIiJ_rc"
+                  title="A+ Student Mentality - Best Study Motivation"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <p className="text-center text-sm text-gray-500 mt-2">
+                Source: <a 
+                  href="https://www.youtube.com/watch?v=g6BtbIiJ_rc" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  A+ Student Mentality - Best Study Motivation
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </motion.section>
@@ -786,41 +1199,42 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== INSTITUTIONS CAROUSEL ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={fadeInUp}
-        className="py-10 bg-white"
-      >
-        <div className="w-full px-2 sm:px-4">
-          <div className="text-center mb-8">
+      {/* ===== INSTITUTIONS MARQUEE (Continuous Right-to-Left) ===== */}
+      <section className="py-10 bg-white overflow-hidden">
+        <div className="w-full">
+          <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Our Partner Institutions</h2>
-            <p className="text-sm text-gray-600">Proudly collaborating with leading universities</p>
+            <p className="text-sm text-gray-600">
+              Proudly collaborating with Zambia's leading universities
+            </p>
           </div>
-          <div className="overflow-hidden" ref={institutionRef}>
-            <div className="flex">
-              {institutions.concat(institutions).map((inst, idx) => (
-                <div key={idx} className="flex-[0_0_25%] md:flex-[0_0_16.666%] min-w-0 px-2">
-                  <div className="flex flex-col items-center">
-                    <img
-                      src={inst.logo}
-                      alt={inst.name}
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-blue-200 shadow-md"
-                    />
-                    <span className="text-xs text-center mt-1 font-medium text-gray-700 truncate w-full">
-                      {inst.name}
-                    </span>
-                  </div>
+          <div className="relative overflow-hidden">
+            <div
+              className="flex gap-8 items-center whitespace-nowrap"
+              style={{
+                animation: 'scrollRightToLeft 30s linear infinite',
+                width: 'max-content',
+              }}
+            >
+              {[...institutions, ...institutions].map((inst, idx) => (
+                <div key={idx} className="flex items-center gap-3 flex-shrink-0">
+                  <img
+                    src={inst.logo}
+                    alt={inst.name}
+                    className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-blue-200 shadow-md"
+                  />
+                  <span className="text-sm font-medium text-gray-700">{inst.name}</span>
                 </div>
               ))}
             </div>
           </div>
+          <p className="text-center text-xs text-gray-400 mt-4">
+            Zambia has 213 Higher Education Institutions: 49 public and 164 private (HEA 2026)
+          </p>
         </div>
-      </motion.section>
+      </section>
 
-      {/* ===== FOOTER ===== */}
+      {/* ===== FOOTER (with WhatsApp) ===== */}
       <footer className="bg-gray-900 text-gray-300">
         <div className="w-full px-2 sm:px-4 py-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
@@ -831,7 +1245,9 @@ export default function HomePageClient() {
                 </div>
                 <span className="text-xl font-bold text-white">Mentality</span>
               </Link>
-              <p className="mt-4 text-sm text-gray-400">Empowering lifelong learning through curated content and community support.</p>
+              <p className="mt-4 text-sm text-gray-400">
+                Empowering Zambian lifelong learners through curated content, mentorship, and community support.
+              </p>
               <div className="mt-4 flex space-x-4">
                 <a href="#" className="text-gray-400 hover:text-blue-400 transition"><Share2 className="w-5 h-5" /></a>
                 <a href="#" className="text-gray-400 hover:text-blue-400 transition"><Globe className="w-5 h-5" /></a>
@@ -851,9 +1267,33 @@ export default function HomePageClient() {
             <div>
               <h4 className="text-white font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm">
-                <li className="flex items-center space-x-2"><Mail className="w-4 h-4 text-blue-400" /><span>support@amentality.com</span></li>
-                <li className="flex items-center space-x-2"><Phone className="w-4 h-4 text-blue-400" /><span>+260 97 123 4567</span></li>
-                <li className="flex items-center space-x-2"><MapPin className="w-4 h-4 text-blue-400" /><span>Lusaka, Zambia</span></li>
+                <li className="flex items-center space-x-2">
+                  <Mail className="w-4 h-4 text-blue-400" />
+                  <a href="mailto:kafiswegchimputu@gmail.com" className="hover:text-blue-400 transition">
+                    kafiswegchimputu@gmail.com
+                  </a>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <Phone className="w-4 h-4 text-blue-400" />
+                  <span>+260 954 953 610</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <a
+                    href="https://wa.me/260772231300"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-green-400 hover:text-green-300 transition"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    +260 772 231 300 (WhatsApp)
+                  </a>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <MapPin className="w-4 h-4 text-blue-400" />
+                  <span>Lusaka, Zambia</span>
+                </li>
               </ul>
             </div>
             <div>
@@ -867,18 +1307,53 @@ export default function HomePageClient() {
                   required
                   className="w-full px-4 py-2 rounded-full bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <button type="submit" className="w-full bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center space-x-2">
-                  <span>Subscribe</span><Send className="w-4 h-4" />
+                <button 
+                  type="submit" 
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center space-x-2"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <span className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+                  ) : (
+                    <>
+                      <span>Subscribe</span><Send className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
                 {isSubscribed && <p className="text-green-400 text-sm text-center">✅ Subscribed successfully!</p>}
               </form>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} A+ Mentality. All rights reserved. Built with ❤️ for lifelong learners.
+            &copy; {new Date().getFullYear()} A+ Mentality Zambia. All rights reserved. Built with ❤️ for Zambian lifelong learners.
           </div>
         </div>
       </footer>
+
+      {/* ===== KEYFRAMES FOR MARQUEE ===== */}
+      <style jsx>{`
+        @keyframes scrollRightToLeft {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+      `}</style>
+
+      {/* ===== FLOATING WHATSAPP BUTTON ===== */}
+      <a
+        href="https://wa.me/260772231300"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-2xl transition-all duration-300 hover:scale-110 flex items-center justify-center"
+        aria-label="Chat on WhatsApp"
+      >
+        <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </a>
     </div>
   );
 }
