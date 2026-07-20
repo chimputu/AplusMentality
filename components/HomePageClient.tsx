@@ -115,9 +115,9 @@ export default function HomePageClient() {
   const institutions = [
     { name: 'University of Zambia', logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&h=150&fit=crop' },
     { name: 'Copperbelt University', logo: 'https://images.unsplash.com/photo-1562774053-701939374585?w=150&h=150&fit=crop' },
-    { name: 'Mulungushi University', logo: 'https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=150&h=150&fit=crop' },
+    { name: 'Mulungushi University', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIpJBpFlsIFSEqF7L6i5PbFavqeIGWQTNlcc0djaiqjw&s=10' },
     { name: 'Kwame Nkrumah University', logo: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=150&h=150&fit=crop' },
-    { name: 'Chalimbana University', logo: 'https://images.unsplash.com/photo-1544717305-996b815c338b?w=150&h=150&fit=crop' },
+    { name: 'Chalimbana University', logo: 'https://lens.usercontent.google.com/image?vsrid=CKKXidTP16nSKRACGAEiJDVjNTJmNDA2LTQyZWYtNGFiYi05ODZhLTE0ZDZhYWJiOGM4NjKBASICZWgoG0JzCi5sZmUtZHVtbXk6OGE2MzdlNDctZmQ3OC00N2YxLTgzMzAtZjg3M2ZkMjAyNGUxEkEKPy9ibnMvZWgvYm9yZy9laC9ibnMvbGVucy1mcm9udGVuZC1hcGkvcHJvZC5sZW5zLWZyb250ZW5kLWFwaS8zNFoECgJlaDjIv4DRh-GVAw&gsessionid=aXf0uimykXqoBUjXLIIfz3RXeNmT2546IYBEk1vpmcsUpNVwZQm3hQ' },
     { name: 'Cavendish University Zambia', logo: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=150&h=150&fit=crop' },
     { name: 'University of Lusaka', logo: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=150&h=150&fit=crop' },
     { name: 'ZCAS University', logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&h=150&fit=crop' },
