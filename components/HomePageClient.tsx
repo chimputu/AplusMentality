@@ -2,9 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 import {
   Menu, X, Mail, Phone, MapPin, Send,
   Share2, Globe, AtSign, Link as LinkIcon,
@@ -15,12 +17,13 @@ import {
   Compass, TrendingUp, PlayCircle, Megaphone, UserPlus,
 } from 'lucide-react';
 
+// Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { duration: 0.6 } 
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6 },
   },
 };
 
@@ -40,6 +43,7 @@ export default function HomePageClient() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Animated stats
   const [learnerCount, setLearnerCount] = useState(0);
   const [videoCount, setVideoCount] = useState(0);
   const [mentorCount, setMentorCount] = useState(0);
@@ -220,6 +224,44 @@ export default function HomePageClient() {
     }
   };
 
+  // ----- Course Data Arrays -----
+  const semester1Courses = [
+    { code: 'CHE111', title: 'Introductory Chemistry', description: 'Atomic structure, bonding, and stoichiometry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.7, students: 950 },
+    { code: 'BIO111', title: 'Bio-molecules and Cells', description: 'Cell biology, genetics, and molecular foundations.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1200 },
+    { code: 'PHY101', title: 'Fundamentals of Physics', description: 'Mechanics, thermodynamics, and waves.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.6, students: 820 },
+    { code: 'MSM111', title: 'Mathematical Methods I', description: 'Limits, derivatives, and integrals.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, students: 1500 },
+  ];
+
+  const semester2Courses = [
+    { code: 'BIO112', title: 'Molecular Biology and Genetics', description: 'DNA replication, transcription, and inheritance.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1100 },
+    { code: 'PHY102', title: 'Introductory Physics II', description: 'Electromagnetism, optics, and modern physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.5, students: 780 },
+    { code: 'MSM112', title: 'Mathematical Methods II', description: 'Differential equations, vectors, and matrices.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1300 },
+    { code: 'CHE112', title: 'Introductory Chemistry II', description: 'Organic chemistry, acids, and bases.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.6, students: 880 },
+  ];
+
+  const csSem1Courses = [
+    { code: 'ICT402', title: 'Statistics and Empirical Methods for Computing', description: 'Statistical analysis, regression, and data interpretation.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 650 },
+    { code: 'ICT261', title: 'Intro to OOP and JAVA', description: 'Object-oriented programming principles with Java.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.8, students: 1800 },
+    { code: 'ICT221', title: 'Computer Architecture', description: 'CPU design, memory hierarchy, and instruction sets.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 920 },
+    { code: 'ICT241', title: 'Digital Design', description: 'Logic gates, flip-flops, and combinational circuits.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.4, students: 540 },
+    { code: 'ICT201', title: 'Discrete Mathematics', description: 'Logic, sets, relations, and graph theory.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1020 },
+  ];
+
+  const csSem2Courses = [
+    { code: 'ICT222', title: 'Operating Systems', description: 'Process management, memory, and file systems.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 850 },
+    { code: 'ICT242', title: 'Networking and Communication', description: 'OSI model, TCP/IP, and network security.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 720 },
+    { code: 'ICT202', title: 'Data Structures and Algorithms', description: 'Stacks, queues, trees, and sorting algorithms.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.9, students: 2200 },
+    { code: 'ICT262', title: 'Intermediate Java Programming', description: 'Advanced OOP, collections, and multithreading.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.7, students: 1350 },
+    { code: 'ICT271', title: 'Databases', description: 'SQL, database design, and transaction management.', image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=200&fit=crop', rating: 4.8, students: 1600 },
+  ];
+
+  // ----- Load More hooks -----
+  const [visibleSem1, setVisibleSem1] = useState(4);
+  const [visibleSem2, setVisibleSem2] = useState(4);
+  const [visibleCsSem1, setVisibleCsSem1] = useState(5);
+  const [visibleCsSem2, setVisibleCsSem2] = useState(5);
+  const [visibleALevel, setVisibleALevel] = useState(4);
+
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       {/* ===== NAVBAR ===== */}
@@ -267,7 +309,7 @@ export default function HomePageClient() {
         )}
       </nav>
 
-      {/* ===== HERO WITH STACKED/STAGGERED TITLE — STRAIGHT ===== */}
+      {/* ===== HERO ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -278,16 +320,12 @@ export default function HomePageClient() {
         <div className="w-full px-2 sm:px-4">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
             <div className="flex-[2] text-center lg:text-left">
-              {/* Badge - Build Better Habits. Achieve Higher Goals. */}
               <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-6">
                 <Sparkles className="w-4 h-4 mr-1" /> ⭐ Build Better Habits. Achieve Higher Goals.
               </div>
 
-              {/* STACKED/STAGGERED TITLE — STRAIGHT (no rotation) */}
               <div className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.3]">
-                <div className="flex items-start">
-                  <span>Your Goals.</span>
-                </div>
+                <div className="flex items-start">Your Goals.</div>
                 <div className="flex items-start pl-6 sm:pl-8 lg:pl-10">
                   <span className="text-blue-600">Our Tools.</span>
                 </div>
@@ -633,7 +671,7 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ============================================================== */}
-      {/* ===== COURSES BY YEAR & SEMESTER (WITH IMAGES) ===== */}
+      {/* ===== COURSES BY YEAR & SEMESTER (OPTIMIZED) ===== */}
       {/* ============================================================== */}
       <motion.section
         initial="hidden"
@@ -653,234 +691,52 @@ export default function HomePageClient() {
           </motion.div>
 
           {/* ===== YEAR 1 - SEMESTER 1 ===== */}
-          <motion.div variants={fadeInUp} className="mb-12">
-            <div className="flex flex-wrap items-center justify-between mb-4">
-              <div>
-                <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
-                  2023/2024 - Semester 1
-                </span>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">Natural Sciences Foundation</h3>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {[
-                { code: 'CHE111', title: 'Introductory Chemistry', description: 'Atomic structure, bonding, and stoichiometry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.7, students: 950 },
-                { code: 'BIO111', title: 'Bio-molecules and Cells', description: 'Cell biology, genetics, and molecular foundations.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1200 },
-                { code: 'PHY101', title: 'Fundamentals of Physics', description: 'Mechanics, thermodynamics, and waves.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.6, students: 820 },
-                { code: 'MSM111', title: 'Mathematical Methods I', description: 'Limits, derivatives, and integrals.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, students: 1500 },
-              ].map((course, idx) => (
-                <motion.div
-                  key={idx}
-                  variants={fadeInUp}
-                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
-                  onClick={() => handleEnroll(course.code)}
-                >
-                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
-                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {course.code}
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                      Natural Sciences
-                    </div>
-                  </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students} students)</span>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEnroll(course.code);
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
-                      >
-                        Explore now
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+          <OptimizedCourseSection
+            title="Natural Sciences Foundation"
+            semester="2023/2024 - Semester 1"
+            courses={semester1Courses}
+            visibleCount={visibleSem1}
+            setVisibleCount={setVisibleSem1}
+            handleEnroll={handleEnroll}
+            faculty="Natural Sciences"
+            color="bg-blue-600"
+          />
 
           {/* ===== YEAR 1 - SEMESTER 2 ===== */}
-          <motion.div variants={fadeInUp} className="mb-12">
-            <div className="flex flex-wrap items-center justify-between mb-4">
-              <div>
-                <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
-                  2023/2024 - Semester 2
-                </span>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">Natural Sciences Advanced</h3>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {[
-                { code: 'BIO112', title: 'Molecular Biology and Genetics', description: 'DNA replication, transcription, and inheritance.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1100 },
-                { code: 'PHY102', title: 'Introductory Physics II', description: 'Electromagnetism, optics, and modern physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.5, students: 780 },
-                { code: 'MSM112', title: 'Mathematical Methods II', description: 'Differential equations, vectors, and matrices.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1300 },
-                { code: 'CHE112', title: 'Introductory Chemistry II', description: 'Organic chemistry, acids, and bases.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.6, students: 880 },
-              ].map((course, idx) => (
-                <motion.div
-                  key={idx}
-                  variants={fadeInUp}
-                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
-                  onClick={() => handleEnroll(course.code)}
-                >
-                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
-                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {course.code}
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                      Natural Sciences
-                    </div>
-                  </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students} students)</span>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEnroll(course.code);
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
-                      >
-                        Explore now
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+          <OptimizedCourseSection
+            title="Natural Sciences Advanced"
+            semester="2023/2024 - Semester 2"
+            courses={semester2Courses}
+            visibleCount={visibleSem2}
+            setVisibleCount={setVisibleSem2}
+            handleEnroll={handleEnroll}
+            faculty="Natural Sciences"
+            color="bg-blue-600"
+          />
 
           {/* ===== YEAR 2 - SEMESTER 1 ===== */}
-          <motion.div variants={fadeInUp} className="mb-12">
-            <div className="flex flex-wrap items-center justify-between mb-4">
-              <div>
-                <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
-                  2024/2025 - Semester 1
-                </span>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">Computer Science Foundation</h3>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
-              {[
-                { code: 'ICT402', title: 'Statistics and Empirical Methods for Computing', description: 'Statistical analysis, regression, and data interpretation.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 650 },
-                { code: 'ICT261', title: 'Intro to OOP and JAVA', description: 'Object-oriented programming principles with Java.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.8, students: 1800 },
-                { code: 'ICT221', title: 'Computer Architecture', description: 'CPU design, memory hierarchy, and instruction sets.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 920 },
-                { code: 'ICT241', title: 'Digital Design', description: 'Logic gates, flip-flops, and combinational circuits.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.4, students: 540 },
-                { code: 'ICT201', title: 'Discrete Mathematics', description: 'Logic, sets, relations, and graph theory.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1020 },
-              ].map((course, idx) => (
-                <motion.div
-                  key={idx}
-                  variants={fadeInUp}
-                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
-                  onClick={() => handleEnroll(course.code)}
-                >
-                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
-                    <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {course.code}
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                      Computer Science
-                    </div>
-                  </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students} students)</span>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEnroll(course.code);
-                        }}
-                        className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
-                      >
-                        Explore now
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+          <OptimizedCourseSection
+            title="Computer Science Foundation"
+            semester="2024/2025 - Semester 1"
+            courses={csSem1Courses}
+            visibleCount={visibleCsSem1}
+            setVisibleCount={setVisibleCsSem1}
+            handleEnroll={handleEnroll}
+            faculty="Computer Science"
+            color="bg-purple-600"
+          />
 
           {/* ===== YEAR 2 - SEMESTER 2 ===== */}
-          <motion.div variants={fadeInUp}>
-            <div className="flex flex-wrap items-center justify-between mb-4">
-              <div>
-                <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
-                  2024/2025 - Semester 2
-                </span>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">Computer Science Advanced</h3>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
-              {[
-                { code: 'ICT222', title: 'Operating Systems', description: 'Process management, memory, and file systems.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 850 },
-                { code: 'ICT242', title: 'Networking and Communication', description: 'OSI model, TCP/IP, and network security.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 720 },
-                { code: 'ICT202', title: 'Data Structures and Algorithms', description: 'Stacks, queues, trees, and sorting algorithms.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.9, students: 2200 },
-                { code: 'ICT262', title: 'Intermediate Java Programming', description: 'Advanced OOP, collections, and multithreading.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.7, students: 1350 },
-                { code: 'ICT271', title: 'Databases', description: 'SQL, database design, and transaction management.', image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=200&fit=crop', rating: 4.8, students: 1600 },
-              ].map((course, idx) => (
-                <motion.div
-                  key={idx}
-                  variants={fadeInUp}
-                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
-                  onClick={() => handleEnroll(course.code)}
-                >
-                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
-                    <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {course.code}
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                      Computer Science
-                    </div>
-                  </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students} students)</span>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEnroll(course.code);
-                        }}
-                        className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
-                      >
-                        Explore now
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+          <OptimizedCourseSection
+            title="Computer Science Advanced"
+            semester="2024/2025 - Semester 2"
+            courses={csSem2Courses}
+            visibleCount={visibleCsSem2}
+            setVisibleCount={setVisibleCsSem2}
+            handleEnroll={handleEnroll}
+            faculty="Computer Science"
+            color="bg-purple-600"
+          />
         </div>
       </motion.section>
 
@@ -907,46 +763,16 @@ export default function HomePageClient() {
               </button>
             </motion.div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {aLevelCourses.map((course) => (
-              <motion.div
-                key={course.id}
-                variants={fadeInUp}
-                className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
-                onClick={handleExplore}
-              >
-                <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                  <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
-                  <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                    {course.code}
-                  </div>
-                  <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                    A-Level
-                  </div>
-                </div>
-                <div className="p-4 flex flex-col flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                  <div className="flex items-center justify-between mt-3">
-                    <div className="flex items-center gap-1">
-                      <span className="text-yellow-500">★</span>
-                      <span className="font-semibold text-gray-800">{course.rating}</span>
-                      <span className="text-gray-400 text-sm">({course.students} students)</span>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEnroll(course.code);
-                      }}
-                      className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
-                    >
-                      Explore now
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <OptimizedCourseSection
+            title=""
+            semester="A-Level"
+            courses={aLevelCourses}
+            visibleCount={visibleALevel}
+            setVisibleCount={setVisibleALevel}
+            handleEnroll={handleEnroll}
+            faculty="A-Level"
+            color="bg-purple-600"
+          />
         </div>
       </motion.section>
 
@@ -997,7 +823,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== SIGN UP AS A TUTOR (WITH WHATSAPP) ===== */}
+      {/* ===== SIGN UP AS A TUTOR ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -1097,9 +923,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ============================================================== */}
-      {/* ===== MOTIVATIONAL SECTION: LEFT TEXT + RIGHT VIDEO ===== */}
-      {/* ============================================================== */}
+      {/* ===== MOTIVATIONAL SECTION ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -1201,7 +1025,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== INSTITUTIONS MARQUEE (Continuous Right-to-Left) ===== */}
+      {/* ===== INSTITUTIONS MARQUEE ===== */}
       <section className="py-10 bg-white overflow-hidden">
         <div className="w-full">
           <div className="text-center mb-6">
@@ -1220,10 +1044,13 @@ export default function HomePageClient() {
             >
               {[...institutions, ...institutions].map((inst, idx) => (
                 <div key={idx} className="flex items-center gap-3 flex-shrink-0">
-                  <img
+                  <Image
                     src={inst.logo}
                     alt={inst.name}
+                    width={64}
+                    height={64}
                     className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-blue-200 shadow-md"
+                    loading="lazy"
                   />
                   <span className="text-sm font-medium text-gray-700">{inst.name}</span>
                 </div>
@@ -1236,7 +1063,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      {/* ===== FOOTER (with WhatsApp) ===== */}
+      {/* ===== FOOTER ===== */}
       <footer className="bg-gray-900 text-gray-300">
         <div className="w-full px-2 sm:px-4 py-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
@@ -1356,6 +1183,114 @@ export default function HomePageClient() {
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
         </svg>
       </a>
+    </div>
+  );
+}
+
+// ============================================================
+// OPTIMIZED COURSE SECTION COMPONENT
+// ============================================================
+interface CourseSectionProps {
+  title: string;
+  semester: string;
+  courses: any[];
+  visibleCount: number;
+  setVisibleCount: React.Dispatch<React.SetStateAction<number>>;  // ✅ fixed type
+  handleEnroll: (code: string) => void;
+  faculty: string;
+  color: string;
+}
+
+function OptimizedCourseSection({
+  title,
+  semester,
+  courses,
+  visibleCount,
+  setVisibleCount,
+  handleEnroll,
+  faculty,
+  color,
+}: CourseSectionProps) {
+  const loadMore = () => setVisibleCount(prev => prev + 4);
+
+  return (
+    <div className="mb-12">
+      <div className="flex flex-wrap items-center justify-between mb-4">
+        <div>
+          <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
+            {semester}
+          </span>
+          <h3 className="text-2xl font-bold text-gray-900 mt-1">{title}</h3>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {courses.slice(0, visibleCount).map((course, idx) => {
+          const [ref, inView] = useInView({
+            triggerOnce: true,
+            threshold: 0.1,
+          });
+          return (
+            <motion.div
+              ref={ref}
+              key={idx}
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col cursor-pointer"
+              onClick={() => handleEnroll(course.code)}
+            >
+              <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                <Image
+                  src={course.image}
+                  alt={course.title}
+                  width={400}
+                  height={200}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  placeholder="blur"
+                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+                />
+                <div className={`absolute top-2 left-2 ${color} text-white text-xs font-semibold px-2 py-0.5 rounded-full`}>
+                  {course.code}
+                </div>
+                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                  {faculty}
+                </div>
+              </div>
+              <div className="p-4 flex flex-col flex-1">
+                <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center gap-1">
+                    <span className="text-yellow-500">★</span>
+                    <span className="font-semibold text-gray-800">{course.rating}</span>
+                    <span className="text-gray-400 text-sm">({course.students} students)</span>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEnroll(course.code);
+                    }}
+                    className={`${color} hover:opacity-90 text-white text-sm font-medium px-4 py-1.5 rounded-full transition`}
+                  >
+                    Explore now
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+      {visibleCount < courses.length && (
+        <div className="text-center mt-6">
+          <button
+            onClick={loadMore}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-full transition"
+          >
+            Load More Courses
+          </button>
+        </div>
+      )}
     </div>
   );
 }
