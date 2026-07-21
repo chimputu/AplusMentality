@@ -1,22 +1,20 @@
-import type { NextConfig } from 'next';
+/** @type {import('next').NextConfig} */
 
-const nextConfig: NextConfig = {
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+});
+
+const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '50mb',
     },
   },
-  images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'img.clerk.com' },
-      { protocol: 'https', hostname: 'res.cloudinary.com' },
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'encrypted-tbn0.gstatic.com' },
-    ],
-  },
-  typescript: {
-    ignoreBuildErrors: false,
-  },
+  // ✅ Silence the Turbopack warning
+  turbopack: {},
 };
 
-export default nextConfig;
+module.exports = withPWA(nextConfig);

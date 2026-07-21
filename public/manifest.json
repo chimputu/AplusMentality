@@ -1,0 +1,46 @@
+{
+  "id": "/",
+  "name": "A+ Mentality",
+  "short_name": "A+ Mentality",
+  "description": "Empowering Zambian lifelong learners through curated content, mentorship, and community support.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile.png",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "label": "Mobile view of A+ Mentality"
+    },
+    {
+      "src": "/screenshots/desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop view of A+ Mentality"
+    }
+  ]
+}
