@@ -1,12 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect, lazy, Suspense } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
 import {
   Menu, X, Mail, Phone, MapPin, Send,
   Share2, Globe, AtSign, Link as LinkIcon,
@@ -17,13 +15,12 @@ import {
   Compass, TrendingUp, PlayCircle, Megaphone, UserPlus,
 } from 'lucide-react';
 
-// Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.6 } 
   },
 };
 
@@ -35,15 +32,6 @@ const staggerContainer = {
   },
 };
 
-// ---------------------------
-// Lazy-load heavy sections
-// ---------------------------
-const CourseSections = lazy(() => import('@/components/CourseSections'));
-const ALevelCourses = lazy(() => import('@/components/ALevelCourses'));
-
-// Tiny blur placeholder (base64)
-const blurPlaceholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
-
 export default function HomePageClient() {
   const router = useRouter();
   const { isSignedIn } = useUser();
@@ -52,7 +40,6 @@ export default function HomePageClient() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Animated stats (unchanged)
   const [learnerCount, setLearnerCount] = useState(0);
   const [videoCount, setVideoCount] = useState(0);
   const [mentorCount, setMentorCount] = useState(0);
@@ -94,7 +81,10 @@ export default function HomePageClient() {
     return () => observer.disconnect();
   }, [hasAnimated]);
 
-  // Data (unchanged)
+  // ============================================================
+  // ZAMBIA 2026 DATA — Based on HEA Gazette & University Websites
+  // ============================================================
+
   const topPublicUniversities = [
     { name: 'University of Zambia', location: 'Lusaka', tier: 'ZQF Level 10' },
     { name: 'Copperbelt University', location: 'Kitwe', tier: 'ZQF Level 10' },
@@ -109,6 +99,17 @@ export default function HomePageClient() {
     { name: 'Business Studies', subjects: 'Business, Economics, Accounting, Entrepreneurship', color: 'bg-yellow-100 text-yellow-800' },
     { name: 'Sports Science', subjects: 'Physical Education, Sports Science, Health Education', color: 'bg-orange-100 text-orange-800' },
     { name: 'Creative & Performing Arts', subjects: 'Art, Music, Drama, Dance, Creative Writing', color: 'bg-purple-100 text-purple-800' },
+  ];
+
+  const aLevelCourses = [
+    { id: 'al1', code: 'AL-BIO', title: 'A-Level Biology', description: 'Advanced cell biology, genetics, physiology, and ecology.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.9, students: 850 },
+    { id: 'al2', code: 'AL-CHEM', title: 'A-Level Chemistry', description: 'Advanced organic, inorganic, and physical chemistry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.8, students: 720 },
+    { id: 'al3', code: 'AL-PHY', title: 'A-Level Physics', description: 'Advanced mechanics, electromagnetism, and quantum physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.7, students: 680 },
+    { id: 'al4', code: 'AL-MATH', title: 'A-Level Mathematics', description: 'Pure mathematics, statistics, and mechanics.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, students: 1200 },
+    { id: 'al5', code: 'AL-FMATH', title: 'A-Level Further Mathematics', description: 'Advanced pure mathematics and further mechanics.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.6, students: 450 },
+    { id: 'al6', code: 'AL-ENG', title: 'A-Level English Literature', description: 'Advanced literary analysis and critical theory.', image: 'https://images.unsplash.com/photo-1544717305-996b815c338b?w=400&h=200&fit=crop', rating: 4.5, students: 560 },
+    { id: 'al7', code: 'AL-HIST', title: 'A-Level History', description: 'Advanced historical analysis and historiography.', image: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=400&h=200&fit=crop', rating: 4.4, students: 490 },
+    { id: 'al8', code: 'AL-GEOG', title: 'A-Level Geography', description: 'Advanced physical geography, human geography, and GIS.', image: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=400&h=200&fit=crop', rating: 4.3, students: 380 },
   ];
 
   const institutions = [
@@ -147,28 +148,40 @@ export default function HomePageClient() {
     { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-purple-50 hover:border-purple-300' },
   ];
 
+  // ============================================================
+  // EMAILJS SUBSCRIPTION HANDLER (DYNAMIC IMPORT)
+  // ============================================================
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+
     setIsLoading(true);
+
     try {
+      // Dynamically import EmailJS only on the client
       const emailjs = await import('@emailjs/browser');
+
       emailjs.init('lq3xCtY4KtS7Z-3Wf');
-      await emailjs.send(
+
+      const templateParams = {
+        user_email: email,
+        to_email: 'kafiswegchimputu@gmail.com',
+        subject: 'New A+ Mentality Subscriber!',
+        message: `A new student has subscribed with email: ${email}`,
+      };
+
+      const response = await emailjs.send(
         'service_fadklbd',
         '__ejs-test-mail-service__',
-        {
-          user_email: email,
-          to_email: 'kafiswegchimputu@gmail.com',
-          subject: 'New A+ Mentality Subscriber!',
-          message: `A new student has subscribed with email: ${email}`,
-        }
+        templateParams
       );
+
+      console.log('Email sent successfully:', response);
       setIsSubscribed(true);
       setEmail('');
       setTimeout(() => setIsSubscribed(false), 5000);
     } catch (error) {
-      console.error(error);
+      console.error('Failed to send email:', error);
       alert('Something went wrong. Please try again later.');
     } finally {
       setIsLoading(false);
@@ -191,6 +204,14 @@ export default function HomePageClient() {
     }
   };
 
+  const handleViewAllCourses = () => {
+    if (!isSignedIn) {
+      router.push('/sign-up');
+    } else {
+      router.push('/courses');
+    }
+  };
+
   const handleViewAllALevels = () => {
     if (!isSignedIn) {
       router.push('/sign-up');
@@ -201,7 +222,7 @@ export default function HomePageClient() {
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
-      {/* ===== NAVBAR ===== (unchanged) */}
+      {/* ===== NAVBAR ===== */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="w-full px-2 sm:px-4">
           <div className="flex justify-between items-center h-16">
@@ -246,7 +267,7 @@ export default function HomePageClient() {
         )}
       </nav>
 
-      {/* ===== HERO ===== */}
+      {/* ===== HERO WITH STACKED/STAGGERED TITLE — STRAIGHT ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -257,17 +278,23 @@ export default function HomePageClient() {
         <div className="w-full px-2 sm:px-4">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
             <div className="flex-[2] text-center lg:text-left">
+              {/* Badge - Build Better Habits. Achieve Higher Goals. */}
               <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-6">
                 <Sparkles className="w-4 h-4 mr-1" /> ⭐ Build Better Habits. Achieve Higher Goals.
               </div>
 
+              {/* STACKED/STAGGERED TITLE — STRAIGHT (no rotation) */}
               <div className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.3]">
-                <div className="flex items-start">Your Goals.</div>
+                <div className="flex items-start">
+                  <span>Your Goals.</span>
+                </div>
                 <div className="flex items-start pl-6 sm:pl-8 lg:pl-10">
                   <span className="text-blue-600">Our Tools.</span>
                 </div>
                 <div className="flex items-start pl-12 sm:pl-16 lg:pl-20">
-                  <span>A+ <span className="text-blue-600">Results.</span></span>
+                  <span>
+                    A+ <span className="text-blue-600">Results.</span>
+                  </span>
                 </div>
               </div>
 
@@ -606,15 +633,322 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ============================================================== */}
-      {/* ===== COURSES & A-LEVELS (LAZY LOADED) ===== */}
+      {/* ===== COURSES BY YEAR & SEMESTER (WITH IMAGES) ===== */}
       {/* ============================================================== */}
-      <Suspense fallback={<div className="text-center py-12 text-gray-500">Loading courses...</div>}>
-        <CourseSections handleEnroll={handleEnroll} />
-      </Suspense>
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={staggerContainer}
+        className="py-12 bg-white"
+      >
+        <div className="w-full px-2 sm:px-4">
+          <motion.div variants={fadeInUp} className="text-center mb-10">
+            <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-gray-900">Your Course Journey</h2>
+            <p className="mt-2 text-gray-600 max-w-3xl mx-auto">
+              From Natural Sciences to Computer Science – a complete academic pathway
+              aligned with Zambian university standards.
+            </p>
+          </motion.div>
 
-      <Suspense fallback={<div className="text-center py-12 text-gray-500">Loading A-Levels...</div>}>
-        <ALevelCourses handleEnroll={handleEnroll} handleViewAllALevels={handleViewAllALevels} />
-      </Suspense>
+          {/* ===== YEAR 1 - SEMESTER 1 ===== */}
+          <motion.div variants={fadeInUp} className="mb-12">
+            <div className="flex flex-wrap items-center justify-between mb-4">
+              <div>
+                <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
+                  2023/2024 - Semester 1
+                </span>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">Natural Sciences Foundation</h3>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {[
+                { code: 'CHE111', title: 'Introductory Chemistry', description: 'Atomic structure, bonding, and stoichiometry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.7, students: 950 },
+                { code: 'BIO111', title: 'Bio-molecules and Cells', description: 'Cell biology, genetics, and molecular foundations.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1200 },
+                { code: 'PHY101', title: 'Fundamentals of Physics', description: 'Mechanics, thermodynamics, and waves.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.6, students: 820 },
+                { code: 'MSM111', title: 'Mathematical Methods I', description: 'Limits, derivatives, and integrals.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, students: 1500 },
+              ].map((course, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={fadeInUp}
+                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  onClick={() => handleEnroll(course.code)}
+                >
+                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {course.code}
+                    </div>
+                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                      Natural Sciences
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500">★</span>
+                        <span className="font-semibold text-gray-800">{course.rating}</span>
+                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnroll(course.code);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                      >
+                        Explore now
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ===== YEAR 1 - SEMESTER 2 ===== */}
+          <motion.div variants={fadeInUp} className="mb-12">
+            <div className="flex flex-wrap items-center justify-between mb-4">
+              <div>
+                <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
+                  2023/2024 - Semester 2
+                </span>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">Natural Sciences Advanced</h3>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {[
+                { code: 'BIO112', title: 'Molecular Biology and Genetics', description: 'DNA replication, transcription, and inheritance.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1100 },
+                { code: 'PHY102', title: 'Introductory Physics II', description: 'Electromagnetism, optics, and modern physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.5, students: 780 },
+                { code: 'MSM112', title: 'Mathematical Methods II', description: 'Differential equations, vectors, and matrices.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1300 },
+                { code: 'CHE112', title: 'Introductory Chemistry II', description: 'Organic chemistry, acids, and bases.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.6, students: 880 },
+              ].map((course, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={fadeInUp}
+                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  onClick={() => handleEnroll(course.code)}
+                >
+                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {course.code}
+                    </div>
+                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                      Natural Sciences
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500">★</span>
+                        <span className="font-semibold text-gray-800">{course.rating}</span>
+                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnroll(course.code);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                      >
+                        Explore now
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ===== YEAR 2 - SEMESTER 1 ===== */}
+          <motion.div variants={fadeInUp} className="mb-12">
+            <div className="flex flex-wrap items-center justify-between mb-4">
+              <div>
+                <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
+                  2024/2025 - Semester 1
+                </span>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">Computer Science Foundation</h3>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+              {[
+                { code: 'ICT402', title: 'Statistics and Empirical Methods for Computing', description: 'Statistical analysis, regression, and data interpretation.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 650 },
+                { code: 'ICT261', title: 'Intro to OOP and JAVA', description: 'Object-oriented programming principles with Java.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.8, students: 1800 },
+                { code: 'ICT221', title: 'Computer Architecture', description: 'CPU design, memory hierarchy, and instruction sets.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 920 },
+                { code: 'ICT241', title: 'Digital Design', description: 'Logic gates, flip-flops, and combinational circuits.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.4, students: 540 },
+                { code: 'ICT201', title: 'Discrete Mathematics', description: 'Logic, sets, relations, and graph theory.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1020 },
+              ].map((course, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={fadeInUp}
+                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  onClick={() => handleEnroll(course.code)}
+                >
+                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {course.code}
+                    </div>
+                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                      Computer Science
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500">★</span>
+                        <span className="font-semibold text-gray-800">{course.rating}</span>
+                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnroll(course.code);
+                        }}
+                        className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                      >
+                        Explore now
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ===== YEAR 2 - SEMESTER 2 ===== */}
+          <motion.div variants={fadeInUp}>
+            <div className="flex flex-wrap items-center justify-between mb-4">
+              <div>
+                <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
+                  2024/2025 - Semester 2
+                </span>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">Computer Science Advanced</h3>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+              {[
+                { code: 'ICT222', title: 'Operating Systems', description: 'Process management, memory, and file systems.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 850 },
+                { code: 'ICT242', title: 'Networking and Communication', description: 'OSI model, TCP/IP, and network security.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 720 },
+                { code: 'ICT202', title: 'Data Structures and Algorithms', description: 'Stacks, queues, trees, and sorting algorithms.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.9, students: 2200 },
+                { code: 'ICT262', title: 'Intermediate Java Programming', description: 'Advanced OOP, collections, and multithreading.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.7, students: 1350 },
+                { code: 'ICT271', title: 'Databases', description: 'SQL, database design, and transaction management.', image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=200&fit=crop', rating: 4.8, students: 1600 },
+              ].map((course, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={fadeInUp}
+                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  onClick={() => handleEnroll(course.code)}
+                >
+                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {course.code}
+                    </div>
+                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                      Computer Science
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500">★</span>
+                        <span className="font-semibold text-gray-800">{course.rating}</span>
+                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnroll(course.code);
+                        }}
+                        className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                      >
+                        Explore now
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* ===== A-LEVEL COURSES ===== */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={staggerContainer}
+        className="py-12 bg-gray-50"
+      >
+        <div className="w-full px-2 sm:px-4">
+          <div className="flex flex-wrap items-center justify-between mb-8">
+            <motion.div variants={fadeInUp}>
+              <h2 className="text-3xl font-bold text-gray-900">A-Level Courses</h2>
+              <p className="text-gray-600">Advanced courses for university preparation and higher education</p>
+            </motion.div>
+            <motion.div variants={fadeInUp}>
+              <button
+                onClick={handleViewAllALevels}
+                className="text-purple-600 hover:text-purple-800 font-medium flex items-center gap-1"
+              >
+                View All A-Levels <span className="text-lg">→</span>
+              </button>
+            </motion.div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {aLevelCourses.map((course) => (
+              <motion.div
+                key={course.id}
+                variants={fadeInUp}
+                className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                onClick={handleExplore}
+              >
+                <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                  <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                  <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                    {course.code}
+                  </div>
+                  <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                    A-Level
+                  </div>
+                </div>
+                <div className="p-4 flex flex-col flex-1">
+                  <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                  <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center gap-1">
+                      <span className="text-yellow-500">★</span>
+                      <span className="font-semibold text-gray-800">{course.rating}</span>
+                      <span className="text-gray-400 text-sm">({course.students} students)</span>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEnroll(course.code);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                    >
+                      Explore now
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
 
       {/* ===== ZAMBIAN GRADING SYSTEM ===== */}
       <motion.section
@@ -663,7 +997,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== SIGN UP AS A TUTOR ===== */}
+      {/* ===== SIGN UP AS A TUTOR (WITH WHATSAPP) ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -763,7 +1097,9 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== MOTIVATIONAL SECTION ===== */}
+      {/* ============================================================== */}
+      {/* ===== MOTIVATIONAL SECTION: LEFT TEXT + RIGHT VIDEO ===== */}
+      {/* ============================================================== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -865,7 +1201,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== INSTITUTIONS MARQUEE ===== */}
+      {/* ===== INSTITUTIONS MARQUEE (Continuous Right-to-Left) ===== */}
       <section className="py-10 bg-white overflow-hidden">
         <div className="w-full">
           <div className="text-center mb-6">
@@ -884,15 +1220,10 @@ export default function HomePageClient() {
             >
               {[...institutions, ...institutions].map((inst, idx) => (
                 <div key={idx} className="flex items-center gap-3 flex-shrink-0">
-                  <Image
+                  <img
                     src={inst.logo}
                     alt={inst.name}
-                    width={64}
-                    height={64}
                     className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-blue-200 shadow-md"
-                    placeholder="blur"
-                    blurDataURL={blurPlaceholder}
-                    loading="lazy"
                   />
                   <span className="text-sm font-medium text-gray-700">{inst.name}</span>
                 </div>
@@ -905,7 +1236,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      {/* ===== FOOTER ===== (unchanged) */}
+      {/* ===== FOOTER (with WhatsApp) ===== */}
       <footer className="bg-gray-900 text-gray-300">
         <div className="w-full px-2 sm:px-4 py-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
@@ -1001,13 +1332,19 @@ export default function HomePageClient() {
         </div>
       </footer>
 
+      {/* ===== KEYFRAMES FOR MARQUEE ===== */}
       <style jsx>{`
         @keyframes scrollRightToLeft {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
         }
       `}</style>
 
+      {/* ===== FLOATING WHATSAPP BUTTON ===== */}
       <a
         href="https://wa.me/260772231300"
         target="_blank"
