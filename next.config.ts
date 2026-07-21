@@ -1,26 +1,22 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // ✅ Increase API body size limit to 50MB
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb',
-    },
-  },
-  
-  // ✅ For Next.js 14+ with App Router
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '50mb',
     },
   },
-
   images: {
-    domains: ['img.clerk.com', 'res.cloudinary.com'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'img.clerk.com' },
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'encrypted-tbn0.gstatic.com' },
+    ],
   },
-  
   typescript: {
     ignoreBuildErrors: false,
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
