@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
@@ -14,7 +14,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'A+ Mentality',
   description: 'Learning Management System',
-  themeColor: '#2563eb', // ✅ PWA theme color (your main blue)
+};
+
+export const viewport: Viewport = {
+  themeColor: '#2563eb',
 };
 
 export default function RootLayout({
@@ -26,14 +29,19 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <head>
-          {/* PWA manifest & icons */}
+          {/* PWA manifest */}
           <link rel="manifest" href="/manifest.json" />
+          
+          {/* ✅ Browser favicon */}
+          <link rel="icon" href="/favicon.ico" sizes="any" />
           <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+          
+          {/* Optional: PNG favicons for better quality */}
+          <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png" />
+          <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png" />
         </head>
         <body className={`${inter.className} antialiased`}>
-          <Providers>
-            {children}
-          </Providers>
+          <Providers>{children}</Providers>
         </body>
       </html>
     </ClerkProvider>
