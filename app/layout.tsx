@@ -1,9 +1,11 @@
+// app/layout.tsx
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { ClerkProvider } from '@clerk/nextjs';
-import { Analytics } from '@vercel/analytics/next'; // ✅ Added
+import { Analytics } from '@vercel/analytics/next';
+import SimpleChat from '@/components/SimpleChat'; // ✅ Import your custom chat
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,19 +32,16 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <head>
-          {/* PWA manifest */}
           <link rel="manifest" href="/manifest.json" />
-          
-          {/* Browser favicon */}
           <link rel="icon" href="/favicon.ico" sizes="any" />
           <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-          <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png" />
-          <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png" />
         </head>
         <body className={`${inter.className} antialiased`}>
           <Providers>
             {children}
-            <Analytics /> {/* ✅ Added here */}
+            {/* ✅ Custom chat component */}
+            <SimpleChat />
+            <Analytics />
           </Providers>
         </body>
       </html>
