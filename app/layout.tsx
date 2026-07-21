@@ -4,17 +4,17 @@ import './globals.css';
 import { Providers } from './providers';
 import { ClerkProvider } from '@clerk/nextjs';
 
-// ✅ Add fallback and display options
 const inter = Inter({
   subsets: ['latin'],
-  display: 'swap', // ✅ Prevents layout shift
-  fallback: ['system-ui', 'Arial', 'sans-serif'], // ✅ Fallback fonts
-  adjustFontFallback: true, // ✅ Adjusts fallback font size
+  display: 'swap',
+  fallback: ['system-ui', 'Arial', 'sans-serif'],
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
   title: 'A+ Mentality',
   description: 'Learning Management System',
+  themeColor: '#2563eb', // ✅ PWA theme color (your main blue)
 };
 
 export default function RootLayout({
@@ -25,6 +25,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
+        <head>
+          {/* PWA manifest & icons */}
+          <link rel="manifest" href="/manifest.json" />
+          <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        </head>
         <body className={`${inter.className} antialiased`}>
           <Providers>
             {children}
