@@ -8,6 +8,7 @@ export default function SimpleChat() {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const sendMessage = async () => {
@@ -15,6 +16,7 @@ export default function SimpleChat() {
     
     setLoading(true);
     setResponse('');
+    setError(null);
     
     try {
       const res = await fetch('/api/chat', {
@@ -23,7 +25,7 @@ export default function SimpleChat() {
         body: JSON.stringify({ message }),
       });
 
-      if (!res.ok) throw new Error('Failed to get response');
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
 
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
@@ -39,7 +41,9 @@ export default function SimpleChat() {
         }
       }
     } catch (error: any) {
-      setResponse('Error: ' + error.message);
+      console.error('Chat error:', error);
+      setError('Failed to get response. Please try again.');
+      setResponse('');
     } finally {
       setLoading(false);
       setMessage('');
@@ -56,11 +60,12 @@ export default function SimpleChat() {
     setIsOpen(false);
     setResponse('');
     setMessage('');
+    setError(null);
   };
 
   return (
     <>
-      {/* 🧠 Floating Chat Button – Brain Icon */}
+      {/* Floating Chat Button – Responsive */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
@@ -71,9 +76,9 @@ export default function SimpleChat() {
           color: 'white',
           border: 'none',
           borderRadius: '9999px',
-          width: '60px',
-          height: '60px',
-          fontSize: '28px',
+          width: 'clamp(48px, 10vw, 60px)',
+          height: 'clamp(48px, 10vw, 60px)',
+          fontSize: 'clamp(20px, 5vw, 28px)',
           cursor: 'pointer',
           boxShadow: '0 4px 16px rgba(37,99,235,0.4)',
           zIndex: 999999,
@@ -81,6 +86,8 @@ export default function SimpleChat() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          touchAction: 'manipulation',
+          WebkitTapHighlightColor: 'transparent',
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'scale(1.08)';
@@ -95,15 +102,15 @@ export default function SimpleChat() {
         🧠
       </button>
 
-      {/* Chat Window */}
+      {/* Chat Window – Responsive */}
       {isOpen && (
         <div
           style={{
             position: 'fixed',
             bottom: '160px',
-            right: '24px',
-            width: '380px',
-            maxHeight: '500px',
+            right: 'clamp(12px, 4vw, 24px)',
+            width: 'min(92vw, 380px)',
+            maxHeight: 'min(70vh, 500px)',
             background: 'white',
             borderRadius: '16px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
@@ -112,23 +119,25 @@ export default function SimpleChat() {
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
+            animation: 'slideUp 0.2s ease-out',
           }}
         >
-          {/* Header with Brain Avatar */}
+          {/* Header */}
           <div
             style={{
               background: '#2563eb',
               color: 'white',
-              padding: '16px 20px',
+              padding: 'clamp(12px, 3vh, 16px) clamp(16px, 4vw, 20px)',
               fontWeight: 600,
-              fontSize: '16px',
+              fontSize: 'clamp(14px, 3vw, 16px)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              flexShrink: 0,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '24px' }}>🧠</span>
+              <span style={{ fontSize: 'clamp(20px, 4vw, 24px)' }}>🧠</span>
               <span>A+ Study Assistant</span>
             </div>
             <button
@@ -144,6 +153,7 @@ export default function SimpleChat() {
                 padding: '4px',
                 borderRadius: '4px',
                 transition: 'background 0.2s',
+                touchAction: 'manipulation',
               }}
               onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.2)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
@@ -157,24 +167,39 @@ export default function SimpleChat() {
           <div
             style={{
               flex: 1,
-              padding: '16px',
-              maxHeight: '320px',
+              padding: 'clamp(12px, 3vh, 16px)',
+              maxHeight: 'calc(70vh - 120px)',
               overflowY: 'auto',
               background: '#f9fafb',
-              minHeight: '100px',
+              minHeight: '80px',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
-            {response ? (
+            {error ? (
+              <div
+                style={{
+                  background: '#fee2e2',
+                  color: '#991b1b',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  fontSize: 'clamp(13px, 2.5vw, 14px)',
+                }}
+              >
+                ❌ {error}
+              </div>
+            ) : response ? (
               <div
                 style={{
                   background: 'white',
-                  padding: '12px 16px',
+                  padding: 'clamp(10px, 2.5vw, 12px) clamp(12px, 3vw, 16px)',
                   borderRadius: '12px',
                   border: '1px solid #e5e7eb',
                   color: '#1a202c',
-                  fontSize: '14px',
+                  fontSize: 'clamp(13px, 2.5vw, 14px)',
                   lineHeight: '1.6',
                   whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
                 }}
               >
                 {response}
@@ -185,7 +210,11 @@ export default function SimpleChat() {
                   color: '#9ca3af',
                   textAlign: 'center',
                   padding: '20px 0',
-                  fontSize: '14px',
+                  fontSize: 'clamp(13px, 2.5vw, 14px)',
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 {loading ? (
@@ -204,11 +233,12 @@ export default function SimpleChat() {
           {/* Input */}
           <div
             style={{
-              padding: '12px 16px',
+              padding: 'clamp(10px, 2vh, 12px) clamp(12px, 3vw, 16px)',
               borderTop: '1px solid #e5e7eb',
               background: 'white',
               display: 'flex',
               gap: '8px',
+              flexShrink: 0,
             }}
           >
             <input
@@ -218,11 +248,12 @@ export default function SimpleChat() {
               placeholder="Type your question..."
               style={{
                 flex: 1,
-                padding: '10px 14px',
+                padding: 'clamp(8px, 2vh, 10px) clamp(10px, 2.5vw, 14px)',
                 border: '1px solid #d1d5db',
                 borderRadius: '8px',
                 outline: 'none',
-                fontSize: '14px',
+                fontSize: 'clamp(13px, 2.5vw, 14px)',
+                minHeight: '40px',
               }}
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
               disabled={loading}
@@ -231,7 +262,7 @@ export default function SimpleChat() {
               onClick={sendMessage}
               disabled={loading || !message.trim()}
               style={{
-                padding: '10px 16px',
+                padding: 'clamp(8px, 2vh, 10px) clamp(14px, 3vw, 20px)',
                 background: '#2563eb',
                 color: 'white',
                 border: 'none',
@@ -242,6 +273,9 @@ export default function SimpleChat() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                minHeight: '40px',
+                touchAction: 'manipulation',
+                whiteSpace: 'nowrap',
               }}
               onMouseEnter={(e) => {
                 if (!loading) e.currentTarget.style.background = '#1d4ed8';
@@ -255,6 +289,37 @@ export default function SimpleChat() {
           </div>
         </div>
       )}
+
+      {/* Add global animation styles */}
+      <style>{`
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        @media (max-width: 480px) {
+          .chat-button {
+            bottom: 80px !important;
+            right: 16px !important;
+          }
+          .chat-window {
+            bottom: 140px !important;
+            right: 8px !important;
+            width: calc(100% - 16px) !important;
+            max-height: 60vh !important;
+            border-radius: 12px !important;
+          }
+        }
+      `}</style>
     </>
   );
 }
