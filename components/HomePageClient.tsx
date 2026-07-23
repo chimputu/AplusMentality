@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
@@ -40,57 +41,16 @@ export default function HomePageClient() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [learnerCount, setLearnerCount] = useState(0);
-  const [videoCount, setVideoCount] = useState(0);
-  const [mentorCount, setMentorCount] = useState(0);
-  const statsRef = useRef<HTMLDivElement>(null);
-  const [hasAnimated, setHasAnimated] = useState(false);
-
-  useEffect(() => {
-    if (!statsRef.current || hasAnimated) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setHasAnimated(true);
-          const learnerInterval = setInterval(() => {
-            setLearnerCount((prev) => {
-              if (prev < 2500) return prev + 25;
-              clearInterval(learnerInterval);
-              return 2500;
-            });
-          }, 10);
-          const videoInterval = setInterval(() => {
-            setVideoCount((prev) => {
-              if (prev < 120) return prev + 1;
-              clearInterval(videoInterval);
-              return 120;
-            });
-          }, 20);
-          const mentorInterval = setInterval(() => {
-            setMentorCount((prev) => {
-              if (prev < 18) return prev + 1;
-              clearInterval(mentorInterval);
-              return 18;
-            });
-          }, 50);
-        }
-      },
-      { threshold: 0.5 }
-    );
-    observer.observe(statsRef.current);
-    return () => observer.disconnect();
-  }, [hasAnimated]);
-
   // ============================================================
   // ZAMBIA 2026 DATA — Based on HEA Gazette & University Websites
   // ============================================================
 
   const topPublicUniversities = [
-    { name: 'University of Zambia', location: 'Lusaka', tier: 'ZQF Level 10' },
-    { name: 'Copperbelt University', location: 'Kitwe', tier: 'ZQF Level 10' },
-    { name: 'Mulungushi University', location: 'Kabwe', tier: 'ZQF Level 10' },
-    { name: 'Kwame Nkrumah University', location: 'Kabwe', tier: 'ZQF Level 10' },
-    { name: 'Chalimbana University', location: 'Lusaka', tier: 'ZQF Level 10' },
+    { name: 'University of Zambia', location: 'Lusaka' },
+    { name: 'Copperbelt University', location: 'Kitwe' },
+    { name: 'Mulungushi University', location: 'Kabwe' },
+    { name: 'Kwame Nkrumah University', location: 'Kabwe' },
+    { name: 'Chalimbana University', location: 'Lusaka' },
   ];
 
   const aLevelPathways = [
@@ -158,24 +118,19 @@ export default function HomePageClient() {
     setIsLoading(true);
 
     try {
-      // Dynamically import EmailJS only on the client
       const emailjs = await import('@emailjs/browser');
-
       emailjs.init('lq3xCtY4KtS7Z-3Wf');
-
       const templateParams = {
         user_email: email,
         to_email: 'kafiswegchimputu@gmail.com',
         subject: 'New A+ Mentality Subscriber!',
         message: `A new student has subscribed with email: ${email}`,
       };
-
       const response = await emailjs.send(
         'service_fadklbd',
         '__ejs-test-mail-service__',
         templateParams
       );
-
       console.log('Email sent successfully:', response);
       setIsSubscribed(true);
       setEmail('');
@@ -219,6 +174,35 @@ export default function HomePageClient() {
       router.push('/alevel');
     }
   };
+
+  // ---- Combined Course Data ----
+  const year1Courses = [
+    // Semester 1
+    { code: 'CHE111', title: 'Introductory Chemistry', description: 'Atomic structure, bonding, and stoichiometry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.7, students: 950 },
+    { code: 'BIO111', title: 'Bio-molecules and Cells', description: 'Cell biology, genetics, and molecular foundations.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1200 },
+    { code: 'PHY101', title: 'Fundamentals of Physics', description: 'Mechanics, thermodynamics, and waves.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.6, students: 820 },
+    { code: 'MSM111', title: 'Mathematical Methods I', description: 'Limits, derivatives, and integrals.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, students: 1500 },
+    // Semester 2
+    { code: 'BIO112', title: 'Molecular Biology and Genetics', description: 'DNA replication, transcription, and inheritance.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1100 },
+    { code: 'PHY102', title: 'Introductory Physics II', description: 'Electromagnetism, optics, and modern physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.5, students: 780 },
+    { code: 'MSM112', title: 'Mathematical Methods II', description: 'Differential equations, vectors, and matrices.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1300 },
+    { code: 'CHE112', title: 'Introductory Chemistry II', description: 'Organic chemistry, acids, and bases.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.6, students: 880 },
+  ];
+
+  const year2Courses = [
+    // Semester 1
+    { code: 'ICT402', title: 'Statistics and Empirical Methods for Computing', description: 'Statistical analysis, regression, and data interpretation.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 650 },
+    { code: 'ICT261', title: 'Intro to OOP and JAVA', description: 'Object-oriented programming principles with Java.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.8, students: 1800 },
+    { code: 'ICT221', title: 'Computer Architecture', description: 'CPU design, memory hierarchy, and instruction sets.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 920 },
+    { code: 'ICT241', title: 'Digital Design', description: 'Logic gates, flip-flops, and combinational circuits.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.4, students: 540 },
+    { code: 'ICT201', title: 'Discrete Mathematics', description: 'Logic, sets, relations, and graph theory.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1020 },
+    // Semester 2
+    { code: 'ICT222', title: 'Operating Systems', description: 'Process management, memory, and file systems.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 850 },
+    { code: 'ICT242', title: 'Networking and Communication', description: 'OSI model, TCP/IP, and network security.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 720 },
+    { code: 'ICT202', title: 'Data Structures and Algorithms', description: 'Stacks, queues, trees, and sorting algorithms.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.9, students: 2200 },
+    { code: 'ICT262', title: 'Intermediate Java Programming', description: 'Advanced OOP, collections, and multithreading.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.7, students: 1350 },
+    { code: 'ICT271', title: 'Databases', description: 'SQL, database design, and transaction management.', image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=200&fit=crop', rating: 4.8, students: 1600 },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
@@ -267,88 +251,98 @@ export default function HomePageClient() {
         )}
       </nav>
 
-      {/* ===== HERO WITH STACKED/STAGGERED TITLE — STRAIGHT ===== */}
+      {/* ===== HERO – IMPROVED BACKGROUND, NO BADGE, HONEST STATS, STATIC BRAIN ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         variants={fadeInUp}
-        className="pt-20 pb-10 md:pt-24 md:pb-12 bg-gradient-to-br from-blue-50 via-white to-blue-50"
+        className="relative pt-20 pb-10 md:pt-24 md:pb-12 overflow-hidden"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1600&h=800&fit=crop')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
       >
-        <div className="w-full px-2 sm:px-4">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
-            <div className="flex-[2] text-center lg:text-left">
-              {/* Badge - Build Better Habits. Achieve Higher Goals. */}
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-6">
-                <Sparkles className="w-4 h-4 mr-1" /> ⭐ Build Better Habits. Achieve Higher Goals.
-              </div>
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/70" />
 
-              {/* STACKED/STAGGERED TITLE — STRAIGHT (no rotation) */}
-              <div className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.3]">
+        <div className="relative w-full px-2 sm:px-4 z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
+            {/* Left – Text Content */}
+            <div className="flex-[2] text-center lg:text-left">
+              <div className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.3]">
                 <div className="flex items-start">
                   <span>Your Goals.</span>
                 </div>
                 <div className="flex items-start pl-6 sm:pl-8 lg:pl-10">
-                  <span className="text-blue-600">Our Tools.</span>
+                  <span className="text-blue-300">Our Tools.</span>
                 </div>
                 <div className="flex items-start pl-12 sm:pl-16 lg:pl-20">
                   <span>
-                    A+ <span className="text-blue-600">Results.</span>
+                    A+ <span className="text-blue-300">Results.</span>
                   </span>
                 </div>
               </div>
 
-              <p className="mt-6 text-lg text-gray-600 max-w-2xl">
+              <p className="mt-6 text-lg text-gray-200 max-w-2xl">
                 A+ Mentality helps students study smarter, stay organized, and track progress — 
                 so you can achieve more and stress less.
               </p>
+
               <div className="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
                 <Link href="/sign-up" className="bg-blue-600 text-white px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl">
                   Get Started Free
                 </Link>
-                <Link href="#explore" className="bg-gray-200 text-gray-800 px-8 py-3 rounded-full font-medium hover:bg-gray-300 transition">
+                <Link href="#explore" className="bg-white/20 backdrop-blur-sm text-white px-8 py-3 rounded-full font-medium hover:bg-white/30 transition border border-white/30">
                   Explore Features
                 </Link>
               </div>
+
+              <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-gray-300">
+                <span className="flex items-center gap-1">
+                  <span className="text-green-400">✓</span> Free to start
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-green-400">✓</span> Learn offline (PWA)
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-green-400">✓</span> Mentors available
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-green-400">✓</span> Built for Zambians
+                </span>
+              </div>
             </div>
 
+            {/* Right – Clean Hero Card with Static Brain */}
             <div className="flex-1 flex justify-center lg:justify-end">
               <div className="relative w-full max-w-sm lg:max-w-md">
-                <div className="absolute -inset-4 bg-gradient-to-r from-blue-300 to-blue-400 rounded-2xl blur-3xl opacity-30" />
-                <div className="relative bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-                  <div className="space-y-4" ref={statsRef}>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Users className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-800">Active Learners</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {learnerCount >= 1000 ? (learnerCount / 1000).toFixed(1) + 'K+' : learnerCount + '+'}
-                        </p>
-                      </div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-300 to-blue-400 rounded-2xl blur-3xl opacity-20" />
+                <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-xl text-center">
+                  
+                 
+
+                  <h3 className="text-2xl font-bold text-white mb-1">Built for Zambian Students</h3>
+                  <p className="text-blue-200 text-sm">By Zambians, for Zambians</p>
+
+                  <div className="mt-6 flex justify-center gap-8 text-sm">
+                    <div>
+                      <p className="font-bold text-white text-lg"></p>
+                      <p className="text-blue-200 text-xs">Quality Content</p>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <BookOpen className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-800">Educational Videos</p>
-                        <p className="text-2xl font-bold text-gray-900">{videoCount}+</p>
-                      </div>
+                    <div>
+                      <p className="font-bold text-white text-lg"></p>
+                      <p className="text-blue-200 text-xs">Expert Mentors</p>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Award className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-800">Certified Mentors</p>
-                        <p className="text-2xl font-bold text-gray-900">{mentorCount}+</p>
-                      </div>
+                    <div>
+                      <p className="font-bold text-white text-lg"></p>
+                      <p className="text-blue-200 text-xs">Learn Offline</p>
                     </div>
-                    <div className="border-t border-gray-100 pt-3 text-center text-xs text-gray-500">
-                      Based on HEA 2026 registered institutions data 
-                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/20 text-center text-xs text-blue-200">
+                     Join the A+ Mentality community today
                   </div>
                 </div>
               </div>
@@ -408,7 +402,7 @@ export default function HomePageClient() {
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
               <div>
                 <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full mb-2">
-                  📊 Welcome back, Future Achiever!
+                   Welcome back, Future Achiever!
                 </span>
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                   Keep going. Great things take time.
@@ -454,7 +448,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== TOP ZAMBIAN UNIVERSITIES ===== */}
+      {/* ===== TOP ZAMBIAN UNIVERSITIES – NO ZQF ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -467,7 +461,7 @@ export default function HomePageClient() {
             <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-gray-900">Top Zambian Universities</h2>
             <p className="mt-2 text-gray-600">
-              Institutions classified at ZQF Level 10 – approved to offer doctoral degree programmes 
+              The leading public universities in Zambia
             </p>
           </motion.div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -482,14 +476,11 @@ export default function HomePageClient() {
                 </div>
                 <h3 className="font-bold text-gray-800 text-sm">{uni.name}</h3>
                 <p className="text-xs text-gray-500">{uni.location}</p>
-                <span className="inline-block mt-1 text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                  {uni.tier}
-                </span>
               </motion.div>
             ))}
           </div>
           <motion.p variants={fadeInUp} className="text-center text-sm text-gray-500 mt-4">
-            Plus 12 private universities also classified at ZQF Level 10 
+            Plus 12 private universities also offering doctoral programmes
           </motion.p>
         </div>
       </motion.section>
@@ -633,7 +624,7 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ============================================================== */}
-      {/* ===== COURSES BY YEAR & SEMESTER (WITH IMAGES) ===== */}
+      {/* ===== COURSES BY YEAR (WITH IMAGE GROW ON HOVER) ===== */}
       {/* ============================================================== */}
       <motion.section
         initial="hidden"
@@ -652,31 +643,30 @@ export default function HomePageClient() {
             </p>
           </motion.div>
 
-          {/* ===== YEAR 1 - SEMESTER 1 ===== */}
+          {/* ===== YEAR 1 – Natural Sciences ===== */}
           <motion.div variants={fadeInUp} className="mb-12">
             <div className="flex flex-wrap items-center justify-between mb-4">
               <div>
                 <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
-                  2023/2024 - Semester 1
+                  Year 1 - Semester 1
                 </span>
                 <h3 className="text-2xl font-bold text-gray-900 mt-1">Natural Sciences Foundation</h3>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {[
-                { code: 'CHE111', title: 'Introductory Chemistry', description: 'Atomic structure, bonding, and stoichiometry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.7, students: 950 },
-                { code: 'BIO111', title: 'Bio-molecules and Cells', description: 'Cell biology, genetics, and molecular foundations.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1200 },
-                { code: 'PHY101', title: 'Fundamentals of Physics', description: 'Mechanics, thermodynamics, and waves.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.6, students: 820 },
-                { code: 'MSM111', title: 'Mathematical Methods I', description: 'Limits, derivatives, and integrals.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, students: 1500 },
-              ].map((course, idx) => (
+              {year1Courses.slice(0,4).map((course, idx) => (
                 <motion.div
                   key={idx}
                   variants={fadeInUp}
-                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
                   <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <img
+                      src={course.image}
+                      alt={course.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                     <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
                       {course.code}
                     </div>
@@ -709,31 +699,30 @@ export default function HomePageClient() {
             </div>
           </motion.div>
 
-          {/* ===== YEAR 1 - SEMESTER 2 ===== */}
+          {/* ===== YEAR 1 - Semester 2 ===== */}
           <motion.div variants={fadeInUp} className="mb-12">
             <div className="flex flex-wrap items-center justify-between mb-4">
               <div>
                 <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
-                  2023/2024 - Semester 2
+                  Year 1 - Semester 2
                 </span>
                 <h3 className="text-2xl font-bold text-gray-900 mt-1">Natural Sciences Advanced</h3>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {[
-                { code: 'BIO112', title: 'Molecular Biology and Genetics', description: 'DNA replication, transcription, and inheritance.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1100 },
-                { code: 'PHY102', title: 'Introductory Physics II', description: 'Electromagnetism, optics, and modern physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.5, students: 780 },
-                { code: 'MSM112', title: 'Mathematical Methods II', description: 'Differential equations, vectors, and matrices.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1300 },
-                { code: 'CHE112', title: 'Introductory Chemistry II', description: 'Organic chemistry, acids, and bases.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.6, students: 880 },
-              ].map((course, idx) => (
+              {year1Courses.slice(4).map((course, idx) => (
                 <motion.div
                   key={idx}
                   variants={fadeInUp}
-                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
                   <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <img
+                      src={course.image}
+                      alt={course.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                     <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
                       {course.code}
                     </div>
@@ -766,32 +755,30 @@ export default function HomePageClient() {
             </div>
           </motion.div>
 
-          {/* ===== YEAR 2 - SEMESTER 1 ===== */}
+          {/* ===== YEAR 2 - Semester 1 ===== */}
           <motion.div variants={fadeInUp} className="mb-12">
             <div className="flex flex-wrap items-center justify-between mb-4">
               <div>
                 <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
-                  2024/2025 - Semester 1
+                  Year 2 - Semester 1
                 </span>
                 <h3 className="text-2xl font-bold text-gray-900 mt-1">Computer Science Foundation</h3>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
-              {[
-                { code: 'ICT402', title: 'Statistics and Empirical Methods for Computing', description: 'Statistical analysis, regression, and data interpretation.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 650 },
-                { code: 'ICT261', title: 'Intro to OOP and JAVA', description: 'Object-oriented programming principles with Java.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.8, students: 1800 },
-                { code: 'ICT221', title: 'Computer Architecture', description: 'CPU design, memory hierarchy, and instruction sets.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 920 },
-                { code: 'ICT241', title: 'Digital Design', description: 'Logic gates, flip-flops, and combinational circuits.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.4, students: 540 },
-                { code: 'ICT201', title: 'Discrete Mathematics', description: 'Logic, sets, relations, and graph theory.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1020 },
-              ].map((course, idx) => (
+              {year2Courses.slice(0,5).map((course, idx) => (
                 <motion.div
                   key={idx}
                   variants={fadeInUp}
-                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
                   <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <img
+                      src={course.image}
+                      alt={course.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                     <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
                       {course.code}
                     </div>
@@ -824,32 +811,30 @@ export default function HomePageClient() {
             </div>
           </motion.div>
 
-          {/* ===== YEAR 2 - SEMESTER 2 ===== */}
+          {/* ===== YEAR 2 - Semester 2 ===== */}
           <motion.div variants={fadeInUp}>
             <div className="flex flex-wrap items-center justify-between mb-4">
               <div>
                 <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
-                  2024/2025 - Semester 2
+                  Year 2 - Semester 2
                 </span>
                 <h3 className="text-2xl font-bold text-gray-900 mt-1">Computer Science Advanced</h3>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
-              {[
-                { code: 'ICT222', title: 'Operating Systems', description: 'Process management, memory, and file systems.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 850 },
-                { code: 'ICT242', title: 'Networking and Communication', description: 'OSI model, TCP/IP, and network security.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 720 },
-                { code: 'ICT202', title: 'Data Structures and Algorithms', description: 'Stacks, queues, trees, and sorting algorithms.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.9, students: 2200 },
-                { code: 'ICT262', title: 'Intermediate Java Programming', description: 'Advanced OOP, collections, and multithreading.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.7, students: 1350 },
-                { code: 'ICT271', title: 'Databases', description: 'SQL, database design, and transaction management.', image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=200&fit=crop', rating: 4.8, students: 1600 },
-              ].map((course, idx) => (
+              {year2Courses.slice(5).map((course, idx) => (
                 <motion.div
                   key={idx}
                   variants={fadeInUp}
-                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
+                  className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
                   <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                    <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                    <img
+                      src={course.image}
+                      alt={course.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                     <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
                       {course.code}
                     </div>
@@ -884,7 +869,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== A-LEVEL COURSES ===== */}
+      {/* ===== A-LEVEL COURSES (with image grow on hover) ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -912,11 +897,15 @@ export default function HomePageClient() {
               <motion.div
                 key={course.id}
                 variants={fadeInUp}
-                className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition flex flex-col"
-                onClick={handleExplore}
+                className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
+                onClick={() => handleEnroll(course.code)}
               >
                 <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                  <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                  <img
+                    src={course.image}
+                    alt={course.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
                   <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
                     {course.code}
                   </div>
@@ -950,7 +939,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== ZAMBIAN GRADING SYSTEM ===== */}
+      {/* ===== ZAMBIAN GRADING & DEGREE CLASSIFICATION SYSTEM ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -962,37 +951,137 @@ export default function HomePageClient() {
           <div className="text-center mb-10">
             <Award className="w-12 h-12 text-blue-600 mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-gray-900">Zambian University Grading System</h2>
-            <p className="mt-2 text-gray-600">Based on the University of Zambia grading scale </p>
+            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
+              Based on the University of Zambia (UNZA) grading scale – used across Zambian universities
+            </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
-            <div className="bg-green-50 rounded-xl p-4 text-center border border-green-200">
-              <span className="text-2xl font-bold text-green-700">A+</span>
-              <p className="text-xs text-gray-600">86–100%</p>
-              <span className="text-[10px] text-green-600 font-medium">Distinction</span>
-            </div>
-            <div className="bg-green-50 rounded-xl p-4 text-center border border-green-200">
-              <span className="text-2xl font-bold text-green-700">A</span>
-              <p className="text-xs text-gray-600">76–85%</p>
-              <span className="text-[10px] text-green-600 font-medium">Distinction</span>
-            </div>
-            <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-200">
-              <span className="text-2xl font-bold text-blue-700">B+</span>
-              <p className="text-xs text-gray-600">66–75%</p>
-              <span className="text-[10px] text-blue-600 font-medium">Meritorius</span>
-            </div>
-            <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-200">
-              <span className="text-2xl font-bold text-blue-700">B</span>
-              <p className="text-xs text-gray-600">56–65%</p>
-              <span className="text-[10px] text-blue-600 font-medium">Very Satisfactory</span>
-            </div>
-            <div className="bg-yellow-50 rounded-xl p-4 text-center border border-yellow-200">
-              <span className="text-2xl font-bold text-yellow-700">C+</span>
-              <p className="text-xs text-gray-600">46–55%</p>
-              <span className="text-[10px] text-yellow-600 font-medium">Definite Pass</span>
+
+          {/* ===== GRADING POINTS SYSTEM ===== */}
+          <div className="mb-12">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Grading Points System</h3>
+            <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-blue-600 text-white">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Grade</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Points</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Percentage</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    <tr className="bg-green-50 hover:bg-green-100 transition">
+                      <td className="px-4 py-3 font-bold text-green-700">A+</td>
+                      <td className="px-4 py-3 font-semibold text-gray-800">2.5</td>
+                      <td className="px-4 py-3 text-gray-700">86 and above</td>
+                      <td className="px-4 py-3 text-green-700 font-medium">Upper Distinction</td>
+                    </tr>
+                    <tr className="bg-green-50/50 hover:bg-green-100 transition">
+                      <td className="px-4 py-3 font-bold text-green-700">A</td>
+                      <td className="px-4 py-3 font-semibold text-gray-800">2.0</td>
+                      <td className="px-4 py-3 text-gray-700">76 – 85</td>
+                      <td className="px-4 py-3 text-green-700 font-medium">Distinction</td>
+                    </tr>
+                    <tr className="bg-blue-50 hover:bg-blue-100 transition">
+                      <td className="px-4 py-3 font-bold text-blue-700">B+</td>
+                      <td className="px-4 py-3 font-semibold text-gray-800">1.5</td>
+                      <td className="px-4 py-3 text-gray-700">66 – 75</td>
+                      <td className="px-4 py-3 text-blue-700 font-medium">Merit</td>
+                    </tr>
+                    <tr className="bg-blue-50/50 hover:bg-blue-100 transition">
+                      <td className="px-4 py-3 font-bold text-blue-700">B</td>
+                      <td className="px-4 py-3 font-semibold text-gray-800">1.0</td>
+                      <td className="px-4 py-3 text-gray-700">60 – 65</td>
+                      <td className="px-4 py-3 text-blue-700 font-medium">Credit</td>
+                    </tr>
+                    <tr className="bg-yellow-50 hover:bg-yellow-100 transition">
+                      <td className="px-4 py-3 font-bold text-yellow-700">C+</td>
+                      <td className="px-4 py-3 font-semibold text-gray-800">0.5</td>
+                      <td className="px-4 py-3 text-gray-700">55 – 59</td>
+                      <td className="px-4 py-3 text-yellow-700 font-medium">Clear Pass</td>
+                    </tr>
+                    <tr className="bg-yellow-50/50 hover:bg-yellow-100 transition">
+                      <td className="px-4 py-3 font-bold text-yellow-700">C</td>
+                      <td className="px-4 py-3 font-semibold text-gray-800">0.25</td>
+                      <td className="px-4 py-3 text-gray-700">50 – 54</td>
+                      <td className="px-4 py-3 text-yellow-700 font-medium">Bare Pass</td>
+                    </tr>
+                    <tr className="bg-red-50 hover:bg-red-100 transition">
+                      <td className="px-4 py-3 font-bold text-red-700">D+</td>
+                      <td className="px-4 py-3 font-semibold text-gray-800">0</td>
+                      <td className="px-4 py-3 text-gray-700">45 – 49</td>
+                      <td className="px-4 py-3 text-red-700 font-medium">Bare Fail</td>
+                    </tr>
+                    <tr className="bg-red-50/50 hover:bg-red-100 transition">
+                      <td className="px-4 py-3 font-bold text-red-700">D</td>
+                      <td className="px-4 py-3 font-semibold text-gray-800">0</td>
+                      <td className="px-4 py-3 text-gray-700">44 and below</td>
+                      <td className="px-4 py-3 text-red-700 font-medium">Fail</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-          <p className="text-center text-xs text-gray-500 mt-4">
-            Minimum passing grade: C (36–39%) · Compensatory pass: CP (30–35%) 
+
+          {/* ===== DEGREE CLASSIFICATION SYSTEM ===== */}
+          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+              <h3 className="text-xl font-bold text-white text-center"> Degree Classification System</h3>
+              <p className="text-blue-100 text-sm text-center mt-1">
+                Based on cumulative points from 20 courses at 3rd &amp; 4th Year Levels (4-Year programmes)<br />
+                or 4th &amp; 5th Year Levels (5-Year programmes)
+              </p>
+            </div>
+            <div className="overflow-x-auto p-4">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2 border-gray-200">
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Cumulative Points</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Degree Classification</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  <tr className="hover:bg-green-50 transition">
+                    <td className="px-4 py-4 font-bold text-green-700">40 Points and above</td>
+                    <td className="px-4 py-4">
+                      <span className="inline-block bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-bold">
+                         Distinction
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-blue-50 transition">
+                    <td className="px-4 py-4 font-bold text-blue-700">30 – 39.9 Points</td>
+                    <td className="px-4 py-4">
+                      <span className="inline-block bg-blue-100 text-blue-800 px-4 py-1.5 rounded-full text-sm font-bold">
+                         Merit
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-yellow-50 transition">
+                    <td className="px-4 py-4 font-bold text-yellow-700">20 – 29.9 Points</td>
+                    <td className="px-4 py-4">
+                      <span className="inline-block bg-yellow-100 text-yellow-800 px-4 py-1.5 rounded-full text-sm font-bold">
+                        Credit
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 transition">
+                    <td className="px-4 py-4 font-bold text-gray-700">Less than 20 Points</td>
+                    <td className="px-4 py-4">
+                      <span className="inline-block bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-sm font-bold">
+                         Pass
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <p className="text-center text-xs text-gray-400 mt-6">
+            Based on the University of Zambia (UNZA) grading system • Used across Zambian universities
           </p>
         </div>
       </motion.section>
@@ -1064,12 +1153,12 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== TESTIMONIALS ===== */}
+      {/* ===== TESTIMONIALS – CONTINUOUS SLIDING MARQUEE ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        variants={staggerContainer}
+        variants={fadeInUp}
         className="py-12 bg-white"
       >
         <div className="w-full px-2 sm:px-4">
@@ -1077,22 +1166,42 @@ export default function HomePageClient() {
             <h2 className="text-3xl font-bold text-gray-900">What Our Community Says</h2>
             <p className="mt-2 text-gray-600">Real stories from real Zambian learners</p>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {testimonials.map((t) => (
-              <motion.div key={t.id} variants={fadeInUp} className="bg-gray-50 rounded-2xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition">
-                <div className="flex items-start space-x-1 text-yellow-500 mb-3">
-                  {Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
+
+          <div className="relative overflow-hidden">
+            <div className="absolute left-0 top-0 h-full w-20 bg-gradient-to-r from-white to-transparent z-10" />
+            <div className="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-white to-transparent z-10" />
+
+            <div
+              className="flex gap-8"
+              style={{
+                animation: 'testimonialScroll 45s linear infinite',
+                width: 'max-content',
+              }}
+            >
+              {[...testimonials, ...testimonials, ...testimonials].map((t, idx) => (
+                <div
+                  key={idx}
+                  className="bg-gray-50 rounded-2xl shadow-md p-6 border border-gray-200 min-w-[320px] max-w-[360px] flex-shrink-0"
+                >
+                  <div className="flex items-start space-x-1 text-yellow-500 mb-3">
+                    {Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
+                  </div>
+                  <div className="flex items-start space-x-1">
+                    <Quote className="w-8 h-8 text-blue-400 flex-shrink-0 opacity-50" />
+                    <p className="text-gray-700 italic text-sm">"{t.quote}"</p>
+                  </div>
+                  <div className="mt-4 flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                      {t.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">{t.name}</p>
+                      <p className="text-xs text-gray-500">{t.role}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-start space-x-1">
-                  <Quote className="w-8 h-8 text-blue-400 flex-shrink-0 opacity-50" />
-                  <p className="text-gray-700 italic">"{t.quote}"</p>
-                </div>
-                <div className="mt-4 flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">{t.name.charAt(0)}</div>
-                  <div><p className="text-sm font-medium text-gray-800">{t.name}</p><p className="text-xs text-gray-500">{t.role}</p></div>
-                </div>
-              </motion.div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </motion.section>
@@ -1152,20 +1261,22 @@ export default function HomePageClient() {
               </div>
             </div>
 
+            {/* Right – YouTube Video (Clean Embed) */}
             <div className="flex-1 w-full">
-              <div className="relative w-full rounded-2xl overflow-hidden shadow-xl border border-gray-200" style={{ paddingBottom: '56.25%' }}>
+              <div className="relative w-full rounded-xl overflow-hidden shadow-xl" style={{ paddingBottom: '56.25%' }}>
                 <iframe
                   className="absolute top-0 left-0 w-full h-full"
-                  src="https://www.youtube.com/embed/g6BtbIiJ_rc"
+                  src="https://www.youtube.com/embed/g6BtbIiJ_rc?start=36&autoplay=0&rel=0"
                   title="A+ Student Mentality - Best Study Motivation"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
+                  loading="lazy"
                 />
               </div>
-              <p className="text-center text-sm text-gray-500 mt-2">
+              <p className="text-center text-sm text-gray-500 mt-3">
                 Source: <a 
-                  href="https://www.youtube.com/watch?v=g6BtbIiJ_rc" 
+                  href="https://www.youtube.com/watch?v=g6BtbIiJ_rc&t=36s" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline"
@@ -1201,42 +1312,60 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== INSTITUTIONS MARQUEE (Continuous Right-to-Left) ===== */}
-      <section className="py-10 bg-white overflow-hidden">
+      {/* ===== PARTNER INSTITUTIONS – CARD MARQUEE (Continuous Sliding) ===== */}
+      <section className="py-16 bg-white">
         <div className="w-full">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Our Partner Institutions</h2>
-            <p className="text-sm text-gray-600">
-              Proudly collaborating with Zambia's leading universities
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-gray-900">Supported Universities</h2>
+            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
+              Aligning with  Zambia's leading academic and financial institutions to support students.
             </p>
           </div>
+
           <div className="relative overflow-hidden">
+            <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-white to-transparent z-10" />
+            <div className="absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-white to-transparent z-10" />
+
             <div
-              className="flex gap-8 items-center whitespace-nowrap"
+              className="flex gap-6 items-center"
               style={{
-                animation: 'scrollRightToLeft 30s linear infinite',
+                animation: 'scrollRightToLeft 35s linear infinite',
                 width: 'max-content',
               }}
             >
-              {[...institutions, ...institutions].map((inst, idx) => (
-                <div key={idx} className="flex items-center gap-3 flex-shrink-0">
-                  <img
-                    src={inst.logo}
-                    alt={inst.name}
-                    className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-blue-200 shadow-md"
-                  />
-                  <span className="text-sm font-medium text-gray-700">{inst.name}</span>
+              {[...institutions, ...institutions, ...institutions].map((inst, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white border border-gray-200 rounded-2xl p-6 text-center hover:shadow-xl hover:border-blue-300 hover:scale-[1.05] transition-all duration-300 flex flex-col items-center justify-center min-w-[160px] shadow-sm"
+                >
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-blue-200 shadow-md flex items-center justify-center bg-gray-50">
+                    <img
+                      src={inst.logo}
+                      alt={inst.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className="mt-3 text-sm font-semibold text-gray-800 leading-tight">{inst.name}</p>
+                  <span className="mt-1 text-[10px] text-gray-400">Supported Institution</span>
                 </div>
               ))}
             </div>
           </div>
-          <p className="text-center text-xs text-gray-400 mt-4">
-            Zambia has 213 Higher Education Institutions: 49 public and 164 private (HEA 2026)
-          </p>
+
+          <div className="text-center mt-8">
+            <Link
+              href="/partners"
+              className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium hover:bg-blue-700 transition shadow-md hover:shadow-lg"
+            >
+              View All Partners <span className="text-lg">→</span>
+            </Link>
+          </div>
+
+          
         </div>
       </section>
 
-      {/* ===== FOOTER (with WhatsApp) ===== */}
+      {/* ===== FOOTER ===== */}
       <footer className="bg-gray-900 text-gray-300">
         <div className="w-full px-2 sm:px-4 py-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
@@ -1332,15 +1461,15 @@ export default function HomePageClient() {
         </div>
       </footer>
 
-      {/* ===== KEYFRAMES FOR MARQUEE ===== */}
+      {/* ===== KEYFRAMES ===== */}
       <style jsx>{`
         @keyframes scrollRightToLeft {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes testimonialScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-33.333%); }
         }
       `}</style>
 
