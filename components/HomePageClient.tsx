@@ -83,17 +83,6 @@ export default function HomePageClient() {
     { name: 'ZCAS University', logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&h=150&fit=crop' },
   ];
 
-  const offerings = [
-    { icon: <Users className="w-8 h-8 text-blue-600" />, title: 'Expert Tutors', description: 'Learn from qualified professionals and industry experts.' },
-    { icon: <FileText className="w-8 h-8 text-blue-600" />, title: 'Lecture Slides', description: 'Access comprehensive slide decks for each course.' },
-    { icon: <ClipboardList className="w-8 h-8 text-blue-600" />, title: 'Past Exam Papers', description: 'Practice with past papers from Zambian universities.' },
-    { icon: <Book className="w-8 h-8 text-blue-600" />, title: 'E-Books & Notes', description: 'Download curated e-books and study notes.' },
-    { icon: <Video className="w-8 h-8 text-blue-600" />, title: 'Video Lessons', description: 'Engaging video tutorials on every topic.' },
-    { icon: <Award className="w-8 h-8 text-blue-600" />, title: 'Interactive Quizzes', description: 'Test your knowledge with instant feedback.' },
-    { icon: <MessageCircle className="w-8 h-8 text-blue-600" />, title: 'Mentorship & Support', description: 'Get one-on-one guidance from your mentors.' },
-    { icon: <Briefcase className="w-8 h-8 text-blue-600" />, title: 'Career Guidance', description: 'Prepare for your future with career resources.' },
-  ];
-
   const testimonials = [
     { id: 1, name: 'Sarah Mwansa', role: 'Medical Student, UNZA', quote: 'A+ Mentality has completely transformed how I learn. The curated videos and past papers keep me ahead of my peers.', rating: 5 },
     { id: 2, name: 'David Banda', role: 'Engineering Graduate, CBU', quote: 'The mentorship platform is a game-changer. I finally feel supported in my academic journey.', rating: 5 },
@@ -251,7 +240,7 @@ export default function HomePageClient() {
         )}
       </nav>
 
-      {/* ===== HERO – IMPROVED BACKGROUND, NO BADGE, HONEST STATS, STATIC BRAIN ===== */}
+      {/* ===== HERO – FACEBOOK-STYLE WELCOME ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -271,21 +260,15 @@ export default function HomePageClient() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
             {/* Left – Text Content */}
             <div className="flex-[2] text-center lg:text-left">
-              <div className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.3]">
-                <div className="flex items-start">
-                  <span>Your Goals.</span>
-                </div>
-                <div className="flex items-start pl-6 sm:pl-8 lg:pl-10">
-                  <span className="text-blue-300">Our Tools.</span>
-                </div>
-                <div className="flex items-start pl-12 sm:pl-16 lg:pl-20">
-                  <span>
-                    A+ <span className="text-blue-300">Results.</span>
-                  </span>
-                </div>
+              <div className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.2]">
+                <span className="block">Welcome to</span>
+                <span className="block text-blue-300">A+ Mentality</span>
+                <span className="block text-2xl sm:text-3xl lg:text-4xl font-normal text-gray-200 mt-2">
+                  Where <span className="text-blue-300 font-bold">A+</span> is possible.
+                </span>
               </div>
 
-              <p className="mt-6 text-lg text-gray-200 max-w-2xl">
+              <p className="mt-4 text-lg text-gray-200 max-w-2xl">
                 A+ Mentality helps students study smarter, stay organized, and track progress — 
                 so you can achieve more and stress less.
               </p>
@@ -304,7 +287,7 @@ export default function HomePageClient() {
                   <span className="text-green-400">✓</span> Free to start
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="text-green-400">✓</span> Learn offline (PWA)
+                  <span className="text-green-400">✓</span> Learn offline 
                 </span>
                 <span className="flex items-center gap-1">
                   <span className="text-green-400">✓</span> Mentors available
@@ -315,13 +298,14 @@ export default function HomePageClient() {
               </div>
             </div>
 
-            {/* Right – Clean Hero Card with Static Brain */}
+            {/* Right – Hero Card with Brain & Icons */}
             <div className="flex-1 flex justify-center lg:justify-end">
               <div className="relative w-full max-w-sm lg:max-w-md">
                 <div className="absolute -inset-4 bg-gradient-to-r from-blue-300 to-blue-400 rounded-2xl blur-3xl opacity-20" />
                 <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-xl text-center">
-                  
-                 
+                  <div className="flex justify-center mb-4">
+                    
+                  </div>
 
                   <h3 className="text-2xl font-bold text-white mb-1">Built for Zambian Students</h3>
                   <p className="text-blue-200 text-sm">By Zambians, for Zambians</p>
@@ -342,7 +326,7 @@ export default function HomePageClient() {
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-white/20 text-center text-xs text-blue-200">
-                     Join the A+ Mentality community today
+                    Join the A+ Mentality community today
                   </div>
                 </div>
               </div>
@@ -448,7 +432,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== TOP ZAMBIAN UNIVERSITIES – NO ZQF ===== */}
+      {/* ===== TOP ZAMBIAN UNIVERSITIES – FULL-WIDTH LOGO CARDS ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -464,24 +448,40 @@ export default function HomePageClient() {
               The leading public universities in Zambia
             </p>
           </motion.div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {topPublicUniversities.map((uni, idx) => (
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
+            {[
+              { name: 'University of Zambia', location: 'Lusaka', logo: '/unza.png' },
+              { name: 'Copperbelt University', location: 'Kitwe', logo: '/cbu.png' },
+              { name: 'Mulungushi University', location: 'Kabwe', logo: '/mulu.png' },
+              { name: 'Kwame Nkrumah University', location: 'Kabwe', logo: '/nku.png' },
+              { name: 'Chalimbana University', location: 'Lusaka', logo: '/chau.png' },
+            ].map((uni, idx) => (
               <motion.div
                 key={idx}
                 variants={fadeInUp}
-                className="bg-gray-50 rounded-xl p-4 text-center border border-gray-200 hover:shadow-md transition hover:border-blue-300"
+                className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-blue-300 hover:scale-[1.04] transition-all duration-300 flex flex-col shadow-sm"
               >
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <span className="text-blue-600 font-bold text-lg">{uni.name.charAt(0)}</span>
+                <div className="w-full h-36 md:h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+                  <Image
+                    src={uni.logo}
+                    alt={uni.name}
+                    width={180}
+                    height={120}
+                    className="object-contain w-full h-full p-2"
+                  />
                 </div>
-                <h3 className="font-bold text-gray-800 text-sm">{uni.name}</h3>
-                <p className="text-xs text-gray-500">{uni.location}</p>
+                <div className="p-4 text-center border-t border-gray-100">
+                  <h3 className="font-bold text-gray-800 text-sm md:text-base group-hover:text-blue-600 transition-colors">
+                    {uni.name}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">{uni.location}</p>
+                </div>
               </motion.div>
             ))}
           </div>
-          <motion.p variants={fadeInUp} className="text-center text-sm text-gray-500 mt-4">
-            Plus 12 private universities also offering doctoral programmes
-          </motion.p>
+
+         
         </div>
       </motion.section>
 
@@ -518,7 +518,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== WHAT WE OFFER ===== */}
+      {/* ===== WHAT WE OFFER – FIXED IMAGES WITH FALLBACK (Mentorship & Support fixed) ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -534,14 +534,77 @@ export default function HomePageClient() {
               Everything you need to succeed in your academic journey – all in one place.
             </p>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {offerings.map((item, idx) => (
-              <motion.div key={idx} variants={fadeInUp} className="bg-white rounded-xl p-6 text-center shadow-md hover:shadow-xl transition border border-blue-100/50">
-                <div className="flex justify-center mb-4">
-                  <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">{item.icon}</div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {[
+              {
+                title: 'Expert Tutors',
+                description: 'Learn from qualified professionals.',
+                image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=400&fit=crop'
+              },
+              {
+                title: 'Lecture Slides',
+                description: 'Comprehensive slide decks for each course.',
+                image: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=600&h=400&fit=crop'
+              },
+              {
+                title: 'Past Exam Papers',
+                description: 'Practice with past papers from Zambia.',
+                image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=400&fit=crop'
+              },
+              {
+                title: 'E-Books & Notes',
+                description: 'Curated e-books and study notes.',
+                image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&h=400&fit=crop'
+              },
+              {
+                title: 'Video Lessons',
+                description: 'Engaging tutorials on every topic.',
+                image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=400&fit=crop'
+              },
+              {
+                title: 'Interactive Quizzes',
+                description: 'Test your knowledge with instant feedback.',
+                image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&h=400&fit=crop'
+              },
+              {
+                title: 'Mentorship & Support',
+                description: 'One-on-one guidance from mentors.',
+                // ✅ Fixed URL – more reliable image of mentorship
+                image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=400&fit=crop'
+              },
+              {
+                title: 'Career Guidance',
+                description: 'Prepare for your future with career resources.',
+                image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&h=400&fit=crop'
+              },
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                variants={fadeInUp}
+                className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.03] h-56 cursor-pointer"
+              >
+                {/* Background Image with Fallback Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-blue-400">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                    priority={idx < 4}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800">{item.title}</h3>
-                <p className="text-gray-600 text-sm mt-2">{item.description}</p>
+
+                {/* Content */}
+                <div className="relative h-full flex flex-col justify-end p-5 text-white">
+                  <h3 className="text-lg font-bold">{item.title}</h3>
+                  <p className="text-sm text-white/80 mt-1">{item.description}</p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -951,9 +1014,7 @@ export default function HomePageClient() {
           <div className="text-center mb-10">
             <Award className="w-12 h-12 text-blue-600 mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-gray-900">Zambian University Grading System</h2>
-            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
-              Based on the University of Zambia (UNZA) grading scale – used across Zambian universities
-            </p>
+            
           </div>
 
           {/* ===== GRADING POINTS SYSTEM ===== */}
@@ -1028,7 +1089,7 @@ export default function HomePageClient() {
           {/* ===== DEGREE CLASSIFICATION SYSTEM ===== */}
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-              <h3 className="text-xl font-bold text-white text-center"> Degree Classification System</h3>
+              <h3 className="text-xl font-bold text-white text-center">Degree Classification System</h3>
               <p className="text-blue-100 text-sm text-center mt-1">
                 Based on cumulative points from 20 courses at 3rd &amp; 4th Year Levels (4-Year programmes)<br />
                 or 4th &amp; 5th Year Levels (5-Year programmes)
@@ -1063,7 +1124,7 @@ export default function HomePageClient() {
                     <td className="px-4 py-4 font-bold text-yellow-700">20 – 29.9 Points</td>
                     <td className="px-4 py-4">
                       <span className="inline-block bg-yellow-100 text-yellow-800 px-4 py-1.5 rounded-full text-sm font-bold">
-                        Credit
+                         Credit
                       </span>
                     </td>
                   </tr>
@@ -1071,7 +1132,7 @@ export default function HomePageClient() {
                     <td className="px-4 py-4 font-bold text-gray-700">Less than 20 Points</td>
                     <td className="px-4 py-4">
                       <span className="inline-block bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-sm font-bold">
-                         Pass
+                        Pass
                       </span>
                     </td>
                   </tr>
@@ -1080,9 +1141,7 @@ export default function HomePageClient() {
             </div>
           </div>
 
-          <p className="text-center text-xs text-gray-400 mt-6">
-            Based on the University of Zambia (UNZA) grading system • Used across Zambian universities
-          </p>
+          
         </div>
       </motion.section>
 
@@ -1264,26 +1323,17 @@ export default function HomePageClient() {
             {/* Right – YouTube Video (Clean Embed) */}
             <div className="flex-1 w-full">
               <div className="relative w-full rounded-xl overflow-hidden shadow-xl" style={{ paddingBottom: '56.25%' }}>
-                <iframe
-                  className="absolute top-0 left-0 w-full h-full"
-                  src="https://www.youtube.com/embed/g6BtbIiJ_rc?start=36&autoplay=0&rel=0"
-                  title="A+ Student Mentality - Best Study Motivation"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  loading="lazy"
-                />
+               <iframe
+  className="absolute top-0 left-0 w-full h-full"
+  src="https://www.youtube.com/embed/g6BtbIiJ_rc?start=36"
+  title="A+ Student Mentality - Best Study Motivation"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+  loading="lazy"
+/>
               </div>
-              <p className="text-center text-sm text-gray-500 mt-3">
-                Source: <a 
-                  href="https://www.youtube.com/watch?v=g6BtbIiJ_rc&t=36s" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  A+ Student Mentality - Best Study Motivation
-                </a>
-              </p>
+              
             </div>
           </div>
         </div>
@@ -1316,9 +1366,9 @@ export default function HomePageClient() {
       <section className="py-16 bg-white">
         <div className="w-full">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900">Supported Universities</h2>
+            <h2 className="text-3xl font-bold text-gray-900">Our Partners</h2>
             <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
-              Aligning with  Zambia's leading academic and financial institutions to support students.
+              Collaborating with Zambia's leading academic and financial institutions to support students.
             </p>
           </div>
 
@@ -1346,7 +1396,7 @@ export default function HomePageClient() {
                     />
                   </div>
                   <p className="mt-3 text-sm font-semibold text-gray-800 leading-tight">{inst.name}</p>
-                  <span className="mt-1 text-[10px] text-gray-400">Supported Institution</span>
+                  <span className="mt-1 text-[10px] text-gray-400">Partner Institution</span>
                 </div>
               ))}
             </div>
@@ -1361,7 +1411,9 @@ export default function HomePageClient() {
             </Link>
           </div>
 
-          
+          <p className="text-center text-xs text-gray-400 mt-6">
+            Zambia has 213 Higher Education Institutions: 49 public and 164 private (HEA 2026)
+          </p>
         </div>
       </section>
 
