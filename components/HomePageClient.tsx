@@ -263,7 +263,7 @@ export default function HomePageClient() {
               <div className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.2]">
                 <span className="block">Your Goal.</span>
                 <span className="block text-blue-300 ml-6">Our tools.</span>
-                <span className="block text-2xl sm:text-3xl lg:text-6xl font-normal text-gray-200 mt-2 ml-7">
+                <span className="block text-2xl sm:text-3xl lg:text-6xl font-normal text-gray-200 mt-2 ml-10">
                   Your <span className="text-blue-300 font-bold lg:text-6xl">A+</span> result.
                 </span>
               </div>
