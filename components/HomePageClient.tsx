@@ -261,15 +261,15 @@ export default function HomePageClient() {
             {/* Left – Text Content */}
             <div className="flex-[2] text-center lg:text-left">
               <div className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.2]">
-                <span className="block">Welcome to</span>
-                <span className="block text-blue-300">A+ Mentality</span>
-                <span className="block text-2xl sm:text-3xl lg:text-4xl font-normal text-gray-200 mt-2">
-                  Where <span className="text-blue-300 font-bold">A+</span> is possible.
+                <span className="block">Your Goal.</span>
+                <span className="block text-blue-300 ml-6">Our tools.</span>
+                <span className="block text-2xl sm:text-3xl lg:text-4xl font-normal text-gray-200 mt-2 ml-7">
+                  Your<span className="text-blue-300 font-bold">A+</span> result.
                 </span>
               </div>
 
               <p className="mt-4 text-lg text-gray-200 max-w-2xl">
-                A+ Mentality helps students study smarter, stay organized, and track progress — 
+                A+ Mentality helps students study smarter, stay organized, and track progress 
                 so you can achieve more and stress less.
               </p>
 
