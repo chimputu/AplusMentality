@@ -1,18 +1,19 @@
 // app/layout.tsx
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from '@vercel/analytics/next';
-import SimpleChat from '@/components/SimpleChat'; // ✅ Import your custom chat
+import SimpleChat from '@/components/SimpleChat';
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  fallback: ['system-ui', 'Arial', 'sans-serif'],
-  adjustFontFallback: true,
-});
+// ✅ Import Inter font weights from @fontsource
+import '@fontsource/inter/400.css';   // Regular
+import '@fontsource/inter/500.css';   // Medium
+import '@fontsource/inter/600.css';   // SemiBold
+import '@fontsource/inter/700.css';   // Bold
+
+// No need to define 'inter' with next/font – we use a CSS class instead.
+// We'll use the class name 'font-sans' which Tailwind maps to Inter.
 
 export const metadata: Metadata = {
   title: 'A+ Mentality',
@@ -36,10 +37,9 @@ export default function RootLayout({
           <link rel="icon" href="/favicon.ico" sizes="any" />
           <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         </head>
-        <body className={`${inter.className} antialiased`}>
+        <body className="font-sans antialiased">
           <Providers>
             {children}
-            {/* ✅ Custom chat component */}
             <SimpleChat />
             <Analytics />
           </Providers>
