@@ -1,7 +1,8 @@
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Plus, ExternalLink, Pencil, Trash2, Eye } from 'lucide-react';
+import { Plus, ExternalLink, Pencil, Eye } from 'lucide-react';
+import DeleteSlideButton from './DeleteSlideButton';
 
 export default async function AdminLectureSlidesPage() {
   await requireAuth(['ADMIN']);
@@ -65,17 +66,7 @@ export default async function AdminLectureSlidesPage() {
                   >
                     <ExternalLink className="w-4 h-4" /> Open
                   </a>
-                  <button
-                    className="text-red-600 hover:underline flex items-center gap-1"
-                    onClick={async () => {
-                      if (confirm('Delete this slide?')) {
-                        await fetch(`/api/lecture-slides/${slide.id}`, { method: 'DELETE' });
-                        window.location.reload();
-                      }
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4" /> Delete
-                  </button>
+                  <DeleteSlideButton slideId={slide.id} />
                 </td>
               </tr>
             ))}

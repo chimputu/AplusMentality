@@ -37,7 +37,11 @@ model User {
   id             String         @id @default(cuid())
   clerkId        String         @unique
   email          String         @unique
+  username       String?        @unique
+  firstName      String?
+  lastName       String?
   name           String?
+  imageUrl       String?
   role           Role           @default(STUDENT)
 
   // Relations
@@ -176,18 +180,18 @@ model Lesson {
 }
 
 // ============================================
-// ✅ UPDATED LECTURE SLIDES (with file support)
+// LECTURE SLIDES
 // ============================================
 model LectureSlide {
   id          String   @id @default(cuid())
   title       String
   description String?
-  embedUrl    String?   // Google Slides embed URL (optional, only for Google Slides)
-  fileUrl     String?   // URL for uploaded PDF (optional)
-  contentType String?   // 'google_slides' or 'pdf'
+  embedUrl    String?
+  fileUrl     String?
+  contentType String?
   order       Int      @default(0)
-  category    String?   // e.g., "Computer Science", "Mathematics"
-  courseId    String?   // optional link to a course
+  category    String?
+  courseId    String?
   course      Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
@@ -202,7 +206,7 @@ model LectureSlide {
 }
 
 // ============================================
-// QUIZZES (Google Forms + Files)
+// QUIZZES
 // ============================================
 model Quiz {
   id          String   @id @default(cuid())
@@ -212,7 +216,7 @@ model Quiz {
   formUrl     String
   dueDate     DateTime?
   fileUrl     String?
-  contentType String?   // 'google_form', 'pdf', 'image', 'past_paper'
+  contentType String?
 
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
@@ -250,7 +254,7 @@ model QuizSubmission {
 }
 
 // ============================================
-// TESTS (Google Forms + Files)
+// TESTS
 // ============================================
 model Test {
   id          String   @id @default(cuid())
@@ -261,7 +265,7 @@ model Test {
   dueDate     DateTime?
   maxScore    Int?
   fileUrl     String?
-  contentType String?   // 'google_form', 'pdf', 'image', 'past_paper'
+  contentType String?
 
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
@@ -298,7 +302,7 @@ model TestSubmission {
 }
 
 // ============================================
-// ASSIGNMENTS (Google Forms + Files)
+// ASSIGNMENTS
 // ============================================
 model Assignment {
   id          String   @id @default(cuid())
@@ -309,7 +313,7 @@ model Assignment {
   dueDate     DateTime?
   maxScore    Int?
   fileUrl     String?
-  contentType String?   // 'google_form', 'pdf', 'image', 'past_paper'
+  contentType String?
 
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
@@ -366,7 +370,7 @@ model Enrollment {
 }
 
 // ============================================
-// ✅ LESSON COMPLETIONS
+// LESSON COMPLETIONS
 // ============================================
 model LessonCompletion {
   id          String   @id @default(cuid())
