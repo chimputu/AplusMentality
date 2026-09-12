@@ -30,7 +30,11 @@ interface User {
   id: string;
   clerkId: string;
   email: string;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
   name: string | null;
+  imageUrl: string | null;
   role: 'ADMIN' | 'STUDENT';
   createdAt: string;
   enrollments?: any[];

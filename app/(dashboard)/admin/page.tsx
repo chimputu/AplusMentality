@@ -28,7 +28,11 @@ export default async function AdminPage({
         id: true,
         clerkId: true,
         email: true,
+        username: true,      // ← added
+        firstName: true,     // ← added
+        lastName: true,      // ← added
         name: true,
+        imageUrl: true,      // ← added
         role: true,
         createdAt: true,
       },
