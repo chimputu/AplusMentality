@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  User, 
-  Mail, 
-  Calendar, 
-  ShieldCheck, 
+import {
+  User,
+  Mail,
+  Calendar,
+  ShieldCheck,
   Trash2,
   Search,
   BookOpen,
@@ -15,14 +15,19 @@ import {
   UserX,
   Users,
   GraduationCap,
+  AtSign,
 } from 'lucide-react';
+import { formatDate } from '@/lib/formatDate';
 
-// ✅ Make properties optional for flexibility
 interface User {
   id: string;
   clerkId: string;
   email: string;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
   name: string | null;
+  imageUrl: string | null;
   role: 'ADMIN' | 'STUDENT';
   createdAt: string;
   enrollments?: any[];
@@ -40,6 +45,22 @@ interface User {
 
 interface UserManagementProps {
   users: User[];
+}
+
+/** Consistent display name with fallback chain: username → name → email prefix */
+function getDisplayName(user: User): string {
+  if (user.username) return `@${user.username}`;
+  if (user.name) return user.name;
+  return user.email.split('@')[0];
+}
+
+/** Real name for subtext, only if different from the display name */
+function getSecondaryName(user: User): string | null {
+  if (!user.username && !user.name) return null;
+  const real = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
+  if (real && real !== user.name) return real;
+  if (user.name && user.username) return user.name;
+  return null;
 }
 
 export default function UserManagement({ users }: UserManagementProps) {
@@ -94,22 +115,25 @@ export default function UserManagement({ users }: UserManagementProps) {
   };
 
   const filteredUsers = users.filter((user) => {
-    const matchesSearch = 
-      (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    
+    const q = searchTerm.toLowerCase();
+    const matchesSearch =
+      (user.name?.toLowerCase() || '').includes(q) ||
+      (user.username?.toLowerCase() || '').includes(q) ||
+      (user.firstName?.toLowerCase() || '').includes(q) ||
+      (user.lastName?.toLowerCase() || '').includes(q) ||
+      user.email.toLowerCase().includes(q);
+
     const matchesRole = filterRole === 'ALL' || user.role === filterRole;
-    
+
     return matchesSearch && matchesRole;
   });
 
   const stats = {
     total: users.length,
-    admins: users.filter(u => u.role === 'ADMIN').length,
-    students: users.filter(u => u.role === 'STUDENT').length,
+    admins: users.filter((u) => u.role === 'ADMIN').length,
+    students: users.filter((u) => u.role === 'STUDENT').length,
   };
 
-  // Calculate total enrollments safely
   const totalEnrollments = users.reduce((acc, u) => acc + (u._count?.enrollments || 0), 0);
 
   if (users.length === 0) {
@@ -170,7 +194,7 @@ export default function UserManagement({ users }: UserManagementProps) {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="text"
-            placeholder="Search users by name or email..."
+            placeholder="Search by username, name, or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -227,94 +251,122 @@ export default function UserManagement({ users }: UserManagementProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
-                        <User className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              {filteredUsers.map((user) => {
+                const displayName = getDisplayName(user);
+                const secondaryName = getSecondaryName(user);
+
+                return (
+                  <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        {user.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={user.imageUrl}
+                            alt={displayName}
+                            className="w-9 h-9 rounded-full object-cover flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-medium text-gray-500 dark:text-gray-300">
+                            {displayName.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-800 dark:text-gray-100 truncate">
+                            {user.username ? (
+                              <span className="inline-flex items-center gap-1">
+                                <AtSign className="w-3 h-3 text-gray-400" />
+                                {user.username}
+                              </span>
+                            ) : (
+                              displayName
+                            )}
+                          </p>
+                          {secondaryName && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {secondaryName}
+                            </p>
+                          )}
+                          <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                            {user.clerkId.substring(0, 12)}…
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-800 dark:text-gray-100">
-                          {user.name || 'Unnamed User'}
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">{user.clerkId.substring(0, 12)}...</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        <span className="text-gray-600 dark:text-gray-300 truncate">{user.email}</span>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-600 dark:text-gray-300">{user.email}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                      user.role === 'ADMIN'
-                        ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
-                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                    }`}>
-                      {user.role === 'ADMIN' ? (
-                        <ShieldCheck className="w-3 h-3 inline mr-1" />
-                      ) : (
-                        <GraduationCap className="w-3 h-3 inline mr-1" />
-                      )}
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                      <span className="flex items-center gap-1">
-                        <BookOpen className="w-3 h-3" />
-                        {user._count?.enrollments || 0}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                        user.role === 'ADMIN'
+                          ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                          : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                      }`}>
+                        {user.role === 'ADMIN' ? (
+                          <ShieldCheck className="w-3 h-3 inline mr-1" />
+                        ) : (
+                          <GraduationCap className="w-3 h-3 inline mr-1" />
+                        )}
+                        {user.role}
                       </span>
-                      <span className="flex items-center gap-1">
-                        <Video className="w-3 h-3" />
-                        {user._count?.videos || 0}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <FileQuestion className="w-3 h-3" />
-                        {(user._count?.quizzes || 0) + (user._count?.tests || 0)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(user.createdAt).toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      {user.role === 'ADMIN' ? (
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="w-3 h-3" />
+                          {user._count?.enrollments || 0}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Video className="w-3 h-3" />
+                          {user._count?.videos || 0}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <FileQuestion className="w-3 h-3" />
+                          {(user._count?.quizzes || 0) + (user._count?.tests || 0)}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs">
+                        <Calendar className="w-4 h-4" />
+                        {formatDate(user.createdAt)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
+                        {user.role === 'ADMIN' ? (
+                          <button
+                            onClick={() => handleRoleChange(user.clerkId, 'STUDENT')}
+                            disabled={updating === user.clerkId}
+                            className="flex items-center gap-1 text-xs px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 rounded-lg transition disabled:opacity-50"
+                          >
+                            <UserX className="w-3 h-3" />
+                            Demote
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleRoleChange(user.clerkId, 'ADMIN')}
+                            disabled={updating === user.clerkId}
+                            className="flex items-center gap-1 text-xs px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-lg transition disabled:opacity-50"
+                          >
+                            <Award className="w-3 h-3" />
+                            Promote
+                          </button>
+                        )}
                         <button
-                          onClick={() => handleRoleChange(user.clerkId, 'STUDENT')}
-                          disabled={updating === user.clerkId}
-                          className="flex items-center gap-1 text-xs px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 rounded-lg transition disabled:opacity-50"
+                          onClick={() => handleDeleteUser(user.clerkId)}
+                          className="flex items-center gap-1 text-xs px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition"
                         >
-                          <UserX className="w-3 h-3" />
-                          Demote
+                          <Trash2 className="w-3 h-3" />
                         </button>
-                      ) : (
-                        <button
-                          onClick={() => handleRoleChange(user.clerkId, 'ADMIN')}
-                          disabled={updating === user.clerkId}
-                          className="flex items-center gap-1 text-xs px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-lg transition disabled:opacity-50"
-                        >
-                          <Award className="w-3 h-3" />
-                          Promote
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleDeleteUser(user.clerkId)}
-                        className="flex items-center gap-1 text-xs px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
