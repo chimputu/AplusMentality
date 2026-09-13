@@ -12,16 +12,21 @@ import '@fontsource/inter/500.css';   // Medium
 import '@fontsource/inter/600.css';   // SemiBold
 import '@fontsource/inter/700.css';   // Bold
 
-// No need to define 'inter' with next/font – we use a CSS class instead.
-// We'll use the class name 'font-sans' which Tailwind maps to Inter.
-
 export const metadata: Metadata = {
   title: 'A+ Mentality',
   description: 'Learning Management System',
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/icons/icon-192x192.png',
+  },
 };
 
 export const viewport: Viewport = {
   themeColor: '#2563eb',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -32,11 +37,6 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <head>
-          <link rel="manifest" href="/manifest.json" />
-          <link rel="icon" href="/favicon.ico" sizes="any" />
-          <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        </head>
         <body className="font-sans antialiased">
           <Providers>
             {children}
