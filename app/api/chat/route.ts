@@ -14,32 +14,45 @@ const openrouter = createOpenRouter({
   },
 });
 
-// --- Free model selection ---
+// ============================================================
+// FREE MODEL SELECTION
+// ============================================================
 let freeModelCache: { model: string | null; timestamp: number } = { model: null, timestamp: 0 };
+
 const fallbackFreeModels = [
+  'qwen/qwen-2.5-7b-instruct:free',
   'meta-llama/llama-3.1-8b-instruct:free',
   'mistralai/mistral-7b-instruct:free',
   'google/gemma-2-9b-it:free',
-  'nousresearch/hermes-3-llama-3.1-8b:free',
 ];
 
 async function getFreeModel(): Promise<string> {
-  const ttl = 10 * 60 * 1000;
-  if (freeModelCache.model && Date.now() - freeModelCache.timestamp < ttl) {
+  const TTL = 5 * 60 * 1000; // 5 minutes
+  if (freeModelCache.model && Date.now() - freeModelCache.timestamp < TTL) {
     return freeModelCache.model;
   }
+
   try {
-    const response = await fetch('https://openrouter.ai/api/v1/models');
-    const data = await response.json();
+    const res = await fetch('https://openrouter.ai/api/v1/models');
+    const data = await res.json();
     const freeModels = data.data.filter((m: any) => m.id.includes(':free'));
-    const chosen = freeModels.find((m: any) => m.context_length > 8000) || freeModels[0];
-    if (chosen) {
-      freeModelCache = { model: chosen.id, timestamp: Date.now() };
-      return chosen.id;
+
+    const preferred = freeModels.find(
+      (m: any) => /qwen|llama|mistral|gemma|hermes/i.test(m.id) && m.context_length > 8000
+    );
+    if (preferred) {
+      freeModelCache = { model: preferred.id, timestamp: Date.now() };
+      return preferred.id;
+    }
+
+    if (freeModels[0]) {
+      freeModelCache = { model: freeModels[0].id, timestamp: Date.now() };
+      return freeModels[0].id;
     }
   } catch (e) {
-    console.warn('Failed to fetch free model list, using fallback:', e);
+    console.warn('Failed to fetch free models:', e);
   }
+
   return fallbackFreeModels[Math.floor(Math.random() * fallbackFreeModels.length)];
 }
 
@@ -254,7 +267,6 @@ export async function POST(req: Request) {
   try {
     const { userId } = await auth();
     const isSignedIn = !!userId;
-
     const { message } = await req.json();
 
     if (!message) {
@@ -263,13 +275,13 @@ export async function POST(req: Request) {
 
     const systemPrompt = isSignedIn ? APP_PROMPT : LANDING_PROMPT;
     const cacheKey = `chat:${isSignedIn ? 'app-mulu' : 'landing'}:${normalizeMessage(message)}`;
-    const cachedResponse = cache.get(cacheKey);
 
-    if (cachedResponse) {
-      const encoder = new TextEncoder();
+    // ---- 1. Instant cached response if available ----
+    const cached = cache.get(cacheKey);
+    if (cached) {
       const stream = new ReadableStream({
         start(controller) {
-          controller.enqueue(encoder.encode(cachedResponse));
+          controller.enqueue(new TextEncoder().encode(cached));
           controller.close();
         },
       });
@@ -278,45 +290,41 @@ export async function POST(req: Request) {
       });
     }
 
+    // ---- 2. Pick a free model ----
     const model = await getFreeModel();
 
+    // ---- 3. Stream the response ----
     const result = streamText({
       model: openrouter(model),
       system: systemPrompt,
       prompt: message,
-      temperature: 0.7,
+      temperature: 0.6,
+      maxOutputTokens: 600,
     });
 
-    let fullResponse = '';
-    const chunks: Uint8Array[] = [];
-
-    const stream = result.toTextStreamResponse();
-    const reader = stream.body?.getReader();
+    // ---- 4. Forward stream immediately + collect for cache ----
+    let fullText = '';
     const decoder = new TextDecoder();
 
-    if (reader) {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        chunks.push(value);
-        fullResponse += decoder.decode(value);
-      }
-    }
-
-    if (fullResponse) {
-      cache.set(cacheKey, fullResponse, 3600);
-    }
-
-    const outStream = new ReadableStream({
-      start(controller) {
-        for (const chunk of chunks) {
-          controller.enqueue(chunk);
+    const transform = new TransformStream({
+      transform(chunk, controller) {
+        fullText += decoder.decode(chunk, { stream: true });
+        controller.enqueue(chunk);
+      },
+      flush() {
+        fullText += decoder.decode();
+        if (fullText.trim()) {
+          cache.set(cacheKey, fullText, 3600);
         }
-        controller.close();
       },
     });
 
-    return new Response(outStream, {
+    const aiResponse = result.toTextStreamResponse();
+    if (!aiResponse.body) {
+      return new Response('Streaming error', { status: 500 });
+    }
+
+    return new Response(aiResponse.body.pipeThrough(transform), {
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });
   } catch (error) {
