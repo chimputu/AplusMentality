@@ -1,12 +1,19 @@
+// app/api/upload/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { getAuthUser } from '@/lib/auth';
 import cloudinary from '@/lib/cloudinary';
 
 export async function POST(req: NextRequest) {
   try {
-    await requireAuth(['ADMIN']);
+    // ✅ API-safe auth — returns null instead of redirecting
+    const authResult = await getAuthUser();
+    if (!authResult) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const file = formData.get('file') as File;
+
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
@@ -15,13 +22,15 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        { folder: 'aplus/assessments', resource_type: 'auto' },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      ).end(buffer);
+      cloudinary.uploader
+        .upload_stream(
+          { folder: 'aplus/assessments', resource_type: 'auto' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        )
+        .end(buffer);
     });
 
     const { secure_url } = result as { secure_url: string };

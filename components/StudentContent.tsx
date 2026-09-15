@@ -12,8 +12,6 @@ import {
   BookOpen,
   HelpCircle,
   ClipboardList,
-  GraduationCap,
-  Play,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -54,6 +52,24 @@ function extractYouTubeId(url: string): string | null {
     if (match) return match[1];
   }
   return null;
+}
+
+// ✅ Deterministic date formatter — same output on server and client
+function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+
+// ✅ Deterministic short date formatter for announcements
+function formatShortDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString('en-GB', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
 const isThisWeek = (dateString: string) => {
@@ -123,7 +139,7 @@ export default function StudentContent({
       href: '/student/courses',
     },
     {
-      icon: <Play className="w-6 h-6 text-red-500" />,
+      icon: <Video className="w-6 h-6 text-red-500" />,
       bg: 'bg-red-50',
       title: 'Watch Videos',
       subtitle: 'Learn visually',
@@ -147,7 +163,7 @@ export default function StudentContent({
 
   return (
     <div className="w-full space-y-6">
-      {/* ── Hero Banner (Dark, like the black design) ── */}
+      {/* Hero Banner */}
       <div className="w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#1e293b] via-[#1a2235] to-[#0f172a] p-8 md:p-10 text-white shadow-lg">
         <div className="flex items-start justify-between gap-6">
           <div>
@@ -161,8 +177,7 @@ export default function StudentContent({
               Hello, {displayName}! 👋
             </h1>
             <p className="text-gray-300 mt-2 text-sm md:text-base">
-              Stay updated with the latest announcements and videos from your
-              mentors.
+              Stay updated with the latest announcements and videos from your mentors.
             </p>
             <div className="inline-flex items-center gap-2 mt-5 bg-white/10 border border-white/10 px-4 py-2 rounded-full">
               <Bell className="w-4 h-4 text-gray-300" />
@@ -172,14 +187,13 @@ export default function StudentContent({
             </div>
           </div>
 
-          {/* Avatar circle with initial */}
           <div className="hidden sm:flex w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/10 border border-white/10 items-center justify-center flex-shrink-0">
             <span className="text-2xl md:text-3xl font-bold">{initial}</span>
           </div>
         </div>
       </div>
 
-      {/* ── Stat Cards (Outside hero, like the black design) ── */}
+      {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
         <StatCard
           value={filteredAnnouncements.length}
@@ -198,7 +212,7 @@ export default function StudentContent({
         />
       </div>
 
-      {/* ── Action Cards ── */}
+      {/* Action Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {actions.map((action) => (
           <Link
@@ -206,7 +220,9 @@ export default function StudentContent({
             href={action.href}
             className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md hover:scale-[1.02] transition group"
           >
-            <div className={`w-12 h-12 ${action.bg} rounded-xl flex items-center justify-center mb-3`}>
+            <div
+              className={`w-12 h-12 ${action.bg} rounded-xl flex items-center justify-center mb-3`}
+            >
               {action.icon}
             </div>
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
@@ -219,7 +235,7 @@ export default function StudentContent({
         ))}
       </div>
 
-      {/* ── Available Videos ── */}
+      {/* Available Videos */}
       <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 md:p-6">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
@@ -239,7 +255,11 @@ export default function StudentContent({
         {filteredVideos.length === 0 ? (
           <div className="text-center py-12 text-gray-500 dark:text-gray-400">
             <Video className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
-            <p>{searchQuery ? 'No videos match your search.' : 'No videos available yet.'}</p>
+            <p>
+              {searchQuery
+                ? 'No videos match your search.'
+                : 'No videos available yet.'}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -287,7 +307,7 @@ export default function StudentContent({
                       <span className="flex items-center gap-1">
                         <User className="w-3 h-3" />
                         {video.uploader?.name || 'Unknown'} •{' '}
-                        {new Date(video.createdAt).toLocaleDateString()}
+                        {formatDate(video.createdAt)}
                       </span>
                     </div>
                   </div>
@@ -298,7 +318,7 @@ export default function StudentContent({
         )}
       </section>
 
-      {/* ── Latest Announcements ── */}
+      {/* Latest Announcements */}
       <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 md:p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -318,7 +338,11 @@ export default function StudentContent({
         {filteredAnnouncements.length === 0 ? (
           <div className="text-center py-10 text-gray-500 dark:text-gray-400">
             <Megaphone className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
-            <p>{searchQuery ? 'No announcements match your search.' : 'No announcements yet.'}</p>
+            <p>
+              {searchQuery
+                ? 'No announcements match your search.'
+                : 'No announcements yet.'}
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -339,11 +363,7 @@ export default function StudentContent({
                       </span>
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {new Date(a.createdAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
+                        {formatShortDate(a.createdAt)}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 line-clamp-2">
