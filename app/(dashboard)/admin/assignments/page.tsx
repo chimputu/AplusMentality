@@ -1,7 +1,8 @@
+// app/(dashboard)/admin/assignments/page.tsx
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Plus, ClipboardList, ExternalLink, Calendar, Users } from 'lucide-react';
+import { Plus, ClipboardList, ExternalLink, Calendar, Users, Eye } from 'lucide-react';
 
 export default async function AdminAssignmentsPage() {
   await requireAuth(['ADMIN']);
@@ -71,55 +72,96 @@ export default async function AdminAssignmentsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {assignments.map((assignment) => (
-                  <tr key={assignment.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-medium text-gray-800 dark:text-gray-100">{assignment.title}</p>
-                        {assignment.description && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{assignment.description}</p>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                      {assignment.maxScore || 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                      {assignment.dueDate ? (
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          {new Date(assignment.dueDate).toLocaleDateString()}
+                {assignments.map((assignment) => {
+                  const totalSubs = assignment.submissions.length;
+                  const gradedSubs = assignment.submissions.filter(
+                    (s) => s.status === 'GRADED'
+                  ).length;
+                  const pendingSubs = totalSubs - gradedSubs;
+
+                  return (
+                    <tr
+                      key={assignment.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+                    >
+                      <td className="px-6 py-4">
+                        <div>
+                          <p className="font-medium text-gray-800 dark:text-gray-100">
+                            {assignment.title}
+                          </p>
+                          {assignment.description && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">
+                              {assignment.description}
+                            </p>
+                          )}
                         </div>
-                      ) : (
-                        'No due date'
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                        <Users className="w-4 h-4" />
-                        {assignment.submissions.length}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <Link
-                          href={`/admin/assignments/${assignment.id}`}
-                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
-                        >
-                          Edit
-                        </Link>
-                        <a
-                          href={assignment.formUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                        {assignment.maxScore || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                        {assignment.dueDate ? (
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            {new Date(assignment.dueDate).toLocaleDateString()}
+                          </div>
+                        ) : (
+                          'No due date'
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-1 text-sm">
+                          <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                            <Users className="w-4 h-4" />
+                            <span className="font-medium">{totalSubs}</span>
+                            <span className="text-xs text-gray-400">total</span>
+                          </div>
+                          {totalSubs > 0 && (
+                            <div className="flex gap-3 text-xs">
+                              <span className="text-green-600 dark:text-green-400">
+                                {gradedSubs} graded
+                              </span>
+                              {pendingSubs > 0 && (
+                                <span className="text-yellow-600 dark:text-yellow-400">
+                                  {pendingSubs} pending
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-3 items-center">
+                          <Link
+                            href={`/admin/assignments/${assignment.id}/submissions`}
+                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                          >
+                            <Eye className="w-4 h-4" />
+                            Submissions
+                          </Link>
+                          <span className="text-gray-300 dark:text-gray-600">|</span>
+                          <Link
+                            href={`/admin/assignments/${assignment.id}`}
+                            className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 text-sm"
+                          >
+                            Edit
+                          </Link>
+                          {assignment.formUrl && (
+                            <a
+                              href={assignment.formUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                              title="Open linked form"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
