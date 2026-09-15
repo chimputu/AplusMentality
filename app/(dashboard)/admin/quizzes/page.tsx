@@ -3,6 +3,7 @@ import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Plus, FileQuestion, ExternalLink, Calendar, Users, Eye } from 'lucide-react';
+import DeleteButton from '@/components/DeleteButton';
 
 export default async function AdminQuizzesPage() {
   await requireAuth(['ADMIN']);
@@ -23,7 +24,6 @@ export default async function AdminQuizzesPage() {
     orderBy: { createdAt: 'desc' },
   });
 
-  // ✅ Convert Dates to strings
   const quizzes = quizzesData.map((q) => ({
     ...q,
     createdAt: q.createdAt.toISOString(),
@@ -167,6 +167,10 @@ export default async function AdminQuizzesPage() {
                               <ExternalLink className="w-4 h-4" />
                             </a>
                           )}
+                          <DeleteButton
+                            apiUrl={`/api/quizzes/${quiz.id}`}
+                            itemName={quiz.title}
+                          />
                         </div>
                       </td>
                     </tr>
