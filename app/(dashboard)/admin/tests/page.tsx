@@ -3,6 +3,7 @@ import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Plus, FileCheck, ExternalLink, Calendar, Users, Eye } from 'lucide-react';
+import DeleteButton from '@/components/DeleteButton';
 
 export default async function AdminTestsPage() {
   await requireAuth(['ADMIN']);
@@ -23,7 +24,6 @@ export default async function AdminTestsPage() {
     orderBy: { createdAt: 'desc' },
   });
 
-  // ✅ Convert Dates to strings
   const tests = testsData.map((t) => ({
     ...t,
     createdAt: t.createdAt.toISOString(),
@@ -173,6 +173,10 @@ export default async function AdminTestsPage() {
                               <ExternalLink className="w-4 h-4" />
                             </a>
                           )}
+                          <DeleteButton
+                            apiUrl={`/api/tests/${test.id}`}
+                            itemName={test.title}
+                          />
                         </div>
                       </td>
                     </tr>

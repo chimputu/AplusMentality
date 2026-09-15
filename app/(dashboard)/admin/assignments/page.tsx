@@ -3,6 +3,7 @@ import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Plus, ClipboardList, ExternalLink, Calendar, Users, Eye } from 'lucide-react';
+import DeleteButton from '@/components/DeleteButton';
 
 export default async function AdminAssignmentsPage() {
   await requireAuth(['ADMIN']);
@@ -23,7 +24,6 @@ export default async function AdminAssignmentsPage() {
     orderBy: { createdAt: 'desc' },
   });
 
-  // ✅ Convert Dates to strings
   const assignments = assignmentsData.map((a) => ({
     ...a,
     createdAt: a.createdAt.toISOString(),
@@ -36,7 +36,9 @@ export default async function AdminAssignmentsPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Assignments</h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">Manage all assignments (Google Forms)</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
+            Manage all assignments (Google Forms)
+          </p>
         </div>
         <Link
           href="/admin/assignments/create"
@@ -49,8 +51,12 @@ export default async function AdminAssignmentsPage() {
       {assignments.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <ClipboardList className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">No assignments yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Create your first assignment using Google Forms.</p>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+            No assignments yet
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+            Create your first assignment using Google Forms.
+          </p>
           <Link
             href="/admin/assignments/create"
             className="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
@@ -103,7 +109,7 @@ export default async function AdminAssignmentsPage() {
                         {assignment.dueDate ? (
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            {new Date(assignment.dueDate).toLocaleDateString()}
+                            {new Date(assignment.dueDate).toLocaleDateString('en-GB')}
                           </div>
                         ) : (
                           'No due date'
@@ -157,6 +163,10 @@ export default async function AdminAssignmentsPage() {
                               <ExternalLink className="w-4 h-4" />
                             </a>
                           )}
+                          <DeleteButton
+                            apiUrl={`/api/assignments/${assignment.id}`}
+                            itemName={assignment.title}
+                          />
                         </div>
                       </td>
                     </tr>
