@@ -1,11 +1,16 @@
+// app/api/lessons/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET - List lessons for a module
 export async function GET(req: NextRequest) {
   try {
-    await requireAuth();
+    const auth = await getAuthUser();
+    if (!auth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const moduleId = searchParams.get('moduleId');
 
@@ -28,7 +33,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(lessons);
   } catch (error) {
-    console.error('Error fetching lessons:', error);
+    console.error('[lessons GET] Error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch lessons' },
       { status: 500 }
@@ -36,10 +41,14 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// ✅ FIXED POST - Create a new lesson (converts empty strings to null)
+// POST - Create a new lesson
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await requireAuth(['ADMIN']);
+    const auth = await getAuthUser(['ADMIN']);
+    if (!auth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await req.json();
     const {
       title,
@@ -58,11 +67,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ✅ Convert empty strings to null to avoid foreign key errors
     const lesson = await prisma.lesson.create({
       data: {
         title,
-        description,
+        description: description || null,
         order: order || 0,
         moduleId,
         videoId: videoId || null,
@@ -78,18 +86,22 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(lesson, { status: 201 });
   } catch (error: any) {
-    console.error('Error creating lesson:', error);
+    console.error('[lessons POST] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to create lesson' },
+      { error: error.message || 'Failed to create lesson' },
       { status: 500 }
     );
   }
 }
 
-// PUT - Update a lesson (no changes needed, but keep consistency)
+// PUT - Update a lesson
 export async function PUT(req: NextRequest) {
   try {
-    await requireAuth(['ADMIN']);
+    const auth = await getAuthUser(['ADMIN']);
+    if (!auth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await req.json();
     const {
       id,
@@ -127,17 +139,14 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(lesson);
   } catch (error: any) {
-    console.error('Error updating lesson:', error);
+    console.error('[lessons PUT] Error:', error);
 
     if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Lesson not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
     }
 
     return NextResponse.json(
-      { error: 'Failed to update lesson' },
+      { error: error.message || 'Failed to update lesson' },
       { status: 500 }
     );
   }
@@ -146,7 +155,11 @@ export async function PUT(req: NextRequest) {
 // DELETE - Delete a lesson
 export async function DELETE(req: NextRequest) {
   try {
-    await requireAuth(['ADMIN']);
+    const auth = await getAuthUser(['ADMIN']);
+    if (!auth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
@@ -163,17 +176,14 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ message: 'Lesson deleted successfully' });
   } catch (error: any) {
-    console.error('Error deleting lesson:', error);
+    console.error('[lessons DELETE] Error:', error);
 
     if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Lesson not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
     }
 
     return NextResponse.json(
-      { error: 'Failed to delete lesson' },
+      { error: error.message || 'Failed to delete lesson' },
       { status: 500 }
     );
   }
