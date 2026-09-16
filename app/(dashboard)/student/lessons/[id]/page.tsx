@@ -1,3 +1,4 @@
+// app/(dashboard)/student/lessons/[id]/page.tsx
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
@@ -15,7 +16,6 @@ export default async function StudentLessonPage({ params }: PageProps) {
   const { userId } = await requireAuth(['STUDENT']);
   const { id } = await params;
 
-  // Fetch the current lesson with its module and course
   const lesson = await prisma.lesson.findUnique({
     where: { id },
     include: {
@@ -44,11 +44,12 @@ export default async function StudentLessonPage({ params }: PageProps) {
   const course = lesson.module.course;
   const enrollment = course.enrollments[0];
 
-  // Check if student is enrolled
   if (!enrollment) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Not Enrolled</h2>
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+          Not Enrolled
+        </h2>
         <p className="text-gray-500 dark:text-gray-400 mt-2">
           You need to be enrolled in this course to access the lesson.
         </p>
@@ -62,7 +63,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
     );
   }
 
-  // ── Compute next lesson ──
+  // Compute next lesson
   const courseWithModules = await prisma.course.findUnique({
     where: { id: course.id },
     include: {
@@ -99,7 +100,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
     }
   }
 
-  // Check if already completed
+  // Check completion
   const completion = await prisma.lessonCompletion.findUnique({
     where: {
       userId_lessonId: {
@@ -110,7 +111,6 @@ export default async function StudentLessonPage({ params }: PageProps) {
   });
   const isCompleted = !!completion;
 
-  // Helper: extract YouTube ID
   function extractYouTubeId(url: string): string | null {
     const patterns = [
       /(?:youtube\.com\/watch\?v=)([\w-]+)/,
@@ -124,7 +124,13 @@ export default async function StudentLessonPage({ params }: PageProps) {
     return null;
   }
 
-  const videoId = lesson.video?.youtubeId || extractYouTubeId(lesson.video?.url || '');
+  const videoId =
+    lesson.video?.youtubeId || extractYouTubeId(lesson.video?.url || '');
+
+  // ✅ Check if slides have any content to render
+  const hasSlides =
+    lesson.slides &&
+    (lesson.slides.embedUrl || lesson.slides.fileUrl);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -158,12 +164,14 @@ export default async function StudentLessonPage({ params }: PageProps) {
 
       {/* Lesson Content */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        {/* Video Content */}
+        {/* ============ VIDEO ============ */}
         {lesson.video && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
               <Video className="w-5 h-5 text-red-500" />
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Video</h2>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                Video
+              </h2>
             </div>
             <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
               {videoId ? (
@@ -187,38 +195,82 @@ export default async function StudentLessonPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Slides Content – ✅ ONLY render when embedUrl exists */}
-        {lesson.slides && lesson.slides.embedUrl && (
+        {/* ============ SLIDES ============ */}
+        {hasSlides && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
               <Presentation className="w-5 h-5 text-blue-500" />
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Lecture Slides</h2>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                Lecture Slides
+              </h2>
             </div>
-            <div className="relative w-full aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-              <iframe
-                src={lesson.slides.embedUrl}
-                title={lesson.slides.title}
-                className="absolute top-0 left-0 w-full h-full"
-                allowFullScreen
-              />
-            </div>
+
+            {/* Embedded slides (Google Slides, OneDrive, etc.) */}
+            {lesson.slides!.embedUrl && (
+              <div className="relative w-full aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+                <iframe
+                  src={lesson.slides!.embedUrl}
+                  title={lesson.slides!.title}
+                  className="absolute top-0 left-0 w-full h-full"
+                  allowFullScreen
+                />
+              </div>
+            )}
+
+            {/* File-based slides (PDF, PPT, etc.) */}
+            {lesson.slides!.fileUrl && !lesson.slides!.embedUrl && (
+              <div className="space-y-3">
+                <div className="relative w-full aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+                  <iframe
+                    src={lesson.slides!.fileUrl}
+                    title={lesson.slides!.title}
+                    className="absolute top-0 left-0 w-full h-full"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href={lesson.slides!.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+                  >
+                    Open in new tab ↗
+                  </a>
+                  <a
+                    href={lesson.slides!.fileUrl}
+                    download
+                    className="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-lg text-sm font-medium transition"
+                  >
+                    Download ⬇
+                  </a>
+                </div>
+              </div>
+            )}
+
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              {lesson.slides.title}
+              {lesson.slides!.title}
             </p>
           </div>
         )}
 
-        {/* Quiz Content */}
+        {/* ============ QUIZ ============ */}
         {lesson.quiz && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
               <FileQuestion className="w-5 h-5 text-purple-500" />
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Quiz</h2>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                Quiz
+              </h2>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 text-center">
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 {lesson.quiz.title}
               </p>
+              {lesson.quiz.description && (
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  {lesson.quiz.description}
+                </p>
+              )}
               <Link
                 href={`/student/quizzes/${lesson.quiz.id}`}
                 className="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
@@ -229,18 +281,20 @@ export default async function StudentLessonPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* No Content */}
-        {!lesson.video && !lesson.slides && !lesson.quiz && (
+        {/* ============ NO CONTENT ============ */}
+        {!lesson.video && !hasSlides && !lesson.quiz && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📝</div>
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">No content yet</h3>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+              No content yet
+            </h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-              This lesson doesn't have any content attached yet.
+              This lesson doesn&apos;t have any content attached yet.
             </p>
           </div>
         )}
 
-        {/* Mark as Complete Button */}
+        {/* ============ MARK COMPLETE ============ */}
         <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
           <MarkLessonCompleteButton
             courseId={course.id}
