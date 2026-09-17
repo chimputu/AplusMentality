@@ -248,8 +248,15 @@ export default function DashboardLayout({
     }
   };
 
+  // Filter results by type
   const announcementResults = searchResults.filter((r: any) => r.type === 'announcement');
   const videoResults = searchResults.filter((r: any) => r.type === 'video');
+  const pastPaperResults = searchResults.filter((r: any) => r.type === 'past_paper');
+  const courseResults = searchResults.filter((r: any) => r.type === 'course');
+  const lectureSlideResults = searchResults.filter((r: any) => r.type === 'lecture_slide');
+  const quizResults = searchResults.filter((r: any) => r.type === 'quiz');
+  const testResults = searchResults.filter((r: any) => r.type === 'test');
+  const assignmentResults = searchResults.filter((r: any) => r.type === 'assignment');
   const totalResults = searchResults.length;
 
   return (
@@ -323,6 +330,7 @@ export default function DashboardLayout({
                 </div>
               ) : (
                 <div>
+                  {/* ANNOUNCEMENTS */}
                   {announcementResults.length > 0 && (
                     <div className="p-3">
                       <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
@@ -331,7 +339,7 @@ export default function DashboardLayout({
                       {announcementResults.slice(0, 5).map((item: any) => (
                         <Link
                           key={item.id}
-                          href={`/${role.toLowerCase()}/announcements`}
+                          href={item.href || `/${role.toLowerCase()}/announcements`}
                           className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
                           onClick={() => {
                             setIsSearchFocused(false);
@@ -355,6 +363,7 @@ export default function DashboardLayout({
                     </div>
                   )}
 
+                  {/* VIDEOS */}
                   {videoResults.length > 0 && (
                     <div className="p-3 border-t border-gray-100 dark:border-gray-700">
                       <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
@@ -363,7 +372,7 @@ export default function DashboardLayout({
                       {videoResults.slice(0, 5).map((item: any) => (
                         <Link
                           key={item.id}
-                          href={`/${role.toLowerCase()}/videos`}
+                          href={item.href || `/${role.toLowerCase()}/videos`}
                           className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
                           onClick={() => {
                             setIsSearchFocused(false);
@@ -380,13 +389,212 @@ export default function DashboardLayout({
                             <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                               {item.title}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.description}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
                           </div>
                         </Link>
                       ))}
                     </div>
                   )}
 
+                  {/* PAST PAPERS */}
+                  {pastPaperResults.length > 0 && (
+                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                        Past Papers ({pastPaperResults.length})
+                      </div>
+                      {pastPaperResults.slice(0, 5).map((item: any) => (
+                        <Link
+                          key={item.id}
+                          href={item.href}
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          onClick={() => {
+                            setIsSearchFocused(false);
+                            setLocalSearch('');
+                            setSearchResults([]);
+                          }}
+                        >
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-8 h-8 bg-orange-50 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                              <FileText className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                              {item.title}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* COURSES */}
+                  {courseResults.length > 0 && (
+                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                        Courses ({courseResults.length})
+                      </div>
+                      {courseResults.slice(0, 5).map((item: any) => (
+                        <Link
+                          key={item.id}
+                          href={item.href}
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          onClick={() => {
+                            setIsSearchFocused(false);
+                            setLocalSearch('');
+                            setSearchResults([]);
+                          }}
+                        >
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                              <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                              {item.title}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* LECTURE SLIDES */}
+                  {lectureSlideResults.length > 0 && (
+                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                        Lecture Slides ({lectureSlideResults.length})
+                      </div>
+                      {lectureSlideResults.slice(0, 5).map((item: any) => (
+                        <Link
+                          key={item.id}
+                          href={item.href}
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          onClick={() => {
+                            setIsSearchFocused(false);
+                            setLocalSearch('');
+                            setSearchResults([]);
+                          }}
+                        >
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-8 h-8 bg-purple-50 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                              <Presentation className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                              {item.title}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* QUIZZES */}
+                  {quizResults.length > 0 && (
+                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                        Quizzes ({quizResults.length})
+                      </div>
+                      {quizResults.slice(0, 5).map((item: any) => (
+                        <Link
+                          key={item.id}
+                          href={item.href}
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          onClick={() => {
+                            setIsSearchFocused(false);
+                            setLocalSearch('');
+                            setSearchResults([]);
+                          }}
+                        >
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-8 h-8 bg-green-50 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                              <FileQuestion className="w-4 h-4 text-green-600 dark:text-green-400" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                              {item.title}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* TESTS */}
+                  {testResults.length > 0 && (
+                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                        Tests ({testResults.length})
+                      </div>
+                      {testResults.slice(0, 5).map((item: any) => (
+                        <Link
+                          key={item.id}
+                          href={item.href}
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          onClick={() => {
+                            setIsSearchFocused(false);
+                            setLocalSearch('');
+                            setSearchResults([]);
+                          }}
+                        >
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-8 h-8 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                              <FileCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                              {item.title}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* ASSIGNMENTS */}
+                  {assignmentResults.length > 0 && (
+                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                        Assignments ({assignmentResults.length})
+                      </div>
+                      {assignmentResults.slice(0, 5).map((item: any) => (
+                        <Link
+                          key={item.id}
+                          href={item.href}
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          onClick={() => {
+                            setIsSearchFocused(false);
+                            setLocalSearch('');
+                            setSearchResults([]);
+                          }}
+                        >
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-8 h-8 bg-pink-50 dark:bg-pink-900/30 rounded-lg flex items-center justify-center">
+                              <ClipboardList className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                              {item.title}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* VIEW ALL */}
                   <div className="p-3 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 rounded-b-xl">
                     <Link
                       href={`/${role.toLowerCase()}?search=${encodeURIComponent(localSearch)}`}
