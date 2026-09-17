@@ -57,6 +57,7 @@ model User {
   testSubmissions TestSubmission[]
   assignmentSubmissions AssignmentSubmission[]
   lessonCompletions LessonCompletion[]
+  pastPapers     PastPaper[]
 
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -383,4 +384,30 @@ model LessonCompletion {
   @@unique([userId, lessonId])
   @@index([userId])
   @@index([lessonId])
+}
+
+// ============================================
+// PAST PAPERS
+// ============================================
+model PastPaper {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  courseCode  String?
+  year        Int?
+  semester    String?
+  category    String   @default("final_exam")  // test | quiz | assignment | final_exam
+  fileUrl     String
+  fileType    String?  // pdf | image | docx
+  fileSize    Int?     // in bytes
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [clerkId])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([courseCode])
+  @@index([year])
+  @@index([category])
+  @@index([createdAt])
 }
