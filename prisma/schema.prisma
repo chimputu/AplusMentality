@@ -58,6 +58,7 @@ model User {
   assignmentSubmissions AssignmentSubmission[]
   lessonCompletions LessonCompletion[]
   pastPapers     PastPaper[]
+  notificationSeens NotificationSeen[]
 
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -410,4 +411,19 @@ model PastPaper {
   @@index([year])
   @@index([category])
   @@index([createdAt])
+}
+
+// ============================================
+// NOTIFICATION SEEN (per-user read tracking)
+// ============================================
+model NotificationSeen {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  notificationId  String   // format: "announcement_xxx", "test_xxx", etc.
+  seenAt          DateTime @default(now())
+
+  @@unique([userId, notificationId])
+  @@index([userId])
+  @@index([notificationId])
 }
