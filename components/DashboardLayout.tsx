@@ -90,7 +90,7 @@ export default function DashboardLayout({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Admin Navigation Items - Complete
+  // Admin Navigation Items
   const adminNavItems = [
     { 
       href: '/admin', 
@@ -114,6 +114,12 @@ export default function DashboardLayout({
       href: '/admin/lecture-slides', 
       label: 'Lecture Slides', 
       icon: Presentation,
+      section: 'Content'
+    },
+    { 
+      href: '/admin/past-papers', 
+      label: 'Past Papers', 
+      icon: FileText,
       section: 'Content'
     },
     { 
@@ -154,7 +160,7 @@ export default function DashboardLayout({
     },
   ];
 
-  // Student Navigation Items - Complete
+  // Student Navigation Items
   const studentNavItems = [
     { 
       href: '/student', 
@@ -178,6 +184,12 @@ export default function DashboardLayout({
       href: '/student/lecture-slides', 
       label: 'Lecture Slides', 
       icon: Presentation,
+      section: 'Content'
+    },
+    { 
+      href: '/student/past-papers', 
+      label: 'Past Papers', 
+      icon: FileText,
       section: 'Content'
     },
     { 
@@ -241,7 +253,6 @@ export default function DashboardLayout({
   const totalResults = searchResults.length;
 
   return (
-    // ✅ Updated with dark mode classes
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Top Navbar */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-4 lg:px-6">
