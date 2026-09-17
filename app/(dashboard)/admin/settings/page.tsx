@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { useTheme } from 'next-themes';
 import { 
   User, 
@@ -23,6 +23,8 @@ import { useRouter } from 'next/navigation';
 
 export default function AdminSettingsPage() {
   const { user } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
   const { theme, setTheme, systemTheme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -65,8 +67,14 @@ export default function AdminSettingsPage() {
   };
 
   const handleLogout = async () => {
-    if (confirm('Are you sure you want to sign out?')) {
-      window.location.href = '/sign-out';
+    if (!confirm('Are you sure you want to sign out?')) return;
+
+    try {
+      await signOut();
+      router.push('/sign-in');
+    } catch (error) {
+      console.error('Sign out failed:', error);
+      alert('Failed to sign out. Please try again.');
     }
   };
 
