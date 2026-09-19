@@ -43,6 +43,8 @@ model User {
   name           String?
   imageUrl       String?
   role           Role           @default(STUDENT)
+    theme          String?        @default("system")   // ← ADD THIS
+
 
   // Relations
   announcements  Announcement[]
