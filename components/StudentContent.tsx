@@ -168,13 +168,12 @@ export default function StudentContent({
         <div className="flex items-start justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-5 h-5 text-yellow-400" />
               <span className="text-sm font-semibold text-yellow-400">
                 Welcome Back
               </span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold">
-              Hello, {displayName}! 👋
+              Hello, {displayName}! 
             </h1>
             <p className="text-gray-300 mt-2 text-sm md:text-base">
               Stay updated with the latest announcements and videos from your mentors.
