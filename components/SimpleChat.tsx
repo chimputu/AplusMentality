@@ -1,4 +1,3 @@
-// components/SimpleChat.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -13,9 +12,9 @@ type Message = {
 
 const SUGGESTED_QUESTIONS = [
   'What grade do I need for a distinction at Mulungushi?',
-  'How can i excel at Mulungushi University',
-  'How do I study  effectively?',
-  'What do i need to learn to succeed?',
+  'Explain limits in Calculus I',
+  'How do I study for Physics I effectively?',
+  'What is a variable in programming?',
 ];
 
 export default function SimpleChat() {
@@ -118,10 +117,10 @@ export default function SimpleChat() {
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Button — darker blue in dark mode */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-[9999] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group active:scale-95"
+        className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-[9999] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group active:scale-95"
         aria-label="Open AI Study Assistant"
       >
         {isOpen ? (
@@ -140,16 +139,16 @@ export default function SimpleChat() {
           className="fixed bottom-36 right-3 left-3 sm:left-auto sm:right-6 sm:bottom-44 z-[9998] sm:w-[400px] md:w-[440px] max-h-[70vh] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden"
           style={{ animation: 'chatSlideUp 0.25s ease-out' }}
         >
-          {/* Header */}
-          <div className="bg-blue-500 text-white px-4 py-3 flex items-center justify-between flex-shrink-0">
+          {/* Header — deeper blue in dark mode */}
+          <div className="bg-blue-500 dark:bg-blue-700 text-white px-4 py-3 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center relative">
                 <Bot className="w-5 h-5" />
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-blue-500" />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-blue-500 dark:border-blue-700" />
               </div>
               <div>
                 <div className="font-semibold text-sm">A+ Study Assistant</div>
-                <div className="text-xs text-blue-100 flex items-center gap-1">
+                <div className="text-xs text-blue-100 dark:text-blue-200 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
                   Online · Always here to help
                 </div>
@@ -159,7 +158,7 @@ export default function SimpleChat() {
               {messages.length > 0 && (
                 <button
                   onClick={handleClear}
-                  className="text-xs text-blue-100 hover:text-white px-2 py-1 rounded hover:bg-white/10 transition"
+                  className="text-xs text-blue-100 dark:text-blue-200 hover:text-white px-2 py-1 rounded hover:bg-white/10 transition"
                   aria-label="Clear chat"
                 >
                   Clear
@@ -183,8 +182,8 @@ export default function SimpleChat() {
             {/* Empty state */}
             {messages.length === 0 && !loading && (
               <div className="text-center py-6">
-                <div className="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Sparkles className="w-7 h-7 text-blue-500" />
+                <div className="w-14 h-14 bg-blue-500/10 dark:bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Sparkles className="w-7 h-7 text-blue-500 dark:text-blue-400" />
                 </div>
                 <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">
                   Hi there! 👋
@@ -216,14 +215,14 @@ export default function SimpleChat() {
                 }`}
               >
                 {msg.role === 'assistant' && (
-                  <div className="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-7 h-7 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Bot className="w-4 h-4 text-white" />
                   </div>
                 )}
                 <div
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed break-words ${
                     msg.role === 'user'
-                      ? 'bg-blue-500 text-white rounded-br-sm whitespace-pre-wrap'
+                      ? 'bg-blue-500 dark:bg-blue-600 text-white rounded-br-sm whitespace-pre-wrap'
                       : 'bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-800 rounded-bl-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-1.5 prose-headings:my-2 prose-headings:text-sm prose-ul:my-1.5 prose-ol:my-1.5 prose-li:my-0.5 prose-li:marker:text-blue-500 prose-strong:text-gray-900 dark:prose-strong:text-white prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:text-xs prose-pre:my-2 prose-pre:overflow-x-auto prose-table:text-xs prose-table:my-2 prose-th:px-2 prose-th:py-1 prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-td:px-2 prose-td:py-1 prose-td:border prose-td:border-gray-200 dark:prose-td:border-gray-700 prose-a:text-blue-500 prose-a:no-underline hover:prose-a:underline prose-hr:my-3 prose-blockquote:border-l-blue-500 prose-blockquote:text-gray-600 dark:prose-blockquote:text-gray-400'
                   }`}
                 >
@@ -273,7 +272,7 @@ export default function SimpleChat() {
               <button
                 onClick={() => sendMessage()}
                 disabled={loading || !input.trim()}
-                className="w-10 h-10 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg flex items-center justify-center transition active:scale-95 flex-shrink-0"
+                className="w-10 h-10 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg flex items-center justify-center transition active:scale-95 flex-shrink-0"
                 aria-label="Send message"
               >
                 {loading ? (
