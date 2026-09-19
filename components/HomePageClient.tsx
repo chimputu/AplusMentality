@@ -235,7 +235,9 @@ export default function HomePageClient() {
             <Link href="/sign-up" className="block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center" onClick={() => setIsMenuOpen(false)}>
               Get Started
             </Link>
+            <Link href="https://smartcorp-zeta.vercel.app">
             <div className="text-xs text-gray-500 text-center">Owned by SmartCorp</div>
+            </Link>
           </div>
         )}
       </nav>
@@ -1441,10 +1443,8 @@ export default function HomePageClient() {
             <div>
               <h4 className="text-white font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/about" className="hover:text-blue-400 transition">About Us</Link></li>
-                <li><Link href="/contact" className="hover:text-blue-400 transition">Contact</Link></li>
-                <li><Link href="/faq" className="hover:text-blue-400 transition">FAQ</Link></li>
-                <li><Link href="/privacy" className="hover:text-blue-400 transition">Privacy Policy</Link></li>
+                <li><Link href="https://smartcorp-zeta.vercel.app" className="hover:text-blue-400 transition">About Us</Link></li>
+                <li><Link href="https://smartcorp-zeta.vercel.app/contact" className="hover:text-blue-400 transition">Contact</Link></li>
               </ul>
             </div>
             <div>
