@@ -43,14 +43,13 @@ model User {
   name           String?
   imageUrl       String?
   role           Role           @default(STUDENT)
-    theme          String?        @default("system")   // ← ADD THIS
-
+  theme          String?        @default("system")
 
   // Relations
   announcements  Announcement[]
   videos         Video[]
-  courses        Course[]       // Courses created by user
-  enrollments    Enrollment[]   // Courses enrolled in
+  courses        Course[]
+  enrollments    Enrollment[]
   lectureSlides  LectureSlide[]
   quizzes        Quiz[]
   tests          Test[]
@@ -61,6 +60,7 @@ model User {
   lessonCompletions LessonCompletion[]
   pastPapers     PastPaper[]
   notificationSeens NotificationSeen[]
+  savedBooks     SavedBook[]
 
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -127,7 +127,6 @@ model Course {
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
 
-  // Reverse relation for lecture slides
   lectureSlides LectureSlide[]
 
   isPublished Boolean  @default(true)
@@ -399,10 +398,10 @@ model PastPaper {
   courseCode  String?
   year        Int?
   semester    String?
-  category    String   @default("final_exam")  // test | quiz | assignment | final_exam
+  category    String   @default("final_exam")
   fileUrl     String
-  fileType    String?  // pdf | image | docx
-  fileSize    Int?     // in bytes
+  fileType    String?
+  fileSize    Int?
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
 
@@ -422,10 +421,57 @@ model NotificationSeen {
   id              String   @id @default(cuid())
   userId          String
   user            User     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
-  notificationId  String   // format: "announcement_xxx", "test_xxx", etc.
+  notificationId  String
   seenAt          DateTime @default(now())
 
   @@unique([userId, notificationId])
   @@index([userId])
   @@index([notificationId])
+}
+
+// ============================================
+// BOOKS (free educational + public-domain)
+// ============================================
+model Book {
+  id              String   @id @default(cuid())
+  source          String   // 'gutenberg' | 'openlibrary'
+  sourceId        String   // external ID
+  title           String
+  authors         String
+  coverUrl        String?
+  publishYear     Int?
+  description     String?
+  subjects        String?
+  language        String?
+  readUrl         String?  // online reader
+  downloadPdfUrl  String?  // legal PDF download
+  downloadEpubUrl String?  // legal EPUB download
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  savedBy         SavedBook[]
+
+  @@unique([source, sourceId])
+  @@index([title])
+  @@index([authors])
+  @@index([source])
+  @@index([createdAt])
+}
+
+// ============================================
+// SAVED BOOKS (student library)
+// ============================================
+model SavedBook {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  savedAt   DateTime @default(now())
+
+  @@unique([userId, bookId])
+  @@index([userId])
+  @@index([bookId])
+  @@index([savedAt])
 }
