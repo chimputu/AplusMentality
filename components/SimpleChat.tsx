@@ -1,3 +1,4 @@
+// components/SimpleChat.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -12,9 +13,9 @@ type Message = {
 
 const SUGGESTED_QUESTIONS = [
   'What grade do I need for a distinction at Mulungushi?',
-  'Explain limits in Calculus I',
-  'How do I study for Physics I effectively?',
-  'What is a variable in programming?',
+  'How can i excel at Mulungushi University',
+  'How do I study  effectively?',
+  'What do i need to learn to succeed?',
 ];
 
 export default function SimpleChat() {
@@ -26,14 +27,12 @@ export default function SimpleChat() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, loading]);
 
-  // Focus input when chat opens
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 150);
@@ -191,7 +190,8 @@ export default function SimpleChat() {
                   Hi there! 👋
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 max-w-[260px] mx-auto">
-                  I&apos;m your A+ Study Assistant. Ask me anything about your first-year modules.
+                  I&apos;m your A+ Study Assistant. Ask me anything about your
+                  first-year modules.
                 </p>
                 <div className="space-y-2">
                   {SUGGESTED_QUESTIONS.map((q, i) => (
@@ -211,7 +211,9 @@ export default function SimpleChat() {
             {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-2 ${
+                  msg.role === 'user' ? 'justify-end' : 'justify-start'
+                }`}
               >
                 {msg.role === 'assistant' && (
                   <div className="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">

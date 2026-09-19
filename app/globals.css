@@ -473,3 +473,43 @@ select:focus {
 .starmorph-chat-send-button:hover {
   background: #1d4ed8 !important;
 }
+/* ===== Dark mode overrides for starmorph chat ===== */
+
+.dark .starmorph-chat-window {
+  background: #1e293b !important;   /* gray-800 */
+  border-color: #334155 !important; /* gray-700 */
+}
+
+.dark .starmorph-chat-messages {
+  background: #0f172a !important;   /* gray-900 */
+}
+
+.dark .starmorph-chat-message-bot {
+  background: #1e293b !important;   /* gray-800 */
+  color: #f1f5f9 !important;        /* gray-100 */
+  border-color: #334155 !important;
+}
+
+.dark .starmorph-chat-message-user {
+  background: #2563eb !important;   /* unchanged */
+  color: white !important;
+}
+
+.dark .starmorph-chat-input-container {
+  background: #1e293b !important;
+  border-top-color: #334155 !important;
+}
+
+.dark .starmorph-chat-input {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .starmorph-chat-input::placeholder {
+  color: #64748b !important;
+}
+
+.dark .starmorph-chat-header {
+  background: #2563eb !important; /* unchanged — brand color */
+}
