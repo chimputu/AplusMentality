@@ -1,23 +1,20 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { useTheme } from 'next-themes';
-import { 
-  User, 
-  Bell, 
+import {
+  User,
+  Bell,
   Palette,
   Moon,
   Sun,
   Monitor,
   Save,
   Loader2,
-  Mail,
   CheckCircle,
   Shield,
   LogOut,
-  Trash2,
   Key,
-  Clock
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -28,8 +25,7 @@ export default function AdminSettingsPage() {
   const { theme, setTheme, systemTheme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  
+
   const [settings, setSettings] = useState({
     name: user?.fullName || user?.firstName || '',
     email: user?.emailAddresses?.[0]?.emailAddress || '',
@@ -39,14 +35,10 @@ export default function AdminSettingsPage() {
     sessionTimeout: '30',
   });
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const handleSave = async () => {
     setLoading(true);
     setSaved(false);
-    
+
     try {
       const res = await fetch(`/api/users/${user?.id}`, {
         method: 'PUT',
@@ -66,6 +58,20 @@ export default function AdminSettingsPage() {
     }
   };
 
+  // ✅ Saves theme to DB (per-user preference)
+  const handleThemeChange = async (newTheme: string) => {
+    setTheme(newTheme);
+    try {
+      await fetch('/api/users/me/theme', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme: newTheme }),
+      });
+    } catch (err) {
+      console.error('Failed to save theme:', err);
+    }
+  };
+
   const handleLogout = async () => {
     if (!confirm('Are you sure you want to sign out?')) return;
 
@@ -78,7 +84,8 @@ export default function AdminSettingsPage() {
     }
   };
 
-  if (!mounted) {
+  // ⏳ Wait for next-themes to hydrate
+  if (theme === undefined) {
     return <div className="text-center py-12">Loading...</div>;
   }
 
@@ -89,8 +96,12 @@ export default function AdminSettingsPage() {
     <div className="max-w-3xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Admin Settings</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">Manage your account and application settings</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          Admin Settings
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          Manage your account and application settings
+        </p>
       </div>
 
       {saved && (
@@ -114,7 +125,9 @@ export default function AdminSettingsPage() {
             <input
               type="text"
               value={settings.name}
-              onChange={(e) => setSettings({ ...settings, name: e.target.value })}
+              onChange={(e) =>
+                setSettings({ ...settings, name: e.target.value })
+              }
               className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             />
           </div>
@@ -141,34 +154,60 @@ export default function AdminSettingsPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2">
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Email Notifications</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Receive email updates</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Email Notifications
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Receive email updates
+              </p>
             </div>
             <button
-              onClick={() => setSettings({ ...settings, emailNotifications: !settings.emailNotifications })}
+              onClick={() =>
+                setSettings({
+                  ...settings,
+                  emailNotifications: !settings.emailNotifications,
+                })
+              }
               className={`relative w-11 h-6 rounded-full transition ${
-                settings.emailNotifications ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+                settings.emailNotifications
+                  ? 'bg-blue-600'
+                  : 'bg-gray-300 dark:bg-gray-600'
               }`}
             >
-              <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition ${
-                settings.emailNotifications ? 'translate-x-5' : ''
-              }`} />
+              <span
+                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition ${
+                  settings.emailNotifications ? 'translate-x-5' : ''
+                }`}
+              />
             </button>
           </div>
           <div className="flex items-center justify-between py-2 border-t border-gray-100 dark:border-gray-700">
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Push Notifications</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Browser notifications</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Push Notifications
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Browser notifications
+              </p>
             </div>
             <button
-              onClick={() => setSettings({ ...settings, pushNotifications: !settings.pushNotifications })}
+              onClick={() =>
+                setSettings({
+                  ...settings,
+                  pushNotifications: !settings.pushNotifications,
+                })
+              }
               className={`relative w-11 h-6 rounded-full transition ${
-                settings.pushNotifications ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+                settings.pushNotifications
+                  ? 'bg-blue-600'
+                  : 'bg-gray-300 dark:bg-gray-600'
               }`}
             >
-              <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition ${
-                settings.pushNotifications ? 'translate-x-5' : ''
-              }`} />
+              <span
+                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition ${
+                  settings.pushNotifications ? 'translate-x-5' : ''
+                }`}
+              />
             </button>
           </div>
         </div>
@@ -182,7 +221,7 @@ export default function AdminSettingsPage() {
         </h2>
         <div className="grid grid-cols-3 gap-4">
           <button
-            onClick={() => setTheme('light')}
+            onClick={() => handleThemeChange('light')}
             className={`p-4 rounded-xl border-2 transition ${
               theme === 'light'
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
@@ -190,10 +229,12 @@ export default function AdminSettingsPage() {
             }`}
           >
             <Sun className="w-8 h-8 mx-auto text-yellow-500" />
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">Light</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
+              Light
+            </p>
           </button>
           <button
-            onClick={() => setTheme('dark')}
+            onClick={() => handleThemeChange('dark')}
             className={`p-4 rounded-xl border-2 transition ${
               theme === 'dark'
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
@@ -201,10 +242,12 @@ export default function AdminSettingsPage() {
             }`}
           >
             <Moon className="w-8 h-8 mx-auto text-gray-700 dark:text-gray-300" />
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">Dark</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
+              Dark
+            </p>
           </button>
           <button
-            onClick={() => setTheme('system')}
+            onClick={() => handleThemeChange('system')}
             className={`p-4 rounded-xl border-2 transition ${
               theme === 'system'
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
@@ -212,11 +255,16 @@ export default function AdminSettingsPage() {
             }`}
           >
             <Monitor className="w-8 h-8 mx-auto text-gray-500" />
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">System</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
+              System
+            </p>
           </button>
         </div>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center">
-          Current: {theme === 'system' ? `${isDark ? 'Dark' : 'Light'} (System)` : theme}
+          Current:{' '}
+          {theme === 'system'
+            ? `${isDark ? 'Dark' : 'Light'} (System)`
+            : theme}
         </p>
       </section>
 
@@ -229,28 +277,47 @@ export default function AdminSettingsPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2">
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Two-Factor Authentication</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Add an extra layer of security</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Two-Factor Authentication
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Add an extra layer of security
+              </p>
             </div>
             <button
-              onClick={() => setSettings({ ...settings, twoFactorAuth: !settings.twoFactorAuth })}
+              onClick={() =>
+                setSettings({
+                  ...settings,
+                  twoFactorAuth: !settings.twoFactorAuth,
+                })
+              }
               className={`relative w-11 h-6 rounded-full transition ${
-                settings.twoFactorAuth ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+                settings.twoFactorAuth
+                  ? 'bg-blue-600'
+                  : 'bg-gray-300 dark:bg-gray-600'
               }`}
             >
-              <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition ${
-                settings.twoFactorAuth ? 'translate-x-5' : ''
-              }`} />
+              <span
+                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition ${
+                  settings.twoFactorAuth ? 'translate-x-5' : ''
+                }`}
+              />
             </button>
           </div>
           <div className="flex items-center justify-between py-2 border-t border-gray-100 dark:border-gray-700">
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Session Timeout</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Auto logout after inactivity</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Session Timeout
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Auto logout after inactivity
+              </p>
             </div>
             <select
               value={settings.sessionTimeout}
-              onChange={(e) => setSettings({ ...settings, sessionTimeout: e.target.value })}
+              onChange={(e) =>
+                setSettings({ ...settings, sessionTimeout: e.target.value })
+              }
               className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="15">15 minutes</option>
