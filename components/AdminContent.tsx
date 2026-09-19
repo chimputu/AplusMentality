@@ -98,8 +98,7 @@ export default function AdminContent({
       {/* Welcome Section */}
       <div id="dashboard" className="bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-8 text-white shadow-lg scroll-mt-20">
         <div className="flex items-center space-x-3 mb-2">
-          <Sparkles className="w-6 h-6 text-yellow-400" />
-          <h1 className="text-2xl font-bold">Welcome back, {displayName}! 👑</h1>
+          <h1 className="text-2xl font-bold">Welcome back, {displayName}! </h1>
         </div>
         <p className="text-gray-300 text-sm">
           Manage announcements, upload videos, and keep your students engaged.
