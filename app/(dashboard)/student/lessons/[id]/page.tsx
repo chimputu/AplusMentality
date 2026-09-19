@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Video, Presentation, FileQuestion } from 'lucide-react';
 import MarkLessonCompleteButton from '@/components/MarkLessonCompleteButton';
+import { getInlineUrl } from '@/lib/cloudinary-url';
 
 interface PageProps {
   params: Promise<{
@@ -129,8 +130,11 @@ export default async function StudentLessonPage({ params }: PageProps) {
 
   // ✅ Check if slides have any content to render
   const hasSlides =
-    lesson.slides &&
-    (lesson.slides.embedUrl || lesson.slides.fileUrl);
+    lesson.slides && (lesson.slides.embedUrl || lesson.slides.fileUrl);
+
+  // ✅ Pre-compute inline URLs (PDF renders inline instead of downloading)
+  const slidesInlineUrl = getInlineUrl(lesson.slides?.fileUrl);
+  const slidesDownloadUrl = lesson.slides?.fileUrl || '';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -217,19 +221,19 @@ export default async function StudentLessonPage({ params }: PageProps) {
               </div>
             )}
 
-            {/* File-based slides (PDF, PPT, etc.) */}
+            {/* File-based slides (PDF, PPT, etc.) — ✅ inline viewing fix */}
             {lesson.slides!.fileUrl && !lesson.slides!.embedUrl && (
               <div className="space-y-3">
                 <div className="relative w-full aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                   <iframe
-                    src={lesson.slides!.fileUrl}
+                    src={slidesInlineUrl}
                     title={lesson.slides!.title}
                     className="absolute top-0 left-0 w-full h-full"
                   />
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <a
-                    href={lesson.slides!.fileUrl}
+                    href={slidesInlineUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
@@ -237,7 +241,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
                     Open in new tab ↗
                   </a>
                   <a
-                    href={lesson.slides!.fileUrl}
+                    href={slidesDownloadUrl}
                     download
                     className="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-lg text-sm font-medium transition"
                   >
