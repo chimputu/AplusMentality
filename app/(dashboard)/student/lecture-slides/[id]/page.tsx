@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Presentation, Download, ExternalLink } from 'lucide-react';
+import { getInlineUrl } from '@/lib/cloudinary-url';
 
 interface PageProps {
   params: Promise<{
@@ -28,6 +29,11 @@ export default async function StudentLectureSlideDetailPage({ params }: PageProp
   }
 
   const embedUrl = slide.embedUrl;
+
+  // ⭐ Inline URL for browser display (removes download header)
+  const inlineUrl = getInlineUrl(slide.fileUrl);
+  const downloadUrl = slide.fileUrl || '';
+
   const isPdf =
     slide.contentType === 'pdf' ||
     (slide.fileUrl?.toLowerCase().endsWith('.pdf') ?? false);
@@ -85,13 +91,13 @@ export default async function StudentLectureSlideDetailPage({ params }: PageProp
           </div>
         )}
 
-        {/* Direct file (PDF, etc.) */}
+        {/* Direct file (PDF, etc.) — ✅ inline fix */}
         {slide.fileUrl && (
           <div className="flex flex-col gap-3">
             {isPdf ? (
               <div className="relative w-full aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                 <iframe
-                  src={slide.fileUrl}
+                  src={inlineUrl}
                   title={slide.title}
                   className="absolute top-0 left-0 w-full h-full"
                 />
@@ -106,7 +112,7 @@ export default async function StudentLectureSlideDetailPage({ params }: PageProp
 
             <div className="flex flex-wrap gap-3">
               <a
-                href={slide.fileUrl}
+                href={inlineUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg transition"
@@ -115,7 +121,7 @@ export default async function StudentLectureSlideDetailPage({ params }: PageProp
                 Open in new tab
               </a>
               <a
-                href={slide.fileUrl}
+                href={downloadUrl}
                 download
                 className="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 font-medium px-5 py-2.5 rounded-lg transition"
               >
