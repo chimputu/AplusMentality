@@ -183,10 +183,9 @@ export default function SimpleChat() {
             {messages.length === 0 && !loading && (
               <div className="text-center py-6">
                 <div className="w-14 h-14 bg-blue-500/10 dark:bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Sparkles className="w-7 h-7 text-blue-500 dark:text-blue-400" />
                 </div>
                 <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">
-                  Hi there! 👋
+                  Hi there! 
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 max-w-[260px] mx-auto">
                   I&apos;m your A+ Study Assistant. Ask me anything about your
