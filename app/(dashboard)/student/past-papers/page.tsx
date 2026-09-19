@@ -10,7 +10,9 @@ import {
   ExternalLink,
   Image as ImageIcon,
   File as FileIcon,
+  X,
 } from 'lucide-react';
+import { getInlineUrl } from '@/lib/cloudinary-url';
 
 interface PastPaper {
   id: string;
@@ -54,6 +56,11 @@ export default function StudentPastPapersPage() {
   const [yearFilter, setYearFilter] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // ✅ Preview modal state
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState('');
+  const [previewType, setPreviewType] = useState<string | null>(null);
+
   useEffect(() => {
     fetch('/api/past-papers')
       .then((r) => r.json())
@@ -93,6 +100,24 @@ export default function StudentPastPapersPage() {
     (a, b) => (b as number) - (a as number)
   );
 
+  // ✅ Open preview modal
+  const handlePreview = (paper: PastPaper) => {
+    if (paper.fileType === 'docx') {
+      // DOCX can't be previewed inline — open in new tab
+      window.open(getInlineUrl(paper.fileUrl), '_blank');
+      return;
+    }
+    setPreviewUrl(getInlineUrl(paper.fileUrl));
+    setPreviewTitle(paper.title);
+    setPreviewType(paper.fileType);
+  };
+
+  const closePreview = () => {
+    setPreviewUrl(null);
+    setPreviewTitle('');
+    setPreviewType(null);
+  };
+
   if (loading) {
     return <div className="text-center py-8 text-gray-500">Loading…</div>;
   }
@@ -111,7 +136,6 @@ export default function StudentPastPapersPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
-        {/* Search */}
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
@@ -123,7 +147,6 @@ export default function StudentPastPapersPage() {
           />
         </div>
 
-        {/* Category */}
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
@@ -136,7 +159,6 @@ export default function StudentPastPapersPage() {
           <option value="final_exam">Final Exams</option>
         </select>
 
-        {/* Year */}
         {years.length > 0 && (
           <select
             value={yearFilter}
@@ -177,7 +199,6 @@ export default function StudentPastPapersPage() {
               key={paper.id}
               className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-5 shadow-sm hover:shadow-md transition flex flex-col"
             >
-              {/* Header */}
               <div className="flex items-start gap-3 mb-3">
                 <div className="w-10 h-10 rounded-lg bg-gray-50 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                   {getFileIcon(paper.fileType)}
@@ -194,7 +215,6 @@ export default function StudentPastPapersPage() {
                 </div>
               </div>
 
-              {/* Category badge */}
               <div className="mb-3">
                 <span
                   className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${
@@ -206,14 +226,12 @@ export default function StudentPastPapersPage() {
                 </span>
               </div>
 
-              {/* Description */}
               {paper.description && (
                 <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
                   {paper.description}
                 </p>
               )}
 
-              {/* Meta */}
               <div className="flex flex-wrap gap-3 text-xs text-gray-500 dark:text-gray-400 mb-4 mt-auto">
                 {paper.year && (
                   <span className="flex items-center gap-1">
@@ -223,16 +241,14 @@ export default function StudentPastPapersPage() {
                 {paper.semester && <span>• {paper.semester}</span>}
               </div>
 
-              {/* Actions */}
+              {/* Actions — Preview inline + Download */}
               <div className="flex gap-2">
-                <a
-                  href={paper.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => handlePreview(paper)}
                   className="flex-1 inline-flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition"
                 >
                   <ExternalLink className="w-3.5 h-3.5" /> Open
-                </a>
+                </button>
                 <a
                   href={paper.fileUrl}
                   download
@@ -244,6 +260,51 @@ export default function StudentPastPapersPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* ✅ Preview Modal */}
+      {previewUrl && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex flex-col"
+          onClick={closePreview}
+        >
+          {/* Modal header */}
+          <div
+            className="flex items-center justify-between px-4 py-3 bg-gray-900 text-white flex-shrink-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-medium text-sm truncate flex-1">
+              {previewTitle}
+            </h3>
+            <button
+              onClick={closePreview}
+              className="p-2 rounded-lg hover:bg-white/10 transition"
+              aria-label="Close preview"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Modal content */}
+          <div
+            className="flex-1 bg-gray-950 flex items-center justify-center overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {previewType === 'image' ? (
+              <img
+                src={previewUrl}
+                alt={previewTitle}
+                className="max-w-full max-h-full object-contain"
+              />
+            ) : (
+              <iframe
+                src={previewUrl}
+                title={previewTitle}
+                className="w-full h-full border-0"
+              />
+            )}
+          </div>
         </div>
       )}
     </div>
