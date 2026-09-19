@@ -216,6 +216,12 @@ export default function DashboardLayout({
       icon: GraduationCap,
       section: 'Learning'
     },
+    { 
+      href: '/student/books', 
+      label: 'Books', 
+      icon: BookOpen,
+      section: 'Learning'
+    },
   ];
 
   const navItems = role === 'ADMIN' ? adminNavItems : studentNavItems;
