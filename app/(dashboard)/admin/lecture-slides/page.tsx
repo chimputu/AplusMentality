@@ -1,8 +1,39 @@
+// app/(dashboard)/admin/lecture-slides/page.tsx
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Plus, ExternalLink, Pencil, Eye } from 'lucide-react';
 import DeleteSlideButton from './DeleteSlideButton';
+
+/**
+ * Wraps a PDF URL with Google Docs Viewer for reliable inline display.
+ * Works across all browsers — Windows, Mac, Android, iOS.
+ */
+function getGoogleDocsViewerUrl(fileUrl: string): string {
+  const encoded = encodeURIComponent(fileUrl);
+  return `https://docs.google.com/viewer?url=${encoded}&embedded=true`;
+}
+
+/**
+ * Compute the "Open" URL for a slide:
+ * - Google Slides embed → use embedUrl
+ * - PDF → wrap in Google Docs Viewer
+ * - Other → use raw URL
+ */
+function getSlideOpenUrl(slide: {
+  embedUrl: string | null;
+  fileUrl: string | null;
+  contentType: string | null;
+}): string {
+  if (slide.embedUrl) return slide.embedUrl;
+  if (!slide.fileUrl) return '#';
+
+  const isPdf =
+    slide.contentType === 'pdf' ||
+    slide.fileUrl.toLowerCase().endsWith('.pdf');
+
+  return isPdf ? getGoogleDocsViewerUrl(slide.fileUrl) : slide.fileUrl;
+}
 
 export default async function AdminLectureSlidesPage() {
   await requireAuth(['ADMIN']);
@@ -29,21 +60,38 @@ export default async function AdminLectureSlidesPage() {
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Title</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Course</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Category</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Order</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                Title
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                Course
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                Category
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                Type
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                Order
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {slides.map((slide) => (
-              <tr key={slide.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+              <tr
+                key={slide.id}
+                className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              >
                 <td className="px-6 py-4">{slide.title}</td>
                 <td className="px-6 py-4">{slide.course?.title || '—'}</td>
                 <td className="px-6 py-4">{slide.category || '—'}</td>
-                <td className="px-6 py-4">{slide.contentType || 'google_slides'}</td>
+                <td className="px-6 py-4">
+                  {slide.contentType || 'google_slides'}
+                </td>
                 <td className="px-6 py-4">{slide.order}</td>
                 <td className="px-6 py-4 flex gap-3 flex-wrap">
                   <Link
@@ -59,7 +107,7 @@ export default async function AdminLectureSlidesPage() {
                     <Pencil className="w-4 h-4" /> Edit
                   </Link>
                   <a
-                    href={slide.embedUrl || slide.fileUrl || '#'}
+                    href={getSlideOpenUrl(slide)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-600 hover:underline flex items-center gap-1"
