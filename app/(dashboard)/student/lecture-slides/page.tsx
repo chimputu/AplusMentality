@@ -1,3 +1,4 @@
+// app/(dashboard)/student/lecture-slides/page.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import { Search, ExternalLink } from 'lucide-react';
@@ -29,6 +30,32 @@ interface LectureSlide {
   updatedAt: string;
 }
 
+/**
+ * Wraps a PDF URL with Google Docs Viewer for reliable inline display.
+ * Works across all browsers — Windows, Mac, Android, iOS.
+ */
+function getGoogleDocsViewerUrl(fileUrl: string): string {
+  const encoded = encodeURIComponent(fileUrl);
+  return `https://docs.google.com/viewer?url=${encoded}&embedded=true`;
+}
+
+/**
+ * Compute the "Open in new tab" URL for a slide:
+ * - If it's a Google Slides embed → use embedUrl
+ * - If it's a PDF file → wrap in Google Docs Viewer
+ * - Otherwise → use the raw URL
+ */
+function getSlideOpenUrl(slide: LectureSlide): string {
+  if (slide.embedUrl) return slide.embedUrl;
+  if (!slide.fileUrl) return '#';
+
+  const isPdf =
+    slide.contentType === 'pdf' ||
+    slide.fileUrl.toLowerCase().endsWith('.pdf');
+
+  return isPdf ? getGoogleDocsViewerUrl(slide.fileUrl) : slide.fileUrl;
+}
+
 export default function StudentLectureSlidesPage() {
   const [slides, setSlides] = useState<LectureSlide[]>([]);
   const [filtered, setFiltered] = useState<LectureSlide[]>([]);
@@ -41,14 +68,16 @@ export default function StudentLectureSlidesPage() {
 
   useEffect(() => {
     fetch('/api/lecture-slides')
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((data: LectureSlide[]) => {
         setSlides(data);
         setFiltered(data);
-        const cats = [...new Set(data.map((slide) => slide.category).filter(Boolean))] as string[];
+        const cats = [
+          ...new Set(data.map((slide) => slide.category).filter(Boolean)),
+        ] as string[];
         setCategories(cats);
         fetch('/api/courses?all=true')
-          .then(res => res.json())
+          .then((res) => res.json())
           .then((coursesData: Course[]) => setCourses(coursesData))
           .catch(() => setCourses([]));
       })
@@ -60,9 +89,10 @@ export default function StudentLectureSlidesPage() {
     let result = slides;
     if (search) {
       const q = search.toLowerCase();
-      result = result.filter((slide) =>
-        slide.title.toLowerCase().includes(q) ||
-        (slide.description && slide.description.toLowerCase().includes(q))
+      result = result.filter(
+        (slide) =>
+          slide.title.toLowerCase().includes(q) ||
+          (slide.description && slide.description.toLowerCase().includes(q))
       );
     }
     if (categoryFilter) {
@@ -98,7 +128,9 @@ export default function StudentLectureSlidesPage() {
           >
             <option value="">All Categories</option>
             {categories.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
         )}
@@ -110,27 +142,46 @@ export default function StudentLectureSlidesPage() {
           >
             <option value="">All Courses</option>
             {courses.map((course) => (
-              <option key={course.id} value={course.id}>{course.title}</option>
+              <option key={course.id} value={course.id}>
+                {course.title}
+              </option>
             ))}
           </select>
         )}
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">No lecture slides found.</div>
+        <div className="text-center py-12 text-gray-500">
+          No lecture slides found.
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((slide) => (
-            <div key={slide.id} className="border rounded-xl p-4 hover:shadow-md transition bg-white dark:bg-gray-800">
+            <div
+              key={slide.id}
+              className="border rounded-xl p-4 hover:shadow-md transition bg-white dark:bg-gray-800"
+            >
               <h3 className="font-semibold text-lg">{slide.title}</h3>
-              {slide.description && <p className="text-sm text-gray-600 mt-1">{slide.description}</p>}
+              {slide.description && (
+                <p className="text-sm text-gray-600 mt-1">
+                  {slide.description}
+                </p>
+              )}
               <div className="flex flex-wrap gap-2 mt-2 text-xs text-gray-500">
-                {slide.category && <span className="bg-gray-100 px-2 py-1 rounded">Category: {slide.category}</span>}
-                {slide.course && <span className="bg-gray-100 px-2 py-1 rounded">Course: {slide.course.title}</span>}
+                {slide.category && (
+                  <span className="bg-gray-100 px-2 py-1 rounded">
+                    Category: {slide.category}
+                  </span>
+                )}
+                {slide.course && (
+                  <span className="bg-gray-100 px-2 py-1 rounded">
+                    Course: {slide.course.title}
+                  </span>
+                )}
               </div>
               <div className="mt-4 flex gap-2">
                 <a
-                  href={slide.embedUrl || slide.fileUrl || '#'}
+                  href={getSlideOpenUrl(slide)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
