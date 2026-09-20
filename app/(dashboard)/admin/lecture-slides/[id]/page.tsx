@@ -154,7 +154,7 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
             />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
-              No content available
+              No content available for preview. Please use the "Open" or "Download" buttons above.
             </div>
           )}
         </div>
