@@ -1,21 +1,21 @@
 // lib/cloudinary-url.ts
 
 /**
- * Converts a Cloudinary URL into an inline-viewable URL.
- * Removes the Content-Disposition: attachment header so browsers
- * (especially Windows Firefox/Edge/Chrome) render PDFs inline
- * instead of downloading them.
+ * Returns a URL suitable for inline viewing of a file.
  *
- * Non-Cloudinary URLs are returned unchanged.
+ * NOTE: This function used to inject Cloudinary's `fl_attachment:false`
+ * transformation flag, but that flag causes Firefox to download the file
+ * with an incorrect filename (`false.pdf`) instead of previewing it.
+ *
+ * Instead, we now wrap PDFs in Google Docs Viewer (done in FileViewer.tsx),
+ * which works reliably across all browsers and OS combinations.
+ *
+ * This function is now a passthrough but kept for backward compatibility
+ * across all pages that import it.
  */
 export function getInlineUrl(url: string | null | undefined): string {
   if (!url) return '';
-  if (!url.includes('cloudinary.com')) return url;
-
-  // Skip if already transformed
-  if (url.includes('fl_attachment:false')) return url;
-
-  return url.replace('/upload/', '/upload/fl_attachment:false/');
+  return url;
 }
 
 /**
