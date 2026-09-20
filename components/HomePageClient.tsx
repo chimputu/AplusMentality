@@ -33,6 +33,12 @@ const staggerContainer = {
   },
 };
 
+// Mobile-safe animation: always visible, just fades in
+const mobileSafe = {
+  hidden: { opacity: 1, y: 0 },
+  visible: { opacity: 1, y: 0 },
+};
+
 export default function HomePageClient() {
   const router = useRouter();
   const { isSignedIn } = useUser();
@@ -214,7 +220,7 @@ export default function HomePageClient() {
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
         className="relative pt-20 pb-10 md:pt-24 md:pb-12 overflow-hidden"
         style={{
@@ -309,7 +315,7 @@ export default function HomePageClient() {
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
         className="py-12 bg-white border-b border-gray-100"
       >
@@ -347,7 +353,7 @@ export default function HomePageClient() {
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
         className="py-12 bg-gray-50"
       >
@@ -406,7 +412,7 @@ export default function HomePageClient() {
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
         className="py-12 bg-white"
       >
@@ -460,7 +466,7 @@ export default function HomePageClient() {
         id="explore"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
         className="py-16 bg-gray-50"
       >
@@ -488,11 +494,11 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== WHAT WE OFFER – FIXED IMAGES WITH FALLBACK (Mentorship & Support fixed) ===== */}
+      {/* ===== WHAT WE OFFER ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
         className="w-full py-12 bg-gradient-to-br from-blue-50 to-blue-100/50"
       >
@@ -540,7 +546,6 @@ export default function HomePageClient() {
               {
                 title: 'Mentorship & Support',
                 description: 'One-on-one guidance from mentors.',
-                // ✅ Fixed URL – more reliable image of mentorship
                 image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=400&fit=crop'
               },
               {
@@ -554,7 +559,6 @@ export default function HomePageClient() {
                 variants={fadeInUp}
                 className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.03] h-48 sm:h-56 cursor-pointer"
               >
-                {/* Background Image with Fallback Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-blue-400">
                   <Image
                     src={item.image}
@@ -570,7 +574,6 @@ export default function HomePageClient() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 </div>
 
-                {/* Content */}
                 <div className="relative h-full flex flex-col justify-end p-5 text-white">
                   <h3 className="text-lg font-bold">{item.title}</h3>
                   <p className="text-sm text-white/80 mt-1">{item.description}</p>
@@ -585,7 +588,7 @@ export default function HomePageClient() {
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
         className="py-12 bg-white"
       >
@@ -620,12 +623,12 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ============================================================== */}
-      {/* ===== COURSES BY YEAR (WITH IMAGE GROW ON HOVER) ===== */}
+      {/* ===== COURSES BY YEAR ===== */}
       {/* ============================================================== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
         className="py-12 bg-white"
       >
@@ -649,7 +652,7 @@ export default function HomePageClient() {
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Natural Sciences Foundation</h3>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {year1Courses.slice(0,4).map((course, idx) => (
                 <motion.div
                   key={idx}
@@ -657,7 +660,7 @@ export default function HomePageClient() {
                   className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
-                  <div className="relative w-full h-44 sm:h-40 bg-gray-200 overflow-hidden">
+                  <div className="relative w-full aspect-[16/9] bg-gray-200 overflow-hidden">
                     <img
                       src={course.image}
                       alt={course.title}
@@ -670,21 +673,21 @@ export default function HomePageClient() {
                       Natural Sciences
                     </div>
                   </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                  <div className="p-3 sm:p-4 flex flex-col flex-1">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
                     <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex items-center justify-between mt-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
                         <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students})</span>
+                        <span className="text-gray-400 text-xs sm:text-sm">({course.students})</span>
                       </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEnroll(course.code);
                         }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full transition whitespace-nowrap"
                       >
                         Explore now
                       </button>
@@ -705,7 +708,7 @@ export default function HomePageClient() {
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Natural Sciences Advanced</h3>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {year1Courses.slice(4).map((course, idx) => (
                 <motion.div
                   key={idx}
@@ -713,7 +716,7 @@ export default function HomePageClient() {
                   className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
-                  <div className="relative w-full h-44 sm:h-40 bg-gray-200 overflow-hidden">
+                  <div className="relative w-full aspect-[16/9] bg-gray-200 overflow-hidden">
                     <img
                       src={course.image}
                       alt={course.title}
@@ -726,21 +729,21 @@ export default function HomePageClient() {
                       Natural Sciences
                     </div>
                   </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                  <div className="p-3 sm:p-4 flex flex-col flex-1">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
                     <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex items-center justify-between mt-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
                         <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students})</span>
+                        <span className="text-gray-400 text-xs sm:text-sm">({course.students})</span>
                       </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEnroll(course.code);
                         }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full transition whitespace-nowrap"
                       >
                         Explore now
                       </button>
@@ -761,7 +764,7 @@ export default function HomePageClient() {
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Computer Science Foundation</h3>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {year2Courses.slice(0,5).map((course, idx) => (
                 <motion.div
                   key={idx}
@@ -769,7 +772,7 @@ export default function HomePageClient() {
                   className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
-                  <div className="relative w-full h-44 sm:h-40 bg-gray-200 overflow-hidden">
+                  <div className="relative w-full aspect-[16/9] bg-gray-200 overflow-hidden">
                     <img
                       src={course.image}
                       alt={course.title}
@@ -782,21 +785,21 @@ export default function HomePageClient() {
                       Computer Science
                     </div>
                   </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                  <div className="p-3 sm:p-4 flex flex-col flex-1">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
                     <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex items-center justify-between mt-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
                         <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students})</span>
+                        <span className="text-gray-400 text-xs sm:text-sm">({course.students})</span>
                       </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEnroll(course.code);
                         }}
-                        className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                        className="bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full transition whitespace-nowrap"
                       >
                         Explore now
                       </button>
@@ -817,7 +820,7 @@ export default function HomePageClient() {
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Computer Science Advanced</h3>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {year2Courses.slice(5).map((course, idx) => (
                 <motion.div
                   key={idx}
@@ -825,7 +828,7 @@ export default function HomePageClient() {
                   className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
-                  <div className="relative w-full h-44 sm:h-40 bg-gray-200 overflow-hidden">
+                  <div className="relative w-full aspect-[16/9] bg-gray-200 overflow-hidden">
                     <img
                       src={course.image}
                       alt={course.title}
@@ -838,21 +841,21 @@ export default function HomePageClient() {
                       Computer Science
                     </div>
                   </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
+                  <div className="p-3 sm:p-4 flex flex-col flex-1">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
                     <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex items-center justify-between mt-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
                         <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students})</span>
+                        <span className="text-gray-400 text-xs sm:text-sm">({course.students})</span>
                       </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEnroll(course.code);
                         }}
-                        className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
+                        className="bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full transition whitespace-nowrap"
                       >
                         Explore now
                       </button>
@@ -869,7 +872,7 @@ export default function HomePageClient() {
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
         className="py-12 bg-white"
       >
@@ -1008,11 +1011,11 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== SIGN UP AS A TUTOR (WITH WHATSAPP) ===== */}
+      {/* ===== SIGN UP AS A TUTOR ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
         className="py-12 bg-gradient-to-r from-blue-50 to-purple-50"
       >
@@ -1055,7 +1058,7 @@ export default function HomePageClient() {
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
         className="py-12 bg-blue-50"
       >
@@ -1093,11 +1096,11 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== TESTIMONIALS – CONTINUOUS SLIDING MARQUEE ===== */}
+      {/* ===== TESTIMONIALS ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
         className="py-12 bg-white overflow-hidden"
       >
@@ -1146,13 +1149,11 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ============================================================== */}
-      {/* ===== MOTIVATIONAL SECTION: LEFT TEXT + RIGHT VIDEO ===== */}
-      {/* ============================================================== */}
+      {/* ===== MOTIVATIONAL SECTION ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
         className="py-12 bg-white"
       >
@@ -1201,7 +1202,6 @@ export default function HomePageClient() {
               </div>
             </div>
 
-            {/* Right – YouTube Video (Clean Embed) */}
             <div className="flex-1 w-full">
               <div className="relative w-full rounded-xl overflow-hidden shadow-xl" style={{ paddingBottom: '56.25%' }}>
                <iframe
@@ -1224,7 +1224,7 @@ export default function HomePageClient() {
       <motion.section
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
         className="py-12 bg-blue-600 text-white"
       >
@@ -1243,7 +1243,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== PARTNER INSTITUTIONS – CARD MARQUEE (Continuous Sliding) ===== */}
+      {/* ===== PARTNER INSTITUTIONS ===== */}
       <section className="py-16 bg-white overflow-hidden">
         <div className="w-full">
           <div className="text-center mb-10 px-3 sm:px-4">
