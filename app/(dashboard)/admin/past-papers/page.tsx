@@ -2,8 +2,9 @@
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Plus, FileText, ExternalLink, Edit } from 'lucide-react';
+import { Plus, FileText, ExternalLink, Edit, Download } from 'lucide-react';
 import DeleteButton from '@/components/DeleteButton';
+import { getInlineUrl } from '@/lib/cloudinary-url';
 
 const CATEGORY_LABELS: Record<string, string> = {
   test: 'Test',
@@ -122,14 +123,25 @@ export default async function AdminPastPapersPage() {
                       {paper.year || '—'}
                     </td>
                     <td className="px-6 py-4">
-                      <a
-                        href={paper.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline inline-flex items-center gap-1 text-sm"
-                      >
-                        <ExternalLink className="w-4 h-4" /> Open
-                      </a>
+                      <div className="flex gap-3 items-center">
+                        <a
+                          href={getInlineUrl(paper.fileUrl)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline inline-flex items-center gap-1 text-sm"
+                          title="Open in browser"
+                        >
+                          <ExternalLink className="w-4 h-4" /> Open
+                        </a>
+                        <a
+                          href={paper.fileUrl}
+                          download
+                          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 inline-flex items-center gap-1 text-sm"
+                          title="Download"
+                        >
+                          <Download className="w-4 h-4" />
+                        </a>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-3 items-center">
