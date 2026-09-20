@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { Eye, ExternalLink, Download } from 'lucide-react';
-import FileViewer from './FileViwer';
+import FileViewer from './FileViewer';
 import { getInlineUrl } from '@/lib/cloudinary-url';
 
 interface PastPaperAdminActionsProps {
