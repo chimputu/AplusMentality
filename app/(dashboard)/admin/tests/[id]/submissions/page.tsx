@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Download, ExternalLink, FileText, X } from 'lucide-react';
+import { getInlineUrl } from '@/lib/cloudinary-url';
 
 interface Submission {
   id: string;
@@ -167,7 +168,7 @@ export default function AdminTestSubmissionsPage() {
                   <td className="px-4 py-3">
                     {sub.fileUrl ? (
                       <a
-                        href={sub.fileUrl}
+                        href={getInlineUrl(sub.fileUrl)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-blue-600 hover:underline"
@@ -233,7 +234,7 @@ export default function AdminTestSubmissionsPage() {
 
             {grading.fileUrl && (
               <a
-                href={grading.fileUrl}
+                href={getInlineUrl(grading.fileUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-blue-600 hover:underline mb-4"
