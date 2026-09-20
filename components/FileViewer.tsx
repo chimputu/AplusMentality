@@ -13,6 +13,15 @@ interface FileViewerProps {
   downloadUrl?: string;
 }
 
+/**
+ * Wraps a PDF URL with Google Docs Viewer for reliable inline display.
+ * Works across all browsers — Windows, Mac, Android, iOS.
+ */
+function getGoogleDocsViewerUrl(fileUrl: string): string {
+  const encoded = encodeURIComponent(fileUrl);
+  return `https://docs.google.com/viewer?url=${encoded}&embedded=true`;
+}
+
 export default function FileViewer({
   isOpen,
   onClose,
@@ -60,6 +69,8 @@ export default function FileViewer({
   if (!isOpen) return null;
 
   const isImage = fileType === 'image';
+  const isPdf = fileType === 'pdf' || fileUrl.toLowerCase().endsWith('.pdf');
+  const isDocx = fileType === 'docx';
 
   return (
     <div
@@ -107,19 +118,22 @@ export default function FileViewer({
 
       {/* Content */}
       <div className="flex-1 overflow-auto bg-gray-950 relative">
-        {isImage ? (
+        {/* ============ IMAGE ============ */}
+        {isImage && (
           <img src={fileUrl} alt={title} className="w-full h-auto" />
-        ) : (
+        )}
+
+        {/* ============ PDF (via Google Docs Viewer) ============ */}
+        {isPdf && !isImage && (
           <>
-            {/* PDF iframe — works on desktop + Android Chrome */}
             <iframe
-              src={fileUrl}
+              src={getGoogleDocsViewerUrl(fileUrl)}
               title={title}
               className="w-full border-0"
               style={{ height: '100%', minHeight: '500px' }}
+              allowFullScreen
             />
 
-            {/* iOS Safari can't render PDFs inline — show fallback bar */}
             {isIOS && (
               <div className="absolute bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur border-t border-gray-700 p-3">
                 <p className="text-xs text-gray-400 text-center mb-2">
@@ -149,6 +163,42 @@ export default function FileViewer({
               </div>
             )}
           </>
+        )}
+
+        {/* ============ DOCX / OTHER ============ */}
+        {!isImage && !isPdf && (
+          <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+            <div className="w-20 h-20 rounded-full bg-blue-500/20 flex items-center justify-center mb-4">
+              <FileText className="w-10 h-10 text-blue-400" />
+            </div>
+            <h3 className="text-white font-semibold text-lg mb-2">{title}</h3>
+            <p className="text-gray-400 text-sm mb-6 max-w-xs">
+              {isDocx
+                ? "Word documents can't be previewed in the browser. Download it to open in Word or Google Docs."
+                : 'This file type cannot be previewed in the app.'}
+            </p>
+            <div className="flex flex-col gap-3 w-full max-w-xs">
+              <a
+                href={fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-medium transition"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Open
+              </a>
+              {downloadUrl && (
+                <a
+                  href={downloadUrl}
+                  download
+                  className="inline-flex items-center justify-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-5 py-3 rounded-lg font-medium transition"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </a>
+              )}
+            </div>
+          </div>
         )}
       </div>
     </div>
