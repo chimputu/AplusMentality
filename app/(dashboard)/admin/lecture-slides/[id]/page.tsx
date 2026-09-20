@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, ExternalLink, Pencil, Download } from 'lucide-react';
 import { getInlineUrl } from '@/lib/cloudinary-url';
+import SlideViewerButton from '@/components/SlideViewerButton';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -41,26 +42,43 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
         >
           <ArrowLeft className="w-4 h-4" /> Back to Slides
         </Link>
-        <div className="flex gap-2 flex-wrap">
+
+        {/* ✅ Mobile-friendly action buttons */}
+        <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
           <Link
             href={`/admin/lecture-slides/${slide.id}/edit`}
-            className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+            className="inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
           >
             <Pencil className="w-4 h-4" /> Edit
           </Link>
-          <a
-            href={openUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-          >
-            <ExternalLink className="w-4 h-4" /> Open
-          </a>
+
+          {/* View in App — only if there's a file (PDF/image) */}
+          {slide.fileUrl && (
+            <SlideViewerButton
+              fileUrl={slide.fileUrl}
+              title={slide.title}
+              fileType={slide.contentType}
+            />
+          )}
+
+          {/* Open in new tab */}
+          {openUrl !== '#' && (
+            <a
+              href={openUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
+            >
+              <ExternalLink className="w-4 h-4" /> Open
+            </a>
+          )}
+
+          {/* Download */}
           {slide.fileUrl && (
             <a
               href={downloadUrl}
               download
-              className="inline-flex items-center gap-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-lg text-sm font-medium transition"
+              className="inline-flex items-center justify-center gap-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
             >
               <Download className="w-4 h-4" /> Download
             </a>
