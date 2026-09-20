@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Video, Presentation, FileQuestion } from 'lucide-react';
 import MarkLessonCompleteButton from '@/components/MarkLessonCompleteButton';
+import SlideViewerButton from '@/components/SlideViewerButton';
 import { getInlineUrl } from '@/lib/cloudinary-url';
 
 interface PageProps {
@@ -221,7 +222,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
               </div>
             )}
 
-            {/* File-based slides (PDF, PPT, etc.) — ✅ inline viewing fix */}
+            {/* File-based slides (PDF, PPT, etc.) */}
             {lesson.slides!.fileUrl && !lesson.slides!.embedUrl && (
               <div className="space-y-3">
                 <div className="relative w-full aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
@@ -231,19 +232,26 @@ export default async function StudentLessonPage({ params }: PageProps) {
                     className="absolute top-0 left-0 w-full h-full"
                   />
                 </div>
-                <div className="flex flex-wrap gap-3">
+
+                {/* ✅ Mobile-friendly action buttons */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <SlideViewerButton
+                    fileUrl={lesson.slides!.fileUrl!}
+                    title={lesson.slides!.title}
+                    fileType={lesson.slides!.contentType}
+                  />
                   <a
                     href={slidesInlineUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+                    className="inline-flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-5 py-3 sm:px-4 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
                   >
                     Open in new tab ↗
                   </a>
                   <a
                     href={slidesDownloadUrl}
                     download
-                    className="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-lg text-sm font-medium transition"
+                    className="inline-flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-5 py-3 sm:px-4 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
                   >
                     Download ⬇
                   </a>

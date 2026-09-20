@@ -10,9 +10,9 @@ import {
   ExternalLink,
   Image as ImageIcon,
   File as FileIcon,
-  X,
 } from 'lucide-react';
 import { getInlineUrl } from '@/lib/cloudinary-url';
+import FileViewer from '@/components/FileViwer';
 
 interface PastPaper {
   id: string;
@@ -56,7 +56,7 @@ export default function StudentPastPapersPage() {
   const [yearFilter, setYearFilter] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // ✅ Preview modal state
+  // ✅ Preview modal state (shared FileViewer)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewTitle, setPreviewTitle] = useState('');
   const [previewType, setPreviewType] = useState<string | null>(null);
@@ -263,50 +263,17 @@ export default function StudentPastPapersPage() {
         </div>
       )}
 
-      {/* ✅ Preview Modal */}
-      {previewUrl && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex flex-col"
-          onClick={closePreview}
-        >
-          {/* Modal header */}
-          <div
-            className="flex items-center justify-between px-4 py-3 bg-gray-900 text-white flex-shrink-0"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="font-medium text-sm truncate flex-1">
-              {previewTitle}
-            </h3>
-            <button
-              onClick={closePreview}
-              className="p-2 rounded-lg hover:bg-white/10 transition"
-              aria-label="Close preview"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Modal content */}
-          <div
-            className="flex-1 bg-gray-950 flex items-center justify-center overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {previewType === 'image' ? (
-              <img
-                src={previewUrl}
-                alt={previewTitle}
-                className="max-w-full max-h-full object-contain"
-              />
-            ) : (
-              <iframe
-                src={previewUrl}
-                title={previewTitle}
-                className="w-full h-full border-0"
-              />
-            )}
-          </div>
-        </div>
-      )}
+      {/* ✅ Shared FileViewer — mobile-friendly */}
+      <FileViewer
+        isOpen={!!previewUrl}
+        onClose={closePreview}
+        fileUrl={previewUrl || ''}
+        title={previewTitle}
+        fileType={previewType}
+        downloadUrl={
+          previewUrl ? previewUrl.replace('fl_attachment:false/', '') : undefined
+        }
+      />
     </div>
   );
 }
