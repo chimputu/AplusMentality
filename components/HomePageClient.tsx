@@ -45,33 +45,6 @@ export default function HomePageClient() {
   // ZAMBIA 2026 DATA — Based on HEA Gazette & University Websites
   // ============================================================
 
-  const topPublicUniversities = [
-    { name: 'University of Zambia', location: 'Lusaka' },
-    { name: 'Copperbelt University', location: 'Kitwe' },
-    { name: 'Mulungushi University', location: 'Kabwe' },
-    { name: 'Kwame Nkrumah University', location: 'Kabwe' },
-    { name: 'Chalimbana University', location: 'Lusaka' },
-  ];
-
-  const aLevelPathways = [
-    { name: 'STEM', subjects: 'Physics, Chemistry, Biology, Mathematics, Further Mathematics', color: 'bg-blue-100 text-blue-800' },
-    { name: 'Social Sciences & Languages', subjects: 'History, Geography, Civic Education, English, Literature', color: 'bg-green-100 text-green-800' },
-    { name: 'Business Studies', subjects: 'Business, Economics, Accounting, Entrepreneurship', color: 'bg-yellow-100 text-yellow-800' },
-    { name: 'Sports Science', subjects: 'Physical Education, Sports Science, Health Education', color: 'bg-orange-100 text-orange-800' },
-    { name: 'Creative & Performing Arts', subjects: 'Art, Music, Drama, Dance, Creative Writing', color: 'bg-purple-100 text-purple-800' },
-  ];
-
-  const aLevelCourses = [
-    { id: 'al1', code: 'AL-BIO', title: 'A-Level Biology', description: 'Advanced cell biology, genetics, physiology, and ecology.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.9, students: 850 },
-    { id: 'al2', code: 'AL-CHEM', title: 'A-Level Chemistry', description: 'Advanced organic, inorganic, and physical chemistry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.8, students: 720 },
-    { id: 'al3', code: 'AL-PHY', title: 'A-Level Physics', description: 'Advanced mechanics, electromagnetism, and quantum physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.7, students: 680 },
-    { id: 'al4', code: 'AL-MATH', title: 'A-Level Mathematics', description: 'Pure mathematics, statistics, and mechanics.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, students: 1200 },
-    { id: 'al5', code: 'AL-FMATH', title: 'A-Level Further Mathematics', description: 'Advanced pure mathematics and further mechanics.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.6, students: 450 },
-    { id: 'al6', code: 'AL-ENG', title: 'A-Level English Literature', description: 'Advanced literary analysis and critical theory.', image: 'https://images.unsplash.com/photo-1544717305-996b815c338b?w=400&h=200&fit=crop', rating: 4.5, students: 560 },
-    { id: 'al7', code: 'AL-HIST', title: 'A-Level History', description: 'Advanced historical analysis and historiography.', image: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=400&h=200&fit=crop', rating: 4.4, students: 490 },
-    { id: 'al8', code: 'AL-GEOG', title: 'A-Level Geography', description: 'Advanced physical geography, human geography, and GIS.', image: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=400&h=200&fit=crop', rating: 4.3, students: 380 },
-  ];
-
   const institutions = [
     { name: 'University of Zambia', logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&h=150&fit=crop' },
     { name: 'Copperbelt University', logo: 'https://images.unsplash.com/photo-1562774053-701939374585?w=150&h=150&fit=crop' },
@@ -86,13 +59,13 @@ export default function HomePageClient() {
   const testimonials = [
     { id: 1, name: 'Sarah Mwansa', role: 'Medical Student, UNZA', quote: 'A+ Mentality has completely transformed how I learn. The curated videos and past papers keep me ahead of my peers.', rating: 5 },
     { id: 2, name: 'David Banda', role: 'Engineering Graduate, CBU', quote: 'The mentorship platform is a game-changer. I finally feel supported in my academic journey.', rating: 5 },
-    { id: 3, name: 'Grace Phiri', role: 'A-Level Student, Lusaka', quote: 'The A-Level resources are amazing. The subject pathways make it easy to focus on what I need for university entrance.', rating: 5 },
+    { id: 3, name: 'Grace Phiri', role: 'Student, Lusaka', quote: 'The resources are amazing. The pathways make it easy to focus on what I need for university entrance.', rating: 5 },
   ];
 
   const exploreItems = [
     { icon: <TrendingUp className="w-6 h-6" />, title: 'Trending Now', description: 'Discover what\'s popular among Zambian learners.', color: 'hover:bg-red-50 hover:border-red-300' },
     { icon: <PlayCircle className="w-6 h-6" />, title: 'Watch Videos', description: 'Access educational videos aligned with the Zambian curriculum.', color: 'hover:bg-blue-50 hover:border-blue-300' },
-    { icon: <Compass className="w-6 h-6" />, title: 'A-Level Pathways', description: 'Explore STEM, Social Sciences, Business, and more.', color: 'hover:bg-green-50 hover:border-green-300' },
+    { icon: <Compass className="w-6 h-6" />, title: 'Course Pathways', description: 'Explore Natural Sciences and Computer Science.', color: 'hover:bg-green-50 hover:border-green-300' },
     { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach thousands of students across Zambia.', color: 'hover:bg-yellow-50 hover:border-yellow-300' },
     { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-purple-50 hover:border-purple-300' },
   ];
@@ -153,14 +126,6 @@ export default function HomePageClient() {
       router.push('/sign-up');
     } else {
       router.push('/courses');
-    }
-  };
-
-  const handleViewAllALevels = () => {
-    if (!isSignedIn) {
-      router.push('/sign-up');
-    } else {
-      router.push('/alevel');
     }
   };
 
@@ -260,33 +225,33 @@ export default function HomePageClient() {
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/70" />
 
-        <div className="relative w-full px-2 sm:px-4 z-10">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
+        <div className="relative w-full px-3 sm:px-4 z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
             {/* Left – Text Content */}
-            <div className="flex-[2] text-center lg:text-left">
-              <div className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.2]">
+            <div className="flex-[2] text-center lg:text-left w-full">
+              <div className="text-3xl sm:text-4xl lg:text-6xl font-bold text-white leading-[1.2]">
                 <span className="block">Your Goal.</span>
-                <span className="block text-blue-300 ml-10">Our tools.</span>
-                <span className="block text-2xl sm:text-3xl lg:text-6xl font-normal text-gray-200 mt-2 ml-15">
-                  Your <span className="text-blue-300 font-bold lg:text-6xl">A+</span> result.
+                <span className="block text-blue-300 ml-4 sm:ml-10">Our tools.</span>
+                <span className="block text-xl sm:text-2xl lg:text-5xl font-normal text-gray-200 mt-2 ml-4 sm:ml-16">
+                  Your <span className="text-blue-300 font-bold lg:text-5xl">A+</span> result.
                 </span>
               </div>
 
-              <p className="mt-4 text-lg text-gray-200 max-w-2xl">
+              <p className="mt-4 text-base sm:text-lg text-gray-200 max-w-2xl mx-auto lg:mx-0">
                 A+ Mentality helps students study smarter, stay organized, and track progress 
                 so you can achieve more and stress less.
               </p>
 
               <div className="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
-                <Link href="/sign-up" className="bg-blue-600 text-white px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl">
+                <Link href="/sign-up" className="bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl">
                   Get Started Free
                 </Link>
-                <Link href="#explore" className="bg-white/20 backdrop-blur-sm text-white px-8 py-3 rounded-full font-medium hover:bg-white/30 transition border border-white/30">
+                <Link href="#explore" className="bg-white/20 backdrop-blur-sm text-white px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-white/30 transition border border-white/30">
                   Explore Features
                 </Link>
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-gray-300">
+              <div className="mt-8 flex flex-wrap justify-center lg:justify-start items-center gap-4 sm:gap-6 text-sm text-gray-300">
                 <span className="flex items-center gap-1">
                   <span className="text-green-400">✓</span> Free to start
                 </span>
@@ -303,18 +268,18 @@ export default function HomePageClient() {
             </div>
 
             {/* Right – Hero Card with Brain & Icons */}
-            <div className="flex-1 flex justify-center lg:justify-end">
+            <div className="flex-1 flex justify-center lg:justify-end w-full">
               <div className="relative w-full max-w-sm lg:max-w-md">
                 <div className="absolute -inset-4 bg-gradient-to-r from-blue-300 to-blue-400 rounded-2xl blur-3xl opacity-20" />
-                <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-xl text-center">
+                <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-5 sm:p-8 shadow-xl text-center">
                   <div className="flex justify-center mb-4">
                     
                   </div>
 
-                  <h3 className="text-2xl font-bold text-white mb-1">Built for Zambian Students</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">Built for Zambian Students</h3>
                   <p className="text-blue-200 text-sm">By Zambians, for Zambians</p>
 
-                  <div className="mt-6 flex justify-center gap-8 text-sm">
+                  <div className="mt-6 flex justify-center gap-6 sm:gap-8 text-sm">
                     <div>
                       <p className="font-bold text-white text-lg"></p>
                       <p className="text-blue-200 text-xs">Quality Content</p>
@@ -347,7 +312,7 @@ export default function HomePageClient() {
         variants={staggerContainer}
         className="py-12 bg-white border-b border-gray-100"
       >
-        <div className="w-full px-2 sm:px-4">
+        <div className="w-full px-3 sm:px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             <motion.div variants={fadeInUp} className="text-center p-4">
               <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -385,8 +350,8 @@ export default function HomePageClient() {
         variants={fadeInUp}
         className="py-12 bg-gray-50"
       >
-        <div className="w-full px-2 sm:px-4">
-          <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-lg border border-gray-200 p-8 md:p-12">
+        <div className="w-full px-3 sm:px-4">
+          <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-lg border border-gray-200 p-5 sm:p-8 md:p-12">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
               <div>
                 <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full mb-2">
@@ -444,16 +409,16 @@ export default function HomePageClient() {
         variants={staggerContainer}
         className="py-12 bg-white"
       >
-        <div className="w-full px-2 sm:px-4">
+        <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
             <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900">Top Zambian Universities</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Top Zambian Universities</h2>
             <p className="mt-2 text-gray-600">
               The leading public universities in Zambia
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 max-w-6xl mx-auto">
             {[
               { name: 'University of Zambia', location: 'Lusaka', logo: '/unza.png' },
               { name: 'Copperbelt University', location: 'Kitwe', logo: '/cbu.png' },
@@ -466,7 +431,7 @@ export default function HomePageClient() {
                 variants={fadeInUp}
                 className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-blue-300 hover:scale-[1.04] transition-all duration-300 flex flex-col shadow-sm"
               >
-                <div className="w-full h-36 md:h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+                <div className="w-full h-28 sm:h-36 md:h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
                   <Image
                     src={uni.logo}
                     alt={uni.name}
@@ -475,8 +440,8 @@ export default function HomePageClient() {
                     className="object-contain w-full h-full p-2"
                   />
                 </div>
-                <div className="p-4 text-center border-t border-gray-100">
-                  <h3 className="font-bold text-gray-800 text-sm md:text-base group-hover:text-blue-600 transition-colors">
+                <div className="p-3 sm:p-4 text-center border-t border-gray-100">
+                  <h3 className="font-bold text-gray-800 text-xs sm:text-sm md:text-base group-hover:text-blue-600 transition-colors">
                     {uni.name}
                   </h3>
                   <p className="text-xs text-gray-500 mt-0.5">{uni.location}</p>
@@ -498,10 +463,10 @@ export default function HomePageClient() {
         variants={staggerContainer}
         className="py-16 bg-gray-50"
       >
-        <div className="w-full px-2 sm:px-4">
+        <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-12">
             <Compass className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900">Must Explore</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Must Explore</h2>
             <p className="mt-2 text-gray-600">Discover the best of what A+ Mentality has to offer</p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
@@ -530,10 +495,10 @@ export default function HomePageClient() {
         variants={staggerContainer}
         className="w-full py-12 bg-gradient-to-br from-blue-50 to-blue-100/50"
       >
-        <div className="w-full px-2 sm:px-4">
+        <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-12">
             <Crown className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900">What We Offer</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">What We Offer</h2>
             <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
               Everything you need to succeed in your academic journey – all in one place.
             </p>
@@ -586,7 +551,7 @@ export default function HomePageClient() {
               <motion.div
                 key={idx}
                 variants={fadeInUp}
-                className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.03] h-56 cursor-pointer"
+                className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.03] h-48 sm:h-56 cursor-pointer"
               >
                 {/* Background Image with Fallback Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-blue-400">
@@ -623,10 +588,10 @@ export default function HomePageClient() {
         variants={fadeInUp}
         className="py-12 bg-white"
       >
-        <div className="w-full px-2 sm:px-4">
+        <div className="w-full px-3 sm:px-4">
           <div className="text-center mb-10">
             <Target className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900">Our Aim</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Our Aim</h2>
             <p className="mt-2 text-gray-600 max-w-3xl mx-auto">
               At <span className="font-semibold text-blue-600">A+ Mentality</span>, we believe that every Zambian student
               deserves access to high-quality education and mentorship. Our mission is to bridge the gap between
@@ -653,43 +618,6 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== A-LEVEL PATHWAYS ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={staggerContainer}
-        className="py-12 bg-blue-50"
-      >
-        <div className="w-full px-2 sm:px-4">
-          <motion.div variants={fadeInUp} className="text-center mb-10">
-            <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900">A-Level Pathways</h2>
-            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
-              Based on the 2023 Zambia Education Curriculum Framework – five specialised pathways for Forms 5 & 6 
-            </p>
-          </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {aLevelPathways.map((pathway, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeInUp}
-                className={`${pathway.color} rounded-xl p-5 text-center shadow-sm hover:shadow-md transition`}
-              >
-                <h3 className="text-lg font-bold text-gray-800">{pathway.name}</h3>
-                <p className="text-xs text-gray-600 mt-1">{pathway.subjects}</p>
-                <div className="mt-3 text-blue-600 font-medium text-sm cursor-pointer" onClick={handleExplore}>
-                  Explore →
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          <motion.p variants={fadeInUp} className="text-center text-xs text-gray-500 mt-4">
-            A-Levels run from Form 5 to Form 6. Students specialise in one pathway. 
-          </motion.p>
-        </div>
-      </motion.section>
-
       {/* ============================================================== */}
       {/* ===== COURSES BY YEAR (WITH IMAGE GROW ON HOVER) ===== */}
       {/* ============================================================== */}
@@ -700,10 +628,10 @@ export default function HomePageClient() {
         variants={staggerContainer}
         className="py-12 bg-white"
       >
-        <div className="w-full px-2 sm:px-4">
+        <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
             <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900">Your Course Journey</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Your Course Journey</h2>
             <p className="mt-2 text-gray-600 max-w-3xl mx-auto">
               From Natural Sciences to Computer Science – a complete academic pathway
               aligned with Zambian university standards.
@@ -717,7 +645,7 @@ export default function HomePageClient() {
                 <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 1 - Semester 1
                 </span>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">Natural Sciences Foundation</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Natural Sciences Foundation</h3>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -728,7 +656,7 @@ export default function HomePageClient() {
                   className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
-                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                  <div className="relative w-full h-44 sm:h-40 bg-gray-200 overflow-hidden">
                     <img
                       src={course.image}
                       alt={course.title}
@@ -748,7 +676,7 @@ export default function HomePageClient() {
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
                         <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                        <span className="text-gray-400 text-sm">({course.students})</span>
                       </div>
                       <button
                         onClick={(e) => {
@@ -773,7 +701,7 @@ export default function HomePageClient() {
                 <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 1 - Semester 2
                 </span>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">Natural Sciences Advanced</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Natural Sciences Advanced</h3>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -784,7 +712,7 @@ export default function HomePageClient() {
                   className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
-                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                  <div className="relative w-full h-44 sm:h-40 bg-gray-200 overflow-hidden">
                     <img
                       src={course.image}
                       alt={course.title}
@@ -804,7 +732,7 @@ export default function HomePageClient() {
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
                         <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                        <span className="text-gray-400 text-sm">({course.students})</span>
                       </div>
                       <button
                         onClick={(e) => {
@@ -829,7 +757,7 @@ export default function HomePageClient() {
                 <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 2 - Semester 1
                 </span>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">Computer Science Foundation</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Computer Science Foundation</h3>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
@@ -840,7 +768,7 @@ export default function HomePageClient() {
                   className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
-                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                  <div className="relative w-full h-44 sm:h-40 bg-gray-200 overflow-hidden">
                     <img
                       src={course.image}
                       alt={course.title}
@@ -860,7 +788,7 @@ export default function HomePageClient() {
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
                         <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                        <span className="text-gray-400 text-sm">({course.students})</span>
                       </div>
                       <button
                         onClick={(e) => {
@@ -885,7 +813,7 @@ export default function HomePageClient() {
                 <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 2 - Semester 2
                 </span>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">Computer Science Advanced</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Computer Science Advanced</h3>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
@@ -896,7 +824,7 @@ export default function HomePageClient() {
                   className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
                   onClick={() => handleEnroll(course.code)}
                 >
-                  <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
+                  <div className="relative w-full h-44 sm:h-40 bg-gray-200 overflow-hidden">
                     <img
                       src={course.image}
                       alt={course.title}
@@ -916,7 +844,7 @@ export default function HomePageClient() {
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
                         <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-sm">({course.students} students)</span>
+                        <span className="text-gray-400 text-sm">({course.students})</span>
                       </div>
                       <button
                         onClick={(e) => {
@@ -936,76 +864,6 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== A-LEVEL COURSES (with image grow on hover) ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={staggerContainer}
-        className="py-12 bg-gray-50"
-      >
-        <div className="w-full px-2 sm:px-4">
-          <div className="flex flex-wrap items-center justify-between mb-8">
-            <motion.div variants={fadeInUp}>
-              <h2 className="text-3xl font-bold text-gray-900">A-Level Courses</h2>
-              <p className="text-gray-600">Advanced courses for university preparation and higher education</p>
-            </motion.div>
-            <motion.div variants={fadeInUp}>
-              <button
-                onClick={handleViewAllALevels}
-                className="text-purple-600 hover:text-purple-800 font-medium flex items-center gap-1"
-              >
-                View All A-Levels <span className="text-lg">→</span>
-              </button>
-            </motion.div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {aLevelCourses.map((course) => (
-              <motion.div
-                key={course.id}
-                variants={fadeInUp}
-                className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
-                onClick={() => handleEnroll(course.code)}
-              >
-                <div className="relative w-full h-40 bg-gray-200 overflow-hidden">
-                  <img
-                    src={course.image}
-                    alt={course.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                    {course.code}
-                  </div>
-                  <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                    A-Level
-                  </div>
-                </div>
-                <div className="p-4 flex flex-col flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                  <div className="flex items-center justify-between mt-3">
-                    <div className="flex items-center gap-1">
-                      <span className="text-yellow-500">★</span>
-                      <span className="font-semibold text-gray-800">{course.rating}</span>
-                      <span className="text-gray-400 text-sm">({course.students} students)</span>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEnroll(course.code);
-                      }}
-                      className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-full transition"
-                    >
-                      Explore now
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
       {/* ===== ZAMBIAN GRADING & DEGREE CLASSIFICATION SYSTEM ===== */}
       <motion.section
         initial="hidden"
@@ -1014,10 +872,10 @@ export default function HomePageClient() {
         variants={fadeInUp}
         className="py-12 bg-white"
       >
-        <div className="w-full px-2 sm:px-4">
+        <div className="w-full px-3 sm:px-4">
           <div className="text-center mb-10">
             <Award className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900">Zambian University Grading System</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Zambian University Grading System</h2>
             
           </div>
 
@@ -1026,63 +884,63 @@ export default function HomePageClient() {
             <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Grading Points System</h3>
             <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full min-w-[500px]">
                   <thead className="bg-blue-600 text-white">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold">Grade</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold">Points</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold">Percentage</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold">Description</th>
+                      <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Grade</th>
+                      <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Points</th>
+                      <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Percentage</th>
+                      <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Description</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     <tr className="bg-green-50 hover:bg-green-100 transition">
-                      <td className="px-4 py-3 font-bold text-green-700">A+</td>
-                      <td className="px-4 py-3 font-semibold text-gray-800">2.5</td>
-                      <td className="px-4 py-3 text-gray-700">86 and above</td>
-                      <td className="px-4 py-3 text-green-700 font-medium">Upper Distinction</td>
+                      <td className="px-3 sm:px-4 py-3 font-bold text-green-700 text-sm">A+</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">2.5</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">86 and above</td>
+                      <td className="px-3 sm:px-4 py-3 text-green-700 font-medium text-sm">Upper Distinction</td>
                     </tr>
                     <tr className="bg-green-50/50 hover:bg-green-100 transition">
-                      <td className="px-4 py-3 font-bold text-green-700">A</td>
-                      <td className="px-4 py-3 font-semibold text-gray-800">2.0</td>
-                      <td className="px-4 py-3 text-gray-700">76 – 85</td>
-                      <td className="px-4 py-3 text-green-700 font-medium">Distinction</td>
+                      <td className="px-3 sm:px-4 py-3 font-bold text-green-700 text-sm">A</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">2.0</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">76 – 85</td>
+                      <td className="px-3 sm:px-4 py-3 text-green-700 font-medium text-sm">Distinction</td>
                     </tr>
                     <tr className="bg-blue-50 hover:bg-blue-100 transition">
-                      <td className="px-4 py-3 font-bold text-blue-700">B+</td>
-                      <td className="px-4 py-3 font-semibold text-gray-800">1.5</td>
-                      <td className="px-4 py-3 text-gray-700">66 – 75</td>
-                      <td className="px-4 py-3 text-blue-700 font-medium">Merit</td>
+                      <td className="px-3 sm:px-4 py-3 font-bold text-blue-700 text-sm">B+</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">1.5</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">66 – 75</td>
+                      <td className="px-3 sm:px-4 py-3 text-blue-700 font-medium text-sm">Merit</td>
                     </tr>
                     <tr className="bg-blue-50/50 hover:bg-blue-100 transition">
-                      <td className="px-4 py-3 font-bold text-blue-700">B</td>
-                      <td className="px-4 py-3 font-semibold text-gray-800">1.0</td>
-                      <td className="px-4 py-3 text-gray-700">60 – 65</td>
-                      <td className="px-4 py-3 text-blue-700 font-medium">Credit</td>
+                      <td className="px-3 sm:px-4 py-3 font-bold text-blue-700 text-sm">B</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">1.0</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">60 – 65</td>
+                      <td className="px-3 sm:px-4 py-3 text-blue-700 font-medium text-sm">Credit</td>
                     </tr>
                     <tr className="bg-yellow-50 hover:bg-yellow-100 transition">
-                      <td className="px-4 py-3 font-bold text-yellow-700">C+</td>
-                      <td className="px-4 py-3 font-semibold text-gray-800">0.5</td>
-                      <td className="px-4 py-3 text-gray-700">55 – 59</td>
-                      <td className="px-4 py-3 text-yellow-700 font-medium">Clear Pass</td>
+                      <td className="px-3 sm:px-4 py-3 font-bold text-yellow-700 text-sm">C+</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0.5</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">55 – 59</td>
+                      <td className="px-3 sm:px-4 py-3 text-yellow-700 font-medium text-sm">Clear Pass</td>
                     </tr>
                     <tr className="bg-yellow-50/50 hover:bg-yellow-100 transition">
-                      <td className="px-4 py-3 font-bold text-yellow-700">C</td>
-                      <td className="px-4 py-3 font-semibold text-gray-800">0.25</td>
-                      <td className="px-4 py-3 text-gray-700">50 – 54</td>
-                      <td className="px-4 py-3 text-yellow-700 font-medium">Bare Pass</td>
+                      <td className="px-3 sm:px-4 py-3 font-bold text-yellow-700 text-sm">C</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0.25</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">50 – 54</td>
+                      <td className="px-3 sm:px-4 py-3 text-yellow-700 font-medium text-sm">Bare Pass</td>
                     </tr>
                     <tr className="bg-red-50 hover:bg-red-100 transition">
-                      <td className="px-4 py-3 font-bold text-red-700">D+</td>
-                      <td className="px-4 py-3 font-semibold text-gray-800">0</td>
-                      <td className="px-4 py-3 text-gray-700">45 – 49</td>
-                      <td className="px-4 py-3 text-red-700 font-medium">Bare Fail</td>
+                      <td className="px-3 sm:px-4 py-3 font-bold text-red-700 text-sm">D+</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">45 – 49</td>
+                      <td className="px-3 sm:px-4 py-3 text-red-700 font-medium text-sm">Bare Fail</td>
                     </tr>
                     <tr className="bg-red-50/50 hover:bg-red-100 transition">
-                      <td className="px-4 py-3 font-bold text-red-700">D</td>
-                      <td className="px-4 py-3 font-semibold text-gray-800">0</td>
-                      <td className="px-4 py-3 text-gray-700">44 and below</td>
-                      <td className="px-4 py-3 text-red-700 font-medium">Fail</td>
+                      <td className="px-3 sm:px-4 py-3 font-bold text-red-700 text-sm">D</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">44 and below</td>
+                      <td className="px-3 sm:px-4 py-3 text-red-700 font-medium text-sm">Fail</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1092,50 +950,50 @@ export default function HomePageClient() {
 
           {/* ===== DEGREE CLASSIFICATION SYSTEM ===== */}
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-              <h3 className="text-xl font-bold text-white text-center">Degree Classification System</h3>
-              <p className="text-blue-100 text-sm text-center mt-1">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 sm:px-6 py-4">
+              <h3 className="text-lg sm:text-xl font-bold text-white text-center">Degree Classification System</h3>
+              <p className="text-blue-100 text-xs sm:text-sm text-center mt-1">
                 Based on cumulative points from 20 courses at 3rd &amp; 4th Year Levels (4-Year programmes)<br />
                 or 4th &amp; 5th Year Levels (5-Year programmes)
               </p>
             </div>
             <div className="overflow-x-auto p-4">
-              <table className="w-full">
+              <table className="w-full min-w-[400px]">
                 <thead>
                   <tr className="border-b-2 border-gray-200">
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Cumulative Points</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Degree Classification</th>
+                    <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Cumulative Points</th>
+                    <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Degree Classification</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   <tr className="hover:bg-green-50 transition">
-                    <td className="px-4 py-4 font-bold text-green-700">40 Points and above</td>
-                    <td className="px-4 py-4">
-                      <span className="inline-block bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-bold">
+                    <td className="px-3 sm:px-4 py-4 font-bold text-green-700 text-sm">40 Points and above</td>
+                    <td className="px-3 sm:px-4 py-4">
+                      <span className="inline-block bg-green-100 text-green-800 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
                          Distinction
                       </span>
                     </td>
                   </tr>
                   <tr className="hover:bg-blue-50 transition">
-                    <td className="px-4 py-4 font-bold text-blue-700">30 – 39.9 Points</td>
-                    <td className="px-4 py-4">
-                      <span className="inline-block bg-blue-100 text-blue-800 px-4 py-1.5 rounded-full text-sm font-bold">
+                    <td className="px-3 sm:px-4 py-4 font-bold text-blue-700 text-sm">30 – 39.9 Points</td>
+                    <td className="px-3 sm:px-4 py-4">
+                      <span className="inline-block bg-blue-100 text-blue-800 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
                          Merit
                       </span>
                     </td>
                   </tr>
                   <tr className="hover:bg-yellow-50 transition">
-                    <td className="px-4 py-4 font-bold text-yellow-700">20 – 29.9 Points</td>
-                    <td className="px-4 py-4">
-                      <span className="inline-block bg-yellow-100 text-yellow-800 px-4 py-1.5 rounded-full text-sm font-bold">
+                    <td className="px-3 sm:px-4 py-4 font-bold text-yellow-700 text-sm">20 – 29.9 Points</td>
+                    <td className="px-3 sm:px-4 py-4">
+                      <span className="inline-block bg-yellow-100 text-yellow-800 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
                          Credit
                       </span>
                     </td>
                   </tr>
                   <tr className="hover:bg-gray-50 transition">
-                    <td className="px-4 py-4 font-bold text-gray-700">Less than 20 Points</td>
-                    <td className="px-4 py-4">
-                      <span className="inline-block bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-sm font-bold">
+                    <td className="px-3 sm:px-4 py-4 font-bold text-gray-700 text-sm">Less than 20 Points</td>
+                    <td className="px-3 sm:px-4 py-4">
+                      <span className="inline-block bg-gray-100 text-gray-700 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
                         Pass
                       </span>
                     </td>
@@ -1157,10 +1015,10 @@ export default function HomePageClient() {
         variants={fadeInUp}
         className="py-12 bg-gradient-to-r from-blue-50 to-purple-50"
       >
-        <div className="w-full px-2 sm:px-4">
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 md:p-12 text-center max-w-4xl mx-auto">
+        <div className="w-full px-3 sm:px-4">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8 md:p-12 text-center max-w-4xl mx-auto">
             <UserPlus className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900">Become a Tutor</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Become a Tutor</h2>
             <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
               Share your knowledge and expertise with thousands of Zambian students.
               Join our community of professional tutors and make a difference.
@@ -1183,7 +1041,7 @@ export default function HomePageClient() {
               </a>
               <Link
                 href="mailto:kafiswegchimputu@gmail.com"
-                className="bg-blue-600 text-white px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
+                className="bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
               >
                 <Mail className="w-5 h-5" /> Email Us
               </Link>
@@ -1200,12 +1058,12 @@ export default function HomePageClient() {
         variants={fadeInUp}
         className="py-12 bg-blue-50"
       >
-        <div className="w-full px-2 sm:px-4 flex flex-col md:flex-row items-center justify-between bg-white rounded-2xl shadow-md border border-gray-200 p-8 md:p-12">
+        <div className="w-full px-3 sm:px-4 flex flex-col md:flex-row items-center justify-between bg-white rounded-2xl shadow-md border border-gray-200 p-6 sm:p-8 md:p-12 gap-4">
           <div className="text-center md:text-left">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Interested in advertising with us?</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Interested in advertising with us?</h2>
             <p className="text-gray-600 mt-1">Reach thousands of Zambian students and educators.</p>
           </div>
-          <div className="mt-4 md:mt-0">
+          <div>
             <Link
               href="/contact"
               className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
@@ -1222,20 +1080,20 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         variants={fadeInUp}
-        className="py-12 bg-white"
+        className="py-12 bg-white overflow-hidden"
       >
-        <div className="w-full px-2 sm:px-4">
+        <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900">What Our Community Says</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">What Our Community Says</h2>
             <p className="mt-2 text-gray-600">Real stories from real Zambian learners</p>
           </motion.div>
 
           <div className="relative overflow-hidden">
-            <div className="absolute left-0 top-0 h-full w-20 bg-gradient-to-r from-white to-transparent z-10" />
-            <div className="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-white to-transparent z-10" />
+            <div className="absolute left-0 top-0 h-full w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10" />
+            <div className="absolute right-0 top-0 h-full w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10" />
 
             <div
-              className="flex gap-8"
+              className="flex gap-6 sm:gap-8"
               style={{
                 animation: 'testimonialScroll 45s linear infinite',
                 width: 'max-content',
@@ -1244,7 +1102,7 @@ export default function HomePageClient() {
               {[...testimonials, ...testimonials, ...testimonials].map((t, idx) => (
                 <div
                   key={idx}
-                  className="bg-gray-50 rounded-2xl shadow-md p-6 border border-gray-200 min-w-[320px] max-w-[360px] flex-shrink-0"
+                  className="bg-gray-50 rounded-2xl shadow-md p-5 sm:p-6 border border-gray-200 min-w-[280px] sm:min-w-[320px] max-w-[340px] flex-shrink-0"
                 >
                   <div className="flex items-start space-x-1 text-yellow-500 mb-3">
                     {Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
@@ -1279,10 +1137,10 @@ export default function HomePageClient() {
         variants={fadeInUp}
         className="py-12 bg-white"
       >
-        <div className="w-full px-2 sm:px-4">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
-            <div className="flex-1 text-center md:text-left">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+        <div className="w-full px-3 sm:px-4">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-12">
+            <div className="flex-1 text-center md:text-left w-full">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
                 Why Choose <span className="text-blue-600">A+ Mentality</span>?
               </h2>
               <ul className="space-y-3 text-gray-700">
@@ -1303,7 +1161,7 @@ export default function HomePageClient() {
                   <span><strong>Progress Tracking</strong> – See your growth in real time and stay motivated.</span>
                 </li>
               </ul>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap justify-center md:justify-start gap-3">
                 <Link
                   href="/sign-up"
                   className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
@@ -1351,15 +1209,15 @@ export default function HomePageClient() {
         variants={fadeInUp}
         className="py-12 bg-blue-600 text-white"
       >
-        <div className="w-full px-2 sm:px-4 text-center">
+        <div className="w-full px-3 sm:px-4 text-center">
           <Heart className="w-12 h-12 mx-auto mb-4 text-blue-200" />
-          <h2 className="text-3xl font-bold">You Are Capable of Great Things</h2>
-          <p className="mt-4 text-lg text-blue-100">
+          <h2 className="text-2xl sm:text-3xl font-bold">You Are Capable of Great Things</h2>
+          <p className="mt-4 text-base sm:text-lg text-blue-100">
             Every expert was once a beginner. Keep learning, keep growing, and never give up.
             Your future is bright, and we're here to help you shine.
           </p>
           <div className="mt-8">
-            <Link href="/sign-up" className="inline-block bg-white text-blue-600 px-8 py-3 rounded-full font-medium hover:bg-blue-50 transition shadow-lg">
+            <Link href="/sign-up" className="inline-block bg-white text-blue-600 px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-50 transition shadow-lg">
               Join Our Community
             </Link>
           </div>
@@ -1367,21 +1225,21 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ===== PARTNER INSTITUTIONS – CARD MARQUEE (Continuous Sliding) ===== */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white overflow-hidden">
         <div className="w-full">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900">Our Partners</h2>
+          <div className="text-center mb-10 px-3 sm:px-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Aligns with Zambia's University Curriculum</h2>
             <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
               Collaborating with Zambia's leading academic and financial institutions to support students.
             </p>
           </div>
 
           <div className="relative overflow-hidden">
-            <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-white to-transparent z-10" />
-            <div className="absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-white to-transparent z-10" />
+            <div className="absolute left-0 top-0 h-full w-12 sm:w-16 bg-gradient-to-r from-white to-transparent z-10" />
+            <div className="absolute right-0 top-0 h-full w-12 sm:w-16 bg-gradient-to-l from-white to-transparent z-10" />
 
             <div
-              className="flex gap-6 items-center"
+              className="flex gap-4 sm:gap-6 items-center"
               style={{
                 animation: 'scrollRightToLeft 35s linear infinite',
                 width: 'max-content',
@@ -1390,23 +1248,23 @@ export default function HomePageClient() {
               {[...institutions, ...institutions, ...institutions].map((inst, idx) => (
                 <div
                   key={idx}
-                  className="bg-white border border-gray-200 rounded-2xl p-6 text-center hover:shadow-xl hover:border-blue-300 hover:scale-[1.05] transition-all duration-300 flex flex-col items-center justify-center min-w-[160px] shadow-sm"
+                  className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 text-center hover:shadow-xl hover:border-blue-300 hover:scale-[1.05] transition-all duration-300 flex flex-col items-center justify-center min-w-[140px] sm:min-w-[160px] shadow-sm"
                 >
-                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-blue-200 shadow-md flex items-center justify-center bg-gray-50">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-blue-200 shadow-md flex items-center justify-center bg-gray-50">
                     <img
                       src={inst.logo}
                       alt={inst.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <p className="mt-3 text-sm font-semibold text-gray-800 leading-tight">{inst.name}</p>
+                  <p className="mt-3 text-xs sm:text-sm font-semibold text-gray-800 leading-tight">{inst.name}</p>
                   <span className="mt-1 text-[10px] text-gray-400">Partner Institution</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="text-center mt-8">
+          <div className="text-center mt-8 px-3 sm:px-4">
             <Link
               href="/partners"
               className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium hover:bg-blue-700 transition shadow-md hover:shadow-lg"
@@ -1415,15 +1273,14 @@ export default function HomePageClient() {
             </Link>
           </div>
 
-          <p className="text-center text-xs text-gray-400 mt-6">
-            Zambia has 213 Higher Education Institutions: 49 public and 164 private (HEA 2026)
+          <p className="text-center text-xs text-gray-400 mt-6 px-3 sm:px-4">
           </p>
         </div>
       </section>
 
       {/* ===== FOOTER ===== */}
       <footer className="bg-gray-900 text-gray-300">
-        <div className="w-full px-2 sm:px-4 py-10">
+        <div className="w-full px-3 sm:px-4 py-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
             <div>
               <Link href="/" className="flex items-center space-x-2">
