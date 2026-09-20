@@ -34,6 +34,15 @@ interface Quiz {
   submissions: Submission[];
 }
 
+/**
+ * Wraps a PDF URL with Google Docs Viewer for reliable inline display.
+ * Works across all browsers — Windows, Mac, Android, iOS.
+ */
+function getGoogleDocsViewerUrl(fileUrl: string): string {
+  const encoded = encodeURIComponent(fileUrl);
+  return `https://docs.google.com/viewer?url=${encoded}&embedded=true`;
+}
+
 export default function AdminQuizSubmissionsPage() {
   const params = useParams();
   const quizId = params.id as string;
@@ -230,7 +239,7 @@ export default function AdminQuizSubmissionsPage() {
                     <td className="px-4 py-3">
                       {sub.fileUrl ? (
                         <a
-                          href={sub.fileUrl}
+                          href={getGoogleDocsViewerUrl(sub.fileUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-blue-600 hover:underline"
@@ -304,10 +313,10 @@ export default function AdminQuizSubmissionsPage() {
               {grading.user.name || grading.user.email}
             </p>
 
-            {/* File link if available */}
+            {/* File link if available — Google Docs Viewer for inline preview */}
             {grading.fileUrl && (
               <a
-                href={grading.fileUrl}
+                href={getGoogleDocsViewerUrl(grading.fileUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-blue-600 hover:underline mb-4"

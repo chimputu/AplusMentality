@@ -34,6 +34,15 @@ interface Assignment {
   submissions: Submission[];
 }
 
+/**
+ * Wraps a PDF URL with Google Docs Viewer for reliable inline display.
+ * Works across all browsers — Windows, Mac, Android, iOS.
+ */
+function getGoogleDocsViewerUrl(fileUrl: string): string {
+  const encoded = encodeURIComponent(fileUrl);
+  return `https://docs.google.com/viewer?url=${encoded}&embedded=true`;
+}
+
 export default function AdminSubmissionsPage() {
   const params = useParams();
   const assignmentId = params.id as string;
@@ -240,7 +249,7 @@ export default function AdminSubmissionsPage() {
                     <td className="px-4 py-3">
                       {sub.fileUrl ? (
                         <a
-                          href={sub.fileUrl}
+                          href={getGoogleDocsViewerUrl(sub.fileUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-blue-600 hover:underline"
@@ -314,10 +323,10 @@ export default function AdminSubmissionsPage() {
               {grading.user.name || grading.user.email}
             </p>
 
-            {/* File preview link */}
+            {/* File preview link — uses Google Docs Viewer for inline PDF */}
             {grading.fileUrl && (
               <a
-                href={grading.fileUrl}
+                href={getGoogleDocsViewerUrl(grading.fileUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-blue-600 hover:underline mb-4"
