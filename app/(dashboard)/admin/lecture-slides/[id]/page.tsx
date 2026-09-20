@@ -11,6 +11,15 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+/**
+ * Wraps a PDF URL with Google Docs Viewer for reliable inline display.
+ * Works across all browsers — Windows, Mac, Android, iOS.
+ */
+function getGoogleDocsViewerUrl(fileUrl: string): string {
+  const encoded = encodeURIComponent(fileUrl);
+  return `https://docs.google.com/viewer?url=${encoded}&embedded=true`;
+}
+
 export default async function AdminLectureSlidePage({ params }: PageProps) {
   await requireAuth(['ADMIN']);
   const { id } = await params;
@@ -27,10 +36,34 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
     notFound();
   }
 
-  // ⭐ Inline URL for browser display (removes download header)
   const inlineUrl = getInlineUrl(slide.fileUrl);
-  const openUrl = slide.embedUrl || inlineUrl || '#';
   const downloadUrl = slide.fileUrl || '';
+
+  // ⭐ Detect PDF vs. Google Slides
+  const isPdf =
+    slide.contentType === 'pdf' ||
+    (slide.fileUrl?.toLowerCase().endsWith('.pdf') ?? false);
+  const isGoogleSlides = slide.contentType === 'google_slides' && !!slide.embedUrl;
+
+  // ⭐ "Open in new tab" URL:
+  // - Google Slides → the embed URL
+  // - PDF → Google Docs Viewer (opens inline in new tab)
+  // - Other → raw file URL
+  const openUrl = isGoogleSlides
+    ? slide.embedUrl
+    : isPdf && slide.fileUrl
+      ? getGoogleDocsViewerUrl(slide.fileUrl)
+      : slide.fileUrl || '#';
+
+  // ⭐ Inline preview URL for the iframe:
+  // - Google Slides → embed URL
+  // - PDF → Google Docs Viewer
+  // - Other file → raw URL
+  const previewUrl = isGoogleSlides
+    ? slide.embedUrl!
+    : isPdf && slide.fileUrl
+      ? getGoogleDocsViewerUrl(slide.fileUrl)
+      : slide.fileUrl || '';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -61,8 +94,8 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
             />
           )}
 
-          {/* Open in new tab */}
-          {openUrl !== '#' && (
+          {/* Open in new tab — uses Google Docs Viewer for PDFs */}
+          {openUrl && openUrl !== '#' && (
             <a
               href={openUrl}
               target="_blank"
@@ -112,32 +145,14 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
       {/* Content preview */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="aspect-video w-full bg-gray-100 dark:bg-gray-700">
-          {slide.contentType === 'google_slides' && slide.embedUrl && (
+          {previewUrl ? (
             <iframe
-              src={slide.embedUrl}
+              src={previewUrl}
               className="w-full h-full"
               allowFullScreen
               title={slide.title}
             />
-          )}
-          {slide.contentType === 'pdf' && slide.fileUrl && (
-            <iframe
-              src={inlineUrl}
-              className="w-full h-full"
-              title={slide.title}
-            />
-          )}
-          {/* Fallback: if type is missing but a file exists, render inline */}
-          {slide.contentType !== 'google_slides' &&
-            slide.contentType !== 'pdf' &&
-            slide.fileUrl && (
-              <iframe
-                src={inlineUrl}
-                className="w-full h-full"
-                title={slide.title}
-              />
-            )}
-          {!slide.embedUrl && !slide.fileUrl && (
+          ) : (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
               No content available
             </div>
