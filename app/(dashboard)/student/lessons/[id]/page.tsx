@@ -6,12 +6,20 @@ import Link from 'next/link';
 import { ArrowLeft, Video, Presentation, FileQuestion } from 'lucide-react';
 import MarkLessonCompleteButton from '@/components/MarkLessonCompleteButton';
 import SlideViewerButton from '@/components/SlideViewerButton';
-import { getInlineUrl } from '@/lib/cloudinary-url';
 
 interface PageProps {
   params: Promise<{
     id: string;
   }>;
+}
+
+/**
+ * Wraps a PDF URL with Google Docs Viewer for reliable inline display.
+ * Works across all browsers — Windows, Mac, Android, iOS.
+ */
+function getGoogleDocsViewerUrl(fileUrl: string): string {
+  const encoded = encodeURIComponent(fileUrl);
+  return `https://docs.google.com/viewer?url=${encoded}&embedded=true`;
 }
 
 export default async function StudentLessonPage({ params }: PageProps) {
@@ -129,13 +137,17 @@ export default async function StudentLessonPage({ params }: PageProps) {
   const videoId =
     lesson.video?.youtubeId || extractYouTubeId(lesson.video?.url || '');
 
-  // ✅ Check if slides have any content to render
   const hasSlides =
     lesson.slides && (lesson.slides.embedUrl || lesson.slides.fileUrl);
 
-  // ✅ Pre-compute inline URLs (PDF renders inline instead of downloading)
-  const slidesInlineUrl = getInlineUrl(lesson.slides?.fileUrl);
-  const slidesDownloadUrl = lesson.slides?.fileUrl || '';
+  // ⭐ Compute preview URL for slides — Google Docs Viewer for PDFs
+  const slidePreviewUrl = lesson.slides?.embedUrl
+    ? lesson.slides.embedUrl
+    : lesson.slides?.fileUrl
+      ? getGoogleDocsViewerUrl(lesson.slides.fileUrl)
+      : '';
+
+  const slideDownloadUrl = lesson.slides?.fileUrl || '';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -210,11 +222,11 @@ export default async function StudentLessonPage({ params }: PageProps) {
               </h2>
             </div>
 
-            {/* Embedded slides (Google Slides, OneDrive, etc.) */}
-            {lesson.slides!.embedUrl && (
+            {/* Preview — Google Slides embed OR Google Docs Viewer */}
+            {slidePreviewUrl && (
               <div className="relative w-full aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                 <iframe
-                  src={lesson.slides!.embedUrl}
+                  src={slidePreviewUrl}
                   title={lesson.slides!.title}
                   className="absolute top-0 left-0 w-full h-full"
                   allowFullScreen
@@ -222,40 +234,29 @@ export default async function StudentLessonPage({ params }: PageProps) {
               </div>
             )}
 
-            {/* File-based slides (PDF, PPT, etc.) */}
-            {lesson.slides!.fileUrl && !lesson.slides!.embedUrl && (
-              <div className="space-y-3">
-                <div className="relative w-full aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-                  <iframe
-                    src={slidesInlineUrl}
-                    title={lesson.slides!.title}
-                    className="absolute top-0 left-0 w-full h-full"
-                  />
-                </div>
-
-                {/* ✅ Mobile-friendly action buttons */}
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <SlideViewerButton
-                    fileUrl={lesson.slides!.fileUrl!}
-                    title={lesson.slides!.title}
-                    fileType={lesson.slides!.contentType}
-                  />
-                  <a
-                    href={slidesInlineUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-5 py-3 sm:px-4 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
-                  >
-                    Open in new tab ↗
-                  </a>
-                  <a
-                    href={slidesDownloadUrl}
-                    download
-                    className="inline-flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-5 py-3 sm:px-4 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
-                  >
-                    Download ⬇
-                  </a>
-                </div>
+            {/* Action buttons */}
+            {lesson.slides!.fileUrl && (
+              <div className="flex flex-col sm:flex-row gap-3 mt-3">
+                <SlideViewerButton
+                  fileUrl={lesson.slides!.fileUrl}
+                  title={lesson.slides!.title}
+                  fileType={lesson.slides!.contentType}
+                />
+                <a
+                  href={slidePreviewUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-5 py-3 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
+                >
+                  Open in new tab ↗
+                </a>
+                <a
+                  href={slideDownloadUrl}
+                  download
+                  className="inline-flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-5 py-3 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
+                >
+                  Download ⬇
+                </a>
               </div>
             )}
 
