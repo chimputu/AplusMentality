@@ -1,12 +1,22 @@
+// app/(dashboard)/student/quizzes/[id]/page.tsx
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Clock, FileQuestion } from 'lucide-react';
+import { ArrowLeft, Clock, FileQuestion, ExternalLink, Download } from 'lucide-react';
 import QuizSubmitButton from '@/components/QuizSubmitButton';
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+/**
+ * Wraps a PDF URL with Google Docs Viewer for reliable inline display.
+ * Works across all browsers — Windows, Mac, Android, iOS.
+ */
+function getGoogleDocsViewerUrl(fileUrl: string): string {
+  const encoded = encodeURIComponent(fileUrl);
+  return `https://docs.google.com/viewer?url=${encoded}&embedded=true`;
 }
 
 export default async function StudentTakeQuizPage({ params }: PageProps) {
@@ -54,7 +64,11 @@ export default async function StudentTakeQuizPage({ params }: PageProps) {
   );
   const isPDF = quiz.contentType === 'pdf';
   const isImage = quiz.contentType === 'image';
-  const isPastPaper = quiz.contentType === 'past_paper';  // ✅ NEW
+  const isPastPaper = quiz.contentType === 'past_paper';
+
+  // ⭐ Compute PDF preview URL via Google Docs Viewer
+  const pdfPreviewUrl =
+    isPDF && quiz.fileUrl ? getGoogleDocsViewerUrl(quiz.fileUrl) : null;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -90,10 +104,57 @@ export default async function StudentTakeQuizPage({ params }: PageProps) {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Quiz</h2>
             <div className="aspect-video w-full bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-              {isGoogleForm && <iframe src={quiz.embedUrl} className="w-full h-full" allowFullScreen />}
-              {isPDF && quiz.fileUrl && <iframe src={quiz.fileUrl} className="w-full h-full" />}
-              {isImage && quiz.fileUrl && <img src={quiz.fileUrl} alt={quiz.title} className="w-full h-full object-contain" />}
+              {/* Google Form embed */}
+              {isGoogleForm && quiz.embedUrl && (
+                <iframe
+                  src={quiz.embedUrl}
+                  className="w-full h-full"
+                  allowFullScreen
+                  title={quiz.title}
+                />
+              )}
+
+              {/* PDF via Google Docs Viewer */}
+              {isPDF && pdfPreviewUrl && (
+                <iframe
+                  src={pdfPreviewUrl}
+                  className="w-full h-full"
+                  title={quiz.title}
+                />
+              )}
+
+              {/* Image */}
+              {isImage && quiz.fileUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={quiz.fileUrl}
+                  alt={quiz.title}
+                  className="w-full h-full object-contain"
+                />
+              )}
             </div>
+
+            {/* PDF action buttons */}
+            {isPDF && quiz.fileUrl && (
+              <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <a
+                  href={getGoogleDocsViewerUrl(quiz.fileUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
+                >
+                  <ExternalLink className="w-4 h-4" /> Open in new tab
+                </a>
+                <a
+                  href={quiz.fileUrl}
+                  download
+                  className="inline-flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-600 px-5 py-3 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
+                >
+                  <Download className="w-4 h-4" /> Download
+                </a>
+              </div>
+            )}
+
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-3 text-center">
               {isGoogleForm
                 ? 'Complete the quiz above, then click the button below to submit.'
@@ -117,12 +178,12 @@ export default async function StudentTakeQuizPage({ params }: PageProps) {
               </p>
               {quiz.fileUrl && (
                 <a
-                  href={quiz.fileUrl}
+                  href={getGoogleDocsViewerUrl(quiz.fileUrl)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
                 >
-                  📥 Open Past Paper
+                  📖 Open Past Paper
                 </a>
               )}
             </div>
