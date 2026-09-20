@@ -1,12 +1,22 @@
+// app/(dashboard)/student/tests/[id]/page.tsx
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Clock, FileCheck } from 'lucide-react';
+import { ArrowLeft, Clock, FileCheck, ExternalLink, Download } from 'lucide-react';
 import TestSubmitButton from '@/components/TestSubmitButton';
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+/**
+ * Wraps a PDF URL with Google Docs Viewer for reliable inline display.
+ * Works across all browsers — Windows, Mac, Android, iOS.
+ */
+function getGoogleDocsViewerUrl(fileUrl: string): string {
+  const encoded = encodeURIComponent(fileUrl);
+  return `https://docs.google.com/viewer?url=${encoded}&embedded=true`;
 }
 
 export default async function StudentTakeTestPage({ params }: PageProps) {
@@ -54,7 +64,11 @@ export default async function StudentTakeTestPage({ params }: PageProps) {
   );
   const isPDF = test.contentType === 'pdf';
   const isImage = test.contentType === 'image';
-  const isPastPaper = test.contentType === 'past_paper';  // ✅ NEW
+  const isPastPaper = test.contentType === 'past_paper';
+
+  // ⭐ Compute the preview URL — Google Docs Viewer for PDFs
+  const pdfPreviewUrl =
+    isPDF && test.fileUrl ? getGoogleDocsViewerUrl(test.fileUrl) : null;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -91,10 +105,57 @@ export default async function StudentTakeTestPage({ params }: PageProps) {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Test</h2>
             <div className="aspect-video w-full bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-              {isGoogleForm && <iframe src={test.embedUrl} className="w-full h-full" allowFullScreen />}
-              {isPDF && test.fileUrl && <iframe src={test.fileUrl} className="w-full h-full" />}
-              {isImage && test.fileUrl && <img src={test.fileUrl} alt={test.title} className="w-full h-full object-contain" />}
+              {/* Google Form embed */}
+              {isGoogleForm && test.embedUrl && (
+                <iframe
+                  src={test.embedUrl}
+                  className="w-full h-full"
+                  allowFullScreen
+                  title={test.title}
+                />
+              )}
+
+              {/* PDF via Google Docs Viewer */}
+              {isPDF && pdfPreviewUrl && (
+                <iframe
+                  src={pdfPreviewUrl}
+                  className="w-full h-full"
+                  title={test.title}
+                />
+              )}
+
+              {/* Image */}
+              {isImage && test.fileUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={test.fileUrl}
+                  alt={test.title}
+                  className="w-full h-full object-contain"
+                />
+              )}
             </div>
+
+            {/* PDF action buttons */}
+            {isPDF && test.fileUrl && (
+              <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <a
+                  href={getGoogleDocsViewerUrl(test.fileUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
+                >
+                  <ExternalLink className="w-4 h-4" /> Open in new tab
+                </a>
+                <a
+                  href={test.fileUrl}
+                  download
+                  className="inline-flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-600 px-5 py-3 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
+                >
+                  <Download className="w-4 h-4" /> Download
+                </a>
+              </div>
+            )}
+
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-3 text-center">
               {isGoogleForm
                 ? 'Complete the test above, then click the button below to submit.'
@@ -111,6 +172,7 @@ export default async function StudentTakeTestPage({ params }: PageProps) {
               />
             </div>
           )}
+
           {isPastPaper && (
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 text-center">
               <p className="text-blue-700 dark:text-blue-300 font-medium">
@@ -118,12 +180,12 @@ export default async function StudentTakeTestPage({ params }: PageProps) {
               </p>
               {test.fileUrl && (
                 <a
-                  href={test.fileUrl}
+                  href={getGoogleDocsViewerUrl(test.fileUrl)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
                 >
-                  📥 Open Past Paper
+                  📖 Open Past Paper
                 </a>
               )}
             </div>
