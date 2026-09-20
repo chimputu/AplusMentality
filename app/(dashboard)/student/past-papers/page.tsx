@@ -12,7 +12,7 @@ import {
   File as FileIcon,
 } from 'lucide-react';
 import { getInlineUrl } from '@/lib/cloudinary-url';
-import FileViewer from '@/components/FileViwer';
+import FileViewer from '@/components/FileViewer';
 
 interface PastPaper {
   id: string;
