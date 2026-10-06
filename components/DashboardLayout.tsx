@@ -190,6 +190,12 @@ export default function DashboardLayout({
       section: 'Management'
     },
     { 
+      href: '/admin/programmes', 
+      label: 'Programmes', 
+      icon: GraduationCap,
+      section: 'Management'
+    },
+    { 
       href: '/admin/users', 
       label: 'Users', 
       icon: Users,
