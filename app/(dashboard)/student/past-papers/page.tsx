@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   FileText,
   Search,
@@ -24,6 +25,12 @@ interface PastPaper {
   category: string;
   fileUrl: string;
   fileType: string | null;
+  course: {
+    id: string;
+    code: string;
+    title: string;
+    university: { id: string; name: string; code: string } | null;
+  } | null;
   createdAt: string;
 }
 
@@ -49,6 +56,8 @@ function getFileIcon(type: string | null) {
 }
 
 export default function StudentPastPapersPage() {
+  const searchParams = useSearchParams();
+  const universityFilter = searchParams.get('university') || '';
   const [papers, setPapers] = useState<PastPaper[]>([]);
   const [filtered, setFiltered] = useState<PastPaper[]>([]);
   const [search, setSearch] = useState('');
@@ -62,7 +71,9 @@ export default function StudentPastPapersPage() {
   const [previewType, setPreviewType] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/past-papers')
+    const params = new URLSearchParams();
+    if (universityFilter) params.set('university', universityFilter);
+    fetch(`/api/past-papers${params.toString() ? '?' + params.toString() : ''}`)
       .then((r) => r.json())
       .then((data) => {
         setPapers(Array.isArray(data) ? data : []);
@@ -70,7 +81,7 @@ export default function StudentPastPapersPage() {
       })
       .catch(() => setPapers([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [universityFilter]);
 
   useEffect(() => {
     let result = papers;

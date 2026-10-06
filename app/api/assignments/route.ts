@@ -3,12 +3,29 @@ import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET – List all assignments
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await requireAuth();
+    const { searchParams } = new URL(req.url);
+    const universityId = searchParams.get('university');
+
+    const where: any = {};
+    if (universityId) {
+      where.course = { universityId };
+    }
+
     const assignments = await prisma.assignment.findMany({
+      where,
       include: {
         creator: { select: { name: true, email: true } },
+        course: {
+          select: {
+            id: true,
+            code: true,
+            title: true,
+            university: { select: { id: true, name: true, code: true } },
+          },
+        },
         submissions: true,
       },
       orderBy: { createdAt: 'desc' },

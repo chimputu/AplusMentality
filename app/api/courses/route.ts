@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   try {
     // Support query params for filtering (used by tag form)
     const { searchParams } = new URL(req.url);
-    const universityId = searchParams.get('universityId');
+    const universityId = searchParams.get('universityId') || searchParams.get('university');
     const programmeId = searchParams.get('programmeId');
     const year = searchParams.get('year');
     const period = searchParams.get('period');

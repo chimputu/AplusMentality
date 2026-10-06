@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Search, ExternalLink, Clock, CheckCircle, XCircle, User } from 'lucide-react';
 
@@ -11,6 +12,12 @@ interface Assignment {
   dueDate: string | null;
   maxScore: number | null;
   creator: { name: string | null } | null;
+  course: {
+    id: string;
+    code: string;
+    title: string;
+    university: { id: string; name: string; code: string } | null;
+  } | null;
   submissions: Array<{
     id: string;
     score: number | null;
@@ -21,6 +28,8 @@ interface Assignment {
 }
 
 export default function StudentAssignmentsPage() {
+  const searchParams = useSearchParams();
+  const universityFilter = searchParams.get('university') || '';
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [filtered, setFiltered] = useState<Assignment[]>([]);
   const [search, setSearch] = useState('');
@@ -28,7 +37,9 @@ export default function StudentAssignmentsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/assignments')
+    const params = new URLSearchParams();
+    if (universityFilter) params.set('university', universityFilter);
+    fetch(`/api/assignments${params.toString() ? '?' + params.toString() : ''}`)
       .then((res) => res.json())
       .then((data: Assignment[]) => {
         setAssignments(data);
@@ -36,7 +47,7 @@ export default function StudentAssignmentsPage() {
       })
       .catch(() => setAssignments([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [universityFilter]);
 
   useEffect(() => {
     let result = assignments;
