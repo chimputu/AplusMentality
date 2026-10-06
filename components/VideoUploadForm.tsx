@@ -23,7 +23,11 @@ interface Course {
   title: string;
 }
 
-export default function VideoUploadForm() {
+interface VideoUploadFormProps {
+  universities?: University[];
+}
+
+export default function VideoUploadForm({ universities: initialUniversities }: VideoUploadFormProps = {}) {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -35,7 +39,7 @@ export default function VideoUploadForm() {
   const [error, setError] = useState<string | null>(null);
 
   // Academic scoping
-  const [universities, setUniversities] = useState<University[]>([]);
+  const [universities, setUniversities] = useState<University[]>(initialUniversities || []);
   const [universityId, setUniversityId] = useState('');
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeId, setProgrammeId] = useState('');
@@ -48,8 +52,9 @@ export default function VideoUploadForm() {
   const [newCourseTitle, setNewCourseTitle] = useState('');
   const [order, setOrder] = useState(1);
 
-  // Load universities
+  // Load universities server-side passed as props, fallback to client-side fetch
   useEffect(() => {
+    if (universities.length > 0) return; // Already loaded from server
     async function loadUniversities() {
       try {
         const res = await fetch('/api/admin/universities');
@@ -62,7 +67,7 @@ export default function VideoUploadForm() {
       }
     }
     loadUniversities();
-  }, []);
+  }, [universities.length]);
 
   // Load programmes when university changes
   useEffect(() => {

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 // GET — list all tutors (admin only)
 export async function GET(req: NextRequest) {
-  const admin = getAuthUser(['ADMIN']);
+  const admin = await getAuthUser(['ADMIN']);
   if (!admin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
 
 // POST — create a tutor (admin only)
 export async function POST(req: NextRequest) {
-  const admin = getAuthUser(['ADMIN']);
+  const admin = await getAuthUser(['ADMIN']);
   if (!admin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
