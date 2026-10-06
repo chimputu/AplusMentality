@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 // GET — single tutor
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const admin = getAuthUser(['ADMIN']);
+  const admin = await getAuthUser(['ADMIN']);
   if (!admin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 // PUT — update tutor
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const admin = getAuthUser(['ADMIN']);
+  const admin = await getAuthUser(['ADMIN']);
   if (!admin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -79,7 +79,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 // DELETE — delete tutor
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const admin = getAuthUser(['ADMIN']);
+  const admin = await getAuthUser(['ADMIN']);
   if (!admin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

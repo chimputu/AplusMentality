@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET — list programmes by university (admin only)
+// GET — list programmes by university (authenticated users)
 export async function GET(req: NextRequest) {
   try {
-    const auth = await getAuthUser(['ADMIN']);
+    const auth = await getAuthUser();
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

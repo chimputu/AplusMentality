@@ -26,15 +26,16 @@ interface Course {
 interface SlideFormProps {
   initialData?: any;
   isEditing?: boolean;
+  universities?: University[];
 }
 
-export default function LectureSlideForm({ initialData, isEditing = false }: SlideFormProps) {
+export default function LectureSlideForm({ initialData, isEditing = false, universities: initialUniversities }: SlideFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
   // Academic scoping
-  const [universities, setUniversities] = useState<University[]>([]);
+  const [universities, setUniversities] = useState<University[]>(initialUniversities || []);
   const [universityId, setUniversityId] = useState('');
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeId, setProgrammeId] = useState('');
@@ -56,8 +57,9 @@ export default function LectureSlideForm({ initialData, isEditing = false }: Sli
     category: initialData?.category || '',
   });
 
-  // Load universities
+  // Load universities server-side passed as props, fallback to client-side fetch
   useEffect(() => {
+    if (universities.length > 0) return; // Already loaded from server
     async function loadUniversities() {
       try {
         const res = await fetch('/api/admin/universities');
@@ -70,7 +72,7 @@ export default function LectureSlideForm({ initialData, isEditing = false }: Sli
       }
     }
     loadUniversities();
-  }, []);
+  }, [universities.length]);
 
   // Load programmes when university changes
   useEffect(() => {

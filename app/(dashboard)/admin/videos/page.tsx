@@ -23,6 +23,16 @@ export default async function AdminVideosPage() {
     createdAt: v.createdAt.toISOString(),
   }));
 
+  // Load universities server-side for the upload form dropdown
+  const universities = await prisma.university.findMany({
+    orderBy: { name: 'asc' },
+    include: {
+      programmes: {
+        orderBy: { name: 'asc' },
+      },
+    },
+  });
+
   // ✅ Clean, focused content with consistent header
   return (
     <div className="space-y-8">
@@ -39,7 +49,7 @@ export default async function AdminVideosPage() {
         <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
           Upload New Video
         </h2>
-        <VideoUploadForm />
+        <VideoUploadForm universities={universities} />
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">

@@ -28,16 +28,18 @@ interface CreateCourseFormProps {
   };
   isEditing?: boolean;
   courseId?: string;
+  universities?: University[];
 }
 
 export default function CreateCourseForm({
   initialData,
   isEditing = false,
   courseId,
+  universities: initialUniversities,
 }: CreateCourseFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [universities, setUniversities] = useState<University[]>([]);
+  const [universities, setUniversities] = useState<University[]>(initialUniversities || []);
   const [programmes, setProgrammes] = useState<Programme[]>([]);
 
   const [formData, setFormData] = useState({
@@ -52,8 +54,9 @@ export default function CreateCourseForm({
     period: '',
   });
 
-  // Load universities
+  // Load universities server-side passed as props, fallback to client-side fetch
   useEffect(() => {
+    if (universities.length > 0) return; // Already loaded from server
     async function loadUniversities() {
       try {
         const res = await fetch('/api/admin/universities');
@@ -66,7 +69,7 @@ export default function CreateCourseForm({
       }
     }
     loadUniversities();
-  }, []);
+  }, [universities.length]);
 
   // Load programmes when university changes
   useEffect(() => {
