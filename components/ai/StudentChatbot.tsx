@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Sparkles, X, Send, Loader2 } from 'lucide-react';
 
 export function StudentChatbot() {
@@ -13,6 +13,20 @@ export function StudentChatbot() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Focus input when chat opens
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [open]);
 
   async function send() {
     if (!input.trim() || loading) return;
@@ -42,62 +56,99 @@ export function StudentChatbot() {
 
   return (
     <>
+      {/* Floating button - visible on all screen sizes */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg flex items-center justify-center hover:opacity-90 transition"
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg flex items-center justify-center hover:opacity-90 transition active:scale-95"
         aria-label="Open AI assistant"
       >
         {open ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
       </button>
 
+      {/* Chat panel - full screen on mobile, fixed panel on desktop */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-40 w-96 h-[500px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-xl">
-            <h3 className="font-semibold flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
-              AI Study Assistant
-            </h3>
-            <p className="text-xs text-blue-100">I know your performance</p>
-          </div>
+        <>
+          {/* Backdrop for mobile */}
+          <div
+            className="fixed inset-0 bg-black/40 z-40 md:hidden"
+            onClick={() => setOpen(false)}
+          />
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {messages.map((m, i) => (
-              <div
-                key={i}
-                className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
-                    m.role === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
-                  }`}
-                >
-                  {m.content}
-                </div>
+          <div className="fixed z-50 flex flex-col bottom-0 right-0 left-0 h-[95vh] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700">
+            {/* Header */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
+              <div>
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  AI Study Assistant
+                </h3>
+                <p className="text-xs text-blue-100">I know your performance</p>
               </div>
-            ))}
-            {loading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
-          </div>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-1 rounded-full hover:bg-white/20 transition"
+                aria-label="Close chat"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-          <div className="p-3 border-t border-gray-200 dark:border-gray-700 flex gap-2">
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && send()}
-              placeholder="How can I improve in CS 101?"
-              className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <button
-              onClick={send}
-              disabled={loading}
-              className="bg-blue-600 text-white px-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
-            >
-              <Send className="w-4 h-4" />
-            </button>
+            {/* Messages area */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+              {messages.map((m, i) => (
+                <div
+                  key={i}
+                  className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-[85%] md:max-w-[80%] rounded-lg px-3 py-2 text-sm break-words ${
+                      m.role === 'user'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                    }`}
+                  >
+                    {m.content}
+                  </div>
+                </div>
+              ))}
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                    <span className="text-xs text-gray-400">Thinking...</span>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input area */}
+            <div className="p-3 border-t border-gray-200 dark:border-gray-700 flex gap-2 flex-shrink-0 pb-safe">
+              <input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && send()}
+                placeholder="How can I improve in CS 101?"
+                className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button
+                onClick={send}
+                disabled={loading || !input.trim()}
+                className="bg-blue-600 text-white px-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 active:scale-95"
+                aria-label="Send message"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
+      <style jsx>{`
+        .pb-safe {
+          padding-bottom: env(safe-area-inset-bottom, 0.75rem);
+        }
+      `}</style>
     </>
   );
 }

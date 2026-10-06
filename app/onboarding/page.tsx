@@ -20,7 +20,7 @@ export default async function OnboardingPage() {
 
   // Fetch institutions for the dropdown
   const institutions = await prisma.institution.findMany({
-    where: { isActive: true, isVerified: true },
+    where: { isActive: true },
     orderBy: { name: 'asc' },
     include: {
       programmes: {
