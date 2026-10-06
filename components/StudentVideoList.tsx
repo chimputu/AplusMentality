@@ -11,7 +11,7 @@ interface Video {
   source?: string | null;
   youtubeId?: string | null;
   createdAt: string;
-  uploader: { name: string | null };
+  uploader: { name: string | null } | null;
 }
 
 interface StudentVideoListProps {

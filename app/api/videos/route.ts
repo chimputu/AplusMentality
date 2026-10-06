@@ -24,11 +24,19 @@ function getYouTubeThumbnail(youtubeId: string): string {
 }
 
 // GET - List all videos
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await requireAuth();
+    const { searchParams } = new URL(req.url);
+    const universityId = searchParams.get('university');
+
+    const where: any = {};
+    if (universityId) {
+      where.course = { universityId };
+    }
 
     const videos = await prisma.video.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
       include: {
         uploader: {
