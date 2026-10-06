@@ -34,6 +34,7 @@ import {
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
 import ThemeToggle from './ThemeToggle';
+import { UniversitySwitcher } from './UniversitySwitcher';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -721,6 +722,9 @@ export default function DashboardLayout({
               </span>
             </div>
           </div>
+
+          {/* University Switcher - Students only */}
+          {role === 'STUDENT' && !isCollapsed && <UniversitySwitcher />}
 
           {/* Navigation */}
           <nav className="flex-1 px-2 py-4 overflow-y-auto">
