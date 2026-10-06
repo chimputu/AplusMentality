@@ -15,16 +15,26 @@ export async function GET(req: NextRequest) {
     const category = searchParams.get('category');
     const courseCode = searchParams.get('courseCode');
     const year = searchParams.get('year');
+    const universityId = searchParams.get('university');
 
     const where: any = {};
     if (category) where.category = category;
     if (courseCode) where.courseCode = courseCode;
     if (year) where.year = parseInt(year);
+    if (universityId) where.course = { universityId };
 
     const papers = await prisma.pastPaper.findMany({
       where,
       include: {
         creator: { select: { name: true, email: true } },
+        course: {
+          select: {
+            id: true,
+            code: true,
+            title: true,
+            university: { select: { id: true, name: true, code: true } },
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });

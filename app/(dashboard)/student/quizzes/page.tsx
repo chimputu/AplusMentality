@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Search, ExternalLink, Clock, CheckCircle, User } from 'lucide-react';
 
@@ -10,6 +11,12 @@ interface Quiz {
   formUrl: string | null;
   dueDate: string | null;
   creator: { name: string | null } | null;
+  course: {
+    id: string;
+    code: string;
+    title: string;
+    university: { id: string; name: string; code: string } | null;
+  } | null;
   submissions: Array<{
     id: string;
     score: number | null;
@@ -19,6 +26,8 @@ interface Quiz {
 }
 
 export default function StudentQuizzesPage() {
+  const searchParams = useSearchParams();
+  const universityFilter = searchParams.get('university') || '';
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [filtered, setFiltered] = useState<Quiz[]>([]);
   const [search, setSearch] = useState('');
@@ -26,7 +35,9 @@ export default function StudentQuizzesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/quizzes')
+    const params = new URLSearchParams();
+    if (universityFilter) params.set('university', universityFilter);
+    fetch(`/api/quizzes${params.toString() ? '?' + params.toString() : ''}`)
       .then((res) => res.json())
       .then((data: Quiz[]) => {
         setQuizzes(data);
@@ -34,7 +45,7 @@ export default function StudentQuizzesPage() {
       })
       .catch(() => setQuizzes([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [universityFilter]);
 
   useEffect(() => {
     let result = quizzes;

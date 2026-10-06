@@ -14,17 +14,26 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const courseId = searchParams.get('courseId');
     const category = searchParams.get('category');
+    const universityId = searchParams.get('university');
 
     // ⭐ THE FIX: only filter if the param is provided
     const where: any = {};
     if (courseId) where.courseId = courseId;
     if (category) where.category = category;
+    if (universityId) where.course = { universityId };
 
     const slides = await prisma.lectureSlide.findMany({
       where,
       orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
       include: {
-        course: { select: { id: true, title: true, code: true } },
+        course: {
+          select: {
+            id: true,
+            title: true,
+            code: true,
+            university: { select: { id: true, name: true, code: true } },
+          },
+        },
         creator: { select: { name: true, email: true } },
       },
     });

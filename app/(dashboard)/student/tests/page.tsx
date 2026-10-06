@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Search, ExternalLink, Clock, CheckCircle, User } from 'lucide-react';
 
@@ -11,6 +12,12 @@ interface Test {
   dueDate: string | null;
   maxScore: number | null;
   creator: { name: string | null } | null;
+  course: {
+    id: string;
+    code: string;
+    title: string;
+    university: { id: string; name: string; code: string } | null;
+  } | null;
   submissions: Array<{
     id: string;
     score: number | null;
@@ -20,6 +27,8 @@ interface Test {
 }
 
 export default function StudentTestsPage() {
+  const searchParams = useSearchParams();
+  const universityFilter = searchParams.get('university') || '';
   const [tests, setTests] = useState<Test[]>([]);
   const [filtered, setFiltered] = useState<Test[]>([]);
   const [search, setSearch] = useState('');
@@ -27,7 +36,9 @@ export default function StudentTestsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/tests')
+    const params = new URLSearchParams();
+    if (universityFilter) params.set('university', universityFilter);
+    fetch(`/api/tests${params.toString() ? '?' + params.toString() : ''}`)
       .then((res) => res.json())
       .then((data: Test[]) => {
         setTests(data);
@@ -35,7 +46,7 @@ export default function StudentTestsPage() {
       })
       .catch(() => setTests([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [universityFilter]);
 
   useEffect(() => {
     let result = tests;

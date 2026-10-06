@@ -1,6 +1,7 @@
 // app/(dashboard)/student/lecture-slides/page.tsx
 'use client';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Search, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
@@ -8,6 +9,7 @@ interface Course {
   id: string;
   title: string;
   code: string;
+  university: { id: string; name: string; code: string } | null;
 }
 
 interface Creator {
@@ -57,6 +59,8 @@ function getSlideOpenUrl(slide: LectureSlide): string {
 }
 
 export default function StudentLectureSlidesPage() {
+  const searchParams = useSearchParams();
+  const universityFilter = searchParams.get('university') || '';
   const [slides, setSlides] = useState<LectureSlide[]>([]);
   const [filtered, setFiltered] = useState<LectureSlide[]>([]);
   const [search, setSearch] = useState('');
@@ -67,7 +71,9 @@ export default function StudentLectureSlidesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/lecture-slides')
+    const params = new URLSearchParams();
+    if (universityFilter) params.set('university', universityFilter);
+    fetch(`/api/lecture-slides${params.toString() ? '?' + params.toString() : ''}`)
       .then((res) => res.json())
       .then((data: LectureSlide[]) => {
         setSlides(data);
@@ -76,14 +82,17 @@ export default function StudentLectureSlidesPage() {
           ...new Set(data.map((slide) => slide.category).filter(Boolean)),
         ] as string[];
         setCategories(cats);
-        fetch('/api/courses?all=true')
+        const courseParams = new URLSearchParams();
+        courseParams.set('all', 'true');
+        if (universityFilter) courseParams.set('university', universityFilter);
+        fetch(`/api/courses?${courseParams.toString()}`)
           .then((res) => res.json())
           .then((coursesData: Course[]) => setCourses(coursesData))
           .catch(() => setCourses([]));
       })
       .catch(() => setSlides([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [universityFilter]);
 
   useEffect(() => {
     let result = slides;
