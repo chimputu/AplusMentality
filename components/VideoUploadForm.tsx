@@ -1,8 +1,27 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, Loader2, CheckCircle, XCircle, Film, Video } from 'lucide-react';
-// Remove Youtube import if not available
+
+interface University {
+  id: string;
+  name: string;
+  code: string;
+  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
+  programmes: Programme[];
+}
+
+interface Programme {
+  id: string;
+  name: string;
+  shortName: string | null;
+}
+
+interface Course {
+  id: string;
+  code: string;
+  title: string;
+}
 
 export default function VideoUploadForm() {
   const router = useRouter();
@@ -14,6 +33,106 @@ export default function VideoUploadForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Academic scoping
+  const [universities, setUniversities] = useState<University[]>([]);
+  const [universityId, setUniversityId] = useState('');
+  const [programmes, setProgrammes] = useState<Programme[]>([]);
+  const [programmeId, setProgrammeId] = useState('');
+  const [year, setYear] = useState(1);
+  const [period, setPeriod] = useState('');
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [courseMode, setCourseMode] = useState<'existing' | 'new'>('new');
+  const [courseId, setCourseId] = useState('');
+  const [newCourseCode, setNewCourseCode] = useState('');
+  const [newCourseTitle, setNewCourseTitle] = useState('');
+  const [order, setOrder] = useState(1);
+
+  // Load universities
+  useEffect(() => {
+    async function loadUniversities() {
+      try {
+        const res = await fetch('/api/admin/universities');
+        if (res.ok) {
+          const data = await res.json();
+          setUniversities(data);
+        }
+      } catch {
+        console.error('Failed to load universities');
+      }
+    }
+    loadUniversities();
+  }, []);
+
+  // Load programmes when university changes
+  useEffect(() => {
+    if (!universityId) {
+      setProgrammes([]);
+      return;
+    }
+    async function loadProgrammes() {
+      try {
+        const res = await fetch(`/api/admin/programmes?universityId=${universityId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProgrammes(data);
+        }
+      } catch {
+        console.error('Failed to load programmes');
+      }
+    }
+    loadProgrammes();
+  }, [universityId]);
+
+  // Load courses when filters change
+  useEffect(() => {
+    if (courseMode !== 'existing' || !universityId || !programmeId) {
+      setCourses([]);
+      return;
+    }
+    async function loadCourses() {
+      try {
+        const params = new URLSearchParams({
+          universityId,
+          programmeId,
+          year: String(year),
+          period: period || '',
+        });
+        const res = await fetch(`/api/courses?${params}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCourses(data);
+        }
+      } catch {
+        console.error('Failed to load courses');
+      }
+    }
+    loadCourses();
+  }, [universityId, programmeId, year, period, courseMode]);
+
+  // Get period options based on selected university's academic system
+  const getPeriodOptions = () => {
+    const uni = universities.find((u) => u.id === universityId);
+    if (!uni) return [];
+
+    switch (uni.academicSystem) {
+      case 'YEARLY':
+        return [{ value: '', label: 'Full Year' }];
+      case 'SEMESTERLY':
+        return [
+          { value: '1', label: 'Semester 1' },
+          { value: '2', label: 'Semester 2' },
+        ];
+      case 'TRIMESTERLY':
+        return [
+          { value: '1', label: 'Trimester 1' },
+          { value: '2', label: 'Trimester 2' },
+          { value: '3', label: 'Trimester 3' },
+        ];
+      default:
+        return [];
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,24 +151,49 @@ export default function VideoUploadForm() {
       setError('Please enter a title');
       return;
     }
+    if (!universityId || !programmeId || !period && universities.find((u) => u.id === universityId)?.academicSystem !== 'YEARLY') {
+      setError('Please select university, programme, and period');
+      return;
+    }
+    if (courseMode === 'existing' && !courseId) {
+      setError('Please select a course');
+      return;
+    }
+    if (courseMode === 'new' && (!newCourseCode || !newCourseTitle)) {
+      setError('Please enter course code and title');
+      return;
+    }
 
     setLoading(true);
-    const formData = new FormData();
-    formData.append('title', title.trim());
-    formData.append('description', description.trim());
-    formData.append('source', source);
+    const fd = new FormData();
+    fd.append('title', title.trim());
+    fd.append('description', description.trim());
+    fd.append('source', source);
+    fd.append('universityId', universityId);
+    fd.append('programmeId', programmeId);
+    fd.append('year', String(year));
+    fd.append('period', period || '');
+    fd.append('courseMode', courseMode);
+    fd.append('order', String(order));
+
+    if (courseMode === 'existing') {
+      fd.append('courseId', courseId);
+    } else {
+      fd.append('newCourseCode', newCourseCode);
+      fd.append('newCourseTitle', newCourseTitle);
+    }
 
     if (source === 'upload' && file) {
-      formData.append('file', file);
+      fd.append('file', file);
     }
     if (source === 'youtube' && youtubeUrl) {
-      formData.append('youtubeUrl', youtubeUrl);
+      fd.append('youtubeUrl', youtubeUrl);
     }
 
     try {
       const res = await fetch('/api/videos', {
         method: 'POST',
-        body: formData,
+        body: fd,
       });
 
       const data = await res.json();
@@ -60,6 +204,8 @@ export default function VideoUploadForm() {
         setDescription('');
         setFile(null);
         setYoutubeUrl('');
+        setNewCourseCode('');
+        setNewCourseTitle('');
         router.refresh();
         setTimeout(() => setSuccess(false), 3000);
       } else {
@@ -239,6 +385,187 @@ export default function VideoUploadForm() {
           )}
         </div>
       )}
+
+      {/* Academic Scoping */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Academic Scope *</h3>
+
+        {/* University */}
+        <div className="mb-3">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            University *
+          </label>
+          <select
+            value={universityId}
+            onChange={(e) => {
+              setUniversityId(e.target.value);
+              setProgrammes([]);
+              setProgrammeId('');
+              setPeriod('');
+            }}
+            required
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          >
+            <option value="">Select university</option>
+            {universities.map((uni) => (
+              <option key={uni.id} value={uni.id}>
+                {uni.name} ({uni.code})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Programme */}
+        <div className="mb-3">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Programme *
+          </label>
+          <select
+            value={programmeId}
+            onChange={(e) => setProgrammeId(e.target.value)}
+            required
+            disabled={!universityId}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+          >
+            <option value="">Select programme</option>
+            {programmes.map((prog) => (
+              <option key={prog.id} value={prog.id}>
+                {prog.shortName || prog.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Year */}
+        <div className="mb-3">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Year *
+          </label>
+          <select
+            value={year}
+            onChange={(e) => setYear(parseInt(e.target.value))}
+            required
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          >
+            {[1, 2, 3, 4, 5, 6, 7].map((y) => (
+              <option key={y} value={y}>
+                Year {y}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Period */}
+        <div className="mb-3">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Period *
+          </label>
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            required
+            disabled={!universityId}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+          >
+            <option value="">Select period</option>
+            {getPeriodOptions().map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Course Selection */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Course *</h3>
+
+        <div className="flex gap-4 mb-3">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="courseMode"
+              value="existing"
+              checked={courseMode === 'existing'}
+              onChange={() => setCourseMode('existing')}
+              className="text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm">Attach to existing</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="courseMode"
+              value="new"
+              checked={courseMode === 'new'}
+              onChange={() => setCourseMode('new')}
+              className="text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm">Create new</span>
+          </label>
+        </div>
+
+        {courseMode === 'existing' ? (
+          <select
+            value={courseId}
+            onChange={(e) => setCourseId(e.target.value)}
+            required
+            disabled={!programmeId}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+          >
+            <option value="">Select course</option>
+            {courses.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.code} — {c.title}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                Course Code
+              </label>
+              <input
+                type="text"
+                value={newCourseCode}
+                onChange={(e) => setNewCourseCode(e.target.value)}
+                required
+                placeholder="e.g. CS 101"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                Course Title
+              </label>
+              <input
+                type="text"
+                value={newCourseTitle}
+                onChange={(e) => setNewCourseTitle(e.target.value)}
+                required
+                placeholder="e.g. Intro to Programming"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Order */}
+        <div className="mt-3">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Order / Number
+          </label>
+          <input
+            type="number"
+            value={order}
+            onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
+            min={0}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          />
+        </div>
+      </div>
 
       {/* Submit Button */}
       <button

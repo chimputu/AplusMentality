@@ -45,6 +45,17 @@ export async function GET() {
             moduleId: true,
           },
         },
+        course: {
+          select: {
+            id: true,
+            code: true,
+            title: true,
+            university: { select: { code: true, name: true } },
+            programme: { select: { name: true } },
+            year: true,
+            period: true,
+          },
+        },
       },
     });
 
@@ -67,6 +78,17 @@ export async function POST(req: NextRequest) {
     const title = formData.get('title') as string;
     const description = formData.get('description') as string;
     const source = formData.get('source') as string; // 'upload' or 'youtube'
+    const order = formData.get('order') ? parseInt(formData.get('order') as string) : null;
+
+    // Academic scoping
+    const universityId = formData.get('universityId') as string;
+    const programmeId = formData.get('programmeId') as string;
+    const year = formData.get('year') ? parseInt(formData.get('year') as string) : 1;
+    const period = (formData.get('period') as string) || null;
+    const courseMode = (formData.get('courseMode') as string) || 'new';
+    const existingCourseId = formData.get('courseId') as string;
+    const newCourseCode = formData.get('newCourseCode') as string;
+    const newCourseTitle = formData.get('newCourseTitle') as string;
 
     // Validate required fields
     if (!title) {
@@ -83,11 +105,42 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!universityId || !programmeId) {
+      return NextResponse.json(
+        { error: 'University and programme are required' },
+        { status: 400 }
+      );
+    }
+
+    // Resolve courseId
+    let resolvedCourseId: string | null = null;
+
+    if (courseMode === 'existing' && existingCourseId) {
+      resolvedCourseId = existingCourseId;
+    } else if (courseMode === 'new' && newCourseCode && newCourseTitle) {
+      // Create the course
+      const course = await prisma.course.create({
+        data: {
+          code: newCourseCode,
+          title: newCourseTitle,
+          universityId,
+          programmeId,
+          year,
+          period,
+          createdBy: userId,
+          isPublished: true,
+        },
+      });
+      resolvedCourseId = course.id;
+    }
+
     let videoData: any = {
       title,
       description: description || null,
       uploadedBy: userId,
       source,
+      courseId: resolvedCourseId,
+      order,
     };
 
     // Handle YouTube URL

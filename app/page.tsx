@@ -40,7 +40,7 @@ export default async function HomePage() {
     }
 
     const role = user?.role || 'STUDENT';
-    redirect(role === 'ADMIN' ? '/admin' : '/student');
+    redirect((role === 'ADMIN' || role === 'SUPER_ADMIN') ? '/admin' : '/student');
   }
 
   return <HomePageClient />;

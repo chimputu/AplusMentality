@@ -4,7 +4,8 @@ import './globals.css';
 import { Providers } from './providers';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from '@vercel/analytics/next';
-import SimpleChat from '@/components/SimpleChat';
+import { Toaster } from 'sonner';
+import { PublicChatbot } from '@/components/ai/PublicChatbot';
 
 // ✅ Import Inter font weights from @fontsource
 import '@fontsource/inter/400.css';   // Regular
@@ -40,7 +41,8 @@ export default function RootLayout({
         <body className="font-sans antialiased">
           <Providers>
             {children}
-            <SimpleChat />
+            <PublicChatbot />
+            <Toaster />
             <Analytics />
           </Providers>
         </body>

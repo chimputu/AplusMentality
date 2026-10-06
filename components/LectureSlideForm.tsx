@@ -3,6 +3,26 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
+interface University {
+  id: string;
+  name: string;
+  code: string;
+  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
+  programmes: Programme[];
+}
+
+interface Programme {
+  id: string;
+  name: string;
+  shortName: string | null;
+}
+
+interface Course {
+  id: string;
+  code: string;
+  title: string;
+}
+
 interface SlideFormProps {
   initialData?: any;
   isEditing?: boolean;
@@ -11,8 +31,21 @@ interface SlideFormProps {
 export default function LectureSlideForm({ initialData, isEditing = false }: SlideFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [courses, setCourses] = useState<any[]>([]);
   const [file, setFile] = useState<File | null>(null);
+
+  // Academic scoping
+  const [universities, setUniversities] = useState<University[]>([]);
+  const [universityId, setUniversityId] = useState('');
+  const [programmes, setProgrammes] = useState<Programme[]>([]);
+  const [programmeId, setProgrammeId] = useState('');
+  const [year, setYear] = useState(1);
+  const [period, setPeriod] = useState('');
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [courseMode, setCourseMode] = useState<'existing' | 'new'>('new');
+  const [courseId, setCourseId] = useState('');
+  const [newCourseCode, setNewCourseCode] = useState('');
+  const [newCourseTitle, setNewCourseTitle] = useState('');
+
   const [form, setForm] = useState({
     title: initialData?.title || '',
     description: initialData?.description || '',
@@ -21,15 +54,93 @@ export default function LectureSlideForm({ initialData, isEditing = false }: Sli
     fileUrl: initialData?.fileUrl || '',
     order: initialData?.order || 0,
     category: initialData?.category || '',
-    courseId: initialData?.courseId || '',
   });
 
+  // Load universities
   useEffect(() => {
-    fetch('/api/courses?all=true')
-      .then(res => res.json())
-      .then(data => setCourses(data))
-      .catch(() => setCourses([]));
+    async function loadUniversities() {
+      try {
+        const res = await fetch('/api/admin/universities');
+        if (res.ok) {
+          const data = await res.json();
+          setUniversities(data);
+        }
+      } catch {
+        console.error('Failed to load universities');
+      }
+    }
+    loadUniversities();
   }, []);
+
+  // Load programmes when university changes
+  useEffect(() => {
+    if (!universityId) {
+      setProgrammes([]);
+      return;
+    }
+    async function loadProgrammes() {
+      try {
+        const res = await fetch(`/api/admin/programmes?universityId=${universityId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProgrammes(data);
+        }
+      } catch {
+        console.error('Failed to load programmes');
+      }
+    }
+    loadProgrammes();
+  }, [universityId]);
+
+  // Load courses when filters change
+  useEffect(() => {
+    if (courseMode !== 'existing' || !universityId || !programmeId) {
+      setCourses([]);
+      return;
+    }
+    async function loadCourses() {
+      try {
+        const params = new URLSearchParams({
+          universityId,
+          programmeId,
+          year: String(year),
+          period: period || '',
+        });
+        const res = await fetch(`/api/courses?${params}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCourses(data);
+        }
+      } catch {
+        console.error('Failed to load courses');
+      }
+    }
+    loadCourses();
+  }, [universityId, programmeId, year, period, courseMode]);
+
+  // Get period options based on selected university's academic system
+  const getPeriodOptions = () => {
+    const uni = universities.find((u) => u.id === universityId);
+    if (!uni) return [];
+
+    switch (uni.academicSystem) {
+      case 'YEARLY':
+        return [{ value: '', label: 'Full Year' }];
+      case 'SEMESTERLY':
+        return [
+          { value: '1', label: 'Semester 1' },
+          { value: '2', label: 'Semester 2' },
+        ];
+      case 'TRIMESTERLY':
+        return [
+          { value: '1', label: 'Trimester 1' },
+          { value: '2', label: 'Trimester 2' },
+          { value: '3', label: 'Trimester 3' },
+        ];
+      default:
+        return [];
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -50,9 +161,39 @@ export default function LectureSlideForm({ initialData, isEditing = false }: Sli
         fileUrl = url;
       }
 
+      // Resolve courseId
+      let resolvedCourseId: string | null = null;
+
+      if (courseMode === 'existing' && courseId) {
+        resolvedCourseId = courseId;
+      } else if (courseMode === 'new' && newCourseCode && newCourseTitle) {
+        // Create the course first
+        const courseRes = await fetch('/api/courses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code: newCourseCode,
+            title: newCourseTitle,
+            universityId,
+            programmeId,
+            year,
+            period: period || null,
+          }),
+        });
+        if (!courseRes.ok) {
+          const err = await courseRes.json();
+          alert(err.error || 'Failed to create course');
+          setLoading(false);
+          return;
+        }
+        const course = await courseRes.json();
+        resolvedCourseId = course.id;
+      }
+
       const payload = {
         ...form,
         fileUrl: fileUrl || null,
+        courseId: resolvedCourseId,
       };
 
       const url = isEditing ? `/api/lecture-slides/${initialData.id}` : '/api/lecture-slides';
@@ -184,18 +325,163 @@ export default function LectureSlideForm({ initialData, isEditing = false }: Sli
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium">Course (optional)</label>
-        <select
-          value={form.courseId}
-          onChange={(e) => setForm({ ...form, courseId: e.target.value })}
-          className="w-full border rounded px-4 py-2"
-        >
-          <option value="">None</option>
-          {courses.map((c) => (
-            <option key={c.id} value={c.id}>{c.code} – {c.title}</option>
-          ))}
-        </select>
+      {/* Academic Scoping */}
+      <div className="border-t border-gray-200 pt-4">
+        <h3 className="text-sm font-medium mb-3">Academic Scope *</h3>
+
+        {/* University */}
+        <div className="mb-3">
+          <label className="block text-sm font-medium">University *</label>
+          <select
+            value={universityId}
+            onChange={(e) => {
+              setUniversityId(e.target.value);
+              setProgrammes([]);
+              setProgrammeId('');
+              setPeriod('');
+            }}
+            required
+            className="w-full border rounded-lg px-4 py-2"
+          >
+            <option value="">Select university</option>
+            {universities.map((uni) => (
+              <option key={uni.id} value={uni.id}>
+                {uni.name} ({uni.code})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Programme */}
+        <div className="mb-3">
+          <label className="block text-sm font-medium">Programme *</label>
+          <select
+            value={programmeId}
+            onChange={(e) => setProgrammeId(e.target.value)}
+            required
+            disabled={!universityId}
+            className="w-full border rounded-lg px-4 py-2 disabled:opacity-50"
+          >
+            <option value="">Select programme</option>
+            {programmes.map((prog) => (
+              <option key={prog.id} value={prog.id}>
+                {prog.shortName || prog.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Year */}
+        <div className="mb-3">
+          <label className="block text-sm font-medium">Year *</label>
+          <select
+            value={year}
+            onChange={(e) => setYear(parseInt(e.target.value))}
+            required
+            className="w-full border rounded-lg px-4 py-2"
+          >
+            {[1, 2, 3, 4, 5, 6, 7].map((y) => (
+              <option key={y} value={y}>
+                Year {y}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Period */}
+        <div className="mb-3">
+          <label className="block text-sm font-medium">Period *</label>
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            required
+            disabled={!universityId}
+            className="w-full border rounded-lg px-4 py-2 disabled:opacity-50"
+          >
+            <option value="">Select period</option>
+            {getPeriodOptions().map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Course Selection */}
+      <div className="border-t border-gray-200 pt-4">
+        <h3 className="text-sm font-medium mb-3">Course *</h3>
+
+        <div className="flex gap-4 mb-3">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="slideCourseMode"
+              value="existing"
+              checked={courseMode === 'existing'}
+              onChange={() => setCourseMode('existing')}
+              className="text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm">Attach to existing</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="slideCourseMode"
+              value="new"
+              checked={courseMode === 'new'}
+              onChange={() => setCourseMode('new')}
+              className="text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm">Create new</span>
+          </label>
+        </div>
+
+        {courseMode === 'existing' ? (
+          <select
+            value={courseId}
+            onChange={(e) => setCourseId(e.target.value)}
+            required
+            disabled={!programmeId}
+            className="w-full border rounded-lg px-4 py-2 disabled:opacity-50"
+          >
+            <option value="">Select course</option>
+            {courses.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.code} — {c.title}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">
+                Course Code
+              </label>
+              <input
+                type="text"
+                value={newCourseCode}
+                onChange={(e) => setNewCourseCode(e.target.value)}
+                required
+                placeholder="e.g. CS 101"
+                className="w-full border rounded-lg px-4 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">
+                Course Title
+              </label>
+              <input
+                type="text"
+                value={newCourseTitle}
+                onChange={(e) => setNewCourseTitle(e.target.value)}
+                required
+                placeholder="e.g. Intro to Programming"
+                className="w-full border rounded-lg px-4 py-2"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <button

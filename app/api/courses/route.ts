@@ -1,17 +1,62 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET - List all courses
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    // ✅ Using your requireAuth function
-    const { userId, role, user } = await requireAuth();
-    
-    console.log(`📚 User ${user.email} (${role}) fetching courses`);
+    // Support query params for filtering (used by tag form)
+    const { searchParams } = new URL(req.url);
+    const universityId = searchParams.get('universityId');
+    const programmeId = searchParams.get('programmeId');
+    const year = searchParams.get('year');
+    const period = searchParams.get('period');
+    const all = searchParams.get('all');
+
+    // If filtering params are present, use lighter auth (for tag form)
+    const hasFilters = universityId || programmeId || year || period;
+
+    let userId: string;
+    let role: string;
+
+    if (hasFilters) {
+      const auth = await getAuthUser(['ADMIN']);
+      if (!auth) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      userId = auth.userId;
+      role = auth.role;
+    } else {
+      const authResult = await requireAuth();
+      userId = authResult.userId;
+      role = authResult.role;
+    }
 
     // If student, only show published courses
-    const where = role === 'ADMIN' ? {} : { isPublished: true };
+    const where: any = role === 'ADMIN' ? {} : { isPublished: true };
+
+    if (universityId) where.universityId = universityId;
+    if (programmeId) where.programmeId = programmeId;
+    if (year) where.year = parseInt(year);
+    if (period !== null) where.period = period === '' ? '' : period;
+
+    // If filtering, return lightweight data
+    if (hasFilters || all) {
+      const courses = await prisma.course.findMany({
+        where,
+        select: {
+          id: true,
+          code: true,
+          title: true,
+          university: { select: { name: true } },
+          programme: { select: { name: true } },
+          year: true,
+          period: true,
+        },
+        orderBy: { code: 'asc' },
+      });
+      return NextResponse.json(courses);
+    }
 
     const courses = await prisma.course.findMany({
       where,
@@ -61,12 +106,19 @@ export async function POST(req: NextRequest) {
     console.log(`📝 Admin ${user.email} creating course`);
 
     const body = await req.json();
-    const { code, title, description, category, level, thumbnail } = body;
+    const { code, title, description, category, level, thumbnail, universityId, programmeId, year, period } = body;
 
     // Validate required fields
     if (!code || !title) {
       return NextResponse.json(
         { error: 'Code and title are required' },
+        { status: 400 }
+      );
+    }
+
+    if (!universityId || !programmeId || year === undefined) {
+      return NextResponse.json(
+        { error: 'University, programme, and year are required' },
         { status: 400 }
       );
     }
@@ -79,13 +131,19 @@ export async function POST(req: NextRequest) {
         category,
         level,
         thumbnail,
-        createdBy: userId, // Using clerkId from requireAuth
+        universityId,
+        programmeId,
+        year: parseInt(String(year)),
+        period: period || null,
+        createdBy: userId,
         isPublished: true,
       },
       include: {
         creator: {
           select: { name: true, email: true },
         },
+        university: { select: { code: true, name: true } },
+        programme: { select: { name: true } },
       },
     });
 
@@ -95,7 +153,7 @@ export async function POST(req: NextRequest) {
     
     if (error.code === 'P2002') {
       return NextResponse.json(
-        { error: 'Course code already exists' },
+        { error: 'A course with this code already exists for this university/programme/year/period combination' },
         { status: 400 }
       );
     }

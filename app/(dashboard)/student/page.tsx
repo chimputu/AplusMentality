@@ -2,6 +2,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import StudentContent from '@/components/StudentContent';
+import { AIInsightsCard } from '@/components/ai/AIInsightsCard';
 
 interface SearchParams {
   search?: string;
@@ -72,11 +73,14 @@ export default async function StudentPage({
 
   // 8. Render content (layout is provided by parent layout.tsx)
   return (
-    <StudentContent
-      announcements={announcements}
-      videos={videos}
-      displayName={displayName}
-      searchQuery={searchQuery}
-    />
+    <div className="space-y-6">
+      <AIInsightsCard />
+      <StudentContent
+        announcements={announcements}
+        videos={videos}
+        displayName={displayName}
+        searchQuery={searchQuery}
+      />
+    </div>
   );
 }
