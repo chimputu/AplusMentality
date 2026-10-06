@@ -71,9 +71,6 @@ export default function OnboardingForm({ user, institutions, universities }: Onb
   const [year, setYear] = useState('');
   const [period, setPeriod] = useState('');
 
-  // Profile fields
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
 
   // Get selected institution/programmes
   const selectedInstitution = institutions.find((i) => i.id === institutionId);
@@ -101,8 +98,6 @@ export default function OnboardingForm({ user, institutions, universities }: Onb
     startTransition(async () => {
       try {
         const data: any = {
-          firstName,
-          lastName,
           onboarded: true,
         };
 
@@ -144,34 +139,6 @@ export default function OnboardingForm({ user, institutions, universities }: Onb
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Name Fields */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              First Name
-            </label>
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              placeholder="John"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Last Name
-            </label>
-            <input
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              placeholder="Doe"
-            />
-          </div>
-        </div>
-
         {/* School / Institution */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
