@@ -1,10 +1,10 @@
-# A+Mentality - Learning Management System
+# A+ Mentality — Learning Management System
 
 ## 🚀 Overview
 
-**A+Mentality** is a modern, role-based Learning Management System (LMS) built with Next.js 16, Clerk Authentication, and Prisma ORM. It empowers educators to share announcements, upload videos, and manage students efficiently.
+**A+ Mentality** is a modern, role-based Learning Management System (LMS) built for Zambian students, with a primary focus on **Mulungushi University**. It provides a complete learning experience: courses, lessons, quizzes, tests, assignments, past exam papers, lecture slides, an e-book library, and an AI-powered study assistant — all accessible from any device, even offline.
 
-**Technology Stack:** Next.js 16, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Clerk, Cloudinary
+**Technology Stack:** Next.js 16, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Clerk, Cloudinary, Upstash Redis, OpenRouter AI, PWA
 
 ---
 
@@ -18,6 +18,7 @@
 - [Database Setup](#-database-setup)
 - [Running the Application](#-running-the-application)
 - [API Documentation](#-api-documentation)
+- [Project Structure](#-project-structure)
 - [Deployment](#-deployment)
 - [Contributing](#-contributing)
 - [License](#-license)
@@ -27,25 +28,46 @@
 ## ✨ Features
 
 ### Role-Based Access Control (RBAC)
-- **Admin Dashboard**: Create announcements, upload videos, manage users
-- **Student Dashboard**: View announcements, watch videos, track progress
+- **Admin Dashboard**: Full content management — create courses, modules, lessons, quizzes, tests, assignments, lecture slides, past papers, and announcements. Grade submissions and manage users.
+- **Student Dashboard**: Enroll in courses, watch lessons, take quizzes and tests, submit assignments, browse past papers, read e-books, track progress, and chat with the AI study assistant.
 
-### Core Functionality
+### Core Learning Features
+- ✅ **Courses & Modules**: Hierarchical course structure with modules and lessons
+- ✅ **Video Lessons**: Upload videos to Cloudinary or embed YouTube links
+- ✅ **Lecture Slides**: Upload and view presentation slides (PDF, PowerPoint, etc.)
+- ✅ **Quizzes**: Create and take quizzes with automatic or manual grading
+- ✅ **Tests**: Timed assessments with submission tracking
+- ✅ **Assignments**: File-based assignments with submission and grading workflow
+- ✅ **Past Exam Papers**: Browse and download past university exam papers by course, year, and semester
+- ✅ **E-Book Library**: Browse, read, and save educational books from public-domain sources (Project Gutenberg, Open Library)
+- ✅ **Progress Tracking**: Track lesson completions and course enrollment progress
+- ✅ **Announcements**: Admin announcements with read-tracking notifications
+
+### AI-Powered Study Assistant
+- ✅ **AI Chat**: Powered by OpenRouter with free AI models, cached with Redis for fast responses
+- ✅ **Context-Aware**: Landing page chat answers questions about the platform; logged-in chat provides Mulungushi University-specific study help
+- ✅ **Smart Caching**: Redis (Upstash) caches AI responses and model selection for performance
+
+### User Experience
 - ✅ **Authentication**: Clerk-powered secure authentication with social login
-- ✅ **Announcements**: Create, read, update, and delete announcements
-- ✅ **Video Management**: Upload videos to Cloudinary or embed YouTube links
-- ✅ **User Management**: Promote/demote users between STUDENT and ADMIN roles
-- ✅ **Search**: Real-time search across announcements and videos
-- ✅ **Responsive Design**: Mobile-first sidebar with collapsible navigation
-- ✅ **YouTube Support**: Embed YouTube videos alongside uploaded content
+- ✅ **Dark/Light/System Theme**: Persistent theme preference synced to database
+- ✅ **PWA (Progressive Web App)**: Installable on mobile devices with offline support
+- ✅ **Responsive Design**: Mobile-first layout with collapsible navigation
+- ✅ **Search**: Real-time search across announcements, videos, and courses
+- ✅ **Notifications**: Announcement read-tracking with notification bell
 
 ### Technical Highlights
-- ⚡ **Next.js 16 App Router** with Server Components
-- 🔒 **TypeScript** for type safety
-- 🎨 **Tailwind CSS** for styling
-- 📊 **Prisma ORM** with PostgreSQL
+- ⚡ **Next.js 16 App Router** with Server and Client Components
+- 🔒 **TypeScript** for end-to-end type safety
+- 🎨 **Tailwind CSS v4** for styling
+- 📊 **Prisma ORM** with PostgreSQL and connection pooling
 - 🔐 **Clerk** for authentication and user management
-- 📁 **Cloudinary** for video storage and streaming
+- 📁 **Cloudinary** for video and file storage
+- 💾 **Upstash Redis** for response caching and performance
+- 🤖 **OpenRouter AI** for the study assistant (Vercel AI SDK)
+- 📱 **PWA** support via `next-pwa`
+- 🎭 **Framer Motion** for animations
+- 🔒 **Security Headers**: X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy
 
 ---
 
@@ -53,7 +75,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Client (Browser)                        │
+│                     Client (Browser / PWA)                  │
 ├─────────────────────────────────────────────────────────────┤
 │                   Next.js 16 App Router                     │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
@@ -64,11 +86,17 @@
 │                    Authentication Layer                     │
 │                      (Clerk SDK)                            │
 ├─────────────────────────────────────────────────────────────┤
-│                    Database Layer                          │
-│              (Prisma ORM + PostgreSQL)                     │
+│                    Caching Layer                            │
+│                  (Upstash Redis)                            │
 ├─────────────────────────────────────────────────────────────┤
-│                    Storage Layer                           │
-│              (Cloudinary - Video Storage)                  │
+│                    Database Layer                           │
+│              (Prisma ORM + PostgreSQL)                      │
+├─────────────────────────────────────────────────────────────┤
+│                    Storage Layer                            │
+│           (Cloudinary — Video & File Storage)               │
+├─────────────────────────────────────────────────────────────┤
+│                    AI Layer                                 │
+│           (OpenRouter + Vercel AI SDK)                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -87,9 +115,11 @@ Before you begin, ensure you have the following installed:
 | **Git** | Latest | Version control |
 
 ### Required Accounts
-- [Clerk](https://clerk.com) - Authentication
-- [Cloudinary](https://cloudinary.com) - Video storage
-- [Neon](https://neon.tech) or [Supabase](https://supabase.com) - Database hosting (optional)
+- [Clerk](https://clerk.com) — Authentication
+- [Cloudinary](https://cloudinary.com) — Video and file storage
+- [Upstash](https://upstash.com) — Redis caching
+- [OpenRouter](https://openrouter.ai) — AI chat assistant
+- [Neon](https://neon.tech) or [Supabase](https://supabase.com) — Database hosting (optional)
 
 ---
 
@@ -97,8 +127,8 @@ Before you begin, ensure you have the following installed:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/a-mentality.git
-cd a-mentality
+git clone https://github.com/chimputu/AplusMentality.git
+cd AplusMentality
 ```
 
 ### 2. Install Dependencies
@@ -108,99 +138,58 @@ npm install
 
 ### 3. Set Up Environment Variables
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
+
+Then fill in your actual credentials. See [Environment Variables](#-environment-variables) below.
 
 ---
 
 ## 🔐 Environment Variables
 
-Create a `.env.local` file in the root directory:
-
-```env
-# ============================================
-# CLERK AUTHENTICATION
-# ============================================
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxxxx
-CLERK_SECRET_KEY=sk_test_xxxxx
-CLERK_WEBHOOK_SECRET=whsec_xxxxx
-
-# Clerk URLs
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
-NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
-
-# ============================================
-# DATABASE
-# ============================================
-# Local Development (Docker)
-DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/amentality?schema=public"
-
-# Production (Neon)
-# DATABASE_URL="postgresql://username:password@ep-xyz.neon.tech/amentality?sslmode=require"
-
-# Production (Supabase)
-# DATABASE_URL="postgresql://postgres:password@db.supabase.co:5432/postgres?sslmode=require"
-
-# ============================================
-# CLOUDINARY - Video Storage
-# ============================================
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-```
-
-### Environment Variables Explained
+See `.env.example` for a complete template. Key variables:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key | ✅ Yes |
-| `CLERK_SECRET_KEY` | Clerk secret key | ✅ Yes |
-| `CLERK_WEBHOOK_SECRET` | Clerk webhook signing secret | ✅ Yes |
 | `DATABASE_URL` | PostgreSQL connection string | ✅ Yes |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key (`pk_live_` for production) | ✅ Yes |
+| `CLERK_SECRET_KEY` | Clerk secret key (`sk_live_` for production) | ✅ Yes |
+| `CLERK_WEBHOOK_SECRET` | Clerk webhook signing secret | ✅ Yes |
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | ✅ Yes |
 | `CLOUDINARY_API_KEY` | Cloudinary API key | ✅ Yes |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret | ✅ Yes |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST URL | ✅ Yes |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis token | ✅ Yes |
+| `OPENROUTER_API_KEY` | OpenRouter API key for AI chat | ✅ Yes |
+| `NEXT_PUBLIC_SITE_URL` | Your app's public URL | ⚠️ Recommended |
 
 ---
 
 ## 🗄️ Database Setup
 
-### Option 1: Local PostgreSQL (Docker) - Recommended for Development
+### Option 1: Local PostgreSQL (Docker) — Recommended for Development
 
 ```bash
 # Pull and run PostgreSQL
 docker run --name amentality-postgres \
-  -e POSTGRES_USER=your_username \
+  -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=your_password \
   -e POSTGRES_DB=amentality \
   -p 5432:5432 \
   -v amentality-data:/var/lib/postgresql/data \
   -d postgres:17
 
-# Run Prisma migrations
-npx prisma migrate dev --name init
-
-# Generate Prisma client
+# Update DATABASE_URL in .env, then:
 npx prisma generate
-
-# Seed the database (optional)
-npx prisma db seed
+npx prisma db push
 ```
 
-### Option 2: Production Database (Neon/Supabase)
+### Option 2: Production Database (Prisma Data Proxy / Neon / Supabase)
 
-**Using Neon:**
-1. Create account at [neon.tech](https://neon.tech)
-2. Create a new project
-3. Copy the connection string
-4. Update `DATABASE_URL` in `.env.local`
-
-**Using Supabase:**
-1. Create account at [supabase.com](https://supabase.com)
-2. Create a new project
-3. Get connection string from Settings → Database
-4. Update `DATABASE_URL` in `.env.local`
+1. Create a database on your preferred host
+2. Set `DATABASE_URL` in `.env`
+3. Generate the Prisma client: `npx prisma generate`
+4. Push the schema: `npx prisma db push`
 
 ---
 
@@ -208,56 +197,121 @@ npx prisma db seed
 
 ### Development Mode
 ```bash
-# Start development server
 npm run dev
-
-# Open Prisma Studio (database GUI)
-npx prisma studio
 ```
+App runs at `http://localhost:3000`.
 
 ### Production Build
 ```bash
-# Build the application
 npm run build
-
-# Start production server
 npm start
 ```
+
+### Prisma Studio (Database GUI)
+```bash
+npx prisma studio
+```
+
+---
+
+## 📚 Database Schema
+
+The database models a complete LMS with the following entities:
+
+| Model | Description |
+|-------|-------------|
+| **User** | Authenticated users (Admin/Student) with Clerk ID, role, and theme preference |
+| **Announcement** | Admin announcements with author tracking |
+| **Course** | Courses with code, title, category, and publish status |
+| **Module** | Modules within courses, ordered sequentially |
+| **Lesson** | Lessons within modules, optionally linked to a video, slide, or quiz |
+| **Video** | Uploaded or embedded videos (Cloudinary/YouTube) |
+| **LectureSlide** | Uploaded lecture slides (PDF, PPT, etc.) |
+| **Quiz** | Quizzes with embed/form URLs, due dates, and publish status |
+| **QuizSubmission** | Student quiz submissions with score, feedback, and grading status |
+| **Test** | Tests similar to quizzes, with max score tracking |
+| **TestSubmission** | Student test submissions |
+| **Assignment** | Assignments with file submissions |
+| **AssignmentSubmission** | Student assignment submissions with file URLs |
+| **PastPaper** | Past exam papers with course code, year, semester, and file download |
+| **Book** | E-books from public-domain sources (Gutenberg, Open Library) |
+| **SavedBook** | Student's saved/bookmarked books |
+| **Enrollment** | Student-course enrollment with progress tracking |
+| **LessonCompletion** | Tracks which lessons a student has completed |
+| **NotificationSeen** | Tracks which announcements a student has read |
 
 ---
 
 ## 📁 Project Structure
 
 ```
-a-mentality/
+AplusMentality/
 ├── app/
+│   ├── (auth)/                # Authentication routes
+│   │   └── sign-in/           # Sign-in page
 │   ├── (dashboard)/           # Protected dashboard routes
 │   │   ├── admin/             # Admin dashboard
+│   │   │   ├── courses/       # Course management
+│   │   │   ├── lessons/       # Lesson management
+│   │   │   ├── quizzes/       # Quiz management + submissions
+│   │   │   ├── tests/         # Test management
+│   │   │   ├── assignments/   # Assignment management + submissions
+│   │   │   ├── videos/        # Video management
+│   │   │   ├── lecture-slides/# Slide management
+│   │   │   ├── past-papers/   # Past paper management
+│   │   │   ├── announcements/ # Announcement management
+│   │   │   ├── users/         # User management
+│   │   │   └── submissions/   # All submissions overview
 │   │   └── student/           # Student dashboard
-│   ├── (auth)/                # Authentication routes
-│   │   ├── sign-in/           # Sign-in page
-│   │   └── sign-up/           # Sign-up page
+│   │       ├── courses/       # Browse and enroll in courses
+│   │       ├── lessons/       # Watch lessons
+│   │       ├── quizzes/       # Take quizzes
+│   │       ├── tests/         # Take tests
+│   │       ├── assignments/   # Submit assignments
+│   │       ├── videos/        # Watch videos
+│   │       ├── lecture-slides/# View slides
+│   │       ├── past-papers/   # Browse past papers
+│   │       ├── books/         # E-book library
+│   │       ├── announcements/ # View announcements
+│   │       ├── results/       # View grades and results
+│   │       └── settings/      # User settings
 │   ├── api/                   # REST API endpoints
-│   │   ├── admin/             # Admin-only endpoints
-│   │   ├── announcements/     # Announcement CRUD
+│   │   ├── chat/              # AI chat (OpenRouter + Redis cache)
+│   │   ├── courses/           # Course CRUD
+│   │   ├── modules/           # Module CRUD
+│   │   ├── lessons/           # Lesson CRUD
+│   │   ├── quizzes/           # Quiz CRUD + submissions
+│   │   ├── tests/             # Test CRUD + submissions
+│   │   ├── assignments/       # Assignment CRUD + submissions
 │   │   ├── videos/            # Video CRUD
-│   │   ├── users/             # User management
-│   │   └── search/            # Search endpoint
-│   ├── layout.tsx             # Root layout
-│   └── page.tsx               # Home page
+│   │   ├── lecture-slides/    # Slide CRUD
+│   │   ├── past-papers/       # Past paper CRUD
+│   │   ├── books/             # E-book browsing and saving
+│   │   ├── enrollments/       # Enrollment and progress
+│   │   ├── users/             # User management + theme
+│   │   ├── search/            # Search endpoint
+│   │   └── webhooks/clerk/    # Clerk webhook for user sync
+│   ├── sign-in/               # Public sign-in page
+│   ├── unauthorized/          # Unauthorized access page
+│   ├── layout.tsx             # Root layout with providers
+│   └── page.tsx               # Landing page (auto-redirects logged-in users)
 ├── components/                # Reusable UI components
+│   ├── DashboardLayout.tsx    # Shared dashboard layout with sidebar
+│   ├── SimpleChat.tsx         # AI chat widget
+│   ├── ThemeToggle.tsx        # Dark/Light/System theme switcher
+│   ├── NotificationBell.tsx   # Announcement notifications
+│   ├── HomePageClient.tsx     # Landing page with animations
+│   └── ...                    # Forms, lists, and action components
 ├── lib/                       # Utility functions
-│   ├── auth.ts                # Authentication helpers
-│   ├── prisma.ts              # Database client
-│   └── types.ts               # TypeScript types
+│   ├── cache.ts               # Upstash Redis client
+│   ├── prisma.ts              # Prisma client with connection pooling
+│   └── ...
 ├── prisma/
 │   └── schema.prisma          # Database schema
-├── public/                    # Static assets
-├── .env.local                 # Environment variables
-├── next.config.js             # Next.js configuration
-├── package.json               # Dependencies
-├── proxy.ts                   # Clerk middleware
-├── tailwind.config.js         # Tailwind CSS config
+├── public/                    # Static assets and PWA manifest
+├── .env.example               # Environment variable template
+├── next.config.ts             # Next.js config (PWA, security headers, images)
+├── package.json               # Dependencies and scripts
 └── tsconfig.json              # TypeScript config
 ```
 
@@ -265,82 +319,87 @@ a-mentality/
 
 ## 📚 API Documentation
 
-### Authentication Endpoints
+### AI Chat
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/webhooks/clerk` | POST | Clerk webhook for user sync |
+| `/api/chat` | POST | Stream AI response (cached in Redis) |
 
-### Announcement Endpoints
+### Courses
 | Endpoint | Method | Description | Auth |
 |----------|--------|-------------|------|
-| `/api/announcements` | GET | List all announcements | ✅ |
-| `/api/announcements` | POST | Create announcement | ADMIN |
-| `/api/announcements/[id]` | DELETE | Delete announcement | ADMIN |
+| `/api/courses` | GET | List published courses | ✅ |
+| `/api/courses` | POST | Create course | ADMIN |
+| `/api/courses/[id]` | PUT | Update course | ADMIN |
+| `/api/courses/[id]` | DELETE | Delete course | ADMIN |
 
-### Video Endpoints
+### Modules & Lessons
 | Endpoint | Method | Description | Auth |
 |----------|--------|-------------|------|
-| `/api/videos` | GET | List all videos | ✅ |
-| `/api/videos` | POST | Upload video | ADMIN |
+| `/api/module` | POST | Create module | ADMIN |
+| `/api/lessons` | POST | Create lesson | ADMIN |
+| `/api/lessons/[id]` | PUT/DELETE | Update/Delete lesson | ADMIN |
+
+### Quizzes
+| Endpoint | Method | Description | Auth |
+|----------|--------|-------------|------|
+| `/api/quizzes` | GET/POST | List/Create quizzes | ✅ / ADMIN |
+| `/api/quizzes/[id]` | PUT/DELETE | Update/Delete quiz | ADMIN |
+| `/api/quizzes/[id]/submit` | POST | Submit quiz response | ✅ |
+| `/api/quizzes/[id]/submissions` | GET | View submissions | ADMIN |
+| `/api/quizzes/submissions/[id]/grade` | POST | Grade submission | ADMIN |
+
+### Tests
+| Endpoint | Method | Description | Auth |
+|----------|--------|-------------|------|
+| `/api/tests` | GET/POST | List/Create tests | ✅ / ADMIN |
+| `/api/tests/[id]` | PUT/DELETE | Update/Delete test | ADMIN |
+| `/api/tests/[id]/submit` | POST | Submit test response | ✅ |
+| `/api/tests/submissions/[id]/grade` | POST | Grade submission | ADMIN |
+
+### Assignments
+| Endpoint | Method | Description | Auth |
+|----------|--------|-------------|------|
+| `/api/assignments` | GET/POST | List/Create assignments | ✅ / ADMIN |
+| `/api/assignments/[id]` | PUT/DELETE | Update/Delete assignment | ADMIN |
+| `/api/assignments/[id]/submit` | POST | Submit assignment | ✅ |
+| `/api/assignments/submissions/[id]/grade` | POST | Grade submission | ADMIN |
+
+### Videos & Slides
+| Endpoint | Method | Description | Auth |
+|----------|--------|-------------|------|
+| `/api/videos` | GET/POST | List/Upload videos | ✅ / ADMIN |
 | `/api/videos/[id]` | DELETE | Delete video | ADMIN |
+| `/api/lecture-slides` | GET/POST | List/Upload slides | ✅ / ADMIN |
+| `/api/lecture-slides/[id]` | PUT/DELETE | Update/Delete slide | ADMIN |
 
-### User Endpoints
+### Past Papers
 | Endpoint | Method | Description | Auth |
 |----------|--------|-------------|------|
-| `/api/users` | GET | List all users | ADMIN |
-| `/api/admin/promote` | POST | Change user role | ADMIN |
+| `/api/past-papers` | GET/POST | List/Upload papers | ✅ / ADMIN |
+| `/api/past-papers/[id]` | DELETE | Delete paper | ADMIN |
 
-### Search Endpoint
+### E-Books
 | Endpoint | Method | Description | Auth |
 |----------|--------|-------------|------|
-| `/api/search?q=query` | GET | Search announcements and videos | ✅ |
+| `/api/books` | GET | Browse books | ✅ |
+| `/api/books/search` | GET | Search books | ✅ |
+| `/api/books/saved` | GET/POST | Get/Save books | ✅ |
+| `/api/books/saved/[id]` | DELETE | Unsave book | ✅ |
 
----
+### Users & Enrollment
+| Endpoint | Method | Description | Auth |
+|----------|--------|-------------|------|
+| `/api/users` | GET | List users | ADMIN |
+| `/api/users/promote` | POST | Change user role | ADMIN |
+| `/api/users/me/theme` | GET/PUT | Get/Set theme | ✅ |
+| `/api/enrollments` | POST | Enroll in course | ✅ |
+| `/api/enrollments/progress` | PUT | Update progress | ✅ |
 
-## 🧪 Database Schema
-
-```prisma
-enum Role {
-  ADMIN
-  STUDENT
-}
-
-model User {
-  id             String   @id @default(cuid())
-  clerkId        String   @unique
-  email          String   @unique
-  name           String?
-  role           Role     @default(STUDENT)
-  announcements  Announcement[]
-  videos         Video[]
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-model Announcement {
-  id        String   @id @default(cuid())
-  title     String
-  content   String
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [clerkId])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Video {
-  id           String   @id @default(cuid())
-  title        String
-  description  String?
-  cloudinaryId String?
-  url          String
-  source       String?  // 'cloudinary' or 'youtube'
-  youtubeId    String?
-  uploadedBy   String
-  uploader     User     @relation(fields: [uploadedBy], references: [clerkId])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-```
+### Search & Webhooks
+| Endpoint | Method | Description | Auth |
+|----------|--------|-------------|------|
+| `/api/search?q=query` | GET | Search content | ✅ |
+| `/api/webhooks/clerk` | POST | Clerk user sync webhook | — |
 
 ---
 
@@ -356,19 +415,24 @@ git push origin main
 # - Go to vercel.com
 # - Click "Add New Project"
 # - Select your repository
-# - Add environment variables
+# - Add all environment variables from .env.example
 # - Deploy
-
-# 3. Environment Variables (Add in Vercel)
-# - All variables from .env.local
 ```
 
-### Deploy Database to Neon/Supabase
+### Environment Variables in Vercel
 
-1. Create account on Neon or Supabase
-2. Get connection string
-3. Add `DATABASE_URL` to Vercel environment variables
-4. Run migrations: `npx prisma migrate deploy`
+Add all variables from `.env.example` in your Vercel project settings. For production, use:
+- **Clerk**: `pk_live_` / `sk_live_` keys (not test keys)
+- **Database**: Production PostgreSQL URL
+- **Redis**: Upstash production credentials
+
+### Security
+
+The app includes security headers configured in `next.config.ts`:
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `X-XSS-Protection: 1; mode=block`
+- `Referrer-Policy: strict-origin-when-cross-origin`
 
 ---
 
@@ -408,9 +472,10 @@ We welcome contributions! Please follow these steps:
 |-------|----------|
 | **P1001: Can't reach database server** | Check `DATABASE_URL` and network connectivity |
 | **Unique constraint failed on clerkId** | User already exists, run `npx prisma db push` |
-| **CLERK_WEBHOOK_SECRET not set** | Add to `.env.local` |
+| **CLERK_WEBHOOK_SECRET not set** | Add to `.env` |
 | **Cloudinary upload failed** | Verify Cloudinary credentials |
 | **SSL connection error** | Add `?sslmode=require` to `DATABASE_URL` |
+| **Redis connection error** | Verify Upstash URL and token in `.env` |
 
 ### Quick Fixes
 
@@ -440,62 +505,60 @@ This project is proprietary and confidential. Unauthorized copying, distribution
 
 **Kafiswe George Chimputu**
 - Email: [kafiswegchimputu@gmail.com](mailto:kafiswegchimputu@gmail.com)
-- GitHub: [@kafiswe](https://github.com/kafiswe)
+- GitHub: [@chimputu](https://github.com/chimputu)
 
 ---
 
 ## 🙏 Acknowledgments
 
-- [Next.js](https://nextjs.org) - React Framework
-- [Clerk](https://clerk.com) - Authentication
-- [Prisma](https://prisma.io) - ORM
-- [Tailwind CSS](https://tailwindcss.com) - Styling
-- [Cloudinary](https://cloudinary.com) - Video Storage
-- [Lucide Icons](https://lucide.dev) - Icons
+- [Next.js](https://nextjs.org) — React Framework
+- [Clerk](https://clerk.com) — Authentication
+- [Prisma](https://prisma.io) — ORM
+- [Tailwind CSS](https://tailwindcss.com) — Styling
+- [Cloudinary](https://cloudinary.com) — Media Storage
+- [Upstash](https://upstash.com) — Redis Caching
+- [OpenRouter](https://openrouter.ai) — AI Models
+- [Vercel AI SDK](https://sdk.vercel.ai) — AI Streaming
+- [Framer Motion](https://www.framer.com/motion) — Animations
+- [Lucide Icons](https://lucide.dev) — Icons
+- [EmailJS](https://www.emailjs.com) — Email Notifications
 
 ---
 
 ## 📊 Project Status
 
-| Feature | Status | Completion |
-|---------|--------|------------|
-| Authentication | ✅ Complete | 100% |
-| User Management | ✅ Complete | 100% |
-| Announcements | ✅ Complete | 100% |
-| Video Upload (Cloudinary) | ✅ Complete | 100% |
-| YouTube Integration | ✅ Complete | 100% |
-| Search Functionality | ✅ Complete | 100% |
-| Responsive Design | ✅ Complete | 100% |
-| Documentation | ✅ Complete | 100% |
+| Feature | Status |
+|---------|--------|
+| Authentication (Clerk) | ✅ Complete |
+| User Management & Roles | ✅ Complete |
+| Courses, Modules, Lessons | ✅ Complete |
+| Video Lessons (Cloudinary + YouTube) | ✅ Complete |
+| Lecture Slides | ✅ Complete |
+| Quizzes with Grading | ✅ Complete |
+| Tests with Grading | ✅ Complete |
+| Assignments with File Submission | ✅ Complete |
+| Past Exam Papers | ✅ Complete |
+| E-Book Library | ✅ Complete |
+| Progress Tracking | ✅ Complete |
+| Announcements & Notifications | ✅ Complete |
+| AI Study Assistant (OpenRouter + Redis) | ✅ Complete |
+| Dark/Light/System Theme | ✅ Complete |
+| PWA (Offline Support) | ✅ Complete |
+| Search | ✅ Complete |
+| Responsive Design | ✅ Complete |
+| Security Headers | ✅ Complete |
 
 ---
 
 ## 🎯 Future Roadmap
 
-- [ ] Add quizzes and assessments
-- [ ] Lecture slides integration
-- [ ] Course progress tracking
-- [ ] Notifications system
-- [ ] Student certificates
-- [ ] Analytics dashboard
+- [ ] Student certificates and achievements
+- [ ] Analytics dashboard for admins
+- [ ] Discussion forums
+- [ ] Live tutoring sessions
 - [ ] Mobile app (React Native)
+- [ ] Payment integration for premium features
 
 ---
 
-## 🏆 Why This Project?
-
-As a software engineer evaluating candidates, here's what I look for:
-
-| Quality | How This Project Demonstrates It |
-|---------|----------------------------------|
-| **Full-Stack Proficiency** | Next.js + TypeScript + Prisma + PostgreSQL |
-| **Security Awareness** | Clerk auth, role-based access, environment variables |
-| **Code Quality** | Clean TypeScript, proper error handling, comments |
-| **Modern Architecture** | App Router, Server Components, API routes |
-| **User Experience** | Responsive design, search, loading states |
-| **Best Practices** | Environment variables, modular code, type safety |
-| **Problem Solving** | Handles complex features (video upload, YouTube embed) |
-
----
-
-*Built with ❤️ by Kafiswe George Chimputu*
+*Built with ❤️ by Kafiswe George Chimputu — Empowering Zambian lifelong learners.*
