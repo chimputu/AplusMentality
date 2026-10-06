@@ -58,12 +58,14 @@ export default function ThemeToggle() {
     }
   };
 
-  // ⏳ next-themes returns undefined until hydrated
+  // ⏳ next-themes returns undefined until hydrated; keep structure identical to avoid hydration mismatch
   if (theme === undefined) {
     return (
-      <button className="p-2 rounded-full hover:bg-gray-100 transition">
-        <div className="w-5 h-5" />
-      </button>
+      <div className="relative">
+        <button className="p-2 rounded-full hover:bg-gray-100 transition" aria-label="Theme">
+          <div className="w-5 h-5" />
+        </button>
+      </div>
     );
   }
 
