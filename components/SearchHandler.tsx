@@ -33,7 +33,7 @@ interface SearchHandlerProps {
   totalVideos: number;
   thisWeekAnnouncements: number;
   userName: string;
-  role: 'ADMIN' | 'STUDENT';
+  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
 }
 
 // Component that actually uses useSearchParams

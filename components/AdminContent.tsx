@@ -35,7 +35,7 @@ interface User {
   lastName: string | null;
   name: string | null;
   imageUrl: string | null;
-  role: 'ADMIN' | 'STUDENT';
+  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
   createdAt: string;
   enrollments?: any[];
   courses?: any[];
@@ -57,7 +57,7 @@ interface AdminContentProps {
   courses?: any[];
   activeTab: string;
   displayName: string;
-  role: 'ADMIN' | 'STUDENT';
+  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
 }
 
 export default function AdminContent({

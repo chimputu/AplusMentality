@@ -26,7 +26,7 @@ interface Notification {
 }
 
 interface NotificationBellProps {
-  role: 'ADMIN' | 'STUDENT';
+  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
 }
 
 const TYPE_CONFIG: Record<

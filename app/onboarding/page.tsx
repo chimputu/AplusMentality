@@ -41,6 +41,7 @@ export default async function OnboardingPage() {
       programmes: {
         orderBy: { name: 'asc' },
         include: {
+          faculty: true,
           branches: { orderBy: { name: 'asc' } },
         },
       },

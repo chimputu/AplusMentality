@@ -2,7 +2,7 @@
 // One-time script to link existing lecture slides to courses
 // Run: npx tsx scripts/migrate-lecture-slides.ts
 
-import { PrismaClient } from '../generated/prisma';
+import { PrismaClient } from '../generated/prisma/client';
 
 const prisma = new PrismaClient();
 
