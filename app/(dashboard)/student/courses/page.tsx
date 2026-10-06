@@ -1,10 +1,16 @@
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { BookOpen, GraduationCap, Users, Calendar, PlayCircle } from 'lucide-react';
+import { BookOpen, GraduationCap, Users, PlayCircle, Building2 } from 'lucide-react';
 
-export default async function StudentCoursesPage() {
+export default async function StudentCoursesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ university?: string }>;
+}) {
   const { userId } = await requireAuth(['STUDENT']);
+  const params = await searchParams;
+  const universityId = params.university || null;
 
   // Get enrolled courses
   const enrollmentsData = await prisma.enrollment.findMany({
@@ -19,6 +25,9 @@ export default async function StudentCoursesPage() {
           },
           creator: {
             select: { name: true },
+          },
+          university: {
+            select: { id: true, name: true, code: true },
           },
         },
       },
@@ -44,10 +53,16 @@ export default async function StudentCoursesPage() {
     },
   }));
 
+  // Filter enrolled courses by university if selected
+  const filteredEnrollments = universityId
+    ? enrollments.filter((e) => e.course.university?.id === universityId)
+    : enrollments;
+
   // Get available courses
   const availableCoursesData = await prisma.course.findMany({
     where: {
       isPublished: true,
+      ...(universityId ? { universityId } : {}),
       NOT: {
         enrollments: {
           some: { userId },
@@ -63,9 +78,12 @@ export default async function StudentCoursesPage() {
       creator: {
         select: { name: true },
       },
+      university: {
+        select: { id: true, name: true, code: true },
+      },
     },
     orderBy: { createdAt: 'desc' },
-    take: 6,
+    take: 12,
   });
 
   // ✅ Convert dates
@@ -82,30 +100,52 @@ export default async function StudentCoursesPage() {
     })),
   }));
 
+  // Fetch university name for the filter indicator
+  const selectedUniversity = universityId
+    ? await prisma.university.findUnique({
+        where: { id: universityId },
+        select: { name: true, code: true },
+      })
+    : null;
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Courses</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">Your enrolled courses and progress</p>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          {selectedUniversity
+            ? `Viewing courses for ${selectedUniversity.name} (${selectedUniversity.code})`
+            : 'Your enrolled courses and progress'}
+        </p>
+        {universityId && (
+          <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 flex items-center gap-1">
+            <Building2 className="w-3 h-3" />
+            Filtered by university — use the sidebar to switch
+          </p>
+        )}
       </div>
 
       {/* Enrolled Courses */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
-          Enrolled Courses ({enrollments.length})
+          Enrolled Courses ({filteredEnrollments.length})
         </h2>
 
-        {enrollments.length === 0 ? (
+        {filteredEnrollments.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
             <BookOpen className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">No courses enrolled</h3>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+              {universityId ? 'No courses for this university' : 'No courses enrolled'}
+            </h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-              Browse available courses below and start learning!
+              {universityId
+                ? 'Try selecting a different university from the sidebar.'
+                : 'Browse available courses below and start learning!'}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {enrollments.map((enrollment) => {
+            {filteredEnrollments.map((enrollment) => {
               const { course } = enrollment;
               const totalLessons = course.modules.reduce(
                 (acc, m) => acc + m.lessons.length,
@@ -123,6 +163,12 @@ export default async function StudentCoursesPage() {
                         <span className="text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
                           {course.code}
                         </span>
+                        {course.university && (
+                          <span className="ml-2 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-1 rounded flex items-center gap-1 inline-flex">
+                            <Building2 className="w-3 h-3" />
+                            {course.university.code}
+                          </span>
+                        )}
                         <h3 className="font-semibold text-gray-800 dark:text-gray-100 mt-2 line-clamp-1">
                           {course.title}
                         </h3>
@@ -203,6 +249,12 @@ export default async function StudentCoursesPage() {
                       <span className="text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
                         {course.code}
                       </span>
+                      {course.university && (
+                        <span className="ml-2 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-1 rounded flex items-center gap-1 inline-flex">
+                          <Building2 className="w-3 h-3" />
+                          {course.university.code}
+                        </span>
+                      )}
                       <h3 className="font-semibold text-gray-800 dark:text-gray-100 mt-2 line-clamp-1">
                         {course.title}
                       </h3>
