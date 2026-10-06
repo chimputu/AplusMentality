@@ -104,27 +104,27 @@ export default function StudentLectureSlidesPage() {
     setFiltered(result);
   }, [search, categoryFilter, courseFilter, slides]);
 
-  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (loading) return <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading...</div>;
 
   return (
     <div className="max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Lecture Slides</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Lecture Slides</h1>
       <div className="flex flex-wrap gap-4 mb-6 items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
           <input
             type="text"
             placeholder="Search slides..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-lg"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           />
         </div>
         {categories.length > 0 && (
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           >
             <option value="">All Categories</option>
             {categories.map((cat) => (
@@ -138,7 +138,7 @@ export default function StudentLectureSlidesPage() {
           <select
             value={courseFilter}
             onChange={(e) => setCourseFilter(e.target.value)}
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           >
             <option value="">All Courses</option>
             {courses.map((course) => (
@@ -151,7 +151,7 @@ export default function StudentLectureSlidesPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
           No lecture slides found.
         </div>
       ) : (
@@ -159,22 +159,22 @@ export default function StudentLectureSlidesPage() {
           {filtered.map((slide) => (
             <div
               key={slide.id}
-              className="border rounded-xl p-4 hover:shadow-md transition bg-white dark:bg-gray-800"
+              className="border border-gray-100 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition bg-white dark:bg-gray-800"
             >
-              <h3 className="font-semibold text-lg">{slide.title}</h3>
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">{slide.title}</h3>
               {slide.description && (
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   {slide.description}
                 </p>
               )}
-              <div className="flex flex-wrap gap-2 mt-2 text-xs text-gray-500">
+              <div className="flex flex-wrap gap-2 mt-2 text-xs">
                 {slide.category && (
-                  <span className="bg-gray-100 px-2 py-1 rounded">
+                  <span className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
                     Category: {slide.category}
                   </span>
                 )}
                 {slide.course && (
-                  <span className="bg-gray-100 px-2 py-1 rounded">
+                  <span className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
                     Course: {slide.course.title}
                   </span>
                 )}
@@ -190,7 +190,7 @@ export default function StudentLectureSlidesPage() {
                 </a>
                 <Link
                   href={`/student/lecture-slides/${slide.id}`}
-                  className="inline-flex items-center gap-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
+                  className="inline-flex items-center gap-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
                 >
                   View
                 </Link>
