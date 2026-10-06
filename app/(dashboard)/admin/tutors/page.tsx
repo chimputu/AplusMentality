@@ -1,17 +1,19 @@
-import { requireAuth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Plus, CheckCircle, XCircle, MessageSquare } from 'lucide-react';
 
-async function getTutors() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-  const res = await fetch(`${baseUrl}/api/admin/tutors`, { cache: 'no-store' });
-  if (!res.ok) return [];
-  return res.json();
-}
-
 export default async function AdminTutorsPage() {
-  await requireAuth(['ADMIN']);
-  const tutors = await getTutors();
+  const tutors = await prisma.tutor.findMany({
+    include: {
+      university: true,
+      programme: true,
+      specialties: {
+        include: { course: true },
+      },
+      _count: { select: { requests: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 
   return (
     <div className="space-y-6">
@@ -54,7 +56,12 @@ export default async function AdminTutorsPage() {
                   <p className="text-xs text-gray-500 dark:text-gray-400">{tutor.email}</p>
                   {tutor.university && (
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                      {tutor.university.name}
+                      {tutor.university.name} ({tutor.university.code})
+                    </p>
+                  )}
+                  {tutor.programme && (
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                      {tutor.programme.name}
                     </p>
                   )}
                 </div>

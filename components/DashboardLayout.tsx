@@ -30,7 +30,6 @@ import {
   MessageSquare,
   Sparkles,
   Building2,
-  Lightbulb,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
@@ -233,12 +232,6 @@ export default function DashboardLayout({
       href: '/student/ai', 
       label: 'AI Assistant', 
       icon: Sparkles,
-      section: 'Learning'
-    },
-    { 
-      href: '/student/ai-insights', 
-      label: 'AI Insights', 
-      icon: Lightbulb,
       section: 'Learning'
     },
     { 
