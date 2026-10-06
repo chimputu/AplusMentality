@@ -1,5 +1,5 @@
 'use client';
-import { Megaphone, Video, Users, Settings, BookOpen, FileText, GraduationCap } from 'lucide-react';
+import { Megaphone, Video, Users, Settings, BookOpen, FileText, GraduationCap, ListTodo } from 'lucide-react';
 import CreateAnnouncementForm from './CreateAnnouncementForm';
 import AnnouncementList from './AnnouncementList';
 import VideoUploadForm from './VideoUploadForm';
@@ -165,6 +165,13 @@ export default function AdminContent({
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Link
+          href="/admin/submissions"
+          className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl p-4 text-center transition border border-gray-100 dark:border-gray-700"
+        >
+          <ListTodo className="w-6 h-6 text-red-500 mx-auto mb-2" />
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">View Submissions</span>
+        </Link>
         <Link
           href="/admin/courses"
           className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl p-4 text-center transition border border-gray-100 dark:border-gray-700"

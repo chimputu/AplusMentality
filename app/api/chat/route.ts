@@ -18,11 +18,13 @@ const openrouter = createOpenRouter({
 // FREE MODEL SELECTION (cached in Redis)
 // ============================================================
 
+// Primary model: openrouter/free auto-routes to any available free model
+// Fallbacks: specific reliable free models if auto-router fails
 const fallbackFreeModels = [
+  'openrouter/free',
+  'qwen/qwen3.8-27b:free',
   'qwen/qwen-2.5-7b-instruct:free',
   'meta-llama/llama-3.1-8b-instruct:free',
-  'mistralai/mistral-7b-instruct:free',
-  'google/gemma-2-9b-it:free',
 ];
 
 async function getFreeModel(): Promise<string> {
@@ -37,30 +39,16 @@ async function getFreeModel(): Promise<string> {
     // Redis unavailable, continue to fetch
   }
 
+  // Prefer openrouter/free auto-router — it handles model availability automatically
+  const preferredModel = 'openrouter/free';
+
+  // Cache the preferred model in Redis for 5 minutes
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/models');
-    const data = await res.json();
-    const freeModels = data.data.filter((m: any) => m.id.includes(':free'));
-
-    const preferred = freeModels.find(
-      (m: any) => /qwen|llama|mistral|gemma|hermes/i.test(m.id) && m.context_length > 8000
-    );
-    const selectedModel = preferred?.id || freeModels[0]?.id;
-
-    if (selectedModel) {
-      // Cache in Redis for 5 minutes
-      try {
-        await cache.set(redisKey, selectedModel, { ex: ttlSeconds });
-      } catch {
-        // Silently fail if Redis is unavailable
-      }
-      return selectedModel;
-    }
-  } catch (e) {
-    console.warn('Failed to fetch free models:', e);
+    await cache.set(redisKey, preferredModel, { ex: ttlSeconds });
+  } catch {
+    // Silently fail if Redis is unavailable
   }
-
-  return fallbackFreeModels[Math.floor(Math.random() * fallbackFreeModels.length)];
+  return preferredModel;
 }
 
 function normalizeMessage(msg: string): string {
@@ -297,44 +285,63 @@ export async function POST(req: Request) {
       });
     }
 
-    // ---- 2. Pick a free model ----
-    const model = await getFreeModel();
+    // ---- 2. Pick a free model (with retry on fallbacks) ----
+    let model = await getFreeModel();
+    let lastError;
 
-    // ---- 3. Stream the response ----
-    const result = streamText({
-      model: openrouter(model),
-      system: systemPrompt,
-      prompt: message,
-      temperature: 0.6,
-      maxOutputTokens: 600,
-    });
+    // Try the primary model, then fall back to specific free models if it fails
+    const modelsToTry = model === 'openrouter/free'
+      ? ['openrouter/free', ...fallbackFreeModels.filter(m => m !== 'openrouter/free')]
+      : [model, ...fallbackFreeModels];
 
-    // ---- 4. Forward stream immediately + collect for cache ----
-    let fullText = '';
-    const decoder = new TextDecoder();
+    for (const tryModel of modelsToTry) {
+      try {
+        // ---- 3. Stream the response ----
+        const result = streamText({
+          model: openrouter(tryModel),
+          system: systemPrompt,
+          prompt: message,
+          temperature: 0.6,
+          maxOutputTokens: 600,
+        });
 
-    const transform = new TransformStream({
-      transform(chunk, controller) {
-        fullText += decoder.decode(chunk, { stream: true });
-        controller.enqueue(chunk);
-      },
-      flush() {
-        fullText += decoder.decode();
-        if (fullText.trim()) {
-          // Cache in Redis for 1 hour (fire-and-forget)
-          cache.set(cacheKey, fullText, { ex: 3600 }).catch(() => {});
+        // ---- 4. Forward stream immediately + collect for cache ----
+        let fullText = '';
+        const decoder = new TextDecoder();
+
+        const transform = new TransformStream({
+          transform(chunk, controller) {
+            fullText += decoder.decode(chunk, { stream: true });
+            controller.enqueue(chunk);
+          },
+          flush() {
+            fullText += decoder.decode();
+            if (fullText.trim()) {
+              // Cache in Redis for 1 hour (fire-and-forget)
+              cache.set(cacheKey, fullText, { ex: 3600 }).catch(() => {});
+            }
+          },
+        });
+
+        const aiResponse = result.toTextStreamResponse();
+        if (!aiResponse.body) {
+          throw new Error('Streaming error');
         }
-      },
-    });
 
-    const aiResponse = result.toTextStreamResponse();
-    if (!aiResponse.body) {
-      return new Response('Streaming error', { status: 500 });
+        return new Response(aiResponse.body.pipeThrough(transform), {
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        });
+      } catch (e) {
+        lastError = e;
+        console.warn(`Model ${tryModel} failed, trying next...`, e);
+        model = tryModel; // update for next iteration
+        continue;
+      }
     }
 
-    return new Response(aiResponse.body.pipeThrough(transform), {
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-    });
+    // All models failed
+    console.error('All free models failed:', lastError);
+    return new Response('AI service is temporarily unavailable. Please try again later.', { status: 503 });
   } catch (error) {
     console.error('Chat API Error:', error);
     return new Response('Internal Server Error', { status: 500 });

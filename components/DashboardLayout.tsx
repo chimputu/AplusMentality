@@ -24,6 +24,8 @@ import {
   Presentation,
   FileQuestion,
   FileCheck,
+  ListTodo,
+  Award,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
@@ -141,6 +143,12 @@ export default function DashboardLayout({
       section: 'Assessments'
     },
     { 
+      href: '/admin/submissions', 
+      label: 'Submissions', 
+      icon: ListTodo,
+      section: 'Assessments'
+    },
+    { 
       href: '/admin/courses', 
       label: 'Courses', 
       icon: BookOpen,
@@ -208,6 +216,12 @@ export default function DashboardLayout({
       href: '/student/assignments', 
       label: 'Assignments', 
       icon: ClipboardList,
+      section: 'Assessments'
+    },
+    { 
+      href: '/student/results', 
+      label: 'Results', 
+      icon: Award,
       section: 'Assessments'
     },
     { 
