@@ -12,6 +12,8 @@ import {
   BookOpen,
   HelpCircle,
   ClipboardList,
+  GraduationCap,
+  School,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -39,6 +41,10 @@ interface StudentContentProps {
   videos: VideoItem[];
   displayName: string;
   searchQuery?: string;
+  universityName?: string | null;
+  universityCode?: string | null;
+  programmeName?: string | null;
+  year?: number | null;
 }
 
 function extractYouTubeId(url: string): string | null {
@@ -103,6 +109,10 @@ export default function StudentContent({
   videos,
   displayName,
   searchQuery = '',
+  universityName,
+  universityCode,
+  programmeName,
+  year,
 }: StudentContentProps) {
   const q = searchQuery.toLowerCase();
 
@@ -175,7 +185,34 @@ export default function StudentContent({
             <h1 className="text-3xl md:text-4xl font-bold">
               Hello, {displayName}! 
             </h1>
-            <p className="text-gray-300 mt-2 text-sm md:text-base">
+            {(universityName || programmeName || year) && (
+              <div className="mt-3 flex flex-wrap gap-3">
+                {universityName && (
+                  <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg">
+                    <School className="w-4 h-4 text-blue-300" />
+                    <span className="text-sm text-gray-200">
+                      {universityName}
+                      {universityCode && (
+                        <span className="text-gray-400 ml-1">({universityCode})</span>
+                      )}
+                    </span>
+                  </div>
+                )}
+                {programmeName && (
+                  <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg">
+                    <GraduationCap className="w-4 h-4 text-green-300" />
+                    <span className="text-sm text-gray-200">{programmeName}</span>
+                  </div>
+                )}
+                {year && (
+                  <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg">
+                    <BookOpen className="w-4 h-4 text-yellow-300" />
+                    <span className="text-sm text-gray-200">Year {year}</span>
+                  </div>
+                )}
+              </div>
+            )}
+            <p className="text-gray-300 mt-3 text-sm md:text-base">
               Stay updated with the latest announcements and videos from your mentors.
             </p>
             <div className="inline-flex items-center gap-2 mt-5 bg-white/10 border border-white/10 px-4 py-2 rounded-full">

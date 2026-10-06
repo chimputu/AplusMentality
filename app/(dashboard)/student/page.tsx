@@ -2,7 +2,6 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import StudentContent from '@/components/StudentContent';
-import { AIInsightsCard } from '@/components/ai/AIInsightsCard';
 
 interface SearchParams {
   search?: string;
@@ -28,10 +27,18 @@ export default async function StudentPage({
   }
   if (!clerkUser) redirect('/sign-in');
 
-  // 3. Get user role from database
+  // 3. Get user role and academic profile from database
   const dbUser = await prisma.user.findUnique({
     where: { clerkId: userId },
-    select: { role: true },
+    select: {
+      role: true,
+      universityId: true,
+      programmeId: true,
+      year: true,
+      period: true,
+      university: { select: { name: true, code: true } },
+      programme: { select: { name: true, shortName: true } },
+    },
   });
   if (!dbUser || dbUser.role !== 'STUDENT') {
     redirect('/admin');
@@ -73,14 +80,15 @@ export default async function StudentPage({
 
   // 8. Render content (layout is provided by parent layout.tsx)
   return (
-    <div className="space-y-6">
-      <AIInsightsCard />
-      <StudentContent
-        announcements={announcements}
-        videos={videos}
-        displayName={displayName}
-        searchQuery={searchQuery}
-      />
-    </div>
+    <StudentContent
+      announcements={announcements}
+      videos={videos}
+      displayName={displayName}
+      searchQuery={searchQuery}
+      universityName={dbUser.university?.name || null}
+      universityCode={dbUser.university?.code || null}
+      programmeName={dbUser.programme?.shortName || dbUser.programme?.name || null}
+      year={dbUser.year || null}
+    />
   );
 }
