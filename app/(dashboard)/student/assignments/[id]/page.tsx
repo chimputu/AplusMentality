@@ -38,7 +38,7 @@ export default async function StudentSubmitAssignmentPage({ params }: PageProps)
           You have already submitted this assignment
         </h2>
         <Link
-          href={`/student/assignments/${id}/results`}
+          href={`/student/assignments/${id}/result`}
           className="inline-block mt-4 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
         >
           View Results →

@@ -229,6 +229,12 @@ export default function DashboardLayout({
       icon: Users,
       section: 'Learning'
     },
+    {
+      href: '/student/lessons',
+      label: 'Lessons',
+      icon: Video,
+      section: 'Learning'
+    },
     { 
       href: '/student/ai', 
       label: 'AI Assistant', 
