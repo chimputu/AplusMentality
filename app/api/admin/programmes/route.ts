@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET — list programmes by university (authenticated users)
+// GET — list programmes by university or institution (authenticated users)
 export async function GET(req: NextRequest) {
   try {
     const auth = await getAuthUser();
@@ -13,17 +13,19 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const universityId = searchParams.get('universityId');
+    const institutionId = searchParams.get('institutionId');
 
-    if (!universityId) {
-      return NextResponse.json(
-        { error: 'universityId query parameter is required' },
-        { status: 400 }
-      );
-    }
+    const where: any = {};
+    if (universityId) where.universityId = universityId;
+    if (institutionId) where.institutionId = institutionId;
 
     const programmes = await prisma.programme.findMany({
-      where: { universityId },
+      where,
       orderBy: { name: 'asc' },
+      include: {
+        institution: { select: { id: true, name: true, slug: true } },
+        faculty: { select: { id: true, name: true, code: true } },
+      },
     });
 
     return NextResponse.json(programmes);
@@ -45,11 +47,11 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, shortName, universityId } = body;
+    const { name, shortName, code, universityId, institutionId, facultyId } = body;
 
-    if (!name || !universityId) {
+    if (!name || (!universityId && !institutionId)) {
       return NextResponse.json(
-        { error: 'Name and universityId are required' },
+        { error: 'Name and (universityId or institutionId) are required' },
         { status: 400 }
       );
     }
@@ -58,7 +60,10 @@ export async function POST(req: NextRequest) {
       data: {
         name,
         shortName: shortName || null,
-        universityId,
+        code: code || null,
+        universityId: universityId || null,
+        institutionId: institutionId || null,
+        facultyId: facultyId || null,
       },
     });
 
