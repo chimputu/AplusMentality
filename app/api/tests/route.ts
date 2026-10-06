@@ -9,6 +9,7 @@ export async function GET() {
     const tests = await prisma.test.findMany({
       include: {
         creator: { select: { name: true, email: true } },
+        course: { select: { id: true, code: true, title: true } },
         submissions: true,
       },
       orderBy: { createdAt: 'desc' },
@@ -34,10 +35,15 @@ export async function POST(req: NextRequest) {
       maxScore,
       fileUrl,
       contentType,
+      courseId,
     } = body;
 
     if (!title) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    }
+
+    if (!courseId) {
+      return NextResponse.json({ error: 'Course is required' }, { status: 400 });
     }
 
     const test = await prisma.test.create({
@@ -51,6 +57,7 @@ export async function POST(req: NextRequest) {
         fileUrl: fileUrl || null,
         contentType: contentType || 'google_form',
         createdBy: userId,
+        courseId,
         isPublished: true,
       },
     });
