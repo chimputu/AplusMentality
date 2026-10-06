@@ -64,10 +64,10 @@ export async function POST(req: Request) {
     const fullName =
       `${first_name || ''} ${last_name || ''}`.trim() || null;
 
-    // Normalize: strip leading @, lowercase
+    // Normalize: strip leading @, lowercase; fall back to email if username is not set
     const normalizedUsername = username
       ? username.replace(/^@/, '').toLowerCase()
-      : null;
+      : primaryEmail;
 
     try {
       await prisma.user.upsert({

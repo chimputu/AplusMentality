@@ -15,6 +15,7 @@ datasource db {
 // ============================================
 enum Role {
   ADMIN
+  SUPER_ADMIN
   STUDENT
 }
 
@@ -28,6 +29,86 @@ enum SubmissionStatus {
   PENDING
   GRADED
   RETURNED
+}
+
+enum PendingUploadStatus {
+  UNTAGGED
+  TAGGED
+  ARCHIVED
+}
+
+enum AcademicSystem {
+  YEARLY
+  SEMESTERLY
+  TRIMESTERLY
+}
+
+// ============================================
+// INSTITUTION ENUMS
+// ============================================
+enum InstitutionType {
+  UNIVERSITY
+  COLLEGE
+  POLYTECHNIC
+  INSTITUTE
+  MEDICAL_SCHOOL
+  BUSINESS_SCHOOL
+  TECHNICAL_COLLEGE
+  VOCATIONAL_SCHOOL
+}
+
+enum LevelType {
+  YEAR
+  STAGE
+  PHASE
+  GRADE
+}
+
+enum PeriodType {
+  SEMESTER
+  TERM
+  TRIMESTER
+  QUARTER
+  BLOCK
+}
+
+// ============================================
+// ASSESSMENT ENGINE ENUMS
+// ============================================
+enum AssessmentType {
+  QUIZ
+  TEST
+  EXAM
+  ASSIGNMENT
+}
+
+enum AssessmentMode {
+  GOOGLE_FORM
+  NATIVE
+}
+
+enum LiveStatus {
+  DRAFT
+  SCHEDULED
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+  ESSAY
+  IMAGE_CHOICE
+  FILE_UPLOAD
+}
+
+enum ResultReveal {
+  IMMEDIATELY
+  AFTER_CLOSE
+  AFTER_MANUAL
+  NEVER
 }
 
 // ============================================
@@ -45,6 +126,19 @@ model User {
   role           Role           @default(STUDENT)
   theme          String?        @default("system")
 
+  // Student academic profile
+  universityId  String?
+  university    University? @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  institutionId String?
+  institution   Institution? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  programmeId   String?
+  programme     Programme? @relation(fields: [programmeId], references: [id], onDelete: SetNull)
+  branchId      String?
+  branch        Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  year          Int?
+  period        String?  // "1", "2", "3" for semester/trimester; "" for yearly
+  onboarded     Boolean  @default(false)
+
   // Relations
   announcements  Announcement[]
   videos         Video[]
@@ -61,6 +155,15 @@ model User {
   pastPapers     PastPaper[]
   notificationSeens NotificationSeen[]
   savedBooks     SavedBook[]
+
+  // Assessment engine relations
+  assessments        Assessment[]        @relation("AssessmentCreator")
+  assessmentAttempts AssessmentAttempt[]
+  formResponses      FormResponse[]
+
+  // Tutor relations
+  tutorProfile       Tutor?
+  tutorRequests      TutorRequest[]
 
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -101,12 +204,18 @@ model Video {
   uploader     User     @relation(fields: [uploadedBy], references: [clerkId])
   lessons      Lesson[]
 
+  // ⭐ NEW — scoping to a course
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  order    Int?
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   @@index([createdAt])
   @@index([uploadedBy])
   @@index([source])
+  @@index([courseId])
 }
 
 // ============================================
@@ -115,27 +224,48 @@ model Video {
 
 model Course {
   id          String   @id @default(cuid())
-  code        String   @unique
+  code        String
   title       String
   description String?
   thumbnail   String?
   category    String?
   level       String?
 
+  universityId String?
+  university   University? @relation(fields: [universityId], references: [id], onDelete: SetNull)
+
+  programmeId String?
+  programme   Programme? @relation(fields: [programmeId], references: [id], onDelete: SetNull)
+
+  year        Int?
+  period      String?  // "1", "2", "3" for semester/trimester; "" for yearly
+
   modules     Module[]
   enrollments Enrollment[]
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
 
-  lectureSlides LectureSlide[]
+  lectureSlides    LectureSlide[]
+  pendingUploads   PendingUpload[]
+  videos           Video[]
+  pastPapers       PastPaper[]
+  quizzes          Quiz[]
+  tests            Test[]
+  assignments      Assignment[]
+  tutorialSheets   TutorialSheet[]
+  assessments      Assessment[]
+  tutorSpecialties TutorSpecialty[]
 
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@unique([universityId, programmeId, year, period, code])
   @@index([isPublished])
   @@index([createdAt])
   @@index([createdBy])
+  @@index([universityId])
+  @@index([programmeId])
 }
 
 model Module {
@@ -226,12 +356,17 @@ model Quiz {
   lessons     Lesson[]
   submissions QuizSubmission[]
 
+  // ⭐ NEW — scoping to a course
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([createdAt])
   @@index([isPublished])
+  @@index([courseId])
 }
 
 model QuizSubmission {
@@ -274,12 +409,17 @@ model Test {
   creator     User     @relation(fields: [createdBy], references: [clerkId])
   submissions TestSubmission[]
 
+  // ⭐ NEW — scoping to a course
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([createdAt])
   @@index([isPublished])
+  @@index([courseId])
 }
 
 model TestSubmission {
@@ -322,12 +462,17 @@ model Assignment {
   creator     User     @relation(fields: [createdBy], references: [clerkId])
   submissions AssignmentSubmission[]
 
+  // ⭐ NEW — scoping to a course
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([createdAt])
   @@index([isPublished])
+  @@index([courseId])
 }
 
 model AssignmentSubmission {
@@ -405,6 +550,10 @@ model PastPaper {
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
 
+  // ⭐ NEW — scoping to a course
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -412,6 +561,7 @@ model PastPaper {
   @@index([year])
   @@index([category])
   @@index([createdAt])
+  @@index([courseId])
 }
 
 // ============================================
@@ -474,4 +624,415 @@ model SavedBook {
   @@index([userId])
   @@index([bookId])
   @@index([savedAt])
+}
+
+// ============================================
+// UNIVERSITY & PROGRAMME
+// ============================================
+model University {
+  id              String         @id @default(cuid())
+  name            String
+  code            String         @unique  // e.g. "MU", "UNZA", "CBU"
+  academicSystem  AcademicSystem @default(SEMESTERLY)
+  courses         Course[]
+  programmes      Programme[]
+  tutors          Tutor[]
+  users           User[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([academicSystem])
+}
+
+model Programme {
+  id              String    @id @default(cuid())
+  name            String    // e.g. "BSc Natural Sciences"
+  shortName       String?   // e.g. "BSc NS"
+  code            String?   // e.g. "BSC-CS", "DIP-ACC"
+
+  // Legacy: University link
+  universityId    String?
+  university      University? @relation(fields: [universityId], references: [id], onDelete: SetNull)
+
+  // New: Institution link
+  institutionId   String?
+  institution     Institution? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  // Faculty link
+  facultyId       String?
+  faculty         Faculty? @relation(fields: [facultyId], references: [id], onDelete: SetNull)
+
+  courses         Course[]
+  branches        Branch[]
+  tutors          Tutor[]
+  users           User[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([institutionId, code])
+  @@index([universityId])
+  @@index([institutionId])
+  @@index([facultyId])
+}
+
+model Branch {
+  id          String    @id @default(cuid())
+  name        String
+  programmeId String
+  programme   Programme @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  tutors      Tutor[]
+  users       User[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([programmeId, name])
+  @@index([programmeId])
+}
+
+// ============================================
+// PENDING UPLOADS (staging area)
+// ============================================
+model PendingUpload {
+  id             String              @id @default(cuid())
+  filename       String
+  originalName   String
+  url            String
+  fileType       String
+  mimeType       String
+  fileSize       Int
+
+  suggestedCode  String?  // auto-extracted from filename via regex
+
+  status         PendingUploadStatus @default(UNTAGGED)
+
+  courseId       String?
+  course         Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  contentType    String?  // "lecture_slide" | "video" | "past_paper" | "quiz" | "test" | "assignment" | "tutorial"
+  order          Int?
+
+  uploadedBy     String
+  createdAt      DateTime           @default(now())
+  taggedAt       DateTime?
+
+  @@index([status])
+  @@index([uploadedBy])
+  @@index([createdAt])
+}
+
+// ============================================
+// TUTORIAL SHEETS
+// ============================================
+model TutorialSheet {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  number    Int
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([courseId, number])
+}
+
+// ============================================
+// ASSESSMENT ENGINE
+// ============================================
+model Assessment {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  type        AssessmentType
+  mode        AssessmentMode
+  liveStatus  LiveStatus     @default(DRAFT)
+  courseId    String
+  course      Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  // GOOGLE_FORM fields
+  embedUrl    String?
+  formUrl     String?
+  fileUrl     String?
+  contentType String?
+
+  // NATIVE fields
+  timeLimit   Int?
+  openAt      DateTime?
+  closeAt     DateTime?
+  maxGrade    Int @default(100)
+  passingScore Int @default(50)
+  attemptsMax Int     @default(1)
+  attemptCooldownHrs Int @default(0)
+  keepBestScore Boolean @default(true)
+  shuffleQs   Boolean      @default(false)
+  showAnswersAfter ResultReveal @default(IMMEDIATELY)
+  resultsReleasedAt DateTime?
+  proctored   Boolean @default(false)
+  maxTabSwitches Int     @default(3)
+  requireFullscreen Boolean @default(false)
+  disableCopyPaste Boolean @default(true)
+  requireCamera Boolean @default(false)
+
+  dueDate     DateTime?
+  isPublished Boolean @default(false)
+
+  createdBy String
+  creator   User     @relation("AssessmentCreator", fields: [createdBy], references: [clerkId])
+
+  questions     Question[]
+  attempts      AssessmentAttempt[]
+  formResponses FormResponse[]
+  overrides     AttemptOverride[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId, type, mode, isPublished])
+}
+
+model Question {
+  id           String       @id @default(cuid())
+  assessmentId String
+  assessment   Assessment   @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  order        Int
+  type         QuestionType
+  prompt       String
+  imageUrl     String?
+  options      Json?
+  correctId    String?
+  correctText  String?
+  points       Int          @default(1)
+  explanation  String?
+  createdAt    DateTime     @default(now())
+
+  @@index([assessmentId, order])
+}
+
+model AssessmentAttempt {
+  id           String     @id @default(cuid())
+  assessmentId String
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  attemptNumber Int     @default(1)
+  isBest        Boolean @default(false)
+  previousId    String?
+  answers       Json?
+  fileUrl       String?
+  fileName      String?
+  startedAt     DateTime  @default(now())
+  submittedAt   DateTime?
+  timeSpent     Int?
+  score         Int?
+  totalPoints   Int?
+  percentage    Int?
+  passed        Boolean?
+  gradedAt      DateTime?
+  gradedBy      String?
+  feedback      String?
+  tabSwitches   Int     @default(0)
+  fullscreenExits Int @default(0)
+  copyAttempts  Int     @default(0)
+  violations    Json?
+  autoSubmitted Boolean @default(false)
+  resultViewedAt DateTime?
+
+  @@index([assessmentId, userId, attemptNumber])
+}
+
+model FormResponse {
+  id           String     @id @default(cuid())
+  assessmentId String
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  responseId   String?
+  score        Int?
+  total        Int?
+  feedback     String?
+  status       String       @default("PENDING")
+  submittedAt  DateTime     @default(now())
+  gradedAt     DateTime?
+  gradedBy     String?
+
+  @@index([assessmentId, userId])
+}
+
+model AttemptOverride {
+  id            String     @id @default(cuid())
+  assessmentId  String
+  assessment    Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  userId        String
+  extraAttempts Int        @default(0)
+  waiveCooldown Boolean    @default(false)
+  reason        String?
+  grantedBy     String
+  createdAt     DateTime   @default(now())
+
+  @@unique([assessmentId, userId])
+}
+
+// ============================================
+// TUTOR SYSTEM
+// ============================================
+model Tutor {
+  id              String     @id @default(cuid())
+  userId          String?    @unique
+  user            User?      @relation(fields: [userId], references: [id])
+  fullName        String
+  email           String     @unique
+  phone           String?
+  bio             String?
+  avatarUrl       String?
+  universityId    String?
+  university      University? @relation(fields: [universityId], references: [id])
+  programmeId     String?
+  programme       Programme?  @relation(fields: [programmeId], references: [id])
+  branchId        String?
+  branch          Branch?     @relation(fields: [branchId], references: [id])
+  yearsExperience Int        @default(0)
+  availability    String?
+  mode            String     @default("online")
+  contactVia      String     @default("form")
+  isVerified      Boolean    @default(false)
+  isActive        Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  specialties     TutorSpecialty[]
+  requests        TutorRequest[]
+
+  @@index([universityId, isActive])
+  @@index([isVerified, isActive])
+}
+
+model TutorSpecialty {
+  id              String    @id @default(cuid())
+  tutorId         String
+  tutor           Tutor     @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  courseId        String
+  course          Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  personalEnabled Boolean   @default(true)
+  personalRate    Decimal?  @db.Decimal(10, 2)
+  groupEnabled    Boolean   @default(false)
+  groupRate       Decimal?  @db.Decimal(10, 2)
+  groupMinSize    Int?
+  groupMaxSize    Int?
+  currency        String    @default("ZMW")
+  notes           String?
+
+  @@unique([tutorId, courseId])
+  @@index([courseId])
+}
+
+model TutorRequest {
+  id            String    @id @default(cuid())
+  tutorId       String
+  tutor         Tutor     @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  studentId     String?
+  student       User?     @relation(fields: [studentId], references: [id])
+  studentName   String
+  studentEmail  String
+  studentPhone  String?
+  courseId      String?
+  courseNeeded  String?
+  sessionType   String    @default("PERSONAL")
+  quotedRate    Decimal?  @db.Decimal(10, 2)
+  currency      String    @default("ZMW")
+  preferredAt   String?
+  message       String
+  status        String    @default("PENDING")
+  adminNotes    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([tutorId, status])
+  @@index([createdAt])
+  @@index([sessionType])
+}
+
+// ============================================
+// INSTITUTION (Multi-type academic institution)
+// ============================================
+model Institution {
+  id              String            @id @default(cuid())
+  name            String
+  slug            String            @unique
+  shortName       String?
+  type            InstitutionType   @default(UNIVERSITY)
+  description     String?
+  country         String?           @default("Zambia")
+  province        String?
+  city            String?
+  website         String?
+  email           String?
+  phone           String?
+  logoUrl         String?
+  levelType       LevelType         @default(YEAR)
+  numLevels       Int               @default(4)
+  periodType      PeriodType        @default(SEMESTER)
+  numPeriods      Int               @default(2)
+  hasFaculties    Boolean           @default(false)
+  hasBranches     Boolean           @default(false)
+  isActive        Boolean           @default(true)
+  isVerified      Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  levels          AcademicLevel[]
+  periods         AcademicPeriod[]
+  faculties       Faculty[]
+  programmes      Programme[]
+  users           User[]
+
+  @@index([slug])
+  @@index([type])
+  @@index([isActive, isVerified])
+  @@index([city])
+}
+
+// ============================================
+// ACADEMIC LEVEL (e.g., "Year 1", "Stage 3")
+// ============================================
+model AcademicLevel {
+  id              String    @id @default(cuid())
+  name            String    // e.g. "Year 1", "Stage 3"
+  order           Int       @default(0)
+  institutionId   String
+  institution     Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+
+  @@unique([institutionId, order])
+  @@index([institutionId, order])
+}
+
+// ============================================
+// ACADEMIC PERIOD (e.g., "Semester 1", "Term 2")
+// ============================================
+model AcademicPeriod {
+  id              String    @id @default(cuid())
+  name            String    // e.g. "Semester 1", "Term 2"
+  order           Int       @default(0)
+  academicYear    Int       @default(2025)
+  institutionId   String
+  institution     Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+
+  @@unique([institutionId, order, academicYear])
+  @@index([institutionId, order])
+}
+
+// ============================================
+// FACULTY (e.g., "Faculty of ICT")
+// ============================================
+model Faculty {
+  id              String    @id @default(cuid())
+  name            String    // e.g. "Faculty of Information Technology"
+  code            String    // e.g. "ICT", "ENG"
+  description     String?
+  institutionId   String
+  institution     Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  programmes      Programme[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([institutionId, code])
+  @@index([institutionId])
 }

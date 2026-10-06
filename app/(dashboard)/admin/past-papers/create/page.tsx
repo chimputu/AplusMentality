@@ -1,10 +1,30 @@
 // app/(dashboard)/admin/past-papers/create/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Upload, Loader2, FileText, Image as ImageIcon, File } from 'lucide-react';
+
+interface University {
+  id: string;
+  name: string;
+  code: string;
+  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
+  programmes: Programme[];
+}
+
+interface Programme {
+  id: string;
+  name: string;
+  shortName: string | null;
+}
+
+interface Course {
+  id: string;
+  code: string;
+  title: string;
+}
 
 const CATEGORIES = [
   { value: 'test', label: 'Test', icon: '📝' },
@@ -24,14 +44,110 @@ export default function CreatePastPaperPage() {
   const [fileSize, setFileSize] = useState(0);
   const [fileName, setFileName] = useState('');
 
+  // Academic scoping
+  const [universities, setUniversities] = useState<University[]>([]);
+  const [universityId, setUniversityId] = useState('');
+  const [programmes, setProgrammes] = useState<Programme[]>([]);
+  const [programmeId, setProgrammeId] = useState('');
+  const [year, setYear] = useState(1);
+  const [period, setPeriod] = useState('');
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [courseMode, setCourseMode] = useState<'existing' | 'new'>('new');
+  const [courseId, setCourseId] = useState('');
+  const [newCourseCode, setNewCourseCode] = useState('');
+  const [newCourseTitle, setNewCourseTitle] = useState('');
+
   const [form, setForm] = useState({
     title: '',
     description: '',
-    courseCode: '',
-    year: '',
-    semester: '',
     category: 'final_exam',
   });
+
+  // Load universities
+  useEffect(() => {
+    async function loadUniversities() {
+      try {
+        const res = await fetch('/api/admin/universities');
+        if (res.ok) {
+          const data = await res.json();
+          setUniversities(data);
+        }
+      } catch {
+        console.error('Failed to load universities');
+      }
+    }
+    loadUniversities();
+  }, []);
+
+  // Load programmes when university changes
+  useEffect(() => {
+    if (!universityId) {
+      setProgrammes([]);
+      return;
+    }
+    async function loadProgrammes() {
+      try {
+        const res = await fetch(`/api/admin/programmes?universityId=${universityId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProgrammes(data);
+        }
+      } catch {
+        console.error('Failed to load programmes');
+      }
+    }
+    loadProgrammes();
+  }, [universityId]);
+
+  // Load courses when filters change
+  useEffect(() => {
+    if (courseMode !== 'existing' || !universityId || !programmeId) {
+      setCourses([]);
+      return;
+    }
+    async function loadCourses() {
+      try {
+        const params = new URLSearchParams({
+          universityId,
+          programmeId,
+          year: String(year),
+          period: period || '',
+        });
+        const res = await fetch(`/api/courses?${params}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCourses(data);
+        }
+      } catch {
+        console.error('Failed to load courses');
+      }
+    }
+    loadCourses();
+  }, [universityId, programmeId, year, period, courseMode]);
+
+  // Get period options based on selected university's academic system
+  const getPeriodOptions = () => {
+    const uni = universities.find((u) => u.id === universityId);
+    if (!uni) return [];
+
+    switch (uni.academicSystem) {
+      case 'YEARLY':
+        return [{ value: '', label: 'Full Year' }];
+      case 'SEMESTERLY':
+        return [
+          { value: '1', label: 'Semester 1' },
+          { value: '2', label: 'Semester 2' },
+        ];
+      case 'TRIMESTERLY':
+        return [
+          { value: '1', label: 'Trimester 1' },
+          { value: '2', label: 'Trimester 2' },
+          { value: '3', label: 'Trimester 3' },
+        ];
+      default:
+        return [];
+    }
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -80,9 +196,50 @@ export default function CreatePastPaperPage() {
       setError('Title and file are required');
       return;
     }
+    if (!universityId || !programmeId) {
+      setError('University and programme are required');
+      return;
+    }
+    if (courseMode === 'existing' && !courseId) {
+      setError('Please select a course');
+      return;
+    }
+    if (courseMode === 'new' && (!newCourseCode || !newCourseTitle)) {
+      setError('Please enter course code and title');
+      return;
+    }
 
     setLoading(true);
     try {
+      // Resolve courseId
+      let resolvedCourseId: string | null = null;
+
+      if (courseMode === 'existing' && courseId) {
+        resolvedCourseId = courseId;
+      } else if (courseMode === 'new' && newCourseCode && newCourseTitle) {
+        // Create the course first
+        const courseRes = await fetch('/api/courses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code: newCourseCode,
+            title: newCourseTitle,
+            universityId,
+            programmeId,
+            year,
+            period: period || null,
+          }),
+        });
+        if (!courseRes.ok) {
+          const err = await courseRes.json();
+          setError(err.error || 'Failed to create course');
+          setLoading(false);
+          return;
+        }
+        const course = await courseRes.json();
+        resolvedCourseId = course.id;
+      }
+
       const res = await fetch('/api/past-papers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -91,6 +248,7 @@ export default function CreatePastPaperPage() {
           fileUrl,
           fileType,
           fileSize,
+          courseId: resolvedCourseId,
         }),
       });
 
@@ -188,50 +346,175 @@ export default function CreatePastPaperPage() {
             />
           </div>
 
-          {/* Course code + Year */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
+          {/* Academic Scoping */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Academic Scope *
+            </h3>
+
+            {/* University */}
+            <div className="mb-3">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Course Code
+                University *
               </label>
-              <input
-                type="text"
-                value={form.courseCode}
-                onChange={(e) => setForm({ ...form, courseCode: e.target.value })}
+              <select
+                value={universityId}
+                onChange={(e) => {
+                  setUniversityId(e.target.value);
+                  setProgrammes([]);
+                  setProgrammeId('');
+                  setPeriod('');
+                }}
+                required
                 className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                placeholder="e.g. ICT411"
-              />
+              >
+                <option value="">Select university</option>
+                {universities.map((uni) => (
+                  <option key={uni.id} value={uni.id}>
+                    {uni.name} ({uni.code})
+                  </option>
+                ))}
+              </select>
             </div>
-            <div>
+
+            {/* Programme */}
+            <div className="mb-3">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Year
+                Programme *
               </label>
-              <input
-                type="number"
-                value={form.year}
-                onChange={(e) => setForm({ ...form, year: e.target.value })}
+              <select
+                value={programmeId}
+                onChange={(e) => setProgrammeId(e.target.value)}
+                required
+                disabled={!universityId}
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+              >
+                <option value="">Select programme</option>
+                {programmes.map((prog) => (
+                  <option key={prog.id} value={prog.id}>
+                    {prog.shortName || prog.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Year */}
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Year *
+              </label>
+              <select
+                value={year}
+                onChange={(e) => setYear(parseInt(e.target.value))}
+                required
                 className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                placeholder="2024"
-              />
+              >
+                {[1, 2, 3, 4, 5, 6, 7].map((y) => (
+                  <option key={y} value={y}>
+                    Year {y}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Period */}
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Period *
+              </label>
+              <select
+                value={period}
+                onChange={(e) => setPeriod(e.target.value)}
+                required
+                disabled={!universityId}
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+              >
+                <option value="">Select period</option>
+                {getPeriodOptions().map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
-          {/* Semester */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Semester
-            </label>
-            <select
-              value={form.semester}
-              onChange={(e) => setForm({ ...form, semester: e.target.value })}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-            >
-              <option value="">Select…</option>
-              <option value="Semester 1">Semester 1</option>
-              <option value="Semester 2">Semester 2</option>
-              <option value="Final">Final</option>
-              <option value="Supplementary">Supplementary</option>
-            </select>
+          {/* Course Selection */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Course *
+            </h3>
+
+            <div className="flex gap-4 mb-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="ppCourseMode"
+                  value="existing"
+                  checked={courseMode === 'existing'}
+                  onChange={() => setCourseMode('existing')}
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm">Attach to existing</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="ppCourseMode"
+                  value="new"
+                  checked={courseMode === 'new'}
+                  onChange={() => setCourseMode('new')}
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm">Create new</span>
+              </label>
+            </div>
+
+            {courseMode === 'existing' ? (
+              <select
+                value={courseId}
+                onChange={(e) => setCourseId(e.target.value)}
+                required
+                disabled={!programmeId}
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+              >
+                <option value="">Select course</option>
+                {courses.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.code} — {c.title}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    Course Code
+                  </label>
+                  <input
+                    type="text"
+                    value={newCourseCode}
+                    onChange={(e) => setNewCourseCode(e.target.value)}
+                    required
+                    placeholder="e.g. ICT411"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    Course Title
+                  </label>
+                  <input
+                    type="text"
+                    value={newCourseTitle}
+                    onChange={(e) => setNewCourseTitle(e.target.value)}
+                    required
+                    placeholder="e.g. Advanced Networking"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* File upload */}

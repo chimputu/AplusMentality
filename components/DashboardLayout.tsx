@@ -26,6 +26,10 @@ import {
   FileCheck,
   ListTodo,
   Award,
+  Upload,
+  MessageSquare,
+  Sparkles,
+  Building2,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
@@ -33,7 +37,7 @@ import ThemeToggle from './ThemeToggle';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  role: 'ADMIN' | 'STUDENT';
+  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
 }
@@ -107,6 +111,18 @@ export default function DashboardLayout({
       section: 'Communication'
     },
     { 
+      href: '/admin/courses', 
+      label: 'Courses', 
+      icon: BookOpen,
+      section: 'Content'
+    },
+    { 
+      href: '/admin/uploads', 
+      label: 'Uploads', 
+      icon: Upload,
+      section: 'Content'
+    },
+    { 
       href: '/admin/videos', 
       label: 'Videos', 
       icon: Video,
@@ -125,14 +141,8 @@ export default function DashboardLayout({
       section: 'Content'
     },
     { 
-      href: '/admin/quizzes', 
-      label: 'Quizzes', 
-      icon: FileQuestion,
-      section: 'Assessments'
-    },
-    { 
-      href: '/admin/tests', 
-      label: 'Tests', 
+      href: '/admin/assessments', 
+      label: 'Assessments', 
       icon: FileCheck,
       section: 'Assessments'
     },
@@ -143,16 +153,40 @@ export default function DashboardLayout({
       section: 'Assessments'
     },
     { 
+      href: '/admin/quizzes', 
+      label: 'Quizzes', 
+      icon: FileQuestion,
+      section: 'Assessments'
+    },
+    { 
+      href: '/admin/tests', 
+      label: 'Tests', 
+      icon: FileText,
+      section: 'Assessments'
+    },
+    { 
       href: '/admin/submissions', 
       label: 'Submissions', 
       icon: ListTodo,
       section: 'Assessments'
     },
     { 
-      href: '/admin/courses', 
-      label: 'Courses', 
-      icon: BookOpen,
-      section: 'Content'
+      href: '/admin/tutors', 
+      label: 'Tutors', 
+      icon: Users,
+      section: 'Management'
+    },
+    { 
+      href: '/admin/tutor-requests', 
+      label: 'Tutor Requests', 
+      icon: MessageSquare,
+      section: 'Management'
+    },
+    { 
+      href: '/admin/institutions', 
+      label: 'Institutions', 
+      icon: Building2,
+      section: 'Management'
     },
     { 
       href: '/admin/users', 
@@ -183,6 +217,24 @@ export default function DashboardLayout({
       section: 'Communication'
     },
     { 
+      href: '/student/courses', 
+      label: 'My Courses', 
+      icon: GraduationCap,
+      section: 'Learning'
+    },
+    { 
+      href: '/student/tutors', 
+      label: 'Find Tutors', 
+      icon: Users,
+      section: 'Learning'
+    },
+    { 
+      href: '/student/ai', 
+      label: 'AI Assistant', 
+      icon: Sparkles,
+      section: 'Learning'
+    },
+    { 
       href: '/student/videos', 
       label: 'Videos', 
       icon: Video,
@@ -201,14 +253,8 @@ export default function DashboardLayout({
       section: 'Content'
     },
     { 
-      href: '/student/quizzes', 
-      label: 'Quizzes', 
-      icon: FileQuestion,
-      section: 'Assessments'
-    },
-    { 
-      href: '/student/tests', 
-      label: 'Tests', 
+      href: '/student/assessments', 
+      label: 'Assessments', 
       icon: FileCheck,
       section: 'Assessments'
     },
@@ -219,16 +265,22 @@ export default function DashboardLayout({
       section: 'Assessments'
     },
     { 
+      href: '/student/quizzes', 
+      label: 'Quizzes', 
+      icon: FileQuestion,
+      section: 'Assessments'
+    },
+    { 
+      href: '/student/tests', 
+      label: 'Tests', 
+      icon: FileText,
+      section: 'Assessments'
+    },
+    { 
       href: '/student/results', 
       label: 'Results', 
       icon: Award,
       section: 'Assessments'
-    },
-    { 
-      href: '/student/courses', 
-      label: 'My Courses', 
-      icon: GraduationCap,
-      section: 'Learning'
     },
     { 
       href: '/student/books', 
@@ -236,9 +288,15 @@ export default function DashboardLayout({
       icon: BookOpen,
       section: 'Learning'
     },
+    { 
+      href: '/student/settings', 
+      label: 'Settings', 
+      icon: Settings,
+      section: 'System'
+    },
   ];
 
-  const navItems = role === 'ADMIN' ? adminNavItems : studentNavItems;
+  const navItems = (role === 'ADMIN' || role === 'SUPER_ADMIN') ? adminNavItems : studentNavItems;
 
   // Group navigation items by section
   const groupedNavItems = navItems.reduce((acc, item) => {

@@ -1,7 +1,21 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { BookOpen, Loader2 } from 'lucide-react';
+
+interface University {
+  id: string;
+  name: string;
+  code: string;
+  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
+  programmes: Programme[];
+}
+
+interface Programme {
+  id: string;
+  name: string;
+  shortName: string | null;
+}
 
 // ✅ Define the props interface
 interface CreateCourseFormProps {
@@ -23,13 +37,80 @@ export default function CreateCourseForm({
 }: CreateCourseFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [universities, setUniversities] = useState<University[]>([]);
+  const [programmes, setProgrammes] = useState<Programme[]>([]);
+
   const [formData, setFormData] = useState({
     code: initialData?.code || '',
     title: initialData?.title || '',
     description: initialData?.description || '',
     category: initialData?.category || '',
     level: initialData?.level || 'Beginner',
+    universityId: '',
+    programmeId: '',
+    year: 1,
+    period: '',
   });
+
+  // Load universities
+  useEffect(() => {
+    async function loadUniversities() {
+      try {
+        const res = await fetch('/api/admin/universities');
+        if (res.ok) {
+          const data = await res.json();
+          setUniversities(data);
+        }
+      } catch {
+        console.error('Failed to load universities');
+      }
+    }
+    loadUniversities();
+  }, []);
+
+  // Load programmes when university changes
+  useEffect(() => {
+    if (!formData.universityId) {
+      setProgrammes([]);
+      return;
+    }
+    async function loadProgrammes() {
+      try {
+        const res = await fetch(`/api/admin/programmes?universityId=${formData.universityId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProgrammes(data);
+        }
+      } catch {
+        console.error('Failed to load programmes');
+      }
+    }
+    loadProgrammes();
+  }, [formData.universityId]);
+
+  // Get period options based on selected university's academic system
+  const getPeriodOptions = () => {
+    const uni = universities.find((u) => u.id === formData.universityId);
+    if (!uni) return [];
+
+    switch (uni.academicSystem) {
+      case 'YEARLY':
+        return [{ value: '', label: 'Full Year' }];
+      case 'SEMESTERLY':
+        return [
+          { value: '1', label: 'Semester 1' },
+          { value: '2', label: 'Semester 2' },
+        ];
+      case 'TRIMESTERLY':
+        return [
+          { value: '1', label: 'Trimester 1' },
+          { value: '2', label: 'Trimester 2' },
+          { value: '3', label: 'Trimester 3' },
+        ];
+      default:
+        return [];
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +119,7 @@ export default function CreateCourseForm({
     try {
       const url = '/api/courses';
       const method = isEditing ? 'PUT' : 'POST';
-      
+
       const payload = isEditing
         ? { id: courseId, ...formData }
         : formData;
@@ -69,8 +150,99 @@ export default function CreateCourseForm({
     }
   };
 
+  const selectedUni = universities.find((u) => u.id === formData.universityId);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
+      {/* University */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          University *
+        </label>
+        <select
+          value={formData.universityId}
+          onChange={(e) => setFormData({ ...formData, universityId: e.target.value, programmeId: '', period: '' })}
+          required
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+        >
+          <option value="">Select university</option>
+          {universities.map((uni) => (
+            <option key={uni.id} value={uni.id}>
+              {uni.name} ({uni.code})
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Programme */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Programme *
+        </label>
+        <select
+          value={formData.programmeId}
+          onChange={(e) => setFormData({ ...formData, programmeId: e.target.value })}
+          required
+          disabled={!formData.universityId}
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+        >
+          <option value="">Select programme</option>
+          {programmes.map((prog) => (
+            <option key={prog.id} value={prog.id}>
+              {prog.shortName || prog.name}
+            </option>
+          ))}
+        </select>
+        {formData.universityId && programmes.length > 0 && (
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            Showing programmes for {selectedUni?.name}
+          </p>
+        )}
+      </div>
+
+      {/* Year */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Year *
+        </label>
+        <select
+          value={formData.year}
+          onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
+          required
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+        >
+          {[1, 2, 3, 4, 5, 6, 7].map((y) => (
+            <option key={y} value={y}>
+              Year {y}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Period */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Period *
+        </label>
+        <select
+          value={formData.period}
+          onChange={(e) => setFormData({ ...formData, period: e.target.value })}
+          required
+          disabled={!formData.universityId}
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+        >
+          <option value="">Select period</option>
+          {getPeriodOptions().map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <hr className="border-gray-200 dark:border-gray-700" />
+
+      {/* Course Code */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Course Code *
@@ -93,6 +265,7 @@ export default function CreateCourseForm({
         )}
       </div>
 
+      {/* Course Title */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Course Title *
@@ -107,6 +280,7 @@ export default function CreateCourseForm({
         />
       </div>
 
+      {/* Description */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Description
@@ -120,6 +294,7 @@ export default function CreateCourseForm({
         />
       </div>
 
+      {/* Category */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Category
@@ -133,6 +308,7 @@ export default function CreateCourseForm({
         />
       </div>
 
+      {/* Level */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Level
@@ -149,6 +325,7 @@ export default function CreateCourseForm({
         </select>
       </div>
 
+      {/* Submit */}
       <button
         type="submit"
         disabled={loading}

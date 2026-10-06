@@ -58,12 +58,12 @@ export default function ThemeToggle() {
     }
   };
 
-  // ⏳ next-themes returns undefined until hydrated; keep structure identical to avoid hydration mismatch
+  // ⏳ next-themes returns undefined until hydrated; use same SVG icon to avoid hydration mismatch
   if (theme === undefined) {
     return (
       <div className="relative">
-        <button className="p-2 rounded-full hover:bg-gray-100 transition" aria-label="Theme">
-          <div className="w-5 h-5" />
+        <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" aria-label="Theme">
+          <Monitor className="w-5 h-5 text-blue-500" />
         </button>
       </div>
     );
