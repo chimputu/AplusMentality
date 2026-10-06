@@ -15,9 +15,8 @@ const openrouter = createOpenRouter({
 });
 
 // ============================================================
-// FREE MODEL SELECTION
+// FREE MODEL SELECTION (cached in Redis)
 // ============================================================
-let freeModelCache: { model: string | null; timestamp: number } = { model: null, timestamp: 0 };
 
 const fallbackFreeModels = [
   'qwen/qwen-2.5-7b-instruct:free',
@@ -27,9 +26,15 @@ const fallbackFreeModels = [
 ];
 
 async function getFreeModel(): Promise<string> {
-  const TTL = 5 * 60 * 1000; // 5 minutes
-  if (freeModelCache.model && Date.now() - freeModelCache.timestamp < TTL) {
-    return freeModelCache.model;
+  const redisKey = 'chat:free_model';
+  const ttlSeconds = 300; // 5 minutes
+
+  // Try Redis cache first
+  try {
+    const cached = await cache.get<string>(redisKey);
+    if (cached) return cached;
+  } catch {
+    // Redis unavailable, continue to fetch
   }
 
   try {
@@ -40,14 +45,16 @@ async function getFreeModel(): Promise<string> {
     const preferred = freeModels.find(
       (m: any) => /qwen|llama|mistral|gemma|hermes/i.test(m.id) && m.context_length > 8000
     );
-    if (preferred) {
-      freeModelCache = { model: preferred.id, timestamp: Date.now() };
-      return preferred.id;
-    }
+    const selectedModel = preferred?.id || freeModels[0]?.id;
 
-    if (freeModels[0]) {
-      freeModelCache = { model: freeModels[0].id, timestamp: Date.now() };
-      return freeModels[0].id;
+    if (selectedModel) {
+      // Cache in Redis for 5 minutes
+      try {
+        await cache.set(redisKey, selectedModel, { ex: ttlSeconds });
+      } catch {
+        // Silently fail if Redis is unavailable
+      }
+      return selectedModel;
     }
   } catch (e) {
     console.warn('Failed to fetch free models:', e);
@@ -277,7 +284,7 @@ export async function POST(req: Request) {
     const cacheKey = `chat:${isSignedIn ? 'app-mulu' : 'landing'}:${normalizeMessage(message)}`;
 
     // ---- 1. Instant cached response if available ----
-    const cached = cache.get(cacheKey);
+    const cached = await cache.get<string>(cacheKey);
     if (cached) {
       const stream = new ReadableStream({
         start(controller) {
@@ -314,7 +321,8 @@ export async function POST(req: Request) {
       flush() {
         fullText += decoder.decode();
         if (fullText.trim()) {
-          cache.set(cacheKey, fullText, 3600);
+          // Cache in Redis for 1 hour (fire-and-forget)
+          cache.set(cacheKey, fullText, { ex: 3600 }).catch(() => {});
         }
       },
     });
