@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   description: 'Learning Management System',
   manifest: '/manifest.json',
   icons: {
+    icon: '/favicon.ico',
     apple: '/icons/icon-192x192.png',
   },
 };
