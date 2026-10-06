@@ -2,7 +2,7 @@
 // One-time script to link existing videos to courses based on title regex
 // Run: npx tsx scripts/migrate-videos.ts
 
-import { PrismaClient } from '../generated/prisma';
+import { PrismaClient } from '../generated/prisma/client';
 
 const prisma = new PrismaClient();
 

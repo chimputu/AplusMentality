@@ -28,7 +28,7 @@ interface User {
   lastName: string | null;
   name: string | null;
   imageUrl: string | null;
-  role: 'ADMIN' | 'STUDENT';
+  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
   createdAt: string;
   enrollments?: any[];
   courses?: any[];
@@ -67,9 +67,9 @@ export default function UserManagement({ users }: UserManagementProps) {
   const router = useRouter();
   const [updating, setUpdating] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterRole, setFilterRole] = useState<'ALL' | 'ADMIN' | 'STUDENT'>('ALL');
+  const [filterRole, setFilterRole] = useState<'ALL' | 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT'>('ALL');
 
-  const handleRoleChange = async (userId: string, newRole: 'ADMIN' | 'STUDENT') => {
+  const handleRoleChange = async (userId: string, newRole: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT') => {
     if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
 
     setUpdating(userId);

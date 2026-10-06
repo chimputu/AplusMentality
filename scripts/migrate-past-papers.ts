@@ -2,7 +2,7 @@
 // One-time script to link existing past papers to courses based on courseCode field
 // Run: npx tsx scripts/migrate-past-papers.ts
 
-import { PrismaClient } from '../generated/prisma';
+import { PrismaClient } from '../generated/prisma/client';
 
 const prisma = new PrismaClient();
 

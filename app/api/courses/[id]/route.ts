@@ -22,6 +22,9 @@ export async function GET(
         creator: {
           select: { name: true },
         },
+        university: {
+          select: { name: true, code: true },
+        },
       },
     });
 
