@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET - List lessons for a module
+// GET - List lessons (all, or filtered by module)
 export async function GET(req: NextRequest) {
   try {
     const auth = await getAuthUser();
@@ -13,22 +13,29 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const moduleId = searchParams.get('moduleId');
+    const universityId = searchParams.get('university');
 
-    if (!moduleId) {
-      return NextResponse.json(
-        { error: 'Module ID is required' },
-        { status: 400 }
-      );
-    }
+    const where: any = {};
+    if (moduleId) where.moduleId = moduleId;
+    if (universityId) where.module = { course: { universityId } };
 
     const lessons = await prisma.lesson.findMany({
-      where: { moduleId },
+      where,
       include: {
+        module: {
+          include: {
+            course: {
+              include: {
+                university: true,
+              },
+            },
+          },
+        },
         video: true,
         slides: true,
         quiz: true,
       },
-      orderBy: { order: 'asc' },
+      orderBy: moduleId ? { order: 'asc' } : { createdAt: 'desc' },
     });
 
     return NextResponse.json(lessons);
