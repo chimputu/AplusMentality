@@ -189,13 +189,12 @@ export async function deactivateUser(id: string) {
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) throw new Error('User not found');
 
-  // Disable in Clerk
+  // Ban user in Clerk (revokes sessions and prevents sign-in)
   try {
-    await clerkClient.users.updateUser(user.clerkId, {
-      disabled: true,
-    });
+    const client = await clerkClient();
+    await client.users.banUser(user.clerkId);
   } catch (error) {
-    console.error('Failed to disable user in Clerk:', error);
+    console.error('Failed to ban user in Clerk:', error);
     // Continue anyway — user is deactivated in our DB
   }
 
@@ -223,13 +222,12 @@ export async function reactivateUser(id: string) {
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) throw new Error('User not found');
 
-  // Re-enable in Clerk
+  // Unban user in Clerk (allows sign-in again)
   try {
-    await clerkClient.users.updateUser(user.clerkId, {
-      disabled: false,
-    });
+    const client = await clerkClient();
+    await client.users.unbanUser(user.clerkId);
   } catch (error) {
-    console.error('Failed to enable user in Clerk:', error);
+    console.error('Failed to unban user in Clerk:', error);
   }
 
   revalidatePath('/admin/users');
@@ -245,7 +243,8 @@ export async function deleteUser(id: string) {
 
   // Delete from Clerk
   try {
-    await clerkClient.users.deleteUser(user.clerkId);
+    const client = await clerkClient();
+    await client.users.deleteUser(user.clerkId);
   } catch (error) {
     console.error('Failed to delete user from Clerk:', error);
     // Continue anyway — delete from our DB
