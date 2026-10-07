@@ -72,25 +72,22 @@ export default function OnboardingForm({ user, institutions, universities }: Onb
   const [period, setPeriod] = useState('');
 
 
-  // Get selected institution/programmes
+  // Determine whether the selected school is an institution or a university
   const selectedInstitution = institutions.find((i) => i.id === institutionId);
-  const institutionProgrammes = selectedInstitution?.programmes || [];
-  const selectedProgramme = institutionProgrammes.find((p) => p.id === programmeId);
+  const selectedUniversity = universities.find((u) => u.id === institutionId);
+  const isUniversity = !!selectedUniversity;
+
+  // Get programmes from the selected school (institution or university)
+  const schoolProgrammes = selectedInstitution?.programmes || selectedUniversity?.programmes || [];
+  const selectedProgramme = schoolProgrammes.find((p) => p.id === programmeId);
   const programmeBranches = selectedProgramme?.branches || [];
   const institutionLevels = selectedInstitution?.levels || [];
 
   // Combine institutions and universities into a single list for display
-  // Universities are shown alongside institutions
   const allSchools = [
     ...institutions.map((inst) => ({ id: inst.id, name: inst.name, type: 'institution' as const })),
     ...universities.map((uni) => ({ id: uni.id, name: uni.name, type: 'university' as const })),
   ].sort((a, b) => a.name.localeCompare(b.name));
-
-  // Get programmes for the selected school (institution or university)
-  let availableProgrammes: Programme[] = [];
-  if (institutionId) {
-    availableProgrammes = institutionProgrammes;
-  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +99,13 @@ export default function OnboardingForm({ user, institutions, universities }: Onb
         };
 
         if (institutionId) {
-          data.institutionId = institutionId;
+          if (isUniversity) {
+            data.universityId = institutionId;
+            data.institutionId = null;
+          } else {
+            data.institutionId = institutionId;
+            data.universityId = null;
+          }
           if (programmeId) data.programmeId = programmeId;
           if (branchId) data.branchId = branchId;
           if (year) data.year = parseInt(year);
@@ -157,13 +160,13 @@ export default function OnboardingForm({ user, institutions, universities }: Onb
             className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
           >
             <option value="">Select your institution</option>
-            {institutions.map((inst) => (
-              <option key={inst.id} value={inst.id}>
-                {inst.name}
+            {allSchools.map((school) => (
+              <option key={school.id} value={school.id}>
+                {school.name}
               </option>
             ))}
           </select>
-          {institutions.length === 0 && (
+          {allSchools.length === 0 && (
             <p className="text-sm text-amber-600 dark:text-amber-400 mt-1.5">
               No institutions available yet. Please contact an admin.
             </p>
@@ -171,7 +174,7 @@ export default function OnboardingForm({ user, institutions, universities }: Onb
         </div>
 
         {/* Programme */}
-        {institutionId && institutionProgrammes.length > 0 && (
+        {institutionId && schoolProgrammes.length > 0 && (
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Programme
@@ -185,7 +188,7 @@ export default function OnboardingForm({ user, institutions, universities }: Onb
               className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
             >
               <option value="">Select your programme</option>
-              {institutionProgrammes.map((prog) => (
+              {schoolProgrammes.map((prog) => (
                 <option key={prog.id} value={prog.id}>
                   {prog.name}
                   {prog.faculty && ` — ${prog.faculty.name}`}
