@@ -106,6 +106,12 @@ export default function DashboardLayout({
       section: 'Overview'
     },
     { 
+      href: '/admin/banners', 
+      label: 'Banners', 
+      icon: Megaphone,
+      section: 'Communication'
+    },
+    { 
       href: '/admin/announcements', 
       label: 'Announcements', 
       icon: Megaphone,

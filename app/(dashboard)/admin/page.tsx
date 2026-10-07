@@ -1,3 +1,4 @@
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import AdminContent from '@/components/AdminContent';
 
@@ -12,6 +13,14 @@ export default async function AdminPage({
 }) {
   const params = await searchParams;
   const activeTab = params?.tab || 'dashboard';
+
+  // Get current user's institution for banner targeting
+  const { userId } = await auth();
+  let userInstitutionId: string | undefined;
+  if (userId) {
+    const user = await prisma.user.findUnique({ where: { clerkId: userId } });
+    userInstitutionId = user?.institutionId || undefined;
+  }
 
   // ✅ Fetch data - NO AUTH needed (layout handles it)
   const [announcementsData, videosData, usersData, coursesData] = await Promise.all([
@@ -100,6 +109,7 @@ export default async function AdminPage({
       activeTab={activeTab}
       displayName="Admin"
       role="ADMIN"
+      institutionId={userInstitutionId}
     />
   );
 }

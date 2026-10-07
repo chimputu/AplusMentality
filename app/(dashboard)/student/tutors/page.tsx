@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, MapPin, GraduationCap, Star, ArrowRight } from 'lucide-react';
+import { Search, Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import TutorAvatar from '@/components/tutor-avatar';
 
 interface Tutor {
   id: string;
@@ -104,9 +105,10 @@ export default function StudentTutorsPage() {
               className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm hover:shadow-md transition group"
             >
               <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
-                  {tutor.fullName.charAt(0)}
-                </div>
+                <TutorAvatar
+                  tutor={{ fullName: tutor.fullName, avatarUrl: tutor.avatarUrl }}
+                  size="md"
+                />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">

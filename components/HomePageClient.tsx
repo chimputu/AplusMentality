@@ -15,6 +15,7 @@ import {
   FileText, Book, Video, ClipboardList, MessageCircle, Briefcase, Crown,
   Compass, TrendingUp, PlayCircle, Megaphone, UserPlus,
 } from 'lucide-react';
+import BannerCarousel from '@/components/banner-carousel';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -167,6 +168,9 @@ export default function HomePageClient() {
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      {/* ===== BANNERS ===== */}
+      <BannerCarousel placement="HOMEPAGE" />
+
       {/* ===== NAVBAR ===== */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="w-full px-2 sm:px-4">

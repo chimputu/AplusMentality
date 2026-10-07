@@ -112,6 +112,29 @@ enum ResultReveal {
 }
 
 // ============================================
+// BANNER ENUMS
+// ============================================
+enum BannerVariant {
+  INFO
+  SUCCESS
+  WARNING
+  DANGER
+  PROMO
+}
+
+enum BannerPlacement {
+  HOMEPAGE
+  DASHBOARD
+  BOTH
+}
+
+enum BannerScope {
+  GLOBAL
+  ALL
+  SPECIFIC
+}
+
+// ============================================
 // USERS
 // ============================================
 model User {
@@ -237,6 +260,17 @@ model Course {
   programmeId String?
   programme   Programme? @relation(fields: [programmeId], references: [id], onDelete: SetNull)
 
+  // NEW: link to AcademicLevel for programme→year→course hierarchy
+  levelId     String?
+  academicLevel AcademicLevel? @relation(fields: [levelId], references: [id], onDelete: SetNull)
+
+  // NEW: link to AcademicPeriod
+  periodId    String?
+  academicPeriod AcademicPeriod? @relation(fields: [periodId], references: [id], onDelete: SetNull)
+
+  // NEW: explicit year number for display (1-10)
+  yearNumber  Int?
+
   year        Int?
   period      String?  // "1", "2", "3" for semester/trimester; "" for yearly
 
@@ -266,6 +300,9 @@ model Course {
   @@index([createdBy])
   @@index([universityId])
   @@index([programmeId])
+  @@index([programmeId, yearNumber])
+  @@index([levelId])
+  @@index([periodId])
 }
 
 model Module {
@@ -880,9 +917,10 @@ model Tutor {
   fullName        String
   email           String     @unique
   phone           String?
-  bio             String?
-  avatarUrl       String?
-  universityId    String?
+  bio                    String?
+  avatarUrl              String?
+  profileImagePublicId   String?
+  universityId           String?
   university      University? @relation(fields: [universityId], references: [id])
   programmeId     String?
   programme       Programme?  @relation(fields: [programmeId], references: [id])
@@ -981,6 +1019,8 @@ model Institution {
   faculties       Faculty[]
   programmes      Programme[]
   users           User[]
+  banners         Banner[]      @relation("BannerPrimaryInstitution")
+  bannerTargets   BannerTarget[] @relation("BannerTargetInstitution")
 
   @@index([slug])
   @@index([type])
@@ -997,6 +1037,7 @@ model AcademicLevel {
   order           Int       @default(0)
   institutionId   String
   institution     Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  courses         Course[]
   createdAt       DateTime  @default(now())
 
   @@unique([institutionId, order])
@@ -1013,6 +1054,7 @@ model AcademicPeriod {
   academicYear    Int       @default(2025)
   institutionId   String
   institution     Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  courses         Course[]
   createdAt       DateTime  @default(now())
 
   @@unique([institutionId, order, academicYear])
@@ -1034,5 +1076,55 @@ model Faculty {
   updatedAt       DateTime  @updatedAt
 
   @@unique([institutionId, code])
+  @@index([institutionId])
+}
+
+// ============================================
+// BANNERS (Admin announcements)
+// ============================================
+model Banner {
+  id            String          @id @default(cuid())
+  institutionId String?         // KEEP for backward compat (single target)
+  institution   Institution?    @relation("BannerPrimaryInstitution", fields: [institutionId], references: [id], onDelete: SetNull)
+
+  title         String
+  message       String          @db.Text
+  ctaLabel      String?
+  ctaUrl        String?
+  imageUrl      String?
+
+  variant       BannerVariant   @default(INFO)
+  placement     BannerPlacement @default(HOMEPAGE)
+
+  scope         BannerScope     @default(SPECIFIC)
+  targets       BannerTarget[]
+
+  startsAt      DateTime        @default(now())
+  endsAt        DateTime?
+  isActive      Boolean         @default(true)
+  priority      Int             @default(0)
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([placement, isActive, startsAt, endsAt])
+  @@index([institutionId])
+  @@index([scope])
+}
+
+// ============================================
+// BANNER TARGETS (Many-to-many: Banner ↔ Institution)
+// ============================================
+model BannerTarget {
+  id            String       @id @default(cuid())
+  bannerId      String
+  banner        Banner       @relation(fields: [bannerId], references: [id], onDelete: Cascade)
+
+  institutionId String
+  institution   Institution  @relation("BannerTargetInstitution", fields: [institutionId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime     @default(now())
+
+  @@unique([bannerId, institutionId])
   @@index([institutionId])
 }

@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Plus, CheckCircle, XCircle, MessageSquare, User } from 'lucide-react';
+import { Plus, CheckCircle, XCircle } from 'lucide-react';
+import TutorAvatar from '@/components/tutor-avatar';
 
 export default async function AdminTutorsPage() {
   const tutors = await prisma.tutor.findMany({
@@ -44,21 +44,10 @@ export default async function AdminTutorsPage() {
               className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm"
             >
               <div className="flex items-start gap-3">
-                {tutor.avatarUrl ? (
-                  <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-gray-200 dark:border-gray-600">
-                    <Image
-                      src={tutor.avatarUrl}
-                      alt={tutor.fullName}
-                      width={48}
-                      height={48}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-semibold flex-shrink-0">
-                    {tutor.fullName.charAt(0)}
-                  </div>
-                )}
+                <TutorAvatar
+                  tutor={{ fullName: tutor.fullName, avatarUrl: tutor.avatarUrl }}
+                  size="md"
+                />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{tutor.fullName}</h3>
@@ -112,7 +101,7 @@ export default async function AdminTutorsPage() {
                   View
                 </Link>
                 <Link
-                  href={`/admin/tutors/${tutor.id}/edit`}
+                  href={`/admin/tutors/${tutor.id}`}
                   className="flex-1 text-center text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
                 >
                   Edit
