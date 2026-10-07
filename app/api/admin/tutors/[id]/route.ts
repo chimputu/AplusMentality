@@ -51,7 +51,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         email: body.email,
         phone: body.phone,
         bio: body.bio,
-        avatarUrl: body.avatarUrl,
         universityId: body.universityId,
         programmeId: body.programmeId,
         branchId: body.branchId,

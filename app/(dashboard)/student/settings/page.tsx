@@ -146,7 +146,7 @@ export default function StudentSettingsPage() {
   };
 
   const handleUpgradeYear = () => {
-    if (academicProfile?.year !== null && academicProfile.year !== undefined) {
+    if (academicProfile && academicProfile.year !== null && academicProfile.year !== undefined) {
       const newYear = academicProfile.year + 1;
       setEditYear(String(newYear));
       // Reset period to 1 when upgrading year

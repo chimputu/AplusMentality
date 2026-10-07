@@ -6,6 +6,7 @@ import VideoUploadForm from './VideoUploadForm';
 import VideoList from './VideoList';
 import UserManagement from '@/components/UserManagement';
 import Link from 'next/link';
+import BannerCarousel from '@/components/banner-carousel';
 
 interface Announcement {
   id: string;
@@ -58,6 +59,7 @@ interface AdminContentProps {
   activeTab: string;
   displayName: string;
   role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
+  institutionId?: string;
 }
 
 export default function AdminContent({
@@ -68,6 +70,7 @@ export default function AdminContent({
   activeTab,
   displayName,
   role,
+  institutionId,
 }: AdminContentProps) {
   // Scroll to section when tab changes
   const scrollToSection = (tab: string) => {
@@ -95,6 +98,9 @@ export default function AdminContent({
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
+      {/* Banners */}
+      <BannerCarousel placement="DASHBOARD" institutionId={institutionId} />
+
       {/* Welcome Section */}
       <div id="dashboard" className="bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-8 text-white shadow-lg scroll-mt-20">
         <div className="flex items-center space-x-3 mb-2">

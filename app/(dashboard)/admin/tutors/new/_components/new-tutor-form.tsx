@@ -65,7 +65,6 @@ export default function NewTutorForm({
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [bio, setBio] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
 
   // Academic affiliation
   const [universityId, setUniversityId] = useState('');
@@ -128,7 +127,6 @@ export default function NewTutorForm({
           email,
           phone: phone || undefined,
           bio: bio || undefined,
-          avatarUrl: avatarUrl || undefined,
           universityId: universityId || undefined,
           programmeId: programmeId || undefined,
           branchId: branchId || undefined,
@@ -220,16 +218,9 @@ export default function NewTutorForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Avatar URL
-              </label>
-              <input
-                type="url"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="https://example.com/avatar.jpg"
-              />
+              <p className="text-xs text-gray-400 dark:text-gray-500">
+                Profile photos can be uploaded after creating the tutor.
+              </p>
             </div>
           </div>
 
