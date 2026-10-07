@@ -51,7 +51,15 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } });
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      include: {
+        institution: { select: { name: true } },
+        university: { select: { name: true } },
+        programme: { select: { name: true } },
+        branch: { select: { name: true } },
+      },
+    });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }

@@ -15,9 +15,24 @@ import {
   CheckCircle,
   Shield,
   LogOut,
-  Trash2
+  Trash2,
+  GraduationCap,
+  ArrowUp
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
+interface AcademicProfile {
+  year: number | null;
+  period: string | null;
+  institutionId: string | null;
+  universityId: string | null;
+  programmeId: string | null;
+  branchId: string | null;
+  institutionName?: string | null;
+  universityName?: string | null;
+  programmeName?: string | null;
+  branchName?: string | null;
+}
 
 export default function StudentSettingsPage() {
   const { user } = useUser();
@@ -26,6 +41,8 @@ export default function StudentSettingsPage() {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [academicLoading, setAcademicLoading] = useState(false);
+  const [academicSaved, setAcademicSaved] = useState(false);
   
   const [settings, setSettings] = useState({
     name: user?.fullName || user?.firstName || '',
@@ -34,9 +51,40 @@ export default function StudentSettingsPage() {
     pushNotifications: false,
   });
 
+  const [academicProfile, setAcademicProfile] = useState<AcademicProfile | null>(null);
+  const [editYear, setEditYear] = useState('');
+  const [editPeriod, setEditPeriod] = useState('');
+
   useEffect(() => {
     setMounted(true);
+    fetchAcademicProfile();
   }, []);
+
+  const fetchAcademicProfile = async () => {
+    try {
+      const res = await fetch('/api/users/me');
+      if (res.ok) {
+        const data = await res.json();
+        const u = data.user;
+        setAcademicProfile({
+          year: u.year,
+          period: u.period,
+          institutionId: u.institutionId,
+          universityId: u.universityId,
+          programmeId: u.programmeId,
+          branchId: u.branchId,
+          institutionName: u.institution?.name || null,
+          universityName: u.university?.name || null,
+          programmeName: u.programme?.name || null,
+          branchName: u.branch?.name || null,
+        });
+        if (u.year) setEditYear(String(u.year));
+        if (u.period) setEditPeriod(u.period);
+      }
+    } catch (err) {
+      console.error('Failed to fetch academic profile:', err);
+    }
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -63,6 +111,46 @@ export default function StudentSettingsPage() {
       alert('Failed to save settings');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAcademicSave = async () => {
+    setAcademicLoading(true);
+    setAcademicSaved(false);
+
+    try {
+      const data: any = {};
+      if (editYear) data.year = parseInt(editYear);
+      if (editPeriod !== undefined) data.period = editPeriod || null;
+
+      const res = await fetch('/api/users/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to update academic profile');
+      }
+
+      setAcademicSaved(true);
+      setTimeout(() => setAcademicSaved(false), 3000);
+      router.refresh();
+    } catch (error: any) {
+      console.error('Error saving academic profile:', error);
+      alert(error.message || 'Failed to update academic profile');
+    } finally {
+      setAcademicLoading(false);
+    }
+  };
+
+  const handleUpgradeYear = () => {
+    if (academicProfile?.year !== null && academicProfile.year !== undefined) {
+      const newYear = academicProfile.year + 1;
+      setEditYear(String(newYear));
+      // Reset period to 1 when upgrading year
+      setEditPeriod('1');
     }
   };
 
@@ -130,6 +218,125 @@ export default function StudentSettingsPage() {
           </div>
         </div>
       </section>
+
+      {/* Academic Profile Section */}
+      {academicProfile && (
+        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <GraduationCap className="w-5 h-5 text-blue-500" />
+            Academic Profile
+          </h2>
+
+          {academicSaved && (
+            <div className="mb-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-400 px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+              <CheckCircle className="w-4 h-4" />
+              Academic profile updated!
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {/* Institution/University */}
+            <div>
+              <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                Institution
+              </label>
+              <p className="text-sm text-gray-900 dark:text-gray-100">
+                {academicProfile.universityName || academicProfile.institutionName || 'Not set'}
+              </p>
+            </div>
+
+            {/* Programme */}
+            <div>
+              <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                Programme
+              </label>
+              <p className="text-sm text-gray-900 dark:text-gray-100">
+                {academicProfile.programmeName || 'Not set'}
+              </p>
+            </div>
+
+            {/* Branch */}
+            {academicProfile.branchName && (
+              <div>
+                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  Branch
+                </label>
+                <p className="text-sm text-gray-900 dark:text-gray-100">
+                  {academicProfile.branchName}
+                </p>
+              </div>
+            )}
+
+            <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                Change Academic Year
+              </h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                {/* Year */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Year
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={editYear}
+                      onChange={(e) => setEditYear(e.target.value)}
+                      className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleUpgradeYear}
+                      title="Upgrade to next year"
+                      className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-1 text-sm"
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Period */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Period
+                  </label>
+                  <select
+                    value={editPeriod || ''}
+                    onChange={(e) => setEditPeriod(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  >
+                    <option value="">Select period</option>
+                    <option value="1">Period 1</option>
+                    <option value="2">Period 2</option>
+                    <option value="3">Period 3</option>
+                  </select>
+                </div>
+              </div>
+
+              <button
+                onClick={handleAcademicSave}
+                disabled={academicLoading}
+                className="mt-4 w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 disabled:opacity-50 font-medium"
+              >
+                {academicLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    Update Academic Profile
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Notifications Section */}
       <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
