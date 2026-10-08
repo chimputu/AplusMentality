@@ -114,5 +114,113 @@ export async function POST(req: Request) {
     }
   }
 
+  // 6. Handle organization.created — link org to institution by slug
+  if (type === 'organization.created') {
+    const { id, name, slug } = data;
+    const institution = await prisma.institution.findUnique({
+      where: { slug },
+    });
+    if (institution) {
+      await prisma.institution.update({
+        where: { id: institution.id },
+        data: { clerkOrgId: id, clerkOrgSlug: slug },
+      });
+      console.log(`✅ Organization linked to institution: ${slug}`);
+    } else {
+      console.warn(`⚠️ Organization created without matching institution: ${slug}`);
+    }
+  }
+
+  // 7. Handle organization.updated — update slug
+  if (type === 'organization.updated') {
+    const { id, slug } = data;
+    await prisma.institution.updateMany({
+      where: { clerkOrgId: id },
+      data: { clerkOrgSlug: slug },
+    });
+  }
+
+  // 8. Handle organization.deleted — nullify links, revoke memberships
+  if (type === 'organization.deleted') {
+    const { id } = data;
+    await prisma.institution.updateMany({
+      where: { clerkOrgId: id },
+      data: { clerkOrgId: null, clerkOrgSlug: null },
+    });
+    await prisma.organizationMembership.updateMany({
+      where: { clerkOrgId: id, status: 'active' },
+      data: { status: 'revoked', revokedAt: new Date() },
+    });
+    console.log(`🗑️  Organization ${id} deleted — links nullified, memberships revoked`);
+  }
+
+  // 9. Handle organizationMembership.created — upsert membership record
+  if (type === 'organizationMembership.created') {
+    const { organization, public_user_data, role } = data;
+    const clerkUserId = public_user_data.user_id;
+    const user = await prisma.user.findUnique({
+      where: { clerkId: clerkUserId },
+    });
+    if (!user) {
+      console.warn(`⚠️ Membership for unknown user: ${clerkUserId}`);
+    } else {
+      await prisma.organizationMembership.upsert({
+        where: {
+          userId_clerkOrgId: {
+            userId: user.id,
+            clerkOrgId: organization.id,
+          },
+        },
+        update: {
+          role,
+          status: 'active',
+          revokedAt: null,
+        },
+        create: {
+          userId: user.id,
+          clerkOrgId: organization.id,
+          clerkOrgSlug: organization.slug,
+          role,
+          status: 'active',
+        },
+      });
+      console.log(`✅ Membership created: ${user.email} → ${organization.slug}`);
+    }
+  }
+
+  // 10. Handle organizationMembership.updated — update role
+  if (type === 'organizationMembership.updated') {
+    const { organization, public_user_data, role } = data;
+    const clerkUserId = public_user_data.user_id;
+    const user = await prisma.user.findUnique({
+      where: { clerkId: clerkUserId },
+    });
+    if (!user) return;
+    await prisma.organizationMembership.updateMany({
+      where: {
+        userId: user.id,
+        clerkOrgId: organization.id,
+      },
+      data: { role },
+    });
+  }
+
+  // 11. Handle organizationMembership.deleted — revoke membership
+  if (type === 'organizationMembership.deleted') {
+    const { organization, public_user_data } = data;
+    const clerkUserId = public_user_data.user_id;
+    const user = await prisma.user.findUnique({
+      where: { clerkId: clerkUserId },
+    });
+    if (!user) return;
+    await prisma.organizationMembership.updateMany({
+      where: {
+        userId: user.id,
+        clerkOrgId: organization.id,
+      },
+      data: { status: 'revoked', revokedAt: new Date() },
+    });
+  }
+
   return new Response('Webhook received', { status: 200 });
 }
