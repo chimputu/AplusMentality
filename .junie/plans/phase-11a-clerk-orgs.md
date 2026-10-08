@@ -14,6 +14,8 @@ Add Clerk Organization support to the A+ Mentality app as a **low-risk, additive
 - ✓ Admin organizations page created
 - ✓ Env validation created (`lib/env.ts`)
 - ✓ Final verification complete
+- ✓ Merged to main and pushed to GitHub
+- ✓ Additional fix: Added missing Question model fields (courseId, difficulty, tags, acceptedAnswers, correctNumber, tolerance, matchingPairs, updatedAt)
 
 ---
 
