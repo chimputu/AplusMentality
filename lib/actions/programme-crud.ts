@@ -45,41 +45,58 @@ const updateProgrammeSchema = z.object({
 // Server Actions
 // ============================================
 
-export async function listProgrammes(filters?: {
+export async function listProgrammes(options?: {
   institutionId?: string;
   search?: string;
+  page?: number;
+  pageSize?: number;
 }) {
+  const page = options?.page ?? 1;
+  const pageSize = options?.pageSize ?? 10;
+  const skip = (page - 1) * pageSize;
+
   const where: any = {};
 
-  if (filters?.institutionId) {
-    where.institutionId = filters.institutionId;
+  if (options?.institutionId) {
+    where.institutionId = options.institutionId;
   }
-  if (filters?.search) {
+  if (options?.search) {
     where.OR = [
-      { name: { contains: filters.search, mode: 'insensitive' } },
-      { code: { contains: filters.search, mode: 'insensitive' } },
-      { shortName: { contains: filters.search, mode: 'insensitive' } },
+      { name: { contains: options.search, mode: 'insensitive' } },
+      { code: { contains: options.search, mode: 'insensitive' } },
+      { shortName: { contains: options.search, mode: 'insensitive' } },
     ];
   }
 
-  const programmes = await prisma.programme.findMany({
-    where,
-    orderBy: { name: 'asc' },
-    include: {
-      institution: { select: { id: true, name: true, slug: true } },
-      faculty: { select: { id: true, name: true, code: true } },
-      _count: {
-        select: {
-          branches: true,
-          courses: true,
-          tutors: true,
-          users: true,
+  const [programmes, total] = await Promise.all([
+    prisma.programme.findMany({
+      where,
+      orderBy: { name: 'asc' },
+      skip,
+      take: pageSize,
+      include: {
+        institution: { select: { id: true, name: true, slug: true } },
+        faculty: { select: { id: true, name: true, code: true } },
+        _count: {
+          select: {
+            branches: true,
+            courses: true,
+            tutors: true,
+            users: true,
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.programme.count({ where }),
+  ]);
 
-  return programmes;
+  return {
+    programmes,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
 }
 
 export async function getProgramme(id: string) {

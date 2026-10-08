@@ -4,6 +4,8 @@
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
+
+
 }
 
 datasource db {
@@ -193,6 +195,8 @@ model User {
 
   @@index([role])
   @@index([email])
+  // Perf: composite index speeds up admin user listing filtered by institution + role
+  @@index([institutionId, role])
 }
 
 // ============================================
@@ -370,6 +374,8 @@ model LectureSlide {
   updatedAt   DateTime @updatedAt
 
   @@index([courseId])
+  // Perf: composite index for ordered slide lookups within a course
+  @@index([courseId, order])
   @@index([category])
   @@index([createdAt])
   @@index([createdBy])
@@ -510,6 +516,8 @@ model Assignment {
   @@index([createdAt])
   @@index([isPublished])
   @@index([courseId])
+  // Perf: composite index for assignment listing sorted by due date within a course
+  @@index([courseId, dueDate])
 }
 
 model AssignmentSubmission {

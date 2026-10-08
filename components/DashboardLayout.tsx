@@ -2,6 +2,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { UserButton, useUser } from '@clerk/nextjs';
+import * as Sentry from '@sentry/nextjs';
 import {
   LayoutDashboard,
   Megaphone,
@@ -51,6 +52,20 @@ export default function DashboardLayout({
 }: DashboardLayoutProps) {
   const pathname = usePathname();
   const { user } = useUser();
+
+  // Sentry: Set user context so errors are associated with the logged-in user
+  useEffect(() => {
+    if (user) {
+      Sentry.setUser({
+        id: user.id,
+        email: user.emailAddresses[0]?.emailAddress,
+        username: user.username ?? undefined,
+      });
+    } else {
+      Sentry.setUser(null);
+    }
+  }, [user]);
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState(searchQuery);

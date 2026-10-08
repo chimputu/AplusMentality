@@ -198,33 +198,60 @@ export default function ProgrammeTreeClient({
                 {level.courses.length === 0 ? (
                   <div className="px-4 py-8 text-center text-gray-400 dark:text-gray-500 text-sm">No courses yet for this year</div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-100 dark:border-gray-700">
-                          <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Code</th>
-                          <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
-                          <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Period</th>
-                          <th className="text-right px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
-                        {level.courses.map((course) => (
-                          <tr key={course.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                            <td className="px-4 py-2 text-sm font-mono text-gray-700 dark:text-gray-300">{course.code}</td>
-                            <td className="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{course.name}</td>
-                            <td className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">{course.period?.name || '—'}</td>
-                            <td className="px-4 py-2 text-right">
-                              <button onClick={() => handleDeleteCourse(course.id)}
-                                className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition">
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </td>
+                  <>
+                    {/* Desktop: native table */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-gray-100 dark:border-gray-700">
+                            <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Code</th>
+                            <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
+                            <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Period</th>
+                            <th className="text-right px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
+                          {level.courses.map((course) => (
+                            <tr key={course.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                              <td className="px-4 py-2 text-sm font-mono text-gray-700 dark:text-gray-300">{course.code}</td>
+                              <td className="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{course.name}</td>
+                              <td className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">{course.period?.name || '—'}</td>
+                              <td className="px-4 py-2 text-right">
+                                <button onClick={() => handleDeleteCourse(course.id)}
+                                  // 44px minimum tap target on mobile, 40px on desktop
+                                  className="h-11 w-11 md:h-10 md:w-10 flex items-center justify-center rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition"
+                                  aria-label={`Delete ${course.name}`}>
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile: card list */}
+                    <div className="md:hidden divide-y divide-gray-50 dark:divide-gray-700">
+                      {level.courses.map((course) => (
+                        <div key={course.id} className="px-4 py-3 flex items-center justify-between">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-mono text-gray-700 dark:text-gray-300">{course.code}</span>
+                              <span className="text-sm text-gray-900 dark:text-gray-100 truncate">{course.name}</span>
+                            </div>
+                            {course.period?.name && (
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{course.period.name}</div>
+                            )}
+                          </div>
+                          <button onClick={() => handleDeleteCourse(course.id)}
+                            className="h-11 w-11 flex items-center justify-center rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition flex-shrink-0"
+                            aria-label={`Delete ${course.name}`}>
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
             ))
