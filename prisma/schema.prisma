@@ -877,7 +877,18 @@ model Question {
   correctText  String?
   points       Int          @default(1)
   explanation  String?
+
+  // Extended fields for question bank
+  courseId     String?
+  difficulty   Int          @default(1)
+  tags         Json?
+  acceptedAnswers Json?
+  correctNumber Float?
+  tolerance    Float?
+  matchingPairs Json?
+
   createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   // Extension relations
   questionOptions QuestionOption[]
@@ -885,6 +896,9 @@ model Question {
   answers         Answer[]
 
   @@index([assessmentId, order])
+  @@index([courseId])
+  @@index([type])
+  @@index([difficulty])
 }
 
 model AssessmentAttempt {
