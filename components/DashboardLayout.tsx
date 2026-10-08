@@ -44,6 +44,14 @@ interface DashboardLayoutProps {
   onSearchChange?: (query: string) => void;
 }
 
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  section: string;
+  roles?: string[];
+}
+
 export default function DashboardLayout({ 
   children, 
   role,
@@ -113,7 +121,7 @@ export default function DashboardLayout({
   }, []);
 
   // Admin Navigation Items
-  const adminNavItems = [
+  const adminNavItems: NavItem[] = [
     { 
       href: '/admin', 
       label: 'Dashboard', 
@@ -238,7 +246,7 @@ export default function DashboardLayout({
   ];
 
   // Student Navigation Items
-  const studentNavItems = [
+  const studentNavItems: NavItem[] = [
     { 
       href: '/student', 
       label: 'Dashboard', 
