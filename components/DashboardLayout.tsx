@@ -223,6 +223,13 @@ export default function DashboardLayout({
       section: 'Management'
     },
     { 
+      href: '/admin/organizations', 
+      label: 'Organizations', 
+      icon: Building2,
+      section: 'Management',
+      roles: ['SUPER_ADMIN'],
+    },
+    { 
       href: '/admin/settings', 
       label: 'Settings', 
       icon: Settings,
@@ -330,7 +337,12 @@ export default function DashboardLayout({
     },
   ];
 
-  const navItems = (role === 'ADMIN' || role === 'SUPER_ADMIN') ? adminNavItems : studentNavItems;
+  let navItems = (role === 'ADMIN' || role === 'SUPER_ADMIN') ? adminNavItems : studentNavItems;
+
+  // Filter nav items by role requirements (e.g., SUPER_ADMIN only)
+  if (role === 'ADMIN') {
+    navItems = navItems.filter((item) => !item.roles || item.roles.includes(role));
+  }
 
   // Group navigation items by section
   const groupedNavItems = navItems.reduce((acc, item) => {

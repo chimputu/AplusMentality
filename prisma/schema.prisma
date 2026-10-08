@@ -214,6 +214,11 @@ model User {
   tutorProfile       Tutor?
   tutorRequests      TutorRequest[]
 
+  // Clerk Organization relations
+  clerkOrgId                 String?
+  clerkOrgRole               String?
+  organizationMemberships    OrganizationMembership[]
+
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
@@ -221,6 +226,7 @@ model User {
   @@index([email])
   // Perf: composite index speeds up admin user listing filtered by institution + role
   @@index([institutionId, role])
+  @@index([clerkOrgId])
 }
 
 // ============================================
@@ -1153,6 +1159,10 @@ model Institution {
   banners         Banner[]      @relation("BannerPrimaryInstitution")
   bannerTargets   BannerTarget[] @relation("BannerTargetInstitution")
 
+  // Clerk Organization linkage
+  clerkOrgId     String?   @unique
+  clerkOrgSlug   String?
+
   @@index([slug])
   @@index([type])
   @@index([isActive, isVerified])
@@ -1258,4 +1268,23 @@ model BannerTarget {
 
   @@unique([bannerId, institutionId])
   @@index([institutionId])
+}
+
+// ============================================
+// ORGANIZATION MEMBERSHIP (Clerk org membership tracking)
+// ============================================
+model OrganizationMembership {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clerkOrgId     String
+  clerkOrgSlug   String?
+  role           String
+  status         String   @default("active")
+  joinedAt       DateTime @default(now())
+  revokedAt      DateTime?
+
+  @@unique([userId, clerkOrgId])
+  @@index([clerkOrgId, status])
+  @@index([userId])
 }

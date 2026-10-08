@@ -1,3 +1,5 @@
+import './env'; // Validate environment variables at startup
+
 import { config } from "dotenv";
 config({ path: ".env.local" });
 config(); // fallback to .env

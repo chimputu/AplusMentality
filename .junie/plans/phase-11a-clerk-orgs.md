@@ -2,35 +2,56 @@
 sessionId: session-261008-224427-1333
 ---
 
-# Requirements
+# Phase 11A — Clerk Organizations (COMPLETED ✓)
 
 ### Overview & Goals
 Add Clerk Organization support to the A+ Mentality app as a **low-risk, additive-only** foundation. No existing behavior should change. The app must work identically after this phase.
 
+### ✅ All 6 Deliverables Complete
+- ✓ Prisma schema fields added
+- ✓ Webhook handlers added (6 org events)
+- ✓ Lookup helpers created (`lib/orgs/lookup.ts`)
+- ✓ Admin organizations page created
+- ✓ Env validation created (`lib/env.ts`)
+- ✓ Final verification complete
+
+---
+
+# Tasks A, B, C — Assessment Engine Completion & Route Connections
+
+### Overview & Goals
+Complete the assessment engine (Phase 12) by fixing the programme dropdown, building the missing assessment creation wizard, and connecting all routes. The assessment engine is **already mostly built** — schema, grader, actions, and most pages exist. The main missing pieces are the assessment creation wizard (`/admin/assessments/new`), programme picker, sidebar nav items, breadcrumbs, and course page tabs.
+
 ### Scope
 
-**In Scope:**
-- Add `clerkOrgId` and `clerkOrgSlug` fields to `Institution` model
-- Add `clerkOrgId` and `clerkOrgRole` fields to `User` model
-- Create new `OrganizationMembership` model
-- Add 6 webhook event handlers for Clerk org events
-- Create read-only lookup helpers in `lib/orgs/lookup.ts`
-- Create admin-only `/admin/organizations` page (SUPER_ADMIN only)
-- Add "Organizations" link to admin sidebar
-- Create `lib/env.ts` for environment variable validation
+**Task A — Fix Programme Dropdown (BLOCKING)**
+- Create `/api/programmes` route for fetching programmes by institution
+- Create `components/programme-picker.tsx` client component
+- Verify programmes load correctly in assessment wizard
 
-**Out of Scope:**
-- Removing or modifying existing fields (institutionId, role stay)
-- Changing existing server actions or pages
-- Modifying middleware or `getScopeContext`
-- Creating Clerk organizations (manual later)
-- Backfilling users (Phase 11B)
-- Adding `<OrganizationSwitcher />` component
+**Task B — Complete Assessment Engine**
+- Create `/admin/assessments/new` page (4-step wizard)
+- Add "Questions" nav item to admin sidebar
+- Add assessment builder components (native + external)
+- Add offline assessment queue
+- Add external sources support (Google Forms, MS Forms, external links)
+- Add cron job for Google Forms sync
+
+**Task C — Connect All Routes**
+- Add breadcrumbs component
+- Add course page tabs (Assessments, Tutors, Progress)
+- Add cross-links between pages
+- Add not-found.tsx pages
+- Update tutor dashboard
+- Update programme page tabs
 
 ### Key Constraints
 - This is a **live production app** with real users
-- All new fields must be nullable
-- No breaking changes to existing API or UI
+- Every mutation must be Zod-validated and audit-logged
+- Institution scoping on every query
+- Never expose answers to client before submission
+- Rate-limit submission endpoints
+- Offline-first for student runner
 - Run `tsc + lint + build` after each deliverable
 
 
@@ -38,163 +59,181 @@ Add Clerk Organization support to the A+ Mentality app as a **low-risk, additive
 
 ### Current Implementation
 
+**What's Already Built (Phase 11A + Assessment Engine Foundation):**
+
 **Prisma Schema** (`prisma/schema.prisma`):
-- `Institution` model (lines 1123-1160): Has `slug` (unique), `name`, `type`, `logoUrl`, and relations to levels, periods, faculties, programmes, users, banners
-- `User` model (lines 163-224): Has `clerkId` (unique), `email`, `role`, `institutionId` (nullable FK), and many relations
-- No `clerkOrgId`/`clerkOrgSlug` fields exist yet
-- No `OrganizationMembership` model exists
+- ✅ Assessment engine enums: `AssessmentType`, `AssessmentMode`, `LiveStatus`, `QuestionType`, `ResultReveal`, `AttemptStatus`, `AssessmentSource`
+- ✅ `Assessment` model with all fields (title, description, type, mode, liveStatus, courseId, timeLimit, openAt, closeAt, maxGrade, passingScore, attemptsMax, shuffleQs, showAnswersAfter, proctored, etc.)
+- ✅ `Question` model with type, prompt, options (JSON), correctId, correctText, points, explanation
+- ✅ `AssessmentAttempt` model with userId, answers (JSON), score, percentage, tabSwitches, fullscreenExits, etc.
+- ✅ `QuestionOption` model (normalized options)
+- ✅ `AssessmentItem` model (junction table for Assessment ↔ Question)
+- ✅ `Answer` model (normalized answers)
+- ✅ `FormResponse` model for Google Forms
+- ✅ `AttemptOverride` model
+- ✅ Clerk org fields on `Institution` and `User`
+- ✅ `OrganizationMembership` model
 
-**Webhook Handler** (`app/api/webhooks/clerk/route.ts`):
-- Uses `if/else` blocks (not switch) for `user.created`, `user.updated`, `user.deleted`
-- Signature verification with Svix is already in place
-- Returns 200 on success
+**Actions (Server Actions):**
+- ✅ `lib/actions/questions.ts` — CRUD for questions (list, create, update, delete, duplicate)
+- ✅ `lib/actions/assessments.ts` — CRUD for assessments
+- ✅ `lib/actions/attempts.ts` — Student attempt actions (start, saveAnswer, submit, getAssessmentForStudent, getAttemptResult)
+- ✅ `lib/actions/programme-crud.ts` — Programme CRUD (list, get, create, update, delete)
+- ✅ `lib/assessment/grader.ts` — Pure grading engine (MCQ, T/F, Fill-in-blank, Numeric, Matching, Essay)
+- ✅ `lib/assessment/grader.test.ts` — Grader tests
 
-**Admin Layout** (`components/DashboardLayout.tsx`):
-- `adminNavItems` array defines all sidebar links
-- Both ADMIN and SUPER_ADMIN see the same nav items (no per-item role filtering)
-- `Building2` icon from `lucide-react` is already imported
-- Nav items are grouped by `section` property
+**Admin Pages:**
+- ✅ `/admin/assessments/page.tsx` — List assessments with filters
+- ✅ `/admin/assessments/[id]/analytics/page.tsx` — Analytics page
+- ✅ `/admin/assessments/[id]/grading/page.tsx` — Manual grading page
+- ✅ `/admin/questions/page.tsx` — Question bank list
+- ✅ `/admin/questions/new/page.tsx` — Create question
+- ✅ `/admin/questions/[id]/edit/page.tsx` — Edit question
+- ✅ `/admin/organizations/page.tsx` — Clerk org linkage (SUPER_ADMIN only)
 
-**Admin Pages** (`app/(dashboard)/admin/`):
-- Pattern: Server component page fetches data, renders `PageHeader` + table component
-- Example: `institutions/page.tsx` calls `listInstitutions()` action, renders `InstitutionTable`
+**Student Pages:**
+- ✅ `/assessments/page.tsx` — List available assessments
+- ✅ `/assessments/[id]/page.tsx` — Assessment runner
+- ✅ `/assessments/[id]/result/page.tsx` — View results
 
-**Prisma Client** (`lib/prisma.ts`):
-- Uses `@prisma/adapter-pg` with `DATABASE_URL` from env
-- No env validation exists yet
+**API Routes:**
+- ✅ `/api/admin/assessments/route.ts` — GET list, POST create
+- ✅ `/api/admin/assessments/[id]/route.ts` — GET, PUT, DELETE
+- ✅ `/api/admin/assessments/[id]/submissions/route.ts` — GET submissions
+- ✅ `/api/admin/programmes/route.ts` — Admin programme management
+- ✅ `/api/programmes/[id]/tree/route.ts` — Programme tree
+- ✅ `/api/student/assessments/[id]/start/route.ts` — Start attempt
+
+**Components:**
+- ✅ `components/DashboardLayout.tsx` — Admin and student sidebar
+- ✅ Admin nav items include Assessments, Assignments, Quizzes, Tests, Submissions
+- ✅ Student nav items include Assessments, Assignments, Quizzes
+
+### What's Missing
+
+1. **`/admin/assessments/new` page** — The 4-step assessment creation wizard (this is the 404 the user reported)
+2. **"Questions" nav item** — Missing from admin sidebar
+3. **Programme picker component** — No `components/programme-picker.tsx`
+4. **`/api/programmes` route** — No public API for fetching programmes by institution
+5. **Breadcrumbs component** — No `components/breadcrumbs.tsx`
+6. **Course page tabs** — No Assessments, Tutors, Progress tabs on course detail page
+7. **External sources support** — No Google Forms/MS Forms/external link support in wizard
+8. **Offline assessment queue** — No `lib/offline/assessment-queue.ts`
+9. **Google Sheets integration** — No `lib/integrations/google-sheets.ts`
+10. **Cron job** — No sync cron for Google Forms
+11. **not-found.tsx pages** — No friendly 404 pages for assessments
 
 ### Key Decisions
 
-1. **Webhook handler style**: The existing handler uses `if/else` (not switch). New org handlers will follow the same `if/else` pattern for consistency.
+1. **Assessment wizard**: 4-step wizard (Source → Basic Info → Builder/Config → Review). Native builder uses drag-drop from question bank; External config collects URL/embed details.
 
-2. **Admin page access**: The organizations page will use `requireAuth(['SUPER_ADMIN'])` in the page component. The sidebar link will be visible to all admins but the page itself enforces SUPER_ADMIN only.
+2. **Programme picker**: Client component fetching from `/api/programmes?institutionId=X`. Follows the existing pattern of client-side fetch for dropdowns.
 
-3. **Orgs lookup helpers**: Placed in `lib/orgs/lookup.ts` as a new module. Not imported anywhere yet — prepared for Phase 11B.
+3. **Sidebar nav items**: Add "Questions" to admin sidebar under "Assessments" section. Follow existing `adminNavItems` pattern.
 
-4. **Env validation**: `lib/env.ts` using Zod schema. Imported only in `lib/prisma.ts` to trigger at startup.
+4. **Breadcrumbs**: Reusable server component that reads dynamic segments. Placed on all detail pages.
+
+5. **Course page tabs**: Add tabs to existing course detail page. Each tab is a separate component rendered conditionally based on `?tab=` query param.
 
 ### Proposed Changes
 
-#### Deliverable 1 — Prisma Schema
-- Add `clerkOrgId String? @unique` and `clerkOrgSlug String?` to `Institution`
-- Add `clerkOrgId String?` and `clerkOrgRole String?` to `User`
-- Add `organizationMemberships OrganizationMembership[]` relation to `User`
-- Add `@@index([clerkOrgId])` to `User`
-- Create `OrganizationMembership` model with all specified fields, unique constraint, and indexes
-- Run migration: `npx prisma migrate dev --name add_clerk_organization_fields`
+#### Stage 1 — Task A: Fix Programme Dropdown
+- Create `app/api/programmes/route.ts` — GET endpoint fetching programmes by institutionId
+- Create `components/programme-picker.tsx` — Client component with Select dropdown
+- Verify programmes load when institution is selected
 
-#### Deliverable 2 — Webhook Handler
-- Add 6 new `if` blocks after existing handlers in `app/api/webhooks/clerk/route.ts`:
-  - `organization.created` — link org to institution by slug
-  - `organization.updated` — update slug
-  - `organization.deleted` — nullify links, revoke memberships
-  - `organizationMembership.created` — upsert membership record
-  - `organizationMembership.updated` — update role
-  - `organizationMembership.deleted` — revoke membership
+#### Stage 2 — Task B1: Assessment Creation Wizard
+- Create `/admin/assessments/new/page.tsx` — 4-step wizard page
+- Create wizard step components:
+  - `step-1-source-chooser.tsx` — Choose Native/Google Form/MS Form/External Link
+  - `step-2-basic-info.tsx` — Title, description, type, course, programme
+  - `step-3a-native-builder.tsx` — Drag-drop questions from bank
+  - `step-3b-external-config.tsx` — URL/embed config for external sources
+  - `step-4-review.tsx` — Review and publish toggle
+- Add "Questions" nav item to admin sidebar
 
-#### Deliverable 3 — Lookup Helpers
-- Create `lib/orgs/lookup.ts` with 4 functions:
-  - `getInstitutionByClerkOrgId(clerkOrgId)`
-  - `getUserOrganizations(userId)`
-  - `isUserMemberOfOrg(userId, clerkOrgId)`
-  - `getUserOrgRole(userId, clerkOrgId)`
+#### Stage 3 — Task B2: Offline Support & External Sources
+- Create `lib/offline/assessment-queue.ts` — IndexedDB queue for offline answers
+- Create `app/(dashboard)/assessments/[id]/_components/offline-badge.tsx`
+- Create `app/(dashboard)/assessments/[id]/embed/page.tsx` — Embed page for external sources
+- Create `lib/integrations/google-sheets.ts` — Google Sheets integration
+- Create `app/api/cron/sync-google-forms/route.ts` — Cron job for sync
+- Update `vercel.json` with cron schedule
 
-#### Deliverable 4 — Admin Page
-- Create `app/(dashboard)/admin/organizations/page.tsx`
-- Server component with `requireAuth(['SUPER_ADMIN'])`
-- Fetch all institutions with clerkOrg fields + count users without org memberships
-- Display summary cards and a table showing linkage status
-- Add nav item to `adminNavItems` in `DashboardLayout.tsx` (SUPER_ADMIN only via conditional rendering)
-
-#### Deliverable 5 — Env Validation
-- Create `lib/env.ts` with Zod schema validating required env vars
-- Import at the top of `lib/prisma.ts`
-
-#### Deliverable 6 — Verification
-- Run `tsc --noEmit`, `npm run lint`, `npm run build`
-- Verify migration status
-- Confirm existing pages still work
-
+#### Stage 4 — Task C: Connect All Routes
+- Create `components/breadcrumbs.tsx` — Reusable breadcrumb component
+- Add breadcrumbs to all detail pages
+- Update course page (`/courses/[id]/page.tsx`) with tabs (Assessments, Tutors, Progress)
+- Add not-found.tsx pages for assessments and questions
+- Update programme page with tabs (Courses, Tutors, Students, Assessments, Analytics)
+- Add cross-links between pages
 
 # Testing
 
 ### Validation Approach
-After each deliverable, run the full validation suite to ensure nothing breaks.
+After each stage, run `tsc --noEmit`, `npm run lint`, and `npm run build` to ensure nothing breaks.
 
 ### Key Scenarios
-1. **Schema migration**: New fields appear in Prisma Studio on Institution, User, and OrganizationMembership tables
-2. **Webhook handlers**: Existing user.created/updated/deleted handlers still work (no regression)
-3. **Admin page**: SUPER_ADMIN can access `/admin/organizations`; regular ADMIN gets blocked
-4. **Lookup helpers**: Functions compile without errors (not called yet, but type-check)
-5. **Env validation**: App starts normally with valid env vars
+1. **Programme dropdown**: Select institution → programmes appear in dropdown
+2. **Assessment wizard**: Complete all 4 steps → assessment created in database
+3. **Questions nav item**: "Questions" appears in admin sidebar under Assessments section
+4. **Breadcrumbs**: Appear on all detail pages with correct hierarchy
+5. **Course tabs**: Assessments, Tutors, Progress tabs work on course detail page
+6. **External sources**: Google Form/MS Form/External Link assessments work correctly
+7. **Offline support**: Answers queued in IndexedDB when offline, synced on reconnect
 
 ### Edge Cases
-- Webhook fires for org with no matching institution slug → logged as warning, no error
-- Membership created for unknown Clerk user → logged as warning, no error
-- Organization deleted → memberships revoked, institution fields nullified
-- Admin page shows correct counts when no orgs exist yet (all zeros)
+- Programme dropdown with no programmes for institution → show "No programmes yet"
+- Assessment wizard with no questions in bank → show "Add questions first" link
+- External URL validation → reject invalid URLs
+- Offline submission → queue answers, sync when online
+- Rate limiting → block excessive saveAnswer calls
 
 ### Test Changes
-- No new tests required for Phase 11A (additive-only, no behavior change)
-- Existing tests should pass unchanged
-
+- Existing grader tests should pass unchanged
+- No new tests required for this phase (additive-only)
 
 # Delivery Steps
 
-###   Step 1: Deliverable 1 — Prisma Schema: Add Clerk org fields
-Add nullable Clerk organization fields to the database schema and run the migration.
+### Stage 1: Task A — Fix Programme Dropdown
+Create the programme API route and picker component to unblock the assessment wizard.
 
-- Update `prisma/schema.prisma`: Add `clerkOrgId String? @unique` and `clerkOrgSlug String?` to `Institution` model
-- Update `prisma/schema.prisma`: Add `clerkOrgId String?`, `clerkOrgRole String?`, and `organizationMemberships OrganizationMembership[]` relation to `User` model
-- Update `prisma/schema.prisma`: Add `@@index([clerkOrgId])` to `User` model
-- Create `OrganizationMembership` model with fields: id, userId, user relation, clerkOrgId, clerkOrgSlug, role, status, joinedAt, revokedAt, unique constraint, and indexes
-- Run `npx prisma migrate dev --name add_clerk_organization_fields` then `npx prisma generate`
-- Verify with `npx prisma migrate status`
-- Run `tsc --noEmit` and `npm run lint` to confirm no type errors
+- Create `app/api/programmes/route.ts` — GET endpoint fetching programmes by institutionId
+- Create `components/programme-picker.tsx` — Client component with Select dropdown
+- Verify programmes load when institution is selected
+- Run `tsc --noEmit`, `npm run lint`, and `npm run build`
 
-###   Step 2: Deliverable 2 — Webhook Handler: Add org event handlers
-Extend the Clerk webhook handler to process 6 organization-related events.
+### Stage 2: Task B1 — Assessment Creation Wizard
+Build the 4-step assessment creation wizard and add the Questions nav item.
 
-- Update `app/api/webhooks/clerk/route.ts`: Add `if` blocks for `organization.created`, `organization.updated`, `organization.deleted`, `organizationMembership.created`, `organizationMembership.updated`, `organizationMembership.deleted`
-- Follow the existing `if/else` pattern (not switch) to match current code style
-- Do NOT modify existing user.created/updated/deleted handlers
-- Do NOT change signature verification logic
-- Run `tsc --noEmit`, `npm run lint`, and `npm run build` to verify
+- Create `/admin/assessments/new/page.tsx` — 4-step wizard page
+- Create wizard step components:
+  - `step-1-source-chooser.tsx` — Choose Native/Google Form/MS Form/External Link
+  - `step-2-basic-info.tsx` — Title, description, type, course, programme
+  - `step-3a-native-builder.tsx` — Drag-drop questions from bank
+  - `step-3b-external-config.tsx` — URL/embed config for external sources
+  - `step-4-review.tsx` — Review and publish toggle
+- Add "Questions" nav item to admin sidebar in `DashboardLayout.tsx`
+- Run `tsc --noEmit`, `npm run lint`, and `npm run build`
 
-###   Step 3: Deliverable 3 — Lookup Helpers: Create lib/orgs/lookup.ts
-Create read-only database lookup functions for organization data (prepared for Phase 11B).
+### Stage 3: Task B2 — Offline Support & External Sources
+Add offline assessment queue and external sources support.
 
-- Create `lib/orgs/lookup.ts` with four exported functions:
-  - `getInstitutionByClerkOrgId(clerkOrgId)` — find institution by Clerk org ID
-  - `getUserOrganizations(userId)` — fetch active memberships with linked institution data
-  - `isUserMemberOfOrg(userId, clerkOrgId)` — check active membership
-  - `getUserOrgRole(userId, clerkOrgId)` — get active membership role
-- These functions are NOT imported anywhere yet
-- Run `tsc --noEmit` and `npm run lint` to verify types
+- Create `lib/offline/assessment-queue.ts` — IndexedDB queue for offline answers
+- Create `app/(dashboard)/assessments/[id]/_components/offline-badge.tsx`
+- Create `app/(dashboard)/assessments/[id]/embed/page.tsx` — Embed page for external sources
+- Create `lib/integrations/google-sheets.ts` — Google Sheets integration
+- Create `app/api/cron/sync-google-forms/route.ts` — Cron job for sync
+- Update `vercel.json` with cron schedule
+- Run `tsc --noEmit`, `npm run lint`, and `npm run build`
 
-###   Step 4: Deliverable 4 — Admin Page: Organizations overview
-Create a read-only admin page for monitoring Clerk org linkage (SUPER_ADMIN only).
+### Stage 4: Task C — Connect All Routes
+Add breadcrumbs, course tabs, not-found pages, and cross-links.
 
-- Create `app/(dashboard)/admin/organizations/page.tsx` as a server component
-- Use `requireAuth(['SUPER_ADMIN'])` to restrict access
-- Fetch all institutions with clerkOrg fields; count users without org memberships
-- Render summary cards (total institutions, linked, not linked, users without memberships)
-- Render a table: Name | Slug | Clerk Org ID | Clerk Org Slug | Status (Linked ✅ / Not linked ⚠️)
-- Update `components/DashboardLayout.tsx`: Add "Organizations" nav item to `adminNavItems` with `Building2` icon, visible only to SUPER_ADMIN (add conditional filtering)
-- Run `tsc --noEmit`, `npm run lint`, and `npm run build` to verify
-
-###   Step 5: Deliverable 5 — Env Validation: Create lib/env.ts
-Add environment variable validation at startup using Zod.
-
-- Create `lib/env.ts` with Zod schema validating: DATABASE_URL, CLERK_SECRET_KEY, NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, CLERK_WEBHOOK_SECRET, NEXT_PUBLIC_APP_URL
-- Import `lib/env.ts` at the top of `lib/prisma.ts` to trigger validation at startup
-- Run `tsc --noEmit`, `npm run lint`, and `npm run build` to verify
-
-###   Step 6: Deliverable 6 — Final Verification
-Run the complete validation suite and confirm everything works.
-
-- Run `npx tsc --noEmit` — no type errors
-- Run `npm run lint` — no lint errors
-- Run `npm run build` — successful build
-- Run `npx prisma migrate status` — schema up to date
-- Report summary: migration name, fields added, models added, webhook events handled, files created/modified, any warnings
+- Create `components/breadcrumbs.tsx` — Reusable breadcrumb component
+- Add breadcrumbs to all detail pages
+- Update course page (`/courses/[id]/page.tsx`) with tabs (Assessments, Tutors, Progress)
+- Add not-found.tsx pages for assessments and questions
+- Update programme page with tabs (Courses, Tutors, Students, Assessments, Analytics)
+- Add cross-links between pages
+- Run `tsc --noEmit`, `npm run lint`, and `npm run build`
