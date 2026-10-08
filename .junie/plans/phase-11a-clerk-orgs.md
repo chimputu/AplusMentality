@@ -197,13 +197,15 @@ After each stage, run `tsc --noEmit`, `npm run lint`, and `npm run build` to ens
 
 # Delivery Steps
 
-### Stage 1: Task A — Fix Programme Dropdown
+### ✓ Stage 1: Task A — Fix Programme Dropdown (DONE)
 Create the programme API route and picker component to unblock the assessment wizard.
 
-- Create `app/api/programmes/route.ts` — GET endpoint fetching programmes by institutionId
-- Create `components/programme-picker.tsx` — Client component with Select dropdown
-- Verify programmes load when institution is selected
-- Run `tsc --noEmit`, `npm run lint`, and `npm run build`
+- ✓ Created `app/api/programmes/route.ts` — GET endpoint fetching programmes by institutionId
+- ✓ Created `app/api/institutions/[id]/programmes/route.ts` — Institution-specific endpoint
+- ✓ `components/programme-picker.tsx` already exists
+- ✓ Fixed `components/DashboardLayout.tsx` — Added `NavItem` interface with optional `roles` property
+- ✓ Fixed `app/(dashboard)/admin/organizations/page.tsx` — Replaced `distinct` with `findMany` + `Set`
+- ✓ Pushed to `main` and `clerk-implementation` branches
 
 ### Stage 2: Task B1 — Assessment Creation Wizard
 Build the 4-step assessment creation wizard and add the Questions nav item.
