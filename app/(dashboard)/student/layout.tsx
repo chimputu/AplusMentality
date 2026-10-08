@@ -2,7 +2,7 @@
 import { ReactNode } from 'react';
 import { requireAuth } from '@/lib/auth';
 import DashboardLayout from '@/components/DashboardLayout';
-import { StudentChatbot } from '@/components/ai/StudentChatbot';
+import { AIAssistant } from '@/components/ai/ai-assistant';
 import { redirect } from 'next/navigation';
 
 interface StudentLayoutProps {
@@ -22,7 +22,11 @@ export default async function StudentLayout({ children }: StudentLayoutProps) {
   return (
     <DashboardLayout role={role}>
       {children}
-      <StudentChatbot />
+      <AIAssistant
+        userFirstName={user.firstName ?? null}
+        userRole={user.role ?? null}
+        userInstitution={user.institution?.shortName ?? user.institution?.name ?? null}
+      />
     </DashboardLayout>
   );
 }

@@ -1,5 +1,5 @@
 import { requireAuth } from '@/lib/auth';
-import { AIChat } from '@/components/ai/AIChat';
+import { AIAssistant } from '@/components/ai/ai-assistant';
 import { redirect } from 'next/navigation';
 
 export default async function StudentAIPage() {
@@ -11,7 +11,11 @@ export default async function StudentAIPage() {
 
   return (
     <div className="space-y-6">
-      <AIChat />
+      <AIAssistant
+        userFirstName={user.firstName ?? null}
+        userRole={user.role ?? null}
+        userInstitution={user.institution?.shortName ?? user.institution?.name ?? null}
+      />
     </div>
   );
 }

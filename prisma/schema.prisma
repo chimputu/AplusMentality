@@ -82,6 +82,7 @@ enum AssessmentType {
   TEST
   EXAM
   ASSIGNMENT
+  PRACTICE
 }
 
 enum AssessmentMode {
@@ -104,6 +105,9 @@ enum QuestionType {
   ESSAY
   IMAGE_CHOICE
   FILE_UPLOAD
+  FILL_IN_BLANK
+  MATCHING
+  NUMERIC
 }
 
 enum ResultReveal {
@@ -111,6 +115,23 @@ enum ResultReveal {
   AFTER_CLOSE
   AFTER_MANUAL
   NEVER
+}
+
+// ============================================
+// ASSESSMENT ENGINE EXTENSION ENUMS
+// ============================================
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  GRADED
+  ABANDONED
+}
+
+enum AssessmentSource {
+  NATIVE
+  GOOGLE_FORM
+  MICROSOFT_FORM
+  EXTERNAL_LINK
 }
 
 // ============================================
@@ -185,6 +206,9 @@ model User {
   assessments        Assessment[]        @relation("AssessmentCreator")
   assessmentAttempts AssessmentAttempt[]
   formResponses      FormResponse[]
+
+  // Chat persistence relations
+  chatConversations  ChatConversation[]
 
   // Tutor relations
   tutorProfile       Tutor?
@@ -826,6 +850,7 @@ model Assessment {
   attempts      AssessmentAttempt[]
   formResponses FormResponse[]
   overrides     AttemptOverride[]
+  items         AssessmentItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -835,9 +860,9 @@ model Assessment {
 
 model Question {
   id           String       @id @default(cuid())
-  assessmentId String
-  assessment   Assessment   @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  order        Int
+  assessmentId String?
+  assessment   Assessment?  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  order        Int          @default(0)
   type         QuestionType
   prompt       String
   imageUrl     String?
@@ -847,6 +872,11 @@ model Question {
   points       Int          @default(1)
   explanation  String?
   createdAt    DateTime     @default(now())
+
+  // Extension relations
+  questionOptions QuestionOption[]
+  assessmentItems AssessmentItem[]
+  answers         Answer[]
 
   @@index([assessmentId, order])
 }
@@ -879,6 +909,9 @@ model AssessmentAttempt {
   violations    Json?
   autoSubmitted Boolean @default(false)
   resultViewedAt DateTime?
+
+  // Extension relations
+  normalizedAnswers Answer[]
 
   @@index([assessmentId, userId, attemptNumber])
 }
@@ -913,6 +946,96 @@ model AttemptOverride {
   createdAt     DateTime   @default(now())
 
   @@unique([assessmentId, userId])
+}
+
+// ============================================
+// CHAT PERSISTENCE
+// ============================================
+model ChatConversation {
+  id            String           @id @default(cuid())
+  userId        String
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title         String           @default("New conversation")
+  mode          String           // 'PUBLIC' | 'LOGGED_IN' — snapshot at creation
+  isArchived    Boolean          @default(false)
+
+  lastMessageAt DateTime         @default(now())
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  messages      ChatMessage[]
+
+  @@index([userId, lastMessageAt])
+  @@index([userId, isArchived])
+}
+
+model ChatMessage {
+  id             String           @id @default(cuid())
+  conversationId String
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  role           String           // 'user' | 'assistant'
+  content        String           @db.Text
+  isError        Boolean          @default(false)
+  tokensUsed     Int?             // optional — if you track
+  metadata       Json?            // model, latency, etc.
+
+  createdAt      DateTime         @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+// ============================================
+// ASSESSMENT ENGINE EXTENSIONS
+// ============================================
+
+// Normalized question options (replaces JSON storage for new questions)
+model QuestionOption {
+  id          String   @id @default(cuid())
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text        String   @db.Text
+  isCorrect   Boolean  @default(false)
+  order       Int
+  @@index([questionId])
+}
+
+// Junction table for Assessment ↔ Question with ordering
+model AssessmentItem {
+  id             String     @id @default(cuid())
+  assessmentId   String
+  assessment     Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  questionId     String
+  question       Question   @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  order          Int
+  pointsOverride Int?
+  @@unique([assessmentId, questionId])
+  @@index([assessmentId])
+}
+
+// Normalized answers (replaces JSON in AssessmentAttempt)
+model Answer {
+  id               String      @id @default(cuid())
+  attemptId        String
+  attempt          AssessmentAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId       String
+  question         Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  selectedOptionId String?
+  textAnswer       String?     @db.Text
+  numericAnswer    Float?
+  matchingAnswer   Json?
+
+  isCorrect        Boolean?
+  pointsEarned     Float?
+  feedback         String?     @db.Text
+
+  answeredAt       DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@unique([attemptId, questionId])
+  @@index([attemptId])
 }
 
 // ============================================

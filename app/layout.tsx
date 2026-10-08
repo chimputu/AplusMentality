@@ -5,7 +5,7 @@ import { Providers } from './providers';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
-import { PublicChatbot } from '@/components/ai/PublicChatbot';
+import { AIAssistant } from '@/components/ai/ai-assistant';
 
 // ✅ Import Inter font weights from @fontsource
 import '@fontsource/inter/400.css';   // Regular
@@ -41,7 +41,7 @@ export default function RootLayout({
         <body className="font-sans antialiased">
           <Providers>
             {children}
-            <PublicChatbot />
+            <AIAssistant />
             <Toaster />
             <Analytics />
           </Providers>
