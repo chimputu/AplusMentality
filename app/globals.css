@@ -51,6 +51,21 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Mobile-safe input font-size: prevents iOS zoom on input focus */
+/* iOS zooms when font-size < 16px on focus; revert to 14px on larger screens */
+input, textarea, select {
+  font-size: 16px;
+}
+@media (min-width: 768px) {
+  input, textarea, select {
+    font-size: 14px;
+  }
+}
+
+/* Mobile-safe tap targets: icon-only buttons should use the class pattern:
+   className="h-11 w-11 md:h-10 md:w-10 flex items-center justify-center"
+   This ensures 44x44px on mobile, 40x40px on desktop (WCAG 2.1 AA compliant). */
+
 /* Smooth Transitions */
 * {
   transition: background-color 0.2s ease, 

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
+import * as Sentry from '@sentry/nextjs';
 import { motion } from 'framer-motion';
 import {
   Menu, X, Mail, Phone, MapPin, Send,
@@ -42,7 +43,21 @@ const mobileSafe = {
 
 export default function HomePageClient() {
   const router = useRouter();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
+
+  // Sentry: Set user context so errors are associated with the logged-in user
+  useEffect(() => {
+    if (user) {
+      Sentry.setUser({
+        id: user.id,
+        email: user.emailAddresses[0]?.emailAddress,
+        username: user.username ?? undefined,
+      });
+    } else {
+      Sentry.setUser(null);
+    }
+  }, [user]);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);

@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 
+// Sentry build-time config — wraps next-pwa with source map upload and instrumentation
+const { withSentryConfig } = require('@sentry/nextjs/config');
+
 const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
@@ -15,16 +18,32 @@ const nextConfig = {
   },
   // ✅ Silence the Turbopack warning
   turbopack: {},
-  // ✅ Security headers
+  // ✅ Security headers including Content-Security-Policy
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
+          // CSP — restricts where resources can be loaded from, preventing XSS
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "img-src 'self' https://res.cloudinary.com https://img.clerk.com data: blob:",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://*.clerk.accounts.dev https://js.sentry-cdn.com https://browser.sentry-cdn.com",
+              "style-src 'self' 'unsafe-inline'",
+              "font-src 'self' data:",
+              "connect-src 'self' https://*.clerk.accounts.dev https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io",
+              "frame-src 'self' https://*.clerk.accounts.dev",
+              "worker-src 'self' blob:",
+              "frame-ancestors 'self'",
+            ].join('; '),
+          },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-XSS-Protection', value: '1; mode=block' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },
     ];
@@ -52,4 +71,14 @@ const nextConfig = {
   },
 };
 
-module.exports = withPWA(nextConfig);
+// Wrap with PWA first, then with Sentry for source map upload
+module.exports = withSentryConfig(withPWA(nextConfig), {
+  // Disable Sentry auto-instrumentation for server components (handled by config files)
+  autoInstrumentServerComponents: true,
+  autoInstrumentAppRoutes: true,
+  autoInstrumentMiddleware: true,
+  hideSourceMaps: true,
+  sourcemaps: {
+    disable: false,
+  },
+});
