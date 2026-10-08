@@ -21,11 +21,12 @@ export default async function OrganizationsPage() {
 
   // Count users without org memberships
   const totalUsers = await prisma.user.count();
-  const usersWithMemberships = await prisma.organizationMembership.count({
+  const memberships = await prisma.organizationMembership.findMany({
     where: { status: 'active' },
-    distinct: ['userId'],
+    select: { userId: true },
   });
-  const usersWithoutMemberships = totalUsers - usersWithMemberships;
+  const distinctUserIds = new Set(memberships.map((m) => m.userId));
+  const usersWithoutMemberships = totalUsers - distinctUserIds.size;
 
   const totalInstitutions = institutions.length;
   const linkedInstitutions = institutions.filter((i) => i.clerkOrgId !== null).length;
