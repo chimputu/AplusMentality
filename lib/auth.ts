@@ -11,6 +11,9 @@ export async function requireAuth(allowedRoles?: string[]) {
 
   let user = await prisma.user.findUnique({
     where: { clerkId: userId },
+    include: {
+      institution: { select: { shortName: true, name: true } },
+    },
   });
 
   if (user) {
@@ -37,6 +40,7 @@ export async function requireAuth(allowedRoles?: string[]) {
       user = await prisma.user.update({
         where: { email },
         data: { clerkId: userId },
+        include: { institution: { select: { shortName: true, name: true } } },
       });
       console.log('✅ User updated with clerkId:', user.email);
     } else {
@@ -49,6 +53,7 @@ export async function requireAuth(allowedRoles?: string[]) {
             : null,
           role: 'STUDENT',
         },
+        include: { institution: { select: { shortName: true, name: true } } },
       });
       console.log('✅ New user created:', user.email);
     }
@@ -64,12 +69,14 @@ export async function requireAuth(allowedRoles?: string[]) {
           name: null,
           role: 'STUDENT',
         },
+        include: { institution: { select: { shortName: true, name: true } } },
       });
       console.log('✅ User created with unique email:', uniqueEmail);
     } catch (retryError) {
       console.error('Fatal: Could not create user:', retryError);
       user = await prisma.user.findUnique({
         where: { clerkId: userId },
+        include: { institution: { select: { shortName: true, name: true } } },
       });
 
       if (!user) {
@@ -98,6 +105,9 @@ export async function getAuthUser(allowedRoles?: string[]) {
 
   let user = await prisma.user.findUnique({
     where: { clerkId: userId },
+    include: {
+      institution: { select: { shortName: true, name: true } },
+    },
   });
 
   if (user) {
@@ -121,6 +131,7 @@ export async function getAuthUser(allowedRoles?: string[]) {
       user = await prisma.user.update({
         where: { email },
         data: { clerkId: userId },
+        include: { institution: { select: { shortName: true, name: true } } },
       });
     } else {
       user = await prisma.user.create({
@@ -132,6 +143,7 @@ export async function getAuthUser(allowedRoles?: string[]) {
             : null,
           role: 'STUDENT',
         },
+        include: { institution: { select: { shortName: true, name: true } } },
       });
     }
   } catch (error) {
