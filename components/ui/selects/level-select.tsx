@@ -33,7 +33,7 @@ export function LevelSelect({
         const res = await fetch(`/api/admin/levels?institutionId=${institutionId}`);
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
-        return data.levels || data || [];
+        return data.data || [];
       }}
       dependencies={[institutionId]}
       getValue={(l: any) => l.id}

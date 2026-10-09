@@ -33,7 +33,7 @@ export function FacultySelect({
         const res = await fetch(`/api/admin/faculties?institutionId=${institutionId}`);
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
-        return data.faculties || data || [];
+        return data.data || [];
       }}
       dependencies={[institutionId]}
       getValue={(f: any) => f.id}

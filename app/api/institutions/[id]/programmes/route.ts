@@ -28,11 +28,11 @@ export async function GET(
       orderBy: { name: 'asc' },
     });
 
-    return NextResponse.json({ programmes });
+    return NextResponse.json({ data: programmes, count: programmes.length });
   } catch (error) {
     console.error('[institutions/[id]/programmes GET] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch programmes' },
+      { error: 'Failed to fetch programmes', data: [], count: 0 },
       { status: 500 }
     );
   }

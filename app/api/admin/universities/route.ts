@@ -20,11 +20,11 @@ export async function GET() {
       orderBy: { name: 'asc' },
     });
 
-    return NextResponse.json(universities);
+    return NextResponse.json({ data: universities, count: universities.length });
   } catch (error) {
     console.error('[admin/universities GET] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch universities' },
+      { error: 'Failed to fetch universities', data: [], count: 0 },
       { status: 500 }
     );
   }

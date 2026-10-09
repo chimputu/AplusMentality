@@ -38,10 +38,11 @@ import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
 import ThemeToggle from './ThemeToggle';
 import { UniversitySwitcher } from './UniversitySwitcher';
+import type { Role } from '@/generated/prisma';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
+  role: Role;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
 }

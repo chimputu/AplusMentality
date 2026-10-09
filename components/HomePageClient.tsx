@@ -58,6 +58,27 @@ export default function HomePageClient() {
     }
   }, [user]);
 
+  // Fetch user's institutionId for homepage banners
+  const [institutionId, setInstitutionId] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (!isSignedIn) {
+      setInstitutionId(undefined);
+      return;
+    }
+    let cancelled = false;
+    fetch('/api/users/me')
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
+      .then((data) => {
+        if (cancelled || !data?.user?.institutionId) return;
+        setInstitutionId(data.user.institutionId);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [isSignedIn]);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -184,7 +205,7 @@ export default function HomePageClient() {
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       {/* ===== BANNERS ===== */}
-      <BannerCarousel placement="HOMEPAGE" />
+      <BannerCarousel placement="HOMEPAGE" institutionId={institutionId} />
 
       {/* ===== NAVBAR ===== */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">

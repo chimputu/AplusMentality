@@ -33,7 +33,7 @@ export function ProgrammeSelect({
         const res = await fetch(`/api/institutions/${institutionId}/programmes`);
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
-        return data.programmes || [];
+        return data.data || [];
       }}
       dependencies={[institutionId]}
       getValue={(p: any) => p.id}

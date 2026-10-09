@@ -32,6 +32,7 @@ export default async function StudentPage({
     where: { clerkId: userId },
     select: {
       role: true,
+      institutionId: true,
       universityId: true,
       programmeId: true,
       year: true,
@@ -85,6 +86,7 @@ export default async function StudentPage({
       videos={videos}
       displayName={displayName}
       searchQuery={searchQuery}
+      institutionId={dbUser.institutionId || undefined}
       universityName={dbUser.university?.name || null}
       universityCode={dbUser.university?.code || null}
       programmeName={dbUser.programme?.shortName || dbUser.programme?.name || null}
