@@ -2,133 +2,217 @@
 sessionId: session-261009-141646-1e26
 ---
 
-# Current State & Problem
+# Cross-University Resource Viewing
+
+### ✓ Done Step 1: Foundation - Schema changes (isPreview flags, ExplorationLog)
+### ✓ Done Step 2: Foundation - Access control helper (lib/auth/exploration.ts)
+### ✓ Done Step 3: Foundation - Exploration queries (lib/queries/exploration.ts)
+### ✓ Done Step 4: Explore Pages - University grid, overview, programme, course
+### ✓ Done Step 5: Components - Banner, contact dialog, cards
+### ✓ Done Step 6: Integration - Dashboard CTA, sidebar link, public pages
+### ✓ Done Step 7: Security - Validation and testing
+
+---
 
 ### Current State
 
 **Files investigated:**
-- `lib/ai/prompts/public.ts` — 144 lines. Contains tone, formatting, and behavioral rules but **zero factual grounding** about A+ Mentality being Zambia-based. No mention of supported institutions, country, or forbidden claims.
-- `lib/ai/prompts/logged-in.ts` — 69 lines. Same issue — personalization templates only, no factual constraints.
-- `lib/ai/prompts.ts` — 128 lines. Legacy prompt builder (not used by the current route). Contains generic prompts without factual grounding.
-- `app/api/ai/chat/route.ts` — 133 lines. Unified chat endpoint. Selects prompt based on mode (PUBLIC/LOGGED_IN), passes it to `chatWithAI()`, and returns the raw response. **No facts injection, no response validation.**
-- `lib/ai/openrouter.ts` — 41 lines. Calls OpenRouter API with the system prompt and messages.
-- `lib/ai/context.ts` — 43 lines. Determines PUBLIC vs LOGGED_IN mode and fetches user context.
-- `sentry.server.config.ts` — Sentry is configured for server-side error capture.
+- `prisma/schema.prisma` — 1350 lines. Course links to Programme (via `programmeId`), Programme links to Institution (via `institutionId`). No direct Course→Institution path. Material models (LectureSlide, TutorialSheet, Assignment, PastPaper, Test, Quiz, Video) have `courseId` but **no `isPreview` flag**. No `ExplorationLog` model exists.
+- `lib/auth.ts` — 158 lines. `requireAuth()` returns `{ userId, role, user }` with user including institution info. `getAuthUser()` returns null instead of redirecting.
+- `components/DashboardLayout.tsx` — 893 lines. Student nav items defined as a constant array. No "Explore" link.
+- `components/StudentContent.tsx` — 418 lines. Dashboard with action cards (My Courses, Videos, Quizzes, Assignments), stat cards, and content sections. No explore CTA.
+- `app/(dashboard)/student/page.tsx` — 94 lines. Fetches user data and passes to `StudentContent`.
+- `app/(dashboard)/student/layout.tsx` — 32 lines. Wraps content in `DashboardLayout` with role-based auth.
+- `app/page.tsx` — 47 lines. Redirects logged-in users to dashboard, shows `HomePageClient` for public.
+- No public university pages exist yet.
 
-**Missing files:**
-- `lib/ai/platform-facts.ts` — Does NOT exist
-- `lib/ai/validate-response.ts` — Does NOT exist
+**Data model path:** Course → Programme → Institution (traverse through Programme to find institution)
 
-### Root Cause
-The AI has no factual constraints in its system prompt. It receives formatting and tone instructions but nothing that says "A+ Mentality is Zambia-based" or "only support these 12 institutions." The model fills the gap with hallucinated data from its training corpus.
+**Tutor relationship:** Course → TutorSpecialty → Tutor (not `tutorAssignments`)
 
 ### Problem
-When asked "Which universities are supported?", the AI invents 150+ universities across US/UK/CA/AU because:
-1. No facts are injected into the system prompt
-2. No post-processing catches forbidden claims
-3. No examples of correct vs incorrect responses exist in the prompt
+Students cannot browse other universities' content because:
+1. No `isPreview` flag on material models to control preview access
+2. No exploration queries that filter by institution membership
+3. No exploration pages or UI
+4. No access control layer for cross-institution browsing
+5. No logging of exploration activity
 
+### Solution
 
-# Technical Design
+Five-stage implementation:
+1. **Foundation** — Schema changes + access control + queries
+2. **Explore Pages** — Four exploration pages
+3. **Components** — Banner, contact dialog, cards
+4. **Integration** — Dashboard CTA, sidebar link, public pages
+5. **Security** — Validation and testing
 
-### Solution Architecture
+---
 
-Three-layer defense against hallucinations:
+## Technical Design
+
+### Architecture Overview
 
 ```
 mermaid
 graph LR
-    A[User Message] --> B[route.ts]
-    B --> C[buildFactsBlock]
-    C --> D[PLATFORM_FACTS]
-    D --> E[System Prompt with Facts]
-    E --> F[OpenRouter AI]
-    F --> G[Raw Response]
-    G --> H[validateAIResponse]
-    H --> I{Contains forbidden claims?}
-    I -->|Yes| J[Safe fallback + Sentry alert]
-    I -->|No| K[Return response]
+    A[Student] --> B[Explore Pages]
+    B --> C[Access Control Helper]
+    C --> D[User Institution]
+    B --> E[Exploration Queries]
+    E --> F[Prisma DB]
+    F --> G{isMember?}
+    G -->|Yes| H[Full Content]
+    G -->|No| I[Preview Only + Locked Counts]
+    B --> J[Exploration Logger]
 ```
 
-### Layer 1: Hard-coded Facts (`lib/ai/platform-facts.ts`)
-New file with `PLATFORM_FACTS` constant containing:
-- Identity: name, country (Zambia), tagline, scope
-- Numbers: 12 institutions, 500+ users, 200+ courses
-- Complete institution list (12 Zambian institutions with short names and cities)
-- Features that exist (courses, materials, past papers, etc.)
-- Features that do NOT exist yet (assessments, badges, certificates, integrations, etc.)
-- Pricing model
-- Forbidden claims array (30+ strings the AI must never say)
+### Data Model Changes
 
-### Layer 2: Strict System Prompt (update `public.ts` and `logged-in.ts`)
-Prepend to both prompts:
-1. **Absolute rules block** — 7 non-negotiable rules (Zambia only, no foreign universities, no invented numbers, etc.)
-2. **Examples block** — 5 pairs of correct vs incorrect responses
-3. Facts block injected dynamically at request time (from `buildFactsBlock()`)
+**Schema additions (`prisma/schema.prisma`):**
 
-### Layer 3: Post-processing Filter (`lib/ai/validate-response.ts`)
-New file with `validateAIResponse()` function:
-- Scans response text against `forbiddenClaims` array
-- Checks for forbidden university names (Oxford, Cambridge, Harvard, MIT, etc.)
-- If violation found: returns safe fallback message, logs to console and Sentry
-- Returns `{ text, wasFiltered }` tuple
+1. **`isPreview` flag** on material models — `Boolean @default(false)` with composite index `[courseId, isPreview]`:
+   - `LectureSlide`, `TutorialSheet`, `Assignment`, `PastPaper`, `Test`, `Quiz`, `Video`
+   - Note: The issue mentions `ExamPaper`, `TestPaper`, and `VideoLecture` but the actual models are `PastPaper`, `Test`, and `Video`
 
-### Changes to `app/api/ai/chat/route.ts`
-1. Import `PLATFORM_FACTS` and `validateAIResponse`
-2. Add `buildFactsBlock()` helper function
-3. Prepend facts block to system prompt: `const systemPrompt = \`${factsBlock}\n\n${basePrompt}\``
-4. After getting AI response: validate with `validateAIResponse(content)`
-5. If filtered: log to Sentry with `Sentry.captureMessage()`
-6. Return validated content
+2. **`ExplorationLog` model** — new model to track exploration views:
+   ```prisma
+   model ExplorationLog {
+     id             String   @id @default(cuid())
+     userId         String
+     user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+     institutionId  String   // The institution being explored
+     resourceType   String   // "UNIVERSITY" | "PROGRAMME" | "COURSE"
+     resourceId     String
+     action         String   @default("VIEW")
+     createdAt      DateTime @default(now())
+     @@index([userId, createdAt])
+     @@index([institutionId])
+   }
+   ```
+   Also add `explorationLogs ExplorationLog[]` to the `User` model.
 
-### Key Design Decisions
-- **Facts are hard-coded** (not from DB) — guarantees they're never empty or stale
-- **Three layers** — prompt alone isn't enough; post-processing catches what the prompt misses
-- **Sentry logging** — filtered responses are tracked so we can measure if the prompt needs strengthening
-- **Safe fallback** — instead of showing hallucinated content, redirect to support email
-- **Both prompts updated** — public and logged-in modes both get the same factual constraints
+3. **Migration:** `npx prisma migrate dev --name add_preview_flags`
 
+### Access Control Helper (`lib/auth/exploration.ts`)
 
-# Delivery Steps
+New file with `getAccessContext()` server function:
+- Uses `auth()` from Clerk to get userId
+- Fetches user from DB with `institutionId`
+- Returns `AccessContext` with:
+  - `userId`, `userInstitutionId`, `isAuthenticated`
+  - `canAccessFullContent(institutionId)` — returns true if user's institution matches
+  - `isExploring(institutionId)` — returns true if user is from a different institution
 
-### * Step 1: Create platform-facts.ts with hard-coded ground truth
-Create `lib/ai/platform-facts.ts` with the `PLATFORM_FACTS` constant containing all factual data about A+ Mentality.
-- Export `PLATFORM_FACTS` object with identity, scope, numbers, institution list (12 Zambian institutions), features, non-features, pricing, and forbidden claims array
-- Hard-code everything — no database fetches, no dynamic data
-- This is the single source of truth for all factual AI responses
+Also includes `verifyResourceBelongsToInstitution()` to prevent IDOR by verifying resources belong to the target institution.
 
-###   Step 2: Create validate-response.ts post-processing filter
-Create `lib/ai/validate-response.ts` with `validateAIResponse()` function.
-- Scan response text against `PLATFORM_FACTS.forbiddenClaims` array
-- Check for additional forbidden university names (Oxford, Cambridge, Harvard, MIT, Stanford, Yale, Princeton, UCLA, NYU, Toronto, McGill, Melbourne, ANU, UNSW, Imperial)
-- Return `{ text, wasFiltered }` — if violations found, return safe fallback message
-- Log violations to console with `console.error()`
+### Exploration Queries (`lib/queries/exploration.ts`)
 
-###   Step 3: Update system prompts with strict rules and examples
-Update both prompt files to prepend factual constraints.
-- `lib/ai/prompts/public.ts`: Prepend the absolute rules block (7 non-negotiable rules) and the examples block (5 correct vs incorrect pairs) before the existing content
-- `lib/ai/prompts/logged-in.ts`: Prepend the same absolute rules and examples block before the existing content
-- Both prompts will receive the dynamic facts block at request time (injected in route.ts)
+New file with server functions:
 
-###   Step 4: Update chat route to inject facts and validate responses
-Update `app/api/ai/chat/route.ts` to wire everything together.
-- Import `PLATFORM_FACTS` from `@/lib/ai/platform-facts` and `validateAIResponse` from `@/lib/ai/validate-response`
-- Add `buildFactsBlock()` helper that formats `PLATFORM_FACTS` into a markdown facts block
-- Prepend facts block to the system prompt before sending to AI: `const systemPrompt = \`${factsBlock}\n\n${basePrompt}\``
-- After receiving AI response, validate with `validateAIResponse(content)`
-- If `wasFiltered` is true, log to Sentry using `Sentry.captureMessage()` with warning level
-- Return validated content in the JSON response
-- Import Sentry from `@sentry/nextjs`
+1. **`listExplorableUniversities()`** — returns all active, verified institutions except the user's own. Includes programme and course counts.
 
-###   Step 5: Verify the fix with test prompts
-Test all 8 critical prompts to verify the fix works:
-1. "Which universities are supported?" — should list only 12 Zambian institutions
-2. "Do you support Oxford University?" — should say no, Zambia only
-3. "How many universities do you have?" — should say 12
-4. "Do you integrate with Canvas?" — should say no integrations
-5. "Are you open-source?" — should redirect to support
-6. "Is it free forever?" — should explain institution subscription model
-7. "Which UK universities?" — should say we don't support UK universities
-8. "What about badges?" — should say badges don't exist
+2. **`getUniversityForExploration(slug)`** — returns institution with faculties and programmes (metadata only, no private content).
 
-Verify: zero forbidden claims in any response, Sentry logs filtered responses if any slip through.
+3. **`getProgrammeForExploration(institutionSlug, programmeCode)`** — returns programme with courses grouped by year. Course metadata only (code, name, description, material counts).
+
+4. **`getCourseForExploration(institutionSlug, courseCode)`** — the core query:
+   - First finds the course to get its institutionId via Programme
+   - Checks if user is a member of that institution
+   - If member: returns all content
+   - If exploring: returns only items where `isPreview=true` (limited: 2 slides, 2 tutorials, 1 past paper, 1 test, 1 assignment)
+   - Always includes `_count` for each material type to show locked counts
+   - Returns `viewerCanAccessFullContent` and `viewerIsExploring` flags
+
+**Key correction from issue:** The issue mentions `tutorAssignments` but the actual relation is `tutorSpecialties` → `Tutor`. Queries will use `tutorSpecialties` with `tutor` nested select.
+
+### Exploration Pages
+
+All pages are Server Components (no `'use client'` unless interactivity is needed):
+
+1. **`app/(dashboard)/explore/page.tsx`** — University grid
+   - Fetches `listExplorableUniversities()`
+   - Grid of cards: logo, name, shortName, city, programme/course counts, "Browse" button
+   - Empty state if no other universities
+
+2. **`app/(dashboard)/explore/[slug]/page.tsx`** — University overview
+   - Hero: logo, name, description, location, website
+   - Stats: programme count, course count, faculty count
+   - Tabs: Overview | Programmes | Faculties
+   - Clickable programme list
+
+3. **`app/(dashboard)/explore/[slug]/programmes/[code]/page.tsx`** — Programme detail
+   - Breadcrumb: Explore > University > Programme
+   - Programme header (name, code, duration, faculty)
+   - Courses grouped by year
+   - Each course: code, name, description, [Preview] button
+
+4. **`app/(dashboard)/explore/[slug]/courses/[code]/page.tsx`** — Course preview
+   - Breadcrumb
+   - Course header (name, code, year, programme)
+   - Tutor card(s) from `tutorSpecialties`
+   - Preview content section (materials where `isPreview=true`)
+   - Locked section with counts (🔒 "14 more lectures", etc.)
+   - CTA: [Contact tutor] [Back to my dashboard]
+
+### Components
+
+1. **`components/exploration-banner.tsx`** — `'use client'`
+   - Amber/yellow background, sticky at top
+   - "You're exploring [University]. Read-only."
+   - [Exit exploration] button → `/student`
+
+2. **`components/contact-tutor-dialog.tsx`** — `'use client'`
+   - Opens when student clicks "Contact tutor"
+   - Select tutor dropdown (from course's `tutorSpecialties`)
+   - Subject pre-filled: "Access request for [Course Name]"
+   - Message textarea with default message
+   - On submit: creates a `TutorRequest` via Prisma, shows success toast
+
+3. **`components/university-explore-card.tsx`** — Server component
+   - University card with logo, name, city, counts
+
+4. **`components/course-locked-section.tsx`** — Server component
+   - Shows locked material counts with lock icons
+
+5. **`components/preview-material-card.tsx`** — Server component
+   - Renders a preview material with type-specific display
+
+### Integration Changes
+
+1. **`components/DashboardLayout.tsx`** — Add to `studentNavItems`:
+   ```
+   { href: '/explore', label: 'Explore Universities', icon: Compass, section: 'Discovery' }
+   ```
+   Import `Compass` from lucide-react.
+
+2. **`components/StudentContent.tsx`** — Add explore action card:
+   ```
+   {
+     icon: <Compass className="w-6 h-6 text-indigo-500" />,
+     bg: 'bg-indigo-50',
+     title: 'Explore Universities',
+     subtitle: 'Browse other institutions',
+     href: '/explore',
+   }
+   ```
+
+3. **Public university page** — Create `app/universities/[slug]/page.tsx`:
+   - Shows public institution info
+   - If logged in: "Explore courses →" CTA to `/explore/[slug]`
+   - If not logged in: "Sign up to explore" CTA
+
+### Exploration Logging (`lib/analytics/exploration.ts`)
+
+New file with `logExplorationView()` server function:
+- Creates `ExplorationLog` record
+- Wrapped in try/catch — never fails the request if logging fails
+- Called from each exploration page
+
+### Security
+
+- Every query is scoped by `institutionId`
+- `isPreview` enforced server-side in queries (not client-side filtering)
+- `verifyResourceBelongsToInstitution()` prevents IDOR
+- Non-members never receive full content in API responses
+- Rate limiting via Upstash (if available) on exploration views

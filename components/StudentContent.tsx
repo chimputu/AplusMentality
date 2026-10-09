@@ -14,6 +14,7 @@ import {
   ClipboardList,
   GraduationCap,
   School,
+  Compass,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -168,6 +169,13 @@ export default function StudentContent({
       title: 'Assignments',
       subtitle: 'Submit your work',
       href: '/student/assignments',
+    },
+    {
+      icon: <Compass className="w-6 h-6 text-indigo-500" />,
+      bg: 'bg-indigo-50',
+      title: 'Explore Universities',
+      subtitle: 'Browse other institutions',
+      href: '/explore',
     },
   ];
 

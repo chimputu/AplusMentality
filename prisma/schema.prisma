@@ -19,6 +19,7 @@ enum Role {
   ADMIN
   SUPER_ADMIN
   STUDENT
+  LECTURER
 }
 
 enum FormType {
@@ -170,6 +171,7 @@ model User {
   name           String?
   imageUrl       String?
   role           Role           @default(STUDENT)
+  isVerifiedTutor Boolean       @default(false)
   theme          String?        @default("system")
 
   // Student academic profile
@@ -213,11 +215,15 @@ model User {
   // Tutor relations
   tutorProfile       Tutor?
   tutorRequests      TutorRequest[]
+  tutorApplication   TutorApplication?
 
   // Clerk Organization relations
   clerkOrgId                 String?
   clerkOrgRole               String?
   organizationMemberships    OrganizationMembership[]
+
+  // Exploration tracking
+  explorationLogs            ExplorationLog[]
 
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -266,6 +272,7 @@ model Video {
   course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
   order    Int?
 
+  isPreview   Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -273,6 +280,7 @@ model Video {
   @@index([uploadedBy])
   @@index([source])
   @@index([courseId])
+  @@index([courseId, isPreview])
 }
 
 // ============================================
@@ -400,12 +408,14 @@ model LectureSlide {
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [clerkId])
   lessons     Lesson[]
+  isPreview   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([courseId])
   // Perf: composite index for ordered slide lookups within a course
   @@index([courseId, order])
+  @@index([courseId, isPreview])
   @@index([category])
   @@index([createdAt])
   @@index([createdBy])
@@ -434,12 +444,14 @@ model Quiz {
   course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
 
   isPublished Boolean  @default(true)
+  isPreview   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([createdAt])
   @@index([isPublished])
   @@index([courseId])
+  @@index([courseId, isPreview])
 }
 
 model QuizSubmission {
@@ -487,12 +499,14 @@ model Test {
   course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
 
   isPublished Boolean  @default(true)
+  isPreview   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([createdAt])
   @@index([isPublished])
   @@index([courseId])
+  @@index([courseId, isPreview])
 }
 
 model TestSubmission {
@@ -540,12 +554,14 @@ model Assignment {
   course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
 
   isPublished Boolean  @default(true)
+  isPreview   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([createdAt])
   @@index([isPublished])
   @@index([courseId])
+  @@index([courseId, isPreview])
   // Perf: composite index for assignment listing sorted by due date within a course
   @@index([courseId, dueDate])
 }
@@ -629,6 +645,7 @@ model PastPaper {
   courseId String?
   course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
 
+  isPreview   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -637,6 +654,7 @@ model PastPaper {
   @@index([category])
   @@index([createdAt])
   @@index([courseId])
+  @@index([courseId, isPreview])
 }
 
 // ============================================
@@ -804,9 +822,11 @@ model TutorialSheet {
   number    Int
   courseId  String
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  isPreview   Boolean  @default(false)
+  createdAt   DateTime @default(now())
 
   @@index([courseId, number])
+  @@index([courseId, isPreview])
 }
 
 // ============================================
@@ -1138,6 +1158,45 @@ model TutorRequest {
 }
 
 // ============================================
+// TUTOR APPLICATION (Self-service tutor application)
+// ============================================
+enum TutorApplicationStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+model TutorApplication {
+  id              String                 @id @default(cuid())
+  userId          String                 @unique
+  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institutionId   String?
+  institution     Institution?           @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  fullName        String
+  email           String
+  phone           String?
+  qualifications  Json?                  // Array of {degree, institution, year}
+  experienceYears Int                    @default(0)
+  cvUrl           String?
+  cvPublicId      String?
+  teachingPhilosophy String?             @db.Text
+  status          TutorApplicationStatus @default(PENDING)
+  adminNotes      String?                @db.Text
+  rejectionReason String?                @db.Text
+  submittedAt     DateTime               @default(now())
+  reviewedAt      DateTime?
+  decidedAt       DateTime?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@index([status])
+  @@index([institutionId])
+  @@index([submittedAt])
+}
+
+// ============================================
 // INSTITUTION (Multi-type academic institution)
 // ============================================
 model Institution {
@@ -1176,6 +1235,9 @@ model Institution {
   // Clerk Organization linkage
   clerkOrgId     String?   @unique
   clerkOrgSlug   String?
+
+  // Tutor applications
+  tutorApplications TutorApplication[]
 
   @@index([slug])
   @@index([type])
@@ -1301,4 +1363,21 @@ model OrganizationMembership {
   @@unique([userId, clerkOrgId])
   @@index([clerkOrgId, status])
   @@index([userId])
+}
+
+// ============================================
+// EXPLORATION LOG (Track cross-university browsing)
+// ============================================
+model ExplorationLog {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institutionId  String   // The institution being explored
+  resourceType   String   // "UNIVERSITY" | "PROGRAMME" | "COURSE"
+  resourceId     String
+  action         String   @default("VIEW")
+  createdAt      DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([institutionId])
 }
