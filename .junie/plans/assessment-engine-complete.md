@@ -2,7 +2,243 @@
 sessionId: session-261009-091553-3i91
 ---
 
-# Current State & Gaps
+# Tutor Application System Plan
+
+## Overview
+
+Build a complete tutor application system where students can apply to become institutional tutors. The system includes a 5-step application wizard, admin review dashboard, document uploads to Cloudinary, and notification workflows. On approval, the applicant becomes a `LECTURER` with `org:admin` Clerk role.
+
+## Requirements
+
+### User Stories
+- As a student, I want to apply as a tutor so I can teach on the platform
+- As an admin, I want to review tutor applications so I can verify qualifications
+- As an admin, I want to approve/reject/request info for applications
+- As an applicant, I want to see my application status
+
+### Scope
+
+**In Scope:**
+- Prisma schema changes (TutorApplication model, User fields, LECTURER role)
+- Zod validation schemas
+- Server actions for CRUD and review operations
+- 5-step applicant wizard with document uploads
+- Admin review dashboard with stats, filters, and action dialogs
+- Notification integration (in-app via existing system)
+- Sidebar navigation updates
+
+**Out of Scope:**
+- Email system (no email infrastructure exists; defer to future)
+- Google Sheets integration
+- Cron jobs
+
+## Technical Design
+
+### Current Implementation
+
+**Schema (`prisma/schema.prisma`):**
+- `Role` enum: ADMIN, SUPER_ADMIN, STUDENT (no LECTURER)
+- `User` model: no `isVerifiedTutor` or `tutorApplicationId` fields
+- No `TutorApplication` model
+- Existing `Tutor` model is for private tutoring (specialties, rates) — separate concern
+- `OrganizationMembership` model exists for Clerk org tracking
+
+**Server Actions Pattern (`lib/actions/tutor-crud.ts`):**
+- `requireAdmin()` helper checks Clerk auth + Prisma user role
+- Zod schemas defined inline or in `lib/validations/`
+- `revalidatePath` after mutations
+- Errors thrown as plain `Error` strings
+
+**Cloudinary Uploads (`lib/cloudinary.ts`):**
+- `uploadTutorPhoto(buffer, publicId)` uploads to `tutors/profiles` folder
+- Returns `{ secure_url, public_id }`
+- File validation: MIME type + size check (5MB max)
+
+**Dashboard Layout (`components/DashboardLayout.tsx`):**
+- Client component with `adminNavItems` and `studentNavItems` arrays
+- Nav items have `href`, `label`, `icon`, `section`, optional `roles`
+- Groups items by section
+
+**Notifications (`/api/notifications/route.ts`):**
+- Aggregates from Announcement, Test, Quiz, Assignment models
+- No dedicated notification model — uses `NotificationSeen` for read tracking
+
+### Key Decisions
+
+1. **Add `LECTURER` to `Role` enum** — The task requires approved tutors to become LECTURERs. This is the cleanest approach since the existing role system controls access.
+
+2. **New `TutorApplication` model** — Separate from the existing `Tutor` model (which is for private tutoring). Stores all application data including JSON fields for qualifications and documents.
+
+3. **JSON fields for complex data** — Qualifications (degrees, certifications) and documents stored as JSON in Prisma, validated by Zod on input. This avoids creating 10+ junction tables.
+
+4. **Document uploads via client-side API route** — Files uploaded from the browser to `/api/upload/document` which uploads to Cloudinary folder `tutor-applications/{userId}`. URLs stored in the application record.
+
+5. **Notifications via existing system** — Extend the notification API to include tutor application events. No email system since none exists.
+
+6. **Admin access check** — `requireAdminOfInstitution()` checks for `org:admin` Clerk role OR legacy ADMIN/SUPER_ADMIN of the application's institution.
+
+### Schema Changes
+
+```prisma
+// Add to Role enum
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+  STUDENT
+  LECTURER
+}
+
+// Add to User model
+  isVerifiedTutor    Boolean            @default(false)
+  tutorApplication   TutorApplication?
+  reviewedApplications TutorApplication[] @relation("Reviewer")
+
+// New model
+model TutorApplication {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institutionId    String
+  
+  // Personal
+  fullName         String
+  email            String
+  phone            String
+  dateOfBirth      DateTime?
+  emergencyContactName   String?
+  emergencyContactPhone  String?
+  
+  // Professional
+  facultyId        String?
+  department       String?
+  position         String
+  yearsExperience  Int
+  subjects         Json     // string[]
+  languages        Json     // string[]
+  
+  // Qualifications
+  highestDegree    Json     // { level, fieldOfStudy, university, yearObtained }
+  additionalDegrees Json?   // array of degree objects
+  certifications   Json?   // array of { name, issuer, year }
+  
+  // Documents
+  staffIdUrl       String
+  staffIdPublicId  String
+  certificateUrl   String
+  certificatePublicId String
+  cvUrl            String
+  cvPublicId       String
+  linkedInUrl      String?
+  additionalDocs   Json?    // array of { name, url, publicId }
+  
+  // Statement
+  statement        String   @db.Text
+  
+  // Status
+  status           String   @default("PENDING") // PENDING | UNDER_REVIEW | APPROVED | REJECTED | WITHDRAWN
+  reference        String   @unique // e.g. "TA-2026-0001"
+  
+  // Review
+  reviewedById     String?
+  reviewedBy       User?    @relation("Reviewer", fields: [reviewedById], references: [id])
+  reviewedAt       DateTime?
+  reviewNotes      String?  @db.Text
+  rejectionReason  String?  @db.Text
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([institutionId, status])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Add relation to Institution
+model Institution {
+  // ... existing fields ...
+  tutorApplications  TutorApplication[]
+}
+```
+
+### File Structure
+
+```
+prisma/
+  schema.prisma                          (modify: add enums, models, fields)
+
+lib/
+  validations/
+    tutor-application.ts                 (new: Zod schemas)
+  actions/
+    tutor-application.ts                 (new: server actions)
+  cloudinary.ts                          (modify: add uploadDocument function)
+
+app/
+  api/
+    upload/document/route.ts             (new: document upload endpoint)
+  onboarding/
+    account-type/page.tsx                (new: Student | Tutor chooser)
+  (dashboard)/
+    apply-as-tutor/
+      page.tsx                           (new: 5-step wizard)
+      status/page.tsx                    (new: application status)
+      _components/
+        tutor-application-wizard.tsx     (new: wizard container)
+        step-1-personal.tsx              (new)
+        step-2-professional.tsx          (new)
+        step-3-qualifications.tsx        (new)
+        step-4-documents.tsx             (new)
+        step-5-statement.tsx             (new)
+        application-review.tsx           (new: summary)
+        document-uploader.tsx            (new: Cloudinary upload)
+        multi-degree-input.tsx           (new: degree repeater)
+  admin/
+    tutor-applications/
+      page.tsx                           (new: list + stats + filters)
+      [id]/page.tsx                      (new: detail + review actions)
+      _components/
+        application-stats.tsx            (new: status count cards)
+        application-filters.tsx          (new: tabs + search)
+        application-table.tsx            (new: applications table)
+        approve-dialog.tsx               (new)
+        reject-dialog.tsx                (new)
+        request-info-dialog.tsx          (new)
+        status-badge.tsx                 (new)
+
+components/
+  DashboardLayout.tsx                    (modify: add nav links)
+```
+
+### Architecture Diagram
+
+``` mermaid
+graph LR
+  A[Student] -->|Applies| B[Apply-as-tutor Wizard]
+  B -->|Upload Docs| C[Cloudinary API]
+  B -->|Submit| D[Server Actions]
+  D -->|Create| E[Prisma DB]
+  E -->|Notify| F[Admin Dashboard]
+  F -->|Approve/Reject| D
+  D -->|Update Role| E
+  D -->|Add to Org| G[Clerk API]
+```
+
+### Risks
+
+1. **Clerk org:admin assignment** — If Clerk API fails during approval, the action should not fail. Wrap in try/catch and log. The user still becomes LECTURER in the DB.
+
+2. **Reference number generation** — Use format `TA-{year}-{sequence}`. Query max sequence for the year to avoid collisions.
+
+3. **Document cleanup** — If an application is deleted, Cloudinary documents are not automatically deleted. Accept this for now.
+
+4. **Existing LECTURER users** — No existing users have LECTURER role. The enum addition is safe.
+
+5. **Large JSON fields** — Qualifications and documents stored as JSON. Validate structure on input with Zod. Consider normalization later if queries on these fields are needed.
+
+---
+
+# Assessment Engine (Previous Work — Complete)
 
 ## What Already Exists
 

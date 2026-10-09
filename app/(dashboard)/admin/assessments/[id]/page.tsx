@@ -46,8 +46,8 @@ interface Assessment {
   courseId: string;
   course: { code: string; title: string };
   timeLimit: number | null;
-  openAt: string | null;
-  closeAt: string | null;
+  openAt: Date | null;
+  closeAt: Date | null;
   attemptsMax: number;
   shuffleQs: boolean;
   showAnswersAfter: string;
@@ -55,7 +55,7 @@ interface Assessment {
   formUrl: string | null;
   questions: any[];
   attempts: any[];
-  createdAt: string;
+  createdAt: Date;
 }
 
 interface BankQuestion {
