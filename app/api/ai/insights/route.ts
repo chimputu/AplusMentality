@@ -60,7 +60,7 @@ Return ONLY the JSON array, no other text.`;
 
     const reply = await chatWithAI({
       systemPrompt,
-      userMessage: 'Generate insight cards for this student.',
+      messages: [{ role: 'user', content: 'Generate insight cards for this student.' }],
       maxTokens: 1000,
     });
 
