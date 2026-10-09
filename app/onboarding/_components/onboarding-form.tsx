@@ -167,34 +167,44 @@ export default function OnboardingForm({ user, institutions, universities }: Onb
             ))}
           </select>
           {allSchools.length === 0 && (
-            <p className="text-sm text-amber-600 dark:text-amber-400 mt-1.5">
-              No institutions available yet. Please contact an admin.
-            </p>
+            <div className="mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
+              <p className="text-amber-700 dark:text-amber-400">
+                No institutions available yet. Please contact an admin to set up your institution.
+              </p>
+            </div>
           )}
         </div>
 
         {/* Programme */}
-        {institutionId && schoolProgrammes.length > 0 && (
+        {institutionId && (
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Programme
             </label>
-            <select
-              value={programmeId}
-              onChange={(e) => {
-                setProgrammeId(e.target.value);
-                setBranchId('');
-              }}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-            >
-              <option value="">Select your programme</option>
-              {schoolProgrammes.map((prog) => (
-                <option key={prog.id} value={prog.id}>
-                  {prog.name}
-                  {prog.faculty && ` — ${prog.faculty.name}`}
-                </option>
-              ))}
-            </select>
+            {schoolProgrammes.length > 0 ? (
+              <select
+                value={programmeId}
+                onChange={(e) => {
+                  setProgrammeId(e.target.value);
+                  setBranchId('');
+                }}
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+              >
+                <option value="">Select your programme</option>
+                {schoolProgrammes.map((prog) => (
+                  <option key={prog.id} value={prog.id}>
+                    {prog.name}
+                    {prog.faculty && ` — ${prog.faculty.name}`}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
+                <p className="text-amber-700 dark:text-amber-400">
+                  No programmes available for this institution yet. Please contact an admin.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -220,23 +230,29 @@ export default function OnboardingForm({ user, institutions, universities }: Onb
         )}
 
         {/* Year/Level */}
-        {institutionId && institutionLevels.length > 0 && (
+        {institutionId && (
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Academic Level
             </label>
-            <select
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-            >
-              <option value="">Select your level</option>
-              {institutionLevels.map((level) => (
-                <option key={level.id} value={level.order}>
-                  {level.name}
-                </option>
-              ))}
-            </select>
+            {institutionLevels.length > 0 ? (
+              <select
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+              >
+                <option value="">Select your level</option>
+                {institutionLevels.map((level) => (
+                  <option key={level.id} value={level.order}>
+                    {level.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                No academic levels defined yet.
+              </p>
+            )}
           </div>
         )}
 

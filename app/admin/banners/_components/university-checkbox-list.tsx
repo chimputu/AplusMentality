@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, CheckSquare, Square } from 'lucide-react';
+import { Search, CheckSquare, Square, AlertCircle, RefreshCw } from 'lucide-react';
 
 interface Institution {
   id: string;
@@ -30,15 +30,25 @@ export default function UniversityCheckboxList({ value, onChange }: UniversityCh
   const [institutions, setInstitutions] = useState<Institution[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadInstitutions = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/institutions/picker');
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+      setInstitutions(data.institutions || []);
+    } catch (e: any) {
+      setError(e.message || 'Failed to load institutions');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch('/api/institutions/picker')
-      .then((res) => res.json())
-      .then((data) => {
-        setInstitutions(data.institutions || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    loadInstitutions();
   }, []);
 
   const filtered = institutions.filter((inst) =>
@@ -66,7 +76,31 @@ export default function UniversityCheckboxList({ value, onChange }: UniversityCh
   const totalCount = institutions.length;
 
   if (loading) {
-    return <div className="text-sm text-gray-500">Loading institutions...</div>;
+    return (
+      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+        <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full animate-spin" />
+        Loading institutions...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm">
+        <div className="flex items-center gap-2 text-red-600 dark:text-red-400 mb-2">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+        <button
+          type="button"
+          onClick={loadInstitutions}
+          className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-white dark:bg-gray-800 border border-red-200 dark:border-red-700 rounded-md text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+        >
+          <RefreshCw className="h-3 w-3" />
+          Retry
+        </button>
+      </div>
+    );
   }
 
   return (
