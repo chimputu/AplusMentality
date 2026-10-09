@@ -35,28 +35,11 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
-interface Assessment {
-  id: string;
-  title: string;
-  description: string | null;
-  type: string;
-  mode: string;
-  liveStatus: string;
-  isPublished: boolean;
-  courseId: string;
-  course: { code: string; title: string };
-  timeLimit: number | null;
-  openAt: Date | null;
-  closeAt: Date | null;
-  attemptsMax: number;
-  shuffleQs: boolean;
-  showAnswersAfter: string;
-  embedUrl: string | null;
-  formUrl: string | null;
-  questions: any[];
-  attempts: any[];
-  createdAt: Date;
-}
+// Assessment state type — matches the shape returned by getAssessment() server action.
+// Uses 'any' because this is a client component and Prisma types (Date objects)
+// cannot be imported directly. The server action returns raw Prisma data with
+// Date objects for DateTime fields, so we use any to avoid type mismatches.
+type Assessment = any;
 
 interface BankQuestion {
   id: string;
