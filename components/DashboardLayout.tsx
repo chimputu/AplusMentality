@@ -31,7 +31,6 @@ import {
   MessageSquare,
   Sparkles,
   Building2,
-  BarChart3,
   Compass,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
@@ -339,12 +338,6 @@ export default function DashboardLayout({
       label: 'Results', 
       icon: Award,
       section: 'Assessments'
-    },
-    { 
-      href: '/student/progress', 
-      label: 'My Progress', 
-      icon: BarChart3,
-      section: 'Learning'
     },
     { 
       href: '/student/books', 

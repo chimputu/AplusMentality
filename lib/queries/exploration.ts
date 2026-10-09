@@ -38,7 +38,7 @@ export async function listExplorableUniversities() {
  * Get a university's public profile with programmes + faculties.
  */
 export async function getUniversityForExploration(slug: string) {
-  return prisma.institution.findUnique({
+  const result = await prisma.institution.findUnique({
     where: { slug },
     select: {
       id: true,
@@ -71,6 +71,30 @@ export async function getUniversityForExploration(slug: string) {
       },
     },
   });
+
+  // Explicitly type the result to avoid Prisma type inference issues in builds
+  return result as {
+    id: string;
+    name: string;
+    shortName: string | null;
+    slug: string;
+    type: string;
+    description: string | null;
+    city: string | null;
+    country: string | null;
+    logoUrl: string | null;
+    website: string | null;
+    faculties: Array<{ id: string; name: string; code: string }>;
+    programmes: Array<{
+      id: string;
+      name: string;
+      code: string | null;
+      duration: string | null;
+      faculty: { id: string; name: string; code: string } | null;
+      _count: { courses: number };
+    }>;
+    _count: { courses: number };
+  } | null;
 }
 
 /**

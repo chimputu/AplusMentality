@@ -82,7 +82,7 @@ export default function StudentAssessmentsPage() {
   }
 
   function handleStart(assessmentId: string) {
-    router.push(`/student/assessments/${assessmentId}/start`);
+    router.push(`/assessments/${assessmentId}`);
   }
 
   function handleOpenForm(formUrl: string) {
