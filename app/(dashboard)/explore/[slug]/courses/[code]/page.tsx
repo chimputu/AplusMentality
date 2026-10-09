@@ -124,7 +124,7 @@ export default async function CoursePreviewPage({ params }: PageProps) {
               if (!tutor) return null;
               return (
                 <div
-                  key={ts.id || i}
+                  key={tutor.id || i}
                   className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 dark:border-gray-700"
                 >
                   {tutor.imageUrl ? (
