@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, PlayCircle, Video, Presentation, FileQuestion } from 'lucide-react';
+import { ArrowLeft, BookOpen, PlayCircle, Video, Presentation, FileQuestion, FileCheck, Users, BarChart3 } from 'lucide-react';
 
 interface PageProps {
   params: Promise<{ courseId: string }>;  // ✅ Changed from 'id' to 'courseId'
@@ -92,6 +92,37 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
     (acc, module) => acc + module.lessons.length,
     0
   );
+
+  // Fetch assessments for this course
+  const assessments = await prisma.assessment.findMany({
+    where: { courseId, isPublished: true },
+    select: {
+      id: true,
+      title: true,
+      type: true,
+      mode: true,
+      timeLimit: true,
+      openAt: true,
+      closeAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  // Fetch student's attempts for this course's assessments
+  const studentAttempts = await prisma.assessmentAttempt.findMany({
+    where: {
+      userId,
+      assessment: { courseId },
+    },
+    select: {
+      id: true,
+      assessmentId: true,
+      score: true,
+      totalPoints: true,
+      percentage: true,
+      submittedAt: true,
+    },
+  });
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -228,6 +259,60 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
           </div>
         ))}
       </div>
+
+      {/* Assessments Section */}
+      {assessments.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <FileCheck className="w-5 h-5" />
+            Assessments
+          </h2>
+          <div className="space-y-3">
+            {assessments.map((a) => {
+              const attempt = studentAttempts.find((at) => at.assessmentId === a.id);
+              return (
+                <div
+                  key={a.id}
+                  className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {a.title}
+                      </span>
+                      <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                        {a.type.replace(/_/g, ' ')}
+                      </span>
+                      {a.mode === 'GOOGLE_FORM' && (
+                        <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                          External
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {a.timeLimit ? `${a.timeLimit} min · ` : ''}
+                      Max {a.mode === 'NATIVE' ? 'native' : 'external'} assessment
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {attempt ? (
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Scored {attempt.percentage}%
+                      </span>
+                    ) : null}
+                    <Link
+                      href={`/assessments/${a.id}`}
+                      className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    >
+                      {attempt ? 'Review' : 'Start'}
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -31,6 +31,7 @@ import {
   MessageSquare,
   Sparkles,
   Building2,
+  BarChart3,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
@@ -174,6 +175,12 @@ export default function DashboardLayout({
       href: '/admin/assessments', 
       label: 'Assessments', 
       icon: FileCheck,
+      section: 'Assessments'
+    },
+    { 
+      href: '/admin/questions', 
+      label: 'Questions', 
+      icon: HelpCircle,
       section: 'Assessments'
     },
     { 
@@ -330,6 +337,12 @@ export default function DashboardLayout({
       label: 'Results', 
       icon: Award,
       section: 'Assessments'
+    },
+    { 
+      href: '/student/progress', 
+      label: 'My Progress', 
+      icon: BarChart3,
+      section: 'Learning'
     },
     { 
       href: '/student/books', 
