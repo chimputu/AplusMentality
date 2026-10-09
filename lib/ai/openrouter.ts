@@ -4,11 +4,11 @@ const OPENROUTER_MODEL = 'openrouter/free';
 
 export async function chatWithAI({
   systemPrompt,
-  userMessage,
+  messages,
   maxTokens = 800,
 }: {
   systemPrompt: string;
-  userMessage: string;
+  messages: { role: string; content: string }[];
   maxTokens?: number;
 }) {
   const res = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
@@ -23,7 +23,7 @@ export async function chatWithAI({
       model: OPENROUTER_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userMessage },
+        ...messages,
       ],
       temperature: 0.7,
       max_tokens: maxTokens,
