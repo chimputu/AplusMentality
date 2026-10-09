@@ -1,14 +1,81 @@
 // Unified AI chat endpoint — replaces /api/ai/public and /api/ai/student
 // Determines mode via getAIContext(), persists messages for logged-in users
+// Injects factual constraints and validates AI responses to prevent hallucinations
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import * as Sentry from '@sentry/nextjs';
 import { prisma } from '@/lib/prisma';
 import { chatWithAI } from '@/lib/ai/openrouter';
 import { getAIContext } from '@/lib/ai/context';
 import { PUBLIC_PROMPT } from '@/lib/ai/prompts/public';
 import { LOGGED_IN_PROMPT } from '@/lib/ai/prompts/logged-in';
+import { PLATFORM_FACTS } from '@/lib/ai/platform-facts';
+import { validateAIResponse } from '@/lib/ai/validate-response';
 
 export const dynamic = 'force-dynamic';
+
+// Build the dynamic facts block injected into the system prompt at request time
+function buildFactsBlock(): string {
+  const f = PLATFORM_FACTS;
+  const featuresList = Object.entries(f.features)
+    .filter(([_, v]) => v)
+    .map(([k]) => `  ✅ ${k.replace(/([A-Z])/g, ' $1').trim().toLowerCase()}`)
+    .join('\n');
+
+  const nonFeaturesList = Object.entries(f.nonFeatures)
+    .filter(([_, v]) => v)
+    .map(([k]) => `  ❌ ${k.replace(/([A-Z])/g, ' $1').trim().toLowerCase()}`)
+    .join('\n');
+
+  const institutionsList = f.institutions
+    .map((i) => `  - ${i.name} (${i.shortName}) — ${i.city}`)
+    .join('\n');
+
+  const forbiddenList = f.forbiddenClaims
+    .map((c) => `  ❌ ${c}`)
+    .join('\n');
+
+  return `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REAL FACTS ABOUT A+ MENTALITY (ONLY STATE THESE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IDENTITY:
+  Name: ${f.name}
+  Country: ${f.country}
+  Tagline: ${f.tagline}
+  Scope: ${f.scope}
+  Expansion: ${f.expansion}
+
+NUMBERS:
+  Institutions: ${f.institutionCount}
+  Users: ${f.userCount}
+  Courses: ${f.courseCount}
+
+INSTITUTIONS (this is the COMPLETE list — no others exist):
+${institutionsList}
+
+FEATURES THAT EXIST:
+${featuresList}
+
+FEATURES THAT DO NOT EXIST YET:
+${nonFeaturesList}
+
+PRICING:
+  Model: ${f.pricing.model}
+  Student cost: ${f.pricing.studentCost}
+  Public pricing: ${f.pricing.publicPricing}
+
+⚠️ FORBIDDEN CLAIMS (NEVER SAY ANY OF THESE):
+${forbiddenList}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IF ASKED about something NOT in this block:
+  → "I don't have that information. Please contact
+     support@aplusmentality.com."
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+}
 
 export async function POST(req: Request) {
   try {
@@ -31,8 +98,8 @@ export async function POST(req: Request) {
 
     const context = await getAIContext();
 
-    // Select prompt based on mode, with template replacement for logged-in
-    const systemPrompt =
+    // Select base prompt based on mode, with template replacement for logged-in
+    const basePrompt =
       context.mode === 'PUBLIC'
         ? PUBLIC_PROMPT
         : LOGGED_IN_PROMPT
@@ -41,16 +108,14 @@ export async function POST(req: Request) {
             .replace('{{userRole}}', context.role ?? 'STUDENT')
             .replace('{{userOnboarded}}', String(context.onboarded));
 
-    // Build full conversation context for the AI
-    const aiMessages = [
-      { role: 'system', content: systemPrompt },
-      ...trimmedMessages,
-    ];
+    // Inject facts block into the system prompt
+    const factsBlock = buildFactsBlock();
+    const systemPrompt = `${factsBlock}\n\n${basePrompt}`;
 
-    // Use OpenRouter (existing client) instead of OpenAI
+    // Use OpenRouter with proper message array for conversation context
     const content = await chatWithAI({
-      systemPrompt: aiMessages[0].content,
-      userMessage: JSON.stringify(aiMessages.slice(1)),
+      systemPrompt,
+      messages: trimmedMessages,
       maxTokens: 800,
     });
 
@@ -59,6 +124,17 @@ export async function POST(req: Request) {
         { error: 'No response from assistant' },
         { status: 502 }
       );
+    }
+
+    // Validate AI response to catch any hallucinations that slipped through
+    const { text: validatedContent, wasFiltered } = validateAIResponse(content);
+
+    // Log to Sentry if response was filtered
+    if (wasFiltered) {
+      Sentry.captureMessage('AI hallucination filtered by post-processing', {
+        level: 'warning',
+        extra: { originalResponse: content },
+      });
     }
 
     // ── Persist for logged-in users (fire-and-forget, never fails the request) ──
@@ -92,7 +168,7 @@ export async function POST(req: Request) {
                   {
                     conversationId,
                     role: 'assistant',
-                    content,
+                    content: validatedContent,
                   },
                 ],
               }),
@@ -117,7 +193,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({
-      content,
+      content: validatedContent,
       mode: context.mode,
     });
   } catch (err: any) {
