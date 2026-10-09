@@ -7,6 +7,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import {
   Send, X, MessageCircle, Sparkles, RefreshCw, Loader2,
+  Mail, Phone, MessageSquare, Copy,
 } from 'lucide-react';
 import { createConversation, getConversation } from '@/lib/actions/chat';
 import { toast } from 'sonner';
@@ -28,6 +29,14 @@ interface AIAssistantProps {
 }
 
 const LAST_CONVO_KEY = 'ai:last-conversation-id';
+
+// Contact info constants
+const CONTACT = {
+  email: 'kafiswegchimputu@gmail.com',
+  phone: '+260772231300',
+  phoneDisplay: '+260 77 223 1300',
+  whatsappLink: 'https://wa.me/260772231300',
+};
 
 // Suggestion chips differ by mode
 const PUBLIC_SUGGESTIONS = [
@@ -70,6 +79,7 @@ export function AIAssistant({
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const isLoggedIn = isLoaded && isSignedIn;
+  const [showSupport, setShowSupport] = useState(false);
 
   // ── Initialize: fetch or create conversation ──
   useEffect(() => {
@@ -290,6 +300,17 @@ export function AIAssistant({
   };
 
   const suggestions = isLoggedIn ? LOGGED_IN_SUGGESTIONS : PUBLIC_SUGGESTIONS;
+
+  // ── Copy user details to clipboard ──
+  const handleCopyDetails = () => {
+    if (!isLoggedIn || !user) return;
+    const details = `Name: ${user.firstName ?? 'N/A'} ${user.lastName ?? ''}\nEmail: ${user.emailAddresses[0]?.emailAddress ?? 'N/A'}\nInstitution: ${institution ?? 'N/A'}`;
+    navigator.clipboard.writeText(details).then(() => {
+      toast.success('Details copied to clipboard');
+    }).catch(() => {
+      toast.error('Failed to copy details');
+    });
+  };
   const placeholder = isLoggedIn
     ? 'Ask about your courses, assessments...'
     : 'Ask about features…';
@@ -304,6 +325,132 @@ export function AIAssistant({
       >
         {open ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
       </button>
+
+      {/* Support dialog */}
+      {open && showSupport && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowSupport(false)}
+          >
+            <div
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-sm w-full border border-gray-200 dark:border-gray-700"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">Need more help?</h3>
+                <button
+                  onClick={() => setShowSupport(false)}
+                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                  aria-label="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-3 mb-4">
+                <a
+                  href={`mailto:${CONTACT.email}`}
+                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <Mail className="w-5 h-5 text-blue-600" />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Email</div>
+                    <div className="text-xs text-gray-500 truncate">{CONTACT.email}</div>
+                  </div>
+                </a>
+
+                <a
+                  href={`tel:${CONTACT.phone}`}
+                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <Phone className="w-5 h-5 text-green-600" />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Call</div>
+                    <div className="text-xs text-gray-500">{CONTACT.phoneDisplay}</div>
+                  </div>
+                </a>
+
+                <a
+                  href={CONTACT.whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <MessageSquare className="w-5 h-5 text-green-600" />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">WhatsApp</div>
+                    <div className="text-xs text-gray-500">{CONTACT.phoneDisplay}</div>
+                  </div>
+                </a>
+              </div>
+
+              {isLoggedIn && user && (
+                <>
+                  <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div className="text-xs font-medium text-gray-500 mb-2">Your details (for faster support):</div>
+                    <div className="text-xs text-gray-700 dark:text-gray-300 space-y-1">
+                      <div>• Name: {user.firstName ?? 'N/A'} {user.lastName ?? ''}</div>
+                      <div>• Email: {user.emailAddresses[0]?.emailAddress ?? 'N/A'}</div>
+                      <div>• Institution: {institution ?? 'N/A'}</div>
+                    </div>
+                    <button
+                      onClick={handleCopyDetails}
+                      className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:underline"
+                    >
+                      <Copy className="w-3 h-3" />
+                      Copy my details
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {!isLoggedIn && (
+                <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <div className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-2">🔓 Sign up to unlock:</div>
+                  <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+                    <div>• In-app support</div>
+                    <div>• Faster responses</div>
+                    <div>• Personalized help</div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <a
+                  href={`mailto:${CONTACT.email}`}
+                  className="flex-1 text-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                  Email
+                </a>
+                <a
+                  href={`tel:${CONTACT.phone}`}
+                  className="flex-1 text-center px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  Call
+                </a>
+                <a
+                  href={CONTACT.whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 text-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                >
+                  WhatsApp
+                </a>
+              </div>
+
+              {!isLoggedIn && (
+                <a
+                  href="/sign-up"
+                  className="block mt-3 text-center px-3 py-2 text-sm border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+                >
+                  Sign up
+                </a>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Chat panel */}
       {open && (
@@ -329,6 +476,14 @@ export function AIAssistant({
                 </p>
               </div>
               <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setShowSupport(true)}
+                  className="p-1 rounded-full hover:bg-white/20 transition"
+                  aria-label="Contact support"
+                  title="Need more help?"
+                >
+                  <Mail className="w-4 h-4" />
+                </button>
                 <button
                   onClick={handleReset}
                   disabled={loading}

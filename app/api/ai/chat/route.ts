@@ -66,6 +66,11 @@ PRICING:
   Student cost: ${f.pricing.studentCost}
   Public pricing: ${f.pricing.publicPricing}
 
+CONTACT INFO (ONLY USE THESE — NEVER INVENT OTHERS):
+  Email: ${f.contact.email}
+  Phone: ${f.contact.phoneDisplay}
+  WhatsApp: ${f.contact.whatsappDisplay} (${f.contact.whatsappLink})
+
 ⚠️ FORBIDDEN CLAIMS (NEVER SAY ANY OF THESE):
 ${forbiddenList}
 
