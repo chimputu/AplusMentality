@@ -32,6 +32,7 @@ import {
   Sparkles,
   Building2,
   BarChart3,
+  Compass,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
@@ -351,6 +352,12 @@ export default function DashboardLayout({
       section: 'Learning'
     },
     { 
+      href: '/explore', 
+      label: 'Explore Universities', 
+      icon: Compass,
+      section: 'Discovery'
+    },
+    { 
       href: '/student/settings', 
       label: 'Settings', 
       icon: Settings,
@@ -431,7 +438,7 @@ export default function DashboardLayout({
         </div>
 
         {/* Center Section - Search */}
-        <div className="hidden md:flex items-center flex-1 max-w-2xl mx-6" ref={searchRef}>
+        <div className="flex items-center flex-1 max-w-2xl mx-6" ref={searchRef}>
           <form onSubmit={handleSearchSubmit} className="relative w-full flex items-center">
             <div className="relative flex-1">
               <input
