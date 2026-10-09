@@ -7,6 +7,7 @@ import VideoList from './VideoList';
 import UserManagement from '@/components/UserManagement';
 import Link from 'next/link';
 import BannerCarousel from '@/components/banner-carousel';
+import type { Role } from '@/generated/prisma';
 
 interface Announcement {
   id: string;
@@ -36,7 +37,7 @@ interface User {
   lastName: string | null;
   name: string | null;
   imageUrl: string | null;
-  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
+  role: Role;
   createdAt: string;
   enrollments?: any[];
   courses?: any[];
@@ -58,7 +59,7 @@ interface AdminContentProps {
   courses?: any[];
   activeTab: string;
   displayName: string;
-  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
+  role: Role;
   institutionId?: string;
 }
 
