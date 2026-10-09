@@ -111,7 +111,7 @@ export async function getProgrammeForExploration(
 
   if (!institution) return null;
 
-  return prisma.programme.findFirst({
+  const result = await prisma.programme.findFirst({
     where: {
       code: programmeCode,
       institutionId: institution.id,
@@ -155,6 +155,39 @@ export async function getProgrammeForExploration(
       },
     },
   });
+
+  // Explicitly type the result to avoid Prisma type inference issues in builds
+  return result as {
+    id: string;
+    name: string;
+    code: string | null;
+    duration: string | null;
+    description: string | null;
+    institution: {
+      id: string;
+      name: string;
+      slug: string;
+      shortName: string | null;
+      logoUrl: string | null;
+    };
+    faculty: { name: string; code: string } | null;
+    courses: Array<{
+      id: string;
+      code: string;
+      title: string;
+      description: string | null;
+      yearNumber: number | null;
+      _count: {
+        lectureSlides: number;
+        tutorialSheets: number;
+        pastPapers: number;
+        tests: number;
+        assignments: number;
+        quizzes: number;
+        videos: number;
+      };
+    }>;
+  } | null;
 }
 
 // Types for the course exploration result
