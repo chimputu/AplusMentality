@@ -1,11 +1,12 @@
 'use client';
 
 // Assessment creation wizard — multi-step form
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createAssessment } from '@/lib/actions/assessments';
 import { listQuestions } from '@/lib/actions/questions';
+import { DataSelect } from '@/components/ui/data-select';
 import {
   ArrowRight,
   ArrowLeft,
@@ -104,13 +105,18 @@ export default function NewAssessmentPage() {
   const [questionSearch, setQuestionSearch] = useState('');
   const [questionTypeFilter, setQuestionTypeFilter] = useState('');
 
-  // Fetch courses on mount
-  useEffect(() => {
-    fetch('/api/courses?all=true')
-      .then((r) => r.json())
-      .then((data) => setCourses(data))
-      .catch(() => setCourses([]));
+  // Fetch courses
+  const fetchCourses = useCallback(async () => {
+    const res = await fetch('/api/courses?all=true');
+    if (!res.ok) throw new Error('Failed to fetch');
+    const data = await res.json();
+    setCourses(Array.isArray(data) ? data : []);
+    return Array.isArray(data) ? data : [];
   }, []);
+
+  useEffect(() => {
+    fetchCourses();
+  }, [fetchCourses]);
 
   // Fetch bank questions when course is selected
   useEffect(() => {
@@ -370,25 +376,19 @@ export default function NewAssessmentPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Course *
-                </label>
-                <select
-                  value={step2.courseId}
-                  onChange={(e) =>
-                    setStep2({ ...step2, courseId: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select a course...</option>
-                  {courses.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.code} — {c.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <DataSelect
+                value={step2.courseId}
+                onChange={(v) => setStep2({ ...step2, courseId: v })}
+                label="Course *"
+                fetchFn={fetchCourses}
+                dependencies={[]}
+                getValue={(c: any) => c.id}
+                getLabel={(c: any) => `${c.code} — ${c.title}`}
+                placeholder="Select a course..."
+                emptyMessage="No courses available."
+                emptyAction={{ label: 'Create course', href: '/admin/courses/new' }}
+                errorMessage="Couldn't load courses."
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

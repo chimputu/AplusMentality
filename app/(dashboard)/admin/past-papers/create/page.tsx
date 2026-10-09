@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Upload, Loader2, FileText, Image as ImageIcon, File } from 'lucide-react';
+import { InstitutionSelect } from '@/components/ui/selects/institution-select';
+import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
 
 interface University {
   id: string;
@@ -47,7 +49,6 @@ export default function CreatePastPaperPage() {
   // Academic scoping
   const [universities, setUniversities] = useState<University[]>([]);
   const [universityId, setUniversityId] = useState('');
-  const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeId, setProgrammeId] = useState('');
   const [year, setYear] = useState(1);
   const [period, setPeriod] = useState('');
@@ -63,7 +64,7 @@ export default function CreatePastPaperPage() {
     category: 'final_exam',
   });
 
-  // Load universities
+  // Load universities for academic system lookup
   useEffect(() => {
     async function loadUniversities() {
       try {
@@ -78,26 +79,6 @@ export default function CreatePastPaperPage() {
     }
     loadUniversities();
   }, []);
-
-  // Load programmes when university changes
-  useEffect(() => {
-    if (!universityId) {
-      setProgrammes([]);
-      return;
-    }
-    async function loadProgrammes() {
-      try {
-        const res = await fetch(`/api/admin/programmes?universityId=${universityId}`);
-        if (res.ok) {
-          const data = await res.json();
-          setProgrammes(data);
-        }
-      } catch {
-        console.error('Failed to load programmes');
-      }
-    }
-    loadProgrammes();
-  }, [universityId]);
 
   // Load courses when filters change
   useEffect(() => {
@@ -353,50 +334,23 @@ export default function CreatePastPaperPage() {
             </h3>
 
             {/* University */}
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                University *
-              </label>
-              <select
-                value={universityId}
-                onChange={(e) => {
-                  setUniversityId(e.target.value);
-                  setProgrammes([]);
-                  setProgrammeId('');
-                  setPeriod('');
-                }}
-                required
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              >
-                <option value="">Select university</option>
-                {universities.map((uni) => (
-                  <option key={uni.id} value={uni.id}>
-                    {uni.name} ({uni.code})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <InstitutionSelect
+              value={universityId}
+              onChange={(v) => {
+                setUniversityId(v);
+                setProgrammeId('');
+                setPeriod('');
+              }}
+              label="University *"
+            />
 
             {/* Programme */}
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Programme *
-              </label>
-              <select
-                value={programmeId}
-                onChange={(e) => setProgrammeId(e.target.value)}
-                required
-                disabled={!universityId}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
-              >
-                <option value="">Select programme</option>
-                {programmes.map((prog) => (
-                  <option key={prog.id} value={prog.id}>
-                    {prog.shortName || prog.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <ProgrammeSelect
+              institutionId={universityId || undefined}
+              value={programmeId}
+              onChange={setProgrammeId}
+              label="Programme *"
+            />
 
             {/* Year */}
             <div className="mb-3">

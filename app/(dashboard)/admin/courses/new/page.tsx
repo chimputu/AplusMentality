@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { addCourseToProgramme } from '@/lib/actions/programme-tree';
-import ProgrammePicker from '@/components/programme-picker';
+import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
+import { DataSelect } from '@/components/ui/data-select';
 
 export default function NewCoursePage({
   institutionId,
@@ -20,43 +21,6 @@ export default function NewCoursePage({
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [levels, setLevels] = useState<any[]>([]);
-  const [periods, setPeriods] = useState<any[]>([]);
-
-  // Fetch levels when programme changes
-  useEffect(() => {
-    if (!selectedProgrammeId) return;
-    async function fetchDetails() {
-      try {
-        const res = await fetch(`/api/programmes/${selectedProgrammeId}/tree`);
-        if (res.ok) {
-          const data = await res.json();
-          setLevels(data.levels || []);
-        }
-      } catch (err) {
-        console.error('Failed to fetch programme details:', err);
-      }
-    }
-    fetchDetails();
-  }, [selectedProgrammeId]);
-
-  // Fetch periods when level changes
-  useEffect(() => {
-    if (!selectedLevelId) return;
-    async function fetchPeriods() {
-      try {
-        const res = await fetch(`/api/programmes/${selectedProgrammeId}/tree`);
-        if (res.ok) {
-          const data = await res.json();
-          // Periods would come from the institution
-          setPeriods([]);
-        }
-      } catch (err) {
-        console.error('Failed to fetch periods:', err);
-      }
-    }
-    fetchPeriods();
-  }, [selectedLevelId, selectedProgrammeId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,22 +83,15 @@ export default function NewCoursePage({
 
         {step === 1 && (
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Select Programme
-              </label>
-              {institutionId ? (
-                <ProgrammePicker
-                  institutionId={institutionId}
-                  value={selectedProgrammeId}
-                  onChange={setSelectedProgrammeId}
-                />
-              ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  No institution selected. Please set up an institution first.
-                </p>
-              )}
-            </div>
+            <ProgrammeSelect
+              institutionId={institutionId}
+              value={selectedProgrammeId}
+              onChange={(v) => {
+                setSelectedProgrammeId(v);
+                setSelectedLevelId('');
+                setSelectedPeriodId('');
+              }}
+            />
             <button
               onClick={() => selectedProgrammeId && setStep(2)}
               disabled={!selectedProgrammeId}
@@ -147,40 +104,54 @@ export default function NewCoursePage({
 
         {step === 2 && (
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Select Year
-              </label>
-              <select
-                value={selectedLevelId}
-                onChange={(e) => setSelectedLevelId(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-              >
-                <option value="">Select a year...</option>
-                {levels.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Period (optional)
-              </label>
-              <select
-                value={selectedPeriodId}
-                onChange={(e) => setSelectedPeriodId(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-              >
-                <option value="">No period</option>
-                {periods.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <DataSelect
+              value={selectedLevelId}
+              onChange={(v) => {
+                setSelectedLevelId(v);
+                setSelectedPeriodId('');
+              }}
+              label="Year / Level"
+              fetchFn={async () => {
+                if (!selectedProgrammeId) return [];
+                const res = await fetch(`/api/programmes/${selectedProgrammeId}/tree`);
+                if (!res.ok) throw new Error('Failed to fetch');
+                const data = await res.json();
+                return data.levels || [];
+              }}
+              dependencies={[selectedProgrammeId]}
+              getValue={(l: any) => l.id}
+              getLabel={(l: any) => l.name}
+              placeholder="Select a year..."
+              emptyMessage="No years defined for this institution."
+              errorMessage="Couldn't load years."
+            />
+            <DataSelect
+              value={selectedPeriodId}
+              onChange={setSelectedPeriodId}
+              label="Period (optional)"
+              fetchFn={async () => {
+                if (!selectedProgrammeId) return [];
+                const res = await fetch(`/api/programmes/${selectedProgrammeId}/tree`);
+                if (!res.ok) throw new Error('Failed to fetch');
+                const data = await res.json();
+                // Extract unique periods from courses
+                const periodMap = new Map<string, { id: string; name: string }>();
+                for (const level of data.levels || []) {
+                  for (const course of level.courses || []) {
+                    if (course.period?.id && !periodMap.has(course.period.id)) {
+                      periodMap.set(course.period.id, { id: course.period.id, name: course.period.name });
+                    }
+                  }
+                }
+                return Array.from(periodMap.values());
+              }}
+              dependencies={[selectedProgrammeId, selectedLevelId]}
+              getValue={(p: any) => p.id}
+              getLabel={(p: any) => p.name}
+              placeholder="No period"
+              emptyMessage="No periods defined yet."
+              errorMessage="Couldn't load periods."
+            />
             <div className="flex gap-3">
               <button
                 onClick={() => setStep(1)}
