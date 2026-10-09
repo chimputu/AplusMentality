@@ -13,6 +13,7 @@ import {
   Check,
   Loader2,
 } from 'lucide-react';
+import type { Role } from '@/generated/prisma';
 
 interface Notification {
   id: string;
@@ -26,7 +27,7 @@ interface Notification {
 }
 
 interface NotificationBellProps {
-  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
+  role: Role;
 }
 
 const TYPE_CONFIG: Record<

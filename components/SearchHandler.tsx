@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { Megaphone, Video, Calendar, Clock, User, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import type { Role } from '@/generated/prisma';
 
 interface Announcement {
   id: string;
@@ -33,7 +34,7 @@ interface SearchHandlerProps {
   totalVideos: number;
   thisWeekAnnouncements: number;
   userName: string;
-  role: 'ADMIN' | 'SUPER_ADMIN' | 'STUDENT';
+  role: Role;
 }
 
 // Component that actually uses useSearchParams
