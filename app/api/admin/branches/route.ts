@@ -21,7 +21,6 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         name: true,
-        code: true,
         programmeId: true,
       },
       orderBy: { name: 'asc' },
