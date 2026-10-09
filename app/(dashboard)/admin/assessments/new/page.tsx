@@ -198,7 +198,7 @@ export default function NewAssessmentPage() {
       if (result.assessmentId) {
         router.push(`/admin/assessments/${result.assessmentId}`);
       } else {
-        setError(result.error || 'Failed to create assessment');
+        setError('Failed to create assessment');
       }
     } catch (err: any) {
       setError(err.message || 'Failed to create assessment');

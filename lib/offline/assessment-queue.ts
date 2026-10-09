@@ -1,6 +1,6 @@
 // Offline assessment answer queue using IndexedDB
 // Queues answers when offline, flushes when connection restored
-import { openDB, DBSchema, IDBPDatabase } from 'idb';
+import { openDB, IDBPDatabase } from 'idb';
 
 interface AssessmentAnswer {
   attemptId: string;
@@ -12,13 +12,13 @@ interface AssessmentAnswer {
   answeredAt: string;
 }
 
-interface AssessmentQueueDB extends DBSchema {
+type AssessmentQueueDB = {
   answers: {
     key: string;
     value: AssessmentAnswer & { id: string; synced: boolean };
     indexes: { synced: boolean };
   };
-}
+};
 
 const DB_NAME = 'assessment-queue';
 const DB_VERSION = 1;
@@ -55,7 +55,7 @@ export async function getUnsyncedAnswers(): Promise<(AssessmentAnswer & { id: st
   const db = await getDB();
   const tx = db.transaction('answers', 'readonly');
   const index = tx.store.index('synced');
-  return index.getAll(false);
+  return index.getAll(false as any);
 }
 
 // Mark answers as synced
@@ -76,7 +76,7 @@ export async function cleanupOldAnswers(): Promise<void> {
   const db = await getDB();
   const tx = db.transaction('answers', 'readwrite');
   const index = tx.store.index('synced');
-  const syncedAnswers = await index.getAll(true);
+  const syncedAnswers = await index.getAll(true as any);
   const cutoff = Date.now() - 24 * 60 * 60 * 1000;
 
   for (const answer of syncedAnswers) {

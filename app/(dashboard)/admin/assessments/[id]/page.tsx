@@ -211,7 +211,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
     );
   }
 
-  const totalPoints = assessment.questions.reduce((sum, q) => sum + q.points, 0);
+  const totalPoints = assessment.questions.reduce((sum: number, q: { points: number }) => sum + q.points, 0);
   const typeColors: Record<string, string> = {
     MULTIPLE_CHOICE: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
     TRUE_FALSE: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',

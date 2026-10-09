@@ -112,7 +112,7 @@ export async function getAttemptsNeedingGrading(assessmentId: string) {
           email: true,
         },
       },
-      answers: {
+      normalizedAnswers: {
         include: {
           question: {
             select: {
@@ -142,7 +142,7 @@ async function recomputeAttemptScore(attemptId: string) {
   });
 
   const score = answers.reduce((sum, a) => sum + (a.pointsEarned || 0), 0);
-  const totalPoints = answers.reduce((sum, a) => sum + a.pointsEarned, 0);
+  const totalPoints = answers.reduce((sum, a) => sum + (a.pointsEarned || 0), 0);
 
   await prisma.assessmentAttempt.update({
     where: { id: attemptId },
@@ -168,7 +168,7 @@ export async function getAttemptForGrading(attemptId: string) {
           email: true,
         },
       },
-      answers: {
+      normalizedAnswers: {
         include: {
           question: {
             select: {
