@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import { createConversation, getConversation } from '@/lib/actions/chat';
 import { toast } from 'sonner';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   id: string;
@@ -362,7 +364,25 @@ export function AIAssistant({
                           : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                     }`}
                   >
-                    {m.content}
+                    {m.role === 'assistant' ? (
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          h1: ({ children }) => <strong>{children}</strong>,
+                          h2: ({ children }) => <strong>{children}</strong>,
+                          h3: ({ children }) => <strong>{children}</strong>,
+                          h4: ({ children }) => <strong>{children}</strong>,
+                          ul: ({ children }) => <ul className="list-disc pl-5 space-y-1">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1">{children}</ol>,
+                          p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                          strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                        }}
+                      >
+                        {m.content}
+                      </ReactMarkdown>
+                    ) : (
+                      m.content
+                    )}
                   </div>
                 </div>
               ))}
