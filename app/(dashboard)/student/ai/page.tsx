@@ -1,5 +1,5 @@
 import { requireAuth } from '@/lib/auth';
-import { AIAssistant } from '@/components/ai/ai-assistant';
+import { AIAssistantPage } from '@/components/ai/ai-assistant-page';
 import { redirect } from 'next/navigation';
 
 export default async function StudentAIPage() {
@@ -10,12 +10,10 @@ export default async function StudentAIPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <AIAssistant
-        userFirstName={user.firstName ?? null}
-        userRole={user.role ?? null}
-        userInstitution={user.institution?.shortName ?? user.institution?.name ?? null}
-      />
-    </div>
+    <AIAssistantPage
+      userFirstName={user.firstName ?? null}
+      userRole={user.role ?? null}
+      userInstitution={user.institution?.shortName ?? user.institution?.name ?? null}
+    />
   );
 }

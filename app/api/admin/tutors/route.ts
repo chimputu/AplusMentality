@@ -30,10 +30,10 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json(tutors);
+    return NextResponse.json({ data: tutors, count: tutors.length });
   } catch (err) {
     console.error('Failed to list tutors:', err);
-    return NextResponse.json({ error: 'Failed to list tutors' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to list tutors', data: [], count: 0 }, { status: 500 });
   }
 }
 

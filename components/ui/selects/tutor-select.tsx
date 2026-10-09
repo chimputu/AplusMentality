@@ -33,7 +33,7 @@ export function TutorSelect({
         const res = await fetch(`/api/admin/tutors?institutionId=${institutionId}`);
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
-        return data.tutors || data || [];
+        return data.data || [];
       }}
       dependencies={[institutionId]}
       getValue={(t: any) => t.id}

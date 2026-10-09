@@ -15,11 +15,11 @@ export async function GET() {
       orderBy: { name: 'asc' },
     });
 
-    return NextResponse.json({ institutions });
+    return NextResponse.json({ data: institutions, count: institutions.length });
   } catch (error) {
     console.error('Error fetching institutions:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch institutions' },
+      { error: 'Failed to fetch institutions', data: [], count: 0 },
       { status: 500 }
     );
   }

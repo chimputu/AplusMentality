@@ -122,38 +122,42 @@ export async function getActiveBanners(
   const now = new Date();
 
   const where: any = {
-    isActive: true,
-    startsAt: { lte: now },
-    endsAt: {
-      or: [
-        { equals: null },
-        { gte: now },
-      ],
-    },
-    OR: [
-      { placement },
-      { placement: 'BOTH' },
+    AND: [
+      { isActive: true },
+      { startsAt: { lte: now } },
+      {
+        endsAt: {
+          or: [
+            { equals: null },
+            { gte: now },
+          ],
+        },
+      },
+      {
+        OR: [
+          { placement },
+          { placement: 'BOTH' },
+        ],
+      },
     ],
   };
 
   // Scope-based filtering
   if (institutionId) {
     // Logged-in user — show GLOBAL, ALL, and SPECIFIC matching their institution
-    where.AND = [
-      {
-        OR: [
-          { scope: 'GLOBAL' },
-          { scope: 'ALL' },
-          {
-            scope: 'SPECIFIC',
-            targets: { some: { institutionId } },
-          },
-        ],
-      },
-    ];
+    where.AND.push({
+      OR: [
+        { scope: 'GLOBAL' },
+        { scope: 'ALL' },
+        {
+          scope: 'SPECIFIC',
+          targets: { some: { institutionId } },
+        },
+      ],
+    });
   } else {
     // Logged-out user — show only GLOBAL banners
-    where.scope = 'GLOBAL';
+    where.AND.push({ scope: 'GLOBAL' });
   }
 
   const banners = await prisma.banner.findMany({

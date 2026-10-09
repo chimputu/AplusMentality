@@ -17,6 +17,7 @@ import {
   Compass,
 } from 'lucide-react';
 import Link from 'next/link';
+import BannerCarousel from '@/components/banner-carousel';
 
 interface Announcement {
   id: string;
@@ -42,6 +43,7 @@ interface StudentContentProps {
   videos: VideoItem[];
   displayName: string;
   searchQuery?: string;
+  institutionId?: string;
   universityName?: string | null;
   universityCode?: string | null;
   programmeName?: string | null;
@@ -109,13 +111,14 @@ export default function StudentContent({
   announcements,
   videos,
   displayName,
-  searchQuery = '',
+  searchQuery,
+  institutionId,
   universityName,
   universityCode,
   programmeName,
   year,
 }: StudentContentProps) {
-  const q = searchQuery.toLowerCase();
+  const q = (searchQuery || '').toLowerCase();
 
   const filteredVideos = videos.filter(
     (v) =>
@@ -181,6 +184,9 @@ export default function StudentContent({
 
   return (
     <div className="w-full space-y-6">
+      {/* Announcements Banner */}
+      <BannerCarousel placement="DASHBOARD" institutionId={institutionId} />
+
       {/* Hero Banner */}
       <div className="w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#1e293b] via-[#1a2235] to-[#0f172a] p-8 md:p-10 text-white shadow-lg">
         <div className="flex items-start justify-between gap-6">

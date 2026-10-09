@@ -33,7 +33,7 @@ export function QuestionSelect({
         const res = await fetch(`/api/questions?courseId=${courseId}`);
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
-        return data.questions || data || [];
+        return data.data || [];
       }}
       dependencies={[courseId]}
       getValue={(q: any) => q.id}

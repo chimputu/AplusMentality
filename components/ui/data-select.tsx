@@ -38,6 +38,10 @@ interface DataSelectProps<T> {
   className?: string;
   label?: string;
   error?: string; // External validation error
+
+  // Search filtering
+  search?: string;
+  filter?: (items: T[], query: string) => T[];
 }
 
 export function DataSelect<T>({
@@ -60,6 +64,8 @@ export function DataSelect<T>({
   className = '',
   label,
   error: externalError,
+  search,
+  filter,
 }: DataSelectProps<T>) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
@@ -93,9 +99,16 @@ export function DataSelect<T>({
 
   const isLoading = loading || externalLoading;
 
+  // Apply search filtering
+  const filteredItems = search && search.trim() !== ''
+    ? (filter
+        ? filter(items, search.trim())
+        : items.filter((item) => getLabel(item).toLowerCase().includes(search.trim().toLowerCase())))
+    : items;
+
   // Group items if getGroup is provided
   const groupedItems = getGroup
-    ? items.reduce<Record<string, T[]>>((acc, item) => {
+    ? filteredItems.reduce<Record<string, T[]>>((acc, item) => {
         const group = getGroup(item) || 'Other';
         if (!acc[group]) acc[group] = [];
         acc[group].push(item);
@@ -153,9 +166,9 @@ export function DataSelect<T>({
           )}
 
           {/* EMPTY STATE */}
-          {!error && !isLoading && items.length === 0 && (
+          {!error && !isLoading && filteredItems.length === 0 && (
             <option disabled>
-              {emptyMessage}
+              {search && search.trim() !== '' ? 'No matches found.' : emptyMessage}
             </option>
           )}
 
@@ -173,7 +186,7 @@ export function DataSelect<T>({
 
           {/* FLAT ITEMS */}
           {!groupedItems &&
-            items.map((item) => (
+            filteredItems.map((item) => (
               <option key={getValue(item)} value={getValue(item)}>
                 {getLabel(item)}
               </option>
@@ -207,9 +220,11 @@ export function DataSelect<T>({
       )}
 
       {/* Empty state with CTA */}
-      {!error && !isLoading && items.length === 0 && (
+      {!error && !isLoading && filteredItems.length === 0 && (
         <div className="mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
-          <p className="text-amber-700 dark:text-amber-400 mb-2">{emptyMessage}</p>
+          <p className="text-amber-700 dark:text-amber-400 mb-2">
+            {search && search.trim() !== '' ? 'No matches found.' : emptyMessage}
+          </p>
           {emptyAction && (
             <Link
               href={emptyAction.href}

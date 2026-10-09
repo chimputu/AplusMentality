@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, useTransition, useMemo } from 'react';
+import { useState, useTransition, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, Plus, X } from 'lucide-react';
 import { createTutor } from '@/lib/actions/tutor-crud';
 import { toast } from 'sonner';
+import { InstitutionSelect } from '@/components/ui/selects/institution-select';
+import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
+import { BranchSelect } from '@/components/ui/selects/branch-select';
 
 const TUTOR_MODES = [
   { value: 'online', label: 'Online' },
@@ -20,43 +23,7 @@ const CONTACT_VIA = [
   { value: 'whatsapp', label: 'WhatsApp' },
 ];
 
-interface University {
-  id: string;
-  name: string;
-  code: string;
-}
-
-interface Programme {
-  id: string;
-  name: string;
-  code: string | null;
-  universityId: string | null;
-}
-
-interface Branch {
-  id: string;
-  name: string;
-  programmeId: string;
-}
-
-interface Course {
-  id: string;
-  code: string;
-  title: string;
-  universityId: string | null;
-}
-
-export default function NewTutorForm({
-  universities,
-  programmes,
-  branches,
-  courses,
-}: {
-  universities: University[];
-  programmes: Programme[];
-  branches: Branch[];
-  courses: Course[];
-}) {
+export default function NewTutorForm() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -83,33 +50,24 @@ export default function NewTutorForm({
 
   // Specialties
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [coursesLoading, setCoursesLoading] = useState(false);
 
-  // Filter programmes by selected university
-  const filteredProgrammes = useMemo(
-    () =>
-      universityId
-        ? programmes.filter((p) => p.universityId === universityId)
-        : programmes,
-    [universityId, programmes]
-  );
-
-  // Filter branches by selected programme
-  const filteredBranches = useMemo(
-    () =>
-      programmeId
-        ? branches.filter((b) => b.programmeId === programmeId)
-        : [],
-    [programmeId, branches]
-  );
-
-  // Filter courses by selected university
-  const filteredCourses = useMemo(
-    () =>
-      universityId
-        ? courses.filter((c) => c.universityId === universityId)
-        : courses,
-    [universityId, courses]
-  );
+  // Fetch courses for the selected university
+  useEffect(() => {
+    if (!universityId) {
+      setCourses([]);
+      return;
+    }
+    setCoursesLoading(true);
+    fetch(`/api/courses?universityId=${universityId}&all=true`)
+      .then((res) => res.json())
+      .then((json) => {
+        setCourses(json.data || []);
+      })
+      .catch(() => setCourses([]))
+      .finally(() => setCoursesLoading(false));
+  }, [universityId]);
 
   const toggleCourse = (courseId: string) => {
     setSelectedCourses((prev) =>
@@ -245,69 +203,29 @@ export default function NewTutorForm({
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                University
-              </label>
-              <select
-                value={universityId}
-                onChange={(e) => {
-                  setUniversityId(e.target.value);
-                  setProgrammeId('');
-                  setBranchId('');
-                }}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select university</option>
-                {universities.map((uni) => (
-                  <option key={uni.id} value={uni.id}>
-                    {uni.name} ({uni.code})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <InstitutionSelect
+              value={universityId}
+              onChange={(v) => {
+                setUniversityId(v);
+                setProgrammeId('');
+                setBranchId('');
+              }}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Programme
-              </label>
-              <select
-                value={programmeId}
-                onChange={(e) => {
-                  setProgrammeId(e.target.value);
-                  setBranchId('');
-                }}
-                disabled={!universityId}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-              >
-                <option value="">Select programme</option>
-                {filteredProgrammes.map((prog) => (
-                  <option key={prog.id} value={prog.id}>
-                    {prog.name}
-                    {prog.code ? ` (${prog.code})` : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <ProgrammeSelect
+              institutionId={universityId || undefined}
+              value={programmeId}
+              onChange={(v) => {
+                setProgrammeId(v);
+                setBranchId('');
+              }}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Branch
-              </label>
-              <select
-                value={branchId}
-                onChange={(e) => setBranchId(e.target.value)}
-                disabled={!programmeId || filteredBranches.length === 0}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-              >
-                <option value="">Select branch</option>
-                {filteredBranches.map((br) => (
-                  <option key={br.id} value={br.id}>
-                    {br.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <BranchSelect
+              programmeId={programmeId || undefined}
+              value={branchId}
+              onChange={setBranchId}
+            />
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
@@ -393,7 +311,7 @@ export default function NewTutorForm({
           {selectedCourses.length > 0 && (
             <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               {selectedCourses.map((courseId) => {
-                const course = filteredCourses.find((c) => c.id === courseId);
+                const course = courses.find((c) => c.id === courseId);
                 return course ? (
                   <span
                     key={courseId}
@@ -414,10 +332,12 @@ export default function NewTutorForm({
           )}
 
           <div className="max-h-60 overflow-y-auto space-y-2 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
-            {filteredCourses.length === 0 ? (
+            {coursesLoading ? (
+              <p className="text-sm text-gray-400 text-center py-4">Loading courses...</p>
+            ) : courses.length === 0 ? (
               <p className="text-sm text-gray-400 text-center py-4">No courses available</p>
             ) : (
-              filteredCourses.map((course) => (
+              courses.map((course) => (
                 <label
                   key={course.id}
                   className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"

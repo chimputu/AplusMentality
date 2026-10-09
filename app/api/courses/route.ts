@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
         },
         orderBy: { code: 'asc' },
       });
-      return NextResponse.json(courses);
+      return NextResponse.json({ data: courses, count: courses.length });
     }
 
     const courses = await prisma.course.findMany({

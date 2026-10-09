@@ -28,7 +28,7 @@ export function InstitutionSelect({
         const res = await fetch('/api/institutions/picker');
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
-        return data.institutions || [];
+        return data.data || [];
       }}
       getValue={(i: any) => i.id}
       getLabel={(i: any) => `${i.name}${i.shortName ? ` (${i.shortName})` : ''}`}
