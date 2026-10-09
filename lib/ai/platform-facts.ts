@@ -72,6 +72,32 @@ export const PLATFORM_FACTS = {
     publicPricing: 'Contact support@aplusmentality.com',
   },
 
+  // ─── CONTACT INFO ───
+  contact: {
+    email: 'kafiswegchimputu@gmail.com',
+    phone: '+260772231300',
+    phoneDisplay: '+260 77 223 1300',
+    whatsapp: '+260772231300',
+    whatsappDisplay: '+260 77 223 1300',
+    whatsappLink: 'https://wa.me/260772231300',
+    website: 'https://aplusmentality.vercel.app',
+
+    // For logged-in users — additional options
+    loggedInOptions: [
+      'Reply in this chat',
+      'Email kafiswegchimputu@gmail.com',
+      'Call or WhatsApp +260 77 223 1300',
+      'Use the Help button in the app',
+    ],
+
+    // For public users — limited options
+    publicOptions: [
+      'Sign up to unlock more support options',
+      'Email kafiswegchimputu@gmail.com',
+      'WhatsApp +260 77 223 1300',
+    ],
+  },
+
   // ─── ABSOLUTE FORBIDDEN CLAIMS ───
   forbiddenClaims: [
     'open-source',
