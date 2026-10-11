@@ -3,6 +3,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
+import { withRetry } from '@/lib/retry';
 import {
   fullApplicationSchema,
   approveApplicationSchema,
@@ -49,189 +50,202 @@ async function requireAdmin() {
 // ============================================
 
 export async function submitTutorApplication(rawInput: unknown) {
-  const user = await requireAuth();
+  try {
+    const user = await requireAuth();
 
-  const input = fullApplicationSchema.parse(rawInput);
+    let input: any;
+    try {
+      input = fullApplicationSchema.parse(rawInput);
+    } catch (validationErr: any) {
+      const firstError = validationErr.errors?.[0]?.message ?? validationErr.message ?? 'Invalid application data';
+      throw new Error(firstError);
+    }
 
-  // Check if user already has an active application
-  const existing = await prisma.tutorApplication.findUnique({
-    where: { userId: user.id },
-    include: {
-      references: true,
-      offerings: true,
-    },
-  });
+    // Check if user already has an active application
+    const existing = await withRetry(
+      async () => prisma.tutorApplication.findUnique({
+        where: { userId: user.id },
+        include: { references: true, offerings: true },
+      }),
+      { attempts: 3, delayMs: 500 }
+    );
 
-  if (existing && existing.status !== 'REJECTED' && existing.status !== 'WITHDRAWN') {
-    throw new Error('You already have a pending or approved application');
+    if (existing && existing.status !== 'REJECTED' && existing.status !== 'WITHDRAWN') {
+      throw new Error('You already have a pending or approved application');
+    }
+
+    let application;
+
+    if (existing) {
+      await withRetry(
+        async () => prisma.tutorReference.deleteMany({ where: { tutorApplicationId: existing.id } }),
+        { attempts: 3, delayMs: 500 }
+      );
+      await withRetry(
+        async () => prisma.tutorOffering.deleteMany({ where: { tutorApplicationId: existing.id } }),
+        { attempts: 3, delayMs: 500 }
+      );
+
+      application = await withRetry(async () => {
+        return prisma.tutorApplication.update({
+          where: { id: existing.id },
+          data: {
+            fullName: input.fullName,
+            email: input.email,
+            phone: input.phone,
+            qualifications: (input.qualifications ?? null) as any,
+            experienceYears: input.experienceYears,
+            cvUrl: input.cvUrl,
+            teachingPhilosophy: input.teachingPhilosophy,
+            institutionId: input.institutionId,
+            status: 'PENDING',
+            adminNotes: null,
+            rejectionReason: null,
+            reviewedAt: null,
+            decidedAt: null,
+            profilePhotoUrl: input.profilePhotoUrl,
+            profilePhotoPublicId: input.profilePhotoPublicId,
+            nrcFrontUrl: input.nrcFrontUrl,
+            nrcFrontPublicId: input.nrcFrontPublicId,
+            nrcBackUrl: input.nrcBackUrl,
+            nrcBackPublicId: input.nrcBackPublicId,
+            nrcNumber: input.nrcNumber || null,
+            grade12School: input.grade12School,
+            grade12Year: input.grade12Year,
+            grade12ResultsUrl: input.grade12ResultsUrl,
+            grade12Summary: input.grade12Summary,
+            currentInstitution: input.currentInstitution,
+            currentProgramme: input.currentProgramme,
+            currentYear: input.currentYear,
+            academicRecordsUrl: input.academicRecordsUrl,
+            academicSummary: input.academicSummary,
+            teachingModes: input.teachingModes,
+            physicalLocation: input.physicalLocation,
+            teachingSchedule: (input.teachingSchedule ?? null) as any,
+            hourlyRateZMW: input.hourlyRateZMW,
+            minimumBookingHours: input.minimumBookingHours,
+            isReadyToTeach: input.isReadyToTeach,
+            references: {
+              create: input.references.map((ref: any) => ({
+                fullName: ref.fullName,
+                relationship: ref.relationship,
+                email: ref.email,
+                phone: ref.phone,
+                institution: ref.institution,
+              })),
+            },
+            offerings: {
+              create: input.offerings.map((off: any) => ({
+                courseId: off.courseId || null,
+                title: off.title,
+                description: off.description,
+                level: off.level,
+                priceZMW: off.priceZMW,
+                durationMinutes: off.durationMinutes,
+                maxStudentsPerSession: off.maxStudentsPerSession,
+                modes: off.modes,
+                schedule: (off.schedule ?? null) as any,
+                prerequisites: off.prerequisites,
+                learningOutcomes: off.learningOutcomes,
+              })),
+            },
+          },
+          include: { references: true, offerings: true },
+        });
+      }, { attempts: 3, delayMs: 500 });
+    } else {
+      application = await withRetry(async () => {
+        return prisma.tutorApplication.create({
+          data: {
+            userId: user.id,
+            fullName: input.fullName,
+            email: input.email,
+            phone: input.phone,
+            qualifications: (input.qualifications ?? null) as any,
+            experienceYears: input.experienceYears,
+            cvUrl: input.cvUrl,
+            teachingPhilosophy: input.teachingPhilosophy,
+            institutionId: input.institutionId,
+            status: 'PENDING',
+            profilePhotoUrl: input.profilePhotoUrl,
+            profilePhotoPublicId: input.profilePhotoPublicId,
+            nrcFrontUrl: input.nrcFrontUrl,
+            nrcFrontPublicId: input.nrcFrontPublicId,
+            nrcBackUrl: input.nrcBackUrl,
+            nrcBackPublicId: input.nrcBackPublicId,
+            nrcNumber: input.nrcNumber || null,
+            grade12School: input.grade12School,
+            grade12Year: input.grade12Year,
+            grade12ResultsUrl: input.grade12ResultsUrl,
+            grade12Summary: input.grade12Summary,
+            currentInstitution: input.currentInstitution,
+            currentProgramme: input.currentProgramme,
+            currentYear: input.currentYear,
+            academicRecordsUrl: input.academicRecordsUrl,
+            academicSummary: input.academicSummary,
+            teachingModes: input.teachingModes,
+            physicalLocation: input.physicalLocation,
+            teachingSchedule: (input.teachingSchedule ?? null) as any,
+            hourlyRateZMW: input.hourlyRateZMW,
+            minimumBookingHours: input.minimumBookingHours,
+            isReadyToTeach: input.isReadyToTeach,
+            references: {
+              create: input.references.map((ref: any) => ({
+                fullName: ref.fullName,
+                relationship: ref.relationship,
+                email: ref.email,
+                phone: ref.phone,
+                institution: ref.institution,
+              })),
+            },
+            offerings: {
+              create: input.offerings.map((off: any) => ({
+                courseId: off.courseId || null,
+                title: off.title,
+                description: off.description,
+                level: off.level,
+                priceZMW: off.priceZMW,
+                durationMinutes: off.durationMinutes,
+                maxStudentsPerSession: off.maxStudentsPerSession,
+                modes: off.modes,
+                schedule: (off.schedule ?? null) as any,
+                prerequisites: off.prerequisites,
+                learningOutcomes: off.learningOutcomes,
+              })),
+            },
+          },
+          include: { references: true, offerings: true },
+        });
+      }, { attempts: 3, delayMs: 500 });
+    }
+
+    // Send email notification to admins
+    const admins = await withRetry(
+      async () => prisma.user.findMany({
+        where: { role: 'ADMIN' },
+        select: { email: true },
+      }),
+      { attempts: 3, delayMs: 500 }
+    );
+    for (const admin of admins) {
+      const email = createSubmittedEmail(admin.email, input.fullName, input.email);
+      await sendTutorApplicationEmail(email).catch(console.error);
+    }
+
+    revalidatePath('/apply-as-tutor');
+    return { success: true, applicationId: application.id };
+  } catch (err: any) {
+    // Handle database errors with user-friendly messages
+    console.error('[submitTutorApplication] Error:', err);
+    if (err.code === 'P2021' || err.code === 'P2025') {
+      throw new Error('Application system is currently being set up. Please try again later.');
+    }
+    if (err.code === 'P1001' || err.code === 'P1002' || err.code === 'P1008') {
+      throw new Error('Database connection issue. Please try again in a moment.');
+    }
+    // Re-throw other errors (validation, business logic) as-is
+    throw err;
   }
-
-  let application;
-
-  if (existing) {
-    // Re-apply after rejection/withdrawal — delete old references and offerings
-    await prisma.tutorReference.deleteMany({ where: { tutorApplicationId: existing.id } });
-    await prisma.tutorOffering.deleteMany({ where: { tutorApplicationId: existing.id } });
-
-    application = await prisma.tutorApplication.update({
-      where: { id: existing.id },
-      data: {
-        fullName: input.fullName,
-        email: input.email,
-        phone: input.phone,
-        qualifications: (input.qualifications ?? null) as any,
-        experienceYears: input.experienceYears,
-        cvUrl: input.cvUrl,
-        teachingPhilosophy: input.teachingPhilosophy,
-        institutionId: input.institutionId,
-        status: 'PENDING',
-        adminNotes: null,
-        rejectionReason: null,
-        reviewedAt: null,
-        decidedAt: null,
-        // Identity
-        profilePhotoUrl: input.profilePhotoUrl,
-        profilePhotoPublicId: input.profilePhotoPublicId,
-        nrcFrontUrl: input.nrcFrontUrl,
-        nrcFrontPublicId: input.nrcFrontPublicId,
-        nrcBackUrl: input.nrcBackUrl,
-        nrcBackPublicId: input.nrcBackPublicId,
-        nrcNumber: input.nrcNumber || null,
-        // Grade 12
-        grade12School: input.grade12School,
-        grade12Year: input.grade12Year,
-        grade12ResultsUrl: input.grade12ResultsUrl,
-        grade12Summary: input.grade12Summary,
-        // Current Academic
-        currentInstitution: input.currentInstitution,
-        currentProgramme: input.currentProgramme,
-        currentYear: input.currentYear,
-        academicRecordsUrl: input.academicRecordsUrl,
-        academicSummary: input.academicSummary,
-        // Teaching
-        teachingModes: input.teachingModes,
-        physicalLocation: input.physicalLocation,
-        teachingSchedule: (input.teachingSchedule ?? null) as any,
-        hourlyRateZMW: input.hourlyRateZMW,
-        minimumBookingHours: input.minimumBookingHours,
-        isReadyToTeach: input.isReadyToTeach,
-        // References
-        references: {
-          create: input.references.map((ref) => ({
-            fullName: ref.fullName,
-            relationship: ref.relationship,
-            email: ref.email,
-            phone: ref.phone,
-            institution: ref.institution,
-          })),
-        },
-        // Offerings
-        offerings: {
-          create: input.offerings.map((off) => ({
-            courseId: off.courseId || null,
-            title: off.title,
-            description: off.description,
-            level: off.level,
-            priceZMW: off.priceZMW,
-            durationMinutes: off.durationMinutes,
-            maxStudentsPerSession: off.maxStudentsPerSession,
-            modes: off.modes,
-            schedule: (off.schedule ?? null) as any,
-            prerequisites: off.prerequisites,
-            learningOutcomes: off.learningOutcomes,
-          })),
-        },
-      },
-      include: {
-        references: true,
-        offerings: true,
-      },
-    });
-  } else {
-    application = await prisma.tutorApplication.create({
-      data: {
-        userId: user.id,
-        fullName: input.fullName,
-        email: input.email,
-        phone: input.phone,
-        qualifications: (input.qualifications ?? null) as any,
-        experienceYears: input.experienceYears,
-        cvUrl: input.cvUrl,
-        teachingPhilosophy: input.teachingPhilosophy,
-        institutionId: input.institutionId,
-        status: 'PENDING',
-        // Identity
-        profilePhotoUrl: input.profilePhotoUrl,
-        profilePhotoPublicId: input.profilePhotoPublicId,
-        nrcFrontUrl: input.nrcFrontUrl,
-        nrcFrontPublicId: input.nrcFrontPublicId,
-        nrcBackUrl: input.nrcBackUrl,
-        nrcBackPublicId: input.nrcBackPublicId,
-        nrcNumber: input.nrcNumber || null,
-        // Grade 12
-        grade12School: input.grade12School,
-        grade12Year: input.grade12Year,
-        grade12ResultsUrl: input.grade12ResultsUrl,
-        grade12Summary: input.grade12Summary,
-        // Current Academic
-        currentInstitution: input.currentInstitution,
-        currentProgramme: input.currentProgramme,
-        currentYear: input.currentYear,
-        academicRecordsUrl: input.academicRecordsUrl,
-        academicSummary: input.academicSummary,
-        // Teaching
-        teachingModes: input.teachingModes,
-        physicalLocation: input.physicalLocation,
-        teachingSchedule: (input.teachingSchedule ?? null) as any,
-        hourlyRateZMW: input.hourlyRateZMW,
-        minimumBookingHours: input.minimumBookingHours,
-        isReadyToTeach: input.isReadyToTeach,
-        // References
-        references: {
-          create: input.references.map((ref) => ({
-            fullName: ref.fullName,
-            relationship: ref.relationship,
-            email: ref.email,
-            phone: ref.phone,
-            institution: ref.institution,
-          })),
-        },
-        // Offerings
-        offerings: {
-          create: input.offerings.map((off) => ({
-            courseId: off.courseId || null,
-            title: off.title,
-            description: off.description,
-            level: off.level,
-            priceZMW: off.priceZMW,
-            durationMinutes: off.durationMinutes,
-            maxStudentsPerSession: off.maxStudentsPerSession,
-            modes: off.modes,
-            schedule: (off.schedule ?? null) as any,
-            prerequisites: off.prerequisites,
-            learningOutcomes: off.learningOutcomes,
-          })),
-        },
-      },
-      include: {
-        references: true,
-        offerings: true,
-      },
-    });
-  }
-
-  // Send email notification to admins
-  const admins = await prisma.user.findMany({
-    where: { role: 'ADMIN' },
-    select: { email: true },
-  });
-  for (const admin of admins) {
-    const email = createSubmittedEmail(admin.email, input.fullName, input.email);
-    await sendTutorApplicationEmail(email).catch(console.error);
-  }
-
-  revalidatePath('/apply-as-tutor');
-  return { success: true, applicationId: application.id };
 }
 
 // ============================================

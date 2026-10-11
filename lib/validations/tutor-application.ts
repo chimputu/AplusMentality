@@ -71,17 +71,17 @@ export const nrcSchema = z.object({
 export const grade12Schema = z.object({
   grade12School: z.string().min(3).max(200),
   grade12Year: z.number().int().min(1990).max(new Date().getFullYear()),
-  grade12ResultsUrl: z.string().url(),
+  grade12ResultsUrl: z.string().url().optional().or(z.string().length(0)),
   grade12Summary: z.string().min(3).max(500),
 });
 
 // ─── Current Academic Records ───
 export const currentAcademicSchema = z.object({
-  currentInstitution: z.string().min(3).max(200),
-  currentProgramme: z.string().min(3).max(200),
+  currentInstitution: z.string().min(3).max(200).optional().or(z.string().length(0)),
+  currentProgramme: z.string().min(3).max(200).optional().or(z.string().length(0)),
   currentYear: z.number().int().min(1).max(10).optional(),
-  academicRecordsUrl: z.string().url().optional(),
-  academicSummary: z.string().min(3).max(500).optional(),
+  academicRecordsUrl: z.string().url().optional().or(z.string().length(0)),
+  academicSummary: z.string().min(3).max(500).optional().or(z.string().length(0)),
 });
 
 // ─── References ───

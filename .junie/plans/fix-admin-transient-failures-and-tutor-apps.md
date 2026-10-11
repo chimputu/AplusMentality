@@ -8,6 +8,7 @@ sessionId: session-261011-080428-v5vw
 This plan addresses two issues:
 1. **Intermittent admin page failures** — `/admin` sometimes shows "Admin page error" but works on retry after ~2 seconds (transient failure pattern).
 2. **Tutor application completeness** — The approve action doesn't copy the profile photo to `User.imageUrl`, and the application window management page is missing.
+3. **Tutor application submit failure** — Clicking submit on "Apply as a Tutor" shows "Failed to fetch" error.
 
 ### Root Cause Analysis
 The admin page at `app/(dashboard)/admin/page.tsx` makes 5 database queries (1 in layout via `requireAuth`, 4 in the page). The Prisma client in `lib/prisma.ts`:
@@ -16,6 +17,11 @@ The admin page at `app/(dashboard)/admin/page.tsx` makes 5 database queries (1 i
 - Has **no retry logic** for transient errors
 - The error boundary has **no auto-retry** mechanism
 - There's **no loading skeleton** to provide feedback during slow loads
+
+The tutor application submit failure is caused by:
+- **Validation schema mismatch** — `grade12ResultsUrl`, `currentInstitution`, `currentProgramme` were required in the schema but optional in the form
+- **No retry logic** in `submitTutorApplication` server action
+- **No error handling** — database errors (missing tables, connection issues) show generic "Failed to fetch"
 
 ### Key Deliverables
 - Fix Prisma singleton pattern for production
@@ -26,6 +32,9 @@ The admin page at `app/(dashboard)/admin/page.tsx` makes 5 database queries (1 i
 - Add health check API endpoint
 - Copy profile photo to `User.imageUrl` on tutor approval
 - Create application window management page
+- Fix tutor application submit validation schema mismatch
+- Add retry logic to submitTutorApplication
+- Add proper error messages for database failures
 
 # Technical Design
 
