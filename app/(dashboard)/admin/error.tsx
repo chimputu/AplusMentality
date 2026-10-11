@@ -1,8 +1,8 @@
 'use client';
 
 // Admin error boundary — catches errors within the /admin/* routes
-// Provides recovery options specific to admin context
-import { useEffect } from 'react';
+// Provides recovery options specific to admin context with auto-retry
+import { useEffect, useRef } from 'react';
 import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
@@ -14,34 +14,55 @@ export default function Error({
   error: Error & { digest?: string };
   unstable_retry: () => void;
 }) {
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);
+
+  // Auto-retry after 2 seconds — matches the observed pattern where retrying
+  // after ~2s succeeds (transient DB connection issue)
+  useEffect(() => {
+    retryTimerRef.current = setTimeout(() => {
+      unstable_retry();
+    }, 2000);
+    return () => {
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+    };
+  }, [unstable_retry]);
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 p-6 text-center">
       <AlertTriangle className="h-16 w-16 text-amber-500" />
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-gray-900">Admin page error</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Loading admin dashboard...</h1>
         <p className="text-gray-600 max-w-md">
-          Something went wrong on this admin page. The error has been reported.
+          We&apos;re reconnecting. This usually takes a couple of seconds.
         </p>
       </div>
       <div className="flex gap-3">
         <button
           type="button"
-          onClick={() => unstable_retry()}
+          onClick={() => {
+            if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+            unstable_retry();
+          }}
           className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition font-medium"
         >
-          <RefreshCw className="h-4 w-4" /> Try again
+          <RefreshCw className="h-4 w-4" /> Retry now
         </button>
         <Link
-          href="/admin"
+          href="/"
           className="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-6 py-2.5 rounded-lg hover:bg-gray-100 transition font-medium"
         >
-          <Home className="h-4 w-4" /> Back to admin
+          <Home className="h-4 w-4" /> Go home
         </Link>
       </div>
+      {error.digest && (
+        <p className="text-xs text-gray-400 font-mono mt-4">
+          Reference: {error.digest}
+        </p>
+      )}
     </div>
   );
 }
