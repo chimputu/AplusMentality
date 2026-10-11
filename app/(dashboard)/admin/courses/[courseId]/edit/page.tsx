@@ -32,6 +32,7 @@ export default async function AdminCourseEditPage({ params }: PageProps) {
   if (!course) {
     notFound();
   }
+  const c = course!;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -40,24 +41,24 @@ export default async function AdminCourseEditPage({ params }: PageProps) {
         className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-4 transition text-sm"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to {course.title}
+        Back to {c.title}
       </Link>
 
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Course</h1>
         <p className="text-gray-600 dark:text-gray-400 text-sm">
-          Editing <span className="font-semibold">{course.title}</span> ({course.code})
+          Editing <span className="font-semibold">{c.title}</span> ({c.code})
         </p>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
         <CreateCourseForm
           initialData={{
-            code: course.code,
-            title: course.title,
-            description: course.description || '',
-            category: course.category || '',
-            level: course.level || 'Beginner',
+            code: c.code,
+            title: c.title,
+            description: c.description || '',
+            category: c.category || '',
+            level: c.level || 'Beginner',
           }}
           isEditing={true}
           courseId={courseId}

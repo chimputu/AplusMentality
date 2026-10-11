@@ -10,6 +10,7 @@ interface AdminLayoutProps {
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   // ✅ Protect ALL admin routes
   const { role, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+  const u = user!;
 
   return (
     <DashboardLayout role={role}>
@@ -17,9 +18,9 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         {children}
       </div>
       <AIAssistant
-        userFirstName={user.firstName ?? null}
-        userRole={user.role ?? null}
-        userInstitution={user.institution?.shortName ?? user.institution?.name ?? null}
+        userFirstName={u.firstName ?? null}
+        userRole={u.role ?? null}
+        userInstitution={u.institution?.shortName ?? u.institution?.name ?? null}
       />
     </DashboardLayout>
   );

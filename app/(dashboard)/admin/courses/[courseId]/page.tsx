@@ -63,23 +63,24 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
   if (!courseData) {
     notFound();
   }
+  const cd = courseData!;
 
   // ✅ Convert dates to strings
   const course = {
-    ...courseData,
-    createdAt: courseData.createdAt.toISOString(),
-    updatedAt: courseData.updatedAt.toISOString(),
-    modules: courseData.modules.map((module) => ({
-      ...module,
-      createdAt: module.createdAt.toISOString(),
-      updatedAt: module.updatedAt.toISOString(),
-      lessons: module.lessons.map((lesson) => ({
+    ...cd,
+    createdAt: cd.createdAt.toISOString(),
+    updatedAt: cd.updatedAt.toISOString(),
+    modules: cd.modules.map((mod) => ({
+      ...mod,
+      createdAt: mod.createdAt.toISOString(),
+      updatedAt: mod.updatedAt.toISOString(),
+      lessons: mod.lessons.map((lesson) => ({
         ...lesson,
         createdAt: lesson.createdAt.toISOString(),
         updatedAt: lesson.updatedAt.toISOString(),
       })),
     })),
-    enrollments: courseData.enrollments.map((enrollment) => ({
+    enrollments: cd.enrollments.map((enrollment) => ({
       ...enrollment,
       enrolledAt: enrollment.enrolledAt.toISOString(),
     })),
