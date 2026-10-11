@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -15,6 +15,7 @@ import {
   GraduationCap, Target, Users as UsersIcon, CheckCircle,
   FileText, Book, Video, ClipboardList, MessageCircle, Briefcase, Crown,
   Compass, TrendingUp, PlayCircle, Megaphone, UserPlus,
+  ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import BannerCarousel from '@/components/banner-carousel';
 import GlowingText from '@/components/glowing-text';
@@ -43,6 +44,87 @@ const mobileSafe: any = {
   hidden: { opacity: 1, y: 0 },
   visible: { opacity: 1, y: 0 },
 };
+
+const partnerInstitutions = [
+  { name: 'University of Zambia', shortName: 'UNZA' },
+  { name: 'Copperbelt University', shortName: 'CBU' },
+  { name: 'Mulungushi University', shortName: 'MU' },
+  { name: 'Kwame Nkrumah University', shortName: 'NKU' },
+  { name: 'Chalimbana University', shortName: 'CU' },
+  { name: 'Cavendish University Zambia', shortName: 'CUZ' },
+];
+
+function UniversitiesCarousel() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = useCallback((direction: 'left' | 'right') => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const scrollAmount = direction === 'left' ? -320 : 320;
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }, []);
+
+  return (
+    <div className="relative">
+      {/* Left arrow */}
+      <button
+        onClick={() => scroll('left')}
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 hidden md:flex items-center justify-center"
+        aria-label="Scroll left"
+      >
+        <ChevronLeft className="w-5 h-5 text-gray-700" />
+      </button>
+
+      {/* Swipe hint for mobile */}
+      <p className="sm:hidden text-xs text-gray-400 text-center mb-3">← Swipe to see more →</p>
+
+      {/* Scrollable container */}
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory px-2 pb-4"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
+        {/* Hide scrollbar for webkit */}
+        <style>{`
+          .scrollbar-hide::-webkit-scrollbar { display: none; }
+        `}</style>
+
+        {partnerInstitutions.map((inst, idx) => (
+          <div
+            key={idx}
+            className="flex-shrink-0 snap-center w-[200px] sm:w-[240px]"
+          >
+            <div className="bg-white rounded-xl border border-gray-200 p-4 text-center hover:shadow-lg hover:border-blue-300 transition-all duration-300 h-full flex flex-col items-center justify-center">
+              <InstitutionLogo
+                name={inst.name}
+                shortName={inst.shortName}
+                size="md"
+              />
+              <p className="mt-3 text-sm font-semibold text-gray-800 leading-tight">
+                {inst.name}
+              </p>
+              <p className="text-[10px] text-gray-400 mt-1">
+                Zambian Institution
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Right arrow */}
+      <button
+        onClick={() => scroll('right')}
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 hidden md:flex items-center justify-center"
+        aria-label="Scroll right"
+      >
+        <ChevronRight className="w-5 h-5 text-gray-700" />
+      </button>
+    </div>
+  );
+}
 
 export default function HomePageClient() {
   const router = useRouter();
@@ -249,8 +331,21 @@ export default function HomePageClient() {
       </nav>
 
       {/* ===== HERO – GLOWING TEXT ===== */}
-      <section className="relative pt-20 pb-10 sm:pt-24 sm:pb-14 overflow-hidden" style={{ background: 'linear-gradient(135deg, #0a0a0a 0%, #1e3a8a 100%)' }}>
-        <div className="relative w-full px-3 sm:px-4 z-10">
+      <section className="relative min-h-[85vh] md:min-h-screen flex items-center overflow-hidden">
+        {/* Hero background — clean navy gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#0f1729] to-[#1e3a8a]" />
+        {/* Subtle grid pattern overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px',
+          }}
+        />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10">
             {/* Left – Text Content */}
             <div className="flex-[2] text-center lg:text-left w-full">
@@ -1096,7 +1191,7 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== PARTNER INSTITUTIONS ===== */}
+      {/* ===== PARTNER INSTITUTIONS — HORIZONTAL CAROUSEL ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -1114,34 +1209,7 @@ export default function HomePageClient() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 max-w-6xl mx-auto">
-            {[
-              { name: 'University of Zambia', shortName: 'UNZA' },
-              { name: 'Copperbelt University', shortName: 'CBU' },
-              { name: 'Mulungushi University', shortName: 'MU' },
-              { name: 'Kwame Nkrumah University', shortName: 'NKU' },
-              { name: 'Chalimbana University', shortName: 'CU' },
-              { name: 'Cavendish University Zambia', shortName: 'CUZ' },
-            ].map((inst, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeInUp}
-                className="flex flex-col items-center text-center p-3 sm:p-4 bg-white rounded-xl border border-gray-200 hover:shadow-lg hover:border-blue-300 hover:scale-[1.02] transition-all duration-300"
-              >
-                <InstitutionLogo
-                  name={inst.name}
-                  shortName={inst.shortName}
-                  size="md"
-                />
-                <p className="mt-3 text-xs sm:text-sm font-semibold text-gray-800 leading-tight">
-                  {inst.name}
-                </p>
-                <p className="text-[10px] text-gray-400 mt-0.5">
-                  Zambian Institution
-                </p>
-              </motion.div>
-            ))}
-          </div>
+          <UniversitiesCarousel />
 
           <div className="text-center mt-8">
             <Link

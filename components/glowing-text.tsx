@@ -14,9 +14,9 @@ interface GlowingTextProps {
 export default function GlowingText({
   text,
   className = '',
-  fillColor = '#3b82f6',
-  glowColor = 'rgba(59, 130, 246, 0.9)',
-  strokeColor = 'rgba(255, 255, 255, 0.35)',
+  fillColor = '#60a5fa',
+  glowColor = 'rgba(96, 165, 250, 0.9)',
+  strokeColor = 'rgba(255, 255, 255, 0.4)',
   cycleDuration = 6,
 }: GlowingTextProps) {
   const shouldReduceMotion = useReducedMotion();
@@ -42,12 +42,12 @@ export default function GlowingText({
       className={`relative inline-block ${className}`}
       aria-label={text}
     >
-      {/* Ghost outline layer */}
+      {/* Ghost outline layer — visible white outline */}
       <span
         aria-hidden="true"
         className="absolute inset-0 select-none pointer-events-none"
         style={{
-          WebkitTextStroke: `1.5px ${strokeColor}`,
+          WebkitTextStroke: `2px ${strokeColor}`,
           color: 'transparent',
         }}
       >
@@ -76,7 +76,7 @@ export default function GlowingText({
         }}
         style={{
           color: fillColor,
-          textShadow: `0 0 20px ${glowColor}, 0 0 40px ${glowColor}`,
+          textShadow: `0 0 20px rgba(96, 165, 250, 0.9), 0 0 40px rgba(96, 165, 250, 0.5)`,
           display: 'inline-block',
         }}
       >
