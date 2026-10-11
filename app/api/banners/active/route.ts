@@ -16,44 +16,34 @@ export async function GET(request: NextRequest) {
 
     const now = new Date();
 
+    // Build scope filter based on whether user is logged in
+    const scopeFilter = institutionId
+      ? {
+          OR: [
+            { scope: 'GLOBAL' },
+            { scope: 'ALL' },
+            {
+              scope: 'SPECIFIC',
+              targets: { some: { institutionId } },
+            },
+          ],
+        }
+      : { scope: 'GLOBAL' };
+
     const where: any = {
+      isActive: true,
+      startsAt: { lte: now },
+      placement: { in: [placement, 'BOTH'] },
       AND: [
-        { isActive: true },
-        { startsAt: { lte: now } },
-        {
-          endsAt: {
-            or: [
-              { equals: null },
-              { gte: now },
-            ],
-          },
-        },
         {
           OR: [
-            { placement },
-            { placement: 'BOTH' },
+            { endsAt: null },
+            { endsAt: { gte: now } },
           ],
         },
+        scopeFilter,
       ],
     };
-
-    // Scope-based filtering
-    if (institutionId) {
-      // Logged-in user — show GLOBAL, ALL, and SPECIFIC matching their institution
-      where.AND.push({
-        OR: [
-          { scope: 'GLOBAL' },
-          { scope: 'ALL' },
-          {
-            scope: 'SPECIFIC',
-            targets: { some: { institutionId } },
-          },
-        ],
-      });
-    } else {
-      // Logged-out user — show only GLOBAL banners
-      where.AND.push({ scope: 'GLOBAL' });
-    }
 
     const banners = await prisma.banner.findMany({
       where,

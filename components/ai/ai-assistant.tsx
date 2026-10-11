@@ -121,6 +121,22 @@ export function AIAssistant({
       if (convoId) {
         try {
           const convo = await getConversation(convoId);
+          // Conversation was deleted or doesn't exist — clear stale ID and start fresh
+          if (!convo) {
+            localStorage.removeItem(LAST_CONVO_KEY);
+            setConversationId(null);
+            const newConvo = await createConversation({ mode: 'LOGGED_IN' });
+            setConversationId(newConvo.id);
+            localStorage.setItem(LAST_CONVO_KEY, newConvo.id);
+            setMessages([
+              {
+                id: 'greeting',
+                role: 'assistant',
+                content: `Hi ${firstName ?? 'there'}! 👋 I'm your A+ Mentality assistant. What can I help you with today?`,
+              },
+            ]);
+            return;
+          }
           if (convo.messages.length === 0) {
             setMessages([
               {
@@ -140,6 +156,8 @@ export function AIAssistant({
             );
           }
         } catch {
+          // If loading fails, clear stale ID and show empty state
+          localStorage.removeItem(LAST_CONVO_KEY);
           setMessages([]);
         }
       }

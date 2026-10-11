@@ -41,6 +41,8 @@ export async function listConversations(options?: {
 }
 
 // ── Get a conversation with all messages ──
+// Returns null instead of throwing when conversation is not found,
+// so callers can handle stale/deleted conversation IDs gracefully.
 export async function getConversation(id: string) {
   const user = await requireUser();
   const conversation = await prisma.chatConversation.findFirst({
@@ -49,7 +51,7 @@ export async function getConversation(id: string) {
       messages: { orderBy: { createdAt: 'asc' } },
     },
   });
-  if (!conversation) throw new Error('Conversation not found');
+  if (!conversation) return null;
   return conversation;
 }
 
