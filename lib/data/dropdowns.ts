@@ -86,10 +86,10 @@ export async function fetchLevelsForDropdown(institutionId?: string) {
     select: {
       id: true,
       name: true,
-      levelNumber: true,
+      order: true,
       institutionId: true,
     },
-    orderBy: { levelNumber: 'asc' },
+    orderBy: { order: 'asc' },
   });
 }
 
@@ -101,10 +101,10 @@ export async function fetchPeriodsForDropdown(institutionId?: string) {
     select: {
       id: true,
       name: true,
-      periodNumber: true,
+      order: true,
       institutionId: true,
     },
-    orderBy: { periodNumber: 'asc' },
+    orderBy: { order: 'asc' },
   });
 }
 

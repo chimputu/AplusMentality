@@ -10,8 +10,8 @@ export async function GET() {
       return NextResponse.json({ count: 0, items: [] }, { status: 200 });
     }
 
-    // Fetch recent items from all 4 content types + seen records
-    const [announcements, tests, quizzes, assignments, seenRecords] =
+    // Fetch recent items from all content types + tutor applications + seen records
+    const [announcements, tests, quizzes, assignments, tutorApplications, seenRecords] =
       await Promise.all([
         prisma.announcement.findMany({
           orderBy: { createdAt: 'desc' },
@@ -61,6 +61,20 @@ export async function GET() {
             description: true,
             createdAt: true,
             creator: { select: { name: true } },
+          },
+        }),
+
+        // Tutor application notifications for the current user
+        prisma.tutorApplication.findMany({
+          where: { userId: auth.userId },
+          orderBy: { updatedAt: 'desc' },
+          take: 10,
+          select: {
+            id: true,
+            status: true,
+            rejectionReason: true,
+            adminNotes: true,
+            updatedAt: true,
           },
         }),
 
@@ -114,6 +128,43 @@ export async function GET() {
         createdAt: a.createdAt.toISOString(),
         author: a.creator?.name || 'Admin',
       })),
+
+      // Tutor application status notifications
+      ...tutorApplications.map((ta) => {
+        let title = 'Tutor Application';
+        let description = '';
+        switch (ta.status) {
+          case 'PENDING':
+            description = 'Your tutor application is pending review.';
+            break;
+          case 'UNDER_REVIEW':
+            description = 'Your tutor application is under review.';
+            break;
+          case 'APPROVED':
+            title = '🎉 Tutor Application Approved';
+            description = 'Congratulations! Your tutor application has been approved.';
+            break;
+          case 'REJECTED':
+            title = 'Tutor Application Update';
+            description = ta.rejectionReason?.slice(0, 120) || 'Your application was not approved.';
+            break;
+          case 'WITHDRAWN':
+            description = 'Your tutor application has been withdrawn.';
+            break;
+        }
+        if (ta.adminNotes && ta.status === 'PENDING') {
+          description = `Admin note: ${ta.adminNotes.slice(0, 120)}`;
+        }
+        return {
+          id: `tutor_app_${ta.id}`,
+          rawId: ta.id,
+          type: 'tutor_application',
+          title,
+          description,
+          createdAt: ta.updatedAt.toISOString(),
+          author: 'A+ Mentality',
+        };
+      }),
     ]
       .sort(
         (a, b) =>

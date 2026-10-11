@@ -174,6 +174,13 @@ export default function StudentContent({
       href: '/student/assignments',
     },
     {
+      icon: <GraduationCap className="w-6 h-6 text-emerald-500" />,
+      bg: 'bg-emerald-50',
+      title: 'Apply as Tutor',
+      subtitle: 'Share your knowledge',
+      href: '/apply-as-tutor',
+    },
+    {
       icon: <Compass className="w-6 h-6 text-indigo-500" />,
       bg: 'bg-indigo-50',
       title: 'Explore Universities',

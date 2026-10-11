@@ -21,10 +21,10 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         name: true,
-        levelNumber: true,
+        order: true,
         institutionId: true,
       },
-      orderBy: { levelNumber: 'asc' },
+      orderBy: { order: 'asc' },
     });
 
     return NextResponse.json({ data: levels, count: levels.length });
