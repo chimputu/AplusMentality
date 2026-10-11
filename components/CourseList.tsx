@@ -197,7 +197,7 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
                     <Link
                       href={`/student/courses/${course.id}`}
                       className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition flex items-center gap-1"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e: React.MouseEvent) => e.stopPropagation()}
                     >
                       <GraduationCap className="w-4 h-4" />
                       View Course
@@ -212,7 +212,7 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
                   <Link
                     href={`/admin/courses/${course.id}`}
                     className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition flex items-center gap-1"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
                   >
                     <Eye className="w-4 h-4" />
                     View

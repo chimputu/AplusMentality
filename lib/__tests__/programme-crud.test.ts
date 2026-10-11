@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 describe('listProgrammes', () => {
   it('returns paginated results with defaults', async () => {
     const mockProgrammes = [
-      { id: '1', name: 'CS', code: 'CS', institution: null, faculty: null, _count: { branches: 0, courses: 0, tutors: 0, users: 0 } },
+      { id: '1', name: 'CS', code: 'CS', institution: null as any, faculty: null as any, _count: { branches: 0, courses: 0, tutors: 0, users: 0 } },
     ];
     (prisma.programme.findMany as any).mockResolvedValue(mockProgrammes);
     (prisma.programme.count as any).mockResolvedValue(1);

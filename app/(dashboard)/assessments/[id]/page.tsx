@@ -11,7 +11,7 @@ export default async function AssessmentRunnerPage({
   await requireAuth(['STUDENT']);
 
   const { id } = await params;
-  const data = await getAssessmentForStudent(id).catch(() => null);
+  const data = await getAssessmentForStudent(id).catch((): null => null);
   if (!data) notFound();
 
   return (

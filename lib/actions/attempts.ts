@@ -93,7 +93,7 @@ export async function getAssessmentForStudent(assessmentId: string) {
   // Sanitize questions — remove correct answers
   const sanitizedQuestions = assessment.questions.map((q) => ({
     ...q,
-    options: null, // Don't send correct answers to client
+    options: null as any, // Don't send correct answers to client
   }));
 
   return {

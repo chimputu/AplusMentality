@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
         status: s.status,
         submittedAt: s.submittedAt.toISOString(),
         gradedAt: s.gradedAt?.toISOString() || null,
-        fileUrl: null,
+        fileUrl: null as string | null,
         responseId: s.responseId,
       })),
       ...testSubs.map((s) => ({
@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
         status: s.status,
         submittedAt: s.submittedAt.toISOString(),
         gradedAt: s.gradedAt?.toISOString() || null,
-        fileUrl: null,
+        fileUrl: null as string | null,
         responseId: s.responseId,
       })),
       ...assignmentSubs.map((s) => ({

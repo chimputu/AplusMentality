@@ -12,7 +12,7 @@ export default async function EditQuestionPage({
   await requireAuth(['ADMIN', 'SUPER_ADMIN']);
 
   const { id } = await params;
-  const question = await getQuestion(id).catch(() => null);
+  const question = await getQuestion(id).catch((): null => null);
   if (!question) notFound();
 
   return (
