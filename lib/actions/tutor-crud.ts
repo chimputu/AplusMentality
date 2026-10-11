@@ -76,7 +76,19 @@ export async function createTutor(rawInput: unknown) {
 
   const tutor = await prisma.tutor.create({
     data: {
-      ...tutorData,
+      fullName: tutorData.fullName,
+      email: tutorData.email,
+      phone: tutorData.phone,
+      bio: tutorData.bio,
+      universityId: tutorData.universityId,
+      programmeId: tutorData.programmeId,
+      branchId: tutorData.branchId,
+      yearsExperience: tutorData.yearsExperience,
+      availability: tutorData.availability,
+      mode: tutorData.mode,
+      contactVia: tutorData.contactVia,
+      isVerified: tutorData.isVerified,
+      isActive: tutorData.isActive,
       specialties: specialtyCourseIds && specialtyCourseIds.length > 0
         ? {
             create: specialtyCourseIds.map((courseId) => ({
@@ -84,7 +96,7 @@ export async function createTutor(rawInput: unknown) {
             })),
           }
         : undefined,
-    },
+    } as any,
     include: {
       specialties: { include: { course: true } },
     },

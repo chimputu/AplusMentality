@@ -608,7 +608,7 @@ export function AIAssistant({
           </div>
         </>
       )}
-      <style jsx>{`
+      <style>{`
         .pb-safe {
           padding-bottom: env(safe-area-inset-bottom, 0.75rem);
         }

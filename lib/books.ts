@@ -78,8 +78,8 @@ export async function searchGutenberg(query: string, limit = 20): Promise<BookRe
     url.searchParams.set('search', query);
 
     const res = await fetch(url.toString(), {
-      next: { revalidate: 3600 }, // cache 1 hour
-    });
+      next: { revalidate: 3600 },
+    } as RequestInit);
 
     if (!res.ok) {
       console.warn('[books] Gutenberg request failed:', res.status);
@@ -149,7 +149,7 @@ export async function searchOpenLibrary(query: string, limit = 20): Promise<Book
 
     const res = await fetch(url.toString(), {
       next: { revalidate: 3600 },
-    });
+    } as RequestInit);
 
     if (!res.ok) {
       console.warn('[books] OpenLibrary request failed:', res.status);
@@ -202,7 +202,7 @@ export async function fetchGutenbergBook(id: string): Promise<BookResult | null>
   try {
     const res = await fetch(`https://gutendex.com/books/${id}`, {
       next: { revalidate: 3600 },
-    });
+    } as RequestInit);
     if (!res.ok) return null;
     const data: GutendexBook = await res.json();
     return gutenbergBookFromApi(data);
@@ -216,7 +216,7 @@ export async function fetchOpenLibraryBook(id: string): Promise<BookResult | nul
   try {
     const res = await fetch(`https://openlibrary.org/works/${id}.json`, {
       next: { revalidate: 3600 },
-    });
+    } as RequestInit);
     if (!res.ok) return null;
     const data: any = await res.json();
 
@@ -229,7 +229,7 @@ export async function fetchOpenLibraryBook(id: string): Promise<BookResult | nul
       try {
         const authorRes = await fetch(
           `https://openlibrary.org${data.authors[0].author.key}.json`,
-          { next: { revalidate: 3600 } }
+          { next: { revalidate: 3600 } } as any
         );
         if (authorRes.ok) {
           const authorData = await authorRes.json();

@@ -60,14 +60,13 @@ export async function getUniversityForExploration(slug: string) {
           id: true,
           name: true,
           code: true,
-          duration: true,
           faculty: { select: { id: true, name: true, code: true } },
           _count: { select: { courses: true } },
         },
         orderBy: { name: 'asc' },
       },
       _count: {
-        select: { courses: true },
+        select: { programmes: true },
       },
     },
   });
@@ -89,11 +88,10 @@ export async function getUniversityForExploration(slug: string) {
       id: string;
       name: string;
       code: string | null;
-      duration: string | null;
       faculty: { id: string; name: string; code: string } | null;
       _count: { courses: number };
     }>;
-    _count: { courses: number };
+    _count: { programmes: number };
   } | null;
 }
 
@@ -120,8 +118,6 @@ export async function getProgrammeForExploration(
       id: true,
       name: true,
       code: true,
-      duration: true,
-      description: true,
       institution: {
         select: {
           id: true,
@@ -157,12 +153,10 @@ export async function getProgrammeForExploration(
   });
 
   // Explicitly type the result to avoid Prisma type inference issues in builds
-  return result as {
+  return result as unknown as {
     id: string;
     name: string;
     code: string | null;
-    duration: string | null;
-    description: string | null;
     institution: {
       id: string;
       name: string;
@@ -208,19 +202,16 @@ export interface CourseExplorationResult {
     id: string;
     name: string;
     code: string | null;
-  } | null;
+  };
   faculty: {
     name: string;
     code: string;
   } | null;
   tutorSpecialties: Array<{
-    role: string;
     tutor: {
       id: string;
       userId: string | null;
-      firstName: string | null;
-      lastName: string | null;
-      imageUrl: string | null;
+      fullName: string;
     } | null;
   }>;
   lectureSlides: Array<{
@@ -328,31 +319,30 @@ export async function getCourseForExploration(
       title: true,
       description: true,
       yearNumber: true,
-      institution: {
+      programme: {
         select: {
           id: true,
           name: true,
-          slug: true,
-          shortName: true,
-          logoUrl: true,
+          code: true,
+          institution: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              shortName: true,
+              logoUrl: true,
+            },
+          },
+          faculty: { select: { name: true, code: true } },
         },
-      },
-      programme: {
-        select: { id: true, name: true, code: true },
-      },
-      faculty: {
-        select: { name: true, code: true },
       },
       tutorSpecialties: {
         select: {
-          role: true,
           tutor: {
             select: {
               id: true,
               userId: true,
-              firstName: true,
-              lastName: true,
-              imageUrl: true,
+              fullName: true,
             },
           },
         },
@@ -401,10 +391,29 @@ export async function getCourseForExploration(
     },
   });
 
-  if (!course || !course.institution) return null;
+  // Cast to avoid TypeScript union type issues from conditional selects
+  const c = course as any;
+  if (!c || !c.programme?.institution) return null;
 
+  const prog = c.programme;
   return {
-    ...course,
+    id: c.id,
+    code: c.code,
+    title: c.title,
+    description: c.description,
+    yearNumber: c.yearNumber,
+    institution: prog.institution,
+    programme: { id: prog.id, name: prog.name, code: prog.code },
+    faculty: prog.faculty ?? null,
+    tutorSpecialties: c.tutorSpecialties,
+    lectureSlides: c.lectureSlides,
+    tutorialSheets: c.tutorialSheets,
+    pastPapers: c.pastPapers,
+    tests: c.tests,
+    assignments: c.assignments,
+    quizzes: c.quizzes,
+    videos: c.videos,
+    _count: c._count,
     viewerCanAccessFullContent: isMember,
     viewerIsExploring: access.isExploring(institution.id),
   };

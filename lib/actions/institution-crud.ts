@@ -101,7 +101,7 @@ export async function createInstitution(rawInput: unknown) {
   const existing = await prisma.institution.findUnique({ where: { slug: input.slug } });
   if (existing) throw new Error('Slug is already taken');
 
-  const institution = await prisma.institution.create({ data: input });
+  const institution = await prisma.institution.create({ data: input as any });
 
   // Auto-generate AcademicLevels
   const levelPrefix = getLevelPrefix(input.levelType);

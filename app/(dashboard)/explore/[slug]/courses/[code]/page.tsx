@@ -127,10 +127,10 @@ export default async function CoursePreviewPage({ params }: PageProps) {
                   key={tutor.id || i}
                   className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 dark:border-gray-700"
                 >
-                  {tutor.imageUrl ? (
+                  {tutor.fullName ? (
                     <img
-                      src={tutor.imageUrl}
-                      alt={`${tutor.firstName} ${tutor.lastName}`}
+                      src={tutor.fullName}
+                      alt={tutor.fullName}
                       className="w-12 h-12 rounded-full object-cover"
                     />
                   ) : (
@@ -140,9 +140,9 @@ export default async function CoursePreviewPage({ params }: PageProps) {
                   )}
                   <div>
                     <p className="font-medium text-gray-900 dark:text-gray-100">
-                      {tutor.firstName || ''} {tutor.lastName || ''}
+                      {tutor.fullName}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{ts.role}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Tutor</p>
                   </div>
                 </div>
               );
