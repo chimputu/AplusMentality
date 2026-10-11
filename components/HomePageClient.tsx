@@ -1151,18 +1151,48 @@ export default function HomePageClient() {
             </div>
 
             <div className="flex-1 w-full">
-              <div className="relative w-full rounded-xl overflow-hidden shadow-xl" style={{ paddingBottom: '56.25%' }}>
-               <iframe
-  className="absolute top-0 left-0 w-full h-full"
-  src="https://www.youtube.com/embed/g6BtbIiJ_rc?start=36"
-  title="A+ Student Mentality - Best Study Motivation"
-  frameBorder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowFullScreen
-  loading="lazy"
-/>
+              <div className="bg-gradient-to-br from-blue-50 to-emerald-50 rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200">
+                <div className="text-center space-y-5">
+                  <div className="inline-flex w-16 h-16 rounded-full bg-blue-100 items-center justify-center mx-auto">
+                    <Sparkles className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
+                    Built for Zambian Students
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-600 max-w-md mx-auto">
+                    Join a growing community of learners studying smarter and reaching their goals.
+                  </p>
+                  <div className="grid grid-cols-3 gap-3 pt-4">
+                    <div className="text-center">
+                      <div className="flex justify-center mb-2">
+                        <BookOpen className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <p className="text-xs font-medium text-gray-700">Courses</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="flex justify-center mb-2">
+                        <Sparkles className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <p className="text-xs font-medium text-gray-700">AI Assistant</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="flex justify-center mb-2">
+                        <Video className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <p className="text-xs font-medium text-gray-700">Video Lessons</p>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-gray-200">
+                    <Link
+                      href="/sign-up"
+                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md"
+                    >
+                      Get Started Free
+                      <span className="text-lg">→</span>
+                    </Link>
+                  </div>
+                </div>
               </div>
-              
             </div>
           </div>
         </div>
