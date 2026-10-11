@@ -18,7 +18,7 @@ import {
   AtSign,
 } from 'lucide-react';
 import { formatDate } from '@/lib/formatDate';
-import type { Role } from '@/generated/prisma';
+import type { Role } from '@/generated/prisma/client';
 
 interface User {
   id: string;

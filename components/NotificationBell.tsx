@@ -13,7 +13,7 @@ import {
   Check,
   Loader2,
 } from 'lucide-react';
-import type { Role } from '@/generated/prisma';
+import type { Role } from '@/generated/prisma/client';
 
 interface Notification {
   id: string;
