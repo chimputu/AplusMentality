@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { withRetry } from '@/lib/retry';
 import Link from 'next/link';
 import {
   CheckCircle,
@@ -48,16 +49,34 @@ export default async function ApplicationStatusPage() {
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
-  const user = await prisma.user.findUnique({ where: { clerkId: userId! } });
+  let user;
+  try {
+    user = await withRetry(
+      () => prisma.user.findUnique({ where: { clerkId: userId! } }),
+      { attempts: 3, delayMs: 500 }
+    );
+  } catch (err: any) {
+    console.error('[AppStatus] Failed to find user:', err.message);
+    redirect('/sign-in');
+  }
   if (!user) redirect('/sign-in');
-  const u = user!;
+  const u = user;
 
-  const application = await prisma.tutorApplication.findUnique({
-    where: { userId: u.id },
-    include: {
-      institution: { select: { id: true, name: true, shortName: true } },
-    },
-  });
+  let application;
+  try {
+    application = await withRetry(
+      () => prisma.tutorApplication.findUnique({
+        where: { userId: u.id },
+        include: {
+          institution: { select: { id: true, name: true, shortName: true } },
+        },
+      }),
+      { attempts: 3, delayMs: 500 }
+    );
+  } catch (err: any) {
+    console.error('[AppStatus] Failed to fetch application:', err.message);
+    application = null;
+  }
 
   const config = application
     ? statusConfig[application.status] || statusConfig.PENDING
