@@ -1,8 +1,8 @@
 'use client';
 
 // Root error boundary — catches errors in the entire app tree
-// Logs to Sentry and provides recovery options
-import { useEffect } from 'react';
+// Logs to Sentry and provides recovery options with auto-retry
+import { useEffect, useRef } from 'react';
 import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
@@ -14,27 +14,41 @@ export default function Error({
   error: Error & { digest?: string };
   unstable_retry: () => void;
 }) {
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    // Report the error to Sentry for tracking
     Sentry.captureException(error);
   }, [error]);
+
+  // Auto-retry after 2 seconds — matches the observed transient failure recovery pattern
+  useEffect(() => {
+    retryTimerRef.current = setTimeout(() => {
+      unstable_retry();
+    }, 2000);
+    return () => {
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+    };
+  }, [unstable_retry]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-6 text-center bg-gray-50">
       <AlertTriangle className="h-16 w-16 text-amber-500" />
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-gray-900">Something went wrong</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Loading...</h1>
         <p className="text-gray-600 max-w-md">
-          We hit an unexpected error. It has been reported and we're looking into it.
+          We&apos;re reconnecting. This usually takes a couple of seconds.
         </p>
       </div>
       <div className="flex gap-3">
         <button
           type="button"
-          onClick={() => unstable_retry()}
+          onClick={() => {
+            if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+            unstable_retry();
+          }}
           className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition font-medium"
         >
-          <RefreshCw className="h-4 w-4" /> Try again
+          <RefreshCw className="h-4 w-4" /> Retry now
         </button>
         <Link
           href="/"
@@ -43,6 +57,11 @@ export default function Error({
           <Home className="h-4 w-4" /> Go home
         </Link>
       </div>
+      {error.digest && (
+        <p className="text-xs text-gray-400 font-mono mt-4">
+          Reference: {error.digest}
+        </p>
+      )}
     </div>
   );
 }

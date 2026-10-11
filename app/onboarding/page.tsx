@@ -7,7 +7,13 @@ export default async function OnboardingPage() {
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
-  let user = await prisma.user.findUnique({ where: { clerkId: userId } });
+  let user;
+  try {
+    user = await prisma.user.findUnique({ where: { clerkId: userId } });
+  } catch (err: any) {
+    console.error('[Onboarding] Failed to find user:', err.message);
+    redirect('/sign-in');
+  }
   if (!user) {
     redirect('/sign-in');
   }
@@ -18,35 +24,42 @@ export default async function OnboardingPage() {
     redirect((role === 'ADMIN' || role === 'SUPER_ADMIN') ? '/admin' : '/student');
   }
 
-  // Fetch institutions for the dropdown
-  const institutions = await prisma.institution.findMany({
-    where: { isActive: true },
-    orderBy: { name: 'asc' },
-    include: {
-      programmes: {
-        orderBy: { name: 'asc' },
-        include: {
-          faculty: true,
-          branches: { orderBy: { name: 'asc' } },
-        },
-      },
-      levels: { orderBy: { order: 'asc' } },
-    },
-  });
+  // Fetch data with error handling
+  let institutions: any[] = [];
+  let universities: any[] = [];
 
-  // Also fetch legacy universities for backward compatibility
-  const universities = await prisma.university.findMany({
-    orderBy: { name: 'asc' },
-    include: {
-      programmes: {
+  try {
+    [institutions, universities] = await Promise.all([
+      prisma.institution.findMany({
+        where: { isActive: true },
         orderBy: { name: 'asc' },
         include: {
-          faculty: true,
-          branches: { orderBy: { name: 'asc' } },
+          programmes: {
+            orderBy: { name: 'asc' },
+            include: {
+              faculty: true,
+              branches: { orderBy: { name: 'asc' } },
+            },
+          },
+          levels: { orderBy: { order: 'asc' } },
         },
-      },
-    },
-  });
+      }).catch(() => [] as any[]),
+      prisma.university.findMany({
+        orderBy: { name: 'asc' },
+        include: {
+          programmes: {
+            orderBy: { name: 'asc' },
+            include: {
+              faculty: true,
+              branches: { orderBy: { name: 'asc' } },
+            },
+          },
+        },
+      }).catch(() => [] as any[]),
+    ]);
+  } catch (err: any) {
+    console.error('[Onboarding] Failed to fetch data:', err.message);
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
