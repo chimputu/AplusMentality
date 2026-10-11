@@ -91,7 +91,7 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const rawPrisma =
+const basePrisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     adapter: connectionString ? new PrismaPg({ connectionString }) : undefined,
@@ -101,24 +101,30 @@ const rawPrisma =
 // Cache the client globally for ALL environments, not just development.
 // In production, without this, each serverless invocation creates a new client
 // and exhausts the connection pool.
-globalForPrisma.prisma = rawPrisma;
+globalForPrisma.prisma = basePrisma;
 
-// Add automatic retry middleware to ALL Prisma queries.
-// This protects every single DB query in the app from transient failures.
-// Use type assertion since Prisma's $use method isn't fully typed in all versions.
-(rawPrisma as any).$use(async (params: any, next: any) => {
-  // Skip retry for transaction queries — they have their own retry logic
-  if (params.transactionId) {
-    return next(params);
-  }
+// Prisma v7 removed $use middleware. Use $extends with $allOperations instead.
+// This adds automatic retry to ALL Prisma queries, protecting every DB query
+// in the app from transient failures (connection pool, timeout, network errors).
+export const prisma = basePrisma.$extends({
+  query: {
+    $allOperations: async ({ model, operation, args, query }: {
+      model?: string;
+      operation: string;
+      args: any;
+      query: (args: any) => Promise<any>;
+    }) => {
+      // Skip retry for transaction queries — they have their own retry logic
+      if (args?._transactionId) {
+        return query(args);
+      }
 
-  // Retry all non-transaction queries on transient failures
-  const result = await withRetry(
-    () => next(params),
-    3, // 3 attempts
-    100 // Start with 100ms delay (faster than 500ms for better UX)
-  );
-  return result;
+      // Retry all non-transaction queries on transient failures
+      return withRetry(
+        () => query(args),
+        3, // 3 attempts
+        100 // Start with 100ms delay (100ms → 200ms → 400ms)
+      );
+    },
+  },
 });
-
-export const prisma = rawPrisma;
