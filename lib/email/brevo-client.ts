@@ -1,27 +1,30 @@
 // lib/email/brevo-client.ts — Brevo (Sendinblue) API client configuration
 // Migrated from Resend/EmailJS to Brevo free plan (300 emails/day)
 // Sender: kafiswegchimputu@gmail.com (must be verified in Brevo dashboard)
+// Uses @getbrevo/brevo v6 SDK with BrevoClient API
 
-import * as brevo from '@getbrevo/brevo';
+import { BrevoClient } from '@getbrevo/brevo';
 
 /**
- * Get a configured Brevo TransactionalEmailsApi instance.
+ * Get a configured BrevoClient instance.
  * Uses the BREVO_API_KEY environment variable.
+ * The client is cached so it's only created once.
  */
+let brevoClient: BrevoClient | null = null;
+
 export function getBrevoClient() {
-  const apiInstance = new brevo.TransactionalEmailsApi();
+  if (brevoClient) return brevoClient;
 
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
     console.warn('[Brevo] BREVO_API_KEY not set — email sends will fail');
   }
 
-  apiInstance.setApiKey(
-    brevo.TransactionalEmailsApiApiKeys.apiKey,
-    apiKey ?? ''
-  );
+  brevoClient = new BrevoClient({
+    apiKey: apiKey ?? '',
+  });
 
-  return apiInstance;
+  return brevoClient;
 }
 
 /**

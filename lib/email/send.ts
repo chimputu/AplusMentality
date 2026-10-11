@@ -1,10 +1,10 @@
 // lib/email/send.ts — Server-side email sending via Brevo
 // Migrated from EmailJS (client-side only) to Brevo for reliable server-side delivery
 // Free plan: 300 emails/day, no custom domain required
+// Uses @getbrevo/brevo v6 SDK with BrevoClient API
 
 'use server';
 
-import * as brevo from '@getbrevo/brevo';
 import * as Sentry from '@sentry/nextjs';
 import {
   getBrevoClient,
@@ -26,7 +26,7 @@ interface SendEmailOptions {
 
 /**
  * Send an email via Brevo transactional API.
- * Renders HTML content and sends to the specified recipient(s).
+ * Uses BrevoClient v6 SDK: client.transactionalEmails.sendTransacEmail({ ... })
  * Falls back to console logging if BREVO_API_KEY is not configured.
  */
 export async function sendEmail({
@@ -44,37 +44,32 @@ export async function sendEmail({
   }
 
   try {
-    const recipients = (Array.isArray(to) ? to : [to]).map((email) => ({
-      email,
-    }));
+    const client = getBrevoClient();
 
-    const sendSmtpEmail = new brevo.SendSmtpEmail();
-    sendSmtpEmail.sender = {
-      name: EMAIL_FROM_NAME,
-      email: EMAIL_FROM,
-    };
-    sendSmtpEmail.to = recipients;
-    sendSmtpEmail.subject = subject;
-    sendSmtpEmail.htmlContent = html;
-    sendSmtpEmail.replyTo = {
-      email: replyTo ?? EMAIL_REPLY_TO,
-      name: EMAIL_FROM_NAME,
-    };
-
-    const apiInstance = getBrevoClient();
-    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    const result = await client.transactionalEmails.sendTransacEmail({
+      sender: {
+        name: EMAIL_FROM_NAME,
+        email: EMAIL_FROM,
+      },
+      to: (Array.isArray(to) ? to : [to]).map((email) => ({ email })),
+      subject,
+      htmlContent: html,
+      replyTo: {
+        email: replyTo ?? EMAIL_REPLY_TO,
+        name: EMAIL_FROM_NAME,
+      },
+    });
 
     console.log(
       '[email] Sent via Brevo:',
-      result.body?.messageId,
+      result.messageId,
       'to:',
       Array.isArray(to) ? to.join(', ') : to
     );
 
-    return { success: true, id: result.body?.messageId };
+    return { success: true, id: result.messageId };
   } catch (err: any) {
     const errorMsg =
-      err?.response?.body?.message ||
       err?.message ||
       'Unknown Brevo error';
 
