@@ -157,7 +157,7 @@ Build the admin page for managing tutor application windows (open/close/schedule
 - Add a "Create New Window" form with fields: institutionId (optional), opensAt, closesAt, publicMessage, isOpen
 - Link from the tutor applications list page
 
-### * Step 5: Fix Server Components render errors on student pages
+### ✓ Step 5: Fix Server Components render errors on student pages
 Apply retry logic to all student-facing server components to prevent transient DB failures from crashing pages.
 
 - Wrap all DB queries in `lib/auth.ts` `requireAuth()` and `getAuthUser()` with `withRetry()` — this protects all layouts
@@ -165,4 +165,14 @@ Apply retry logic to all student-facing server components to prevent transient D
 - Fix `app/(dashboard)/student/page.tsx` DB queries with retry logic
 - Add auto-retry to `app/(dashboard)/error.tsx` dashboard error boundary (2s delay)
 - Wrap all Prisma queries in `lib/queries/exploration.ts` with `withRetry()`
+- TypeScript compilation passes with zero errors
+
+### ✓ Step 6: Add universal Prisma retry middleware and fix remaining error boundaries
+Eliminate Server Component render errors by adding automatic retry at the Prisma client level and fixing all error boundaries.
+
+- Add `$use` middleware to `lib/prisma.ts` that automatically retries ALL Prisma queries on transient errors (3 attempts, 100ms → 200ms → 400ms exponential backoff)
+- This protects all 130+ files that import prisma, without modifying each one
+- Add auto-retry to root `app/error.tsx` error boundary (2s delay)
+- Add error handling to `app/onboarding/page.tsx` with try-catch fallbacks
+- Create `app/onboarding/error.tsx` error boundary with auto-retry
 - TypeScript compilation passes with zero errors

@@ -15,6 +15,75 @@ if (!connectionString) {
   console.log(`🔌 Prisma connecting to: ${host}`);
 }
 
+/**
+ * Detect whether a Prisma error is transient and safe to retry.
+ */
+function isTransientError(error: unknown): boolean {
+  const err = error as any;
+  const message = err?.message?.toLowerCase() ?? '';
+  const code = err?.code ?? '';
+
+  // Prisma / Postgres transient error codes
+  const transientCodes = ['P1001', 'P1002', 'P1008', 'P1017', 'P2024', 'P2025', 'P2028', 'P2030', 'P2034'];
+  if (transientCodes.includes(code)) {
+    return true;
+  }
+
+  // Transient error message patterns
+  const transientKeywords = [
+    'connection',
+    'timed out',
+    'timeout',
+    'econnreset',
+    'econnrefused',
+    'cannot reach',
+    'terminated',
+    'pool',
+    'too many clients',
+    'retry',
+    'lock wait timeout',
+    'deadlock',
+  ];
+
+  if (transientKeywords.some((kw) => message.includes(kw))) {
+    return true;
+  }
+
+  // Network errors
+  if (message.includes('fetch failed') || message.includes('network')) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Retry an async operation with exponential backoff for transient errors.
+ */
+async function withRetry<T>(fn: () => Promise<T>, attempts = 3, delayMs = 100): Promise<T> {
+  let lastError: unknown;
+  let delay = delayMs;
+
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (err: unknown) {
+      lastError = err;
+      if (!isTransientError(err)) throw err;
+      if (i === attempts - 1) throw err;
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Prisma retry] Attempt ${i + 1} failed, retrying in ${delay}ms...`, (err as any)?.message);
+      }
+
+      await new Promise((r) => setTimeout(r, delay));
+      delay *= 2; // Exponential backoff: 100ms → 200ms → 400ms
+    }
+  }
+
+  throw lastError;
+}
+
 // Prisma 7.x requires an adapter. Use adapter-pg for both direct and Data Proxy connections.
 // Use a global singleton to avoid creating a new client on every request in production,
 // which causes connection pool exhaustion and transient failures.
@@ -22,7 +91,7 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const prisma =
+const rawPrisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     adapter: connectionString ? new PrismaPg({ connectionString }) : undefined,
@@ -32,4 +101,24 @@ export const prisma =
 // Cache the client globally for ALL environments, not just development.
 // In production, without this, each serverless invocation creates a new client
 // and exhausts the connection pool.
-globalForPrisma.prisma = prisma;
+globalForPrisma.prisma = rawPrisma;
+
+// Add automatic retry middleware to ALL Prisma queries.
+// This protects every single DB query in the app from transient failures.
+// Use type assertion since Prisma's $use method isn't fully typed in all versions.
+(rawPrisma as any).$use(async (params: any, next: any) => {
+  // Skip retry for transaction queries — they have their own retry logic
+  if (params.transactionId) {
+    return next(params);
+  }
+
+  // Retry all non-transaction queries on transient failures
+  const result = await withRetry(
+    () => next(params),
+    3, // 3 attempts
+    100 // Start with 100ms delay (faster than 500ms for better UX)
+  );
+  return result;
+});
+
+export const prisma = rawPrisma;
