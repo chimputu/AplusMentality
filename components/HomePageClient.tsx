@@ -181,11 +181,11 @@ export default function HomePageClient() {
   ];
 
   const exploreItems = [
-    { icon: <TrendingUp className="w-6 h-6" />, title: 'Trending Now', description: 'Discover what\'s popular among Zambian learners.', color: 'hover:bg-red-50 hover:border-red-300' },
+    { icon: <TrendingUp className="w-6 h-6" />, title: 'Trending Now', description: 'Discover what\'s popular among Zambian learners.', color: 'hover:bg-blue-50 hover:border-blue-300' },
     { icon: <PlayCircle className="w-6 h-6" />, title: 'Watch Videos', description: 'Access educational videos aligned with the Zambian curriculum.', color: 'hover:bg-blue-50 hover:border-blue-300' },
-    { icon: <Compass className="w-6 h-6" />, title: 'Course Pathways', description: 'Explore Natural Sciences and Computer Science.', color: 'hover:bg-green-50 hover:border-green-300' },
-    { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach students across Zambia.', color: 'hover:bg-yellow-50 hover:border-yellow-300' },
-    { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-blue-50 hover:border-blue-300' },
+    { icon: <Compass className="w-6 h-6" />, title: 'Course Pathways', description: 'Explore Natural Sciences and Computer Science.', color: 'hover:bg-emerald-50 hover:border-emerald-300' },
+    { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach students across Zambia.', color: 'hover:bg-blue-50 hover:border-blue-300' },
+    { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-emerald-50 hover:border-emerald-300' },
   ];
 
   // ============================================================
@@ -450,14 +450,14 @@ export default function HomePageClient() {
               <h3 className="font-bold text-gray-800 text-sm">Study Smarter</h3>
             </motion.div>
             <motion.div variants={fadeInUp} className="text-center p-4">
-              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <TrendingUp className="w-7 h-7 text-green-600" />
+              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <TrendingUp className="w-7 h-7 text-emerald-600" />
               </div>
               <h3 className="font-bold text-gray-800 text-sm">Track Progress</h3>
             </motion.div>
             <motion.div variants={fadeInUp} className="text-center p-4">
-              <div className="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Target className="w-7 h-7 text-yellow-600" />
+              <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Target className="w-7 h-7 text-amber-600" />
               </div>
               <h3 className="font-bold text-gray-800 text-sm">Reach Your Goals</h3>
             </motion.div>
