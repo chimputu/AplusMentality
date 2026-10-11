@@ -17,6 +17,7 @@ import {
   Compass, TrendingUp, PlayCircle, Megaphone, UserPlus,
 } from 'lucide-react';
 import BannerCarousel from '@/components/banner-carousel';
+import GlowingText from '@/components/glowing-text';
 
 const fadeInUp: any = {
   hidden: { opacity: 0, y: 30 },
@@ -110,7 +111,7 @@ export default function HomePageClient() {
     { icon: <TrendingUp className="w-6 h-6" />, title: 'Trending Now', description: 'Discover what\'s popular among Zambian learners.', color: 'hover:bg-red-50 hover:border-red-300' },
     { icon: <PlayCircle className="w-6 h-6" />, title: 'Watch Videos', description: 'Access educational videos aligned with the Zambian curriculum.', color: 'hover:bg-blue-50 hover:border-blue-300' },
     { icon: <Compass className="w-6 h-6" />, title: 'Course Pathways', description: 'Explore Natural Sciences and Computer Science.', color: 'hover:bg-green-50 hover:border-green-300' },
-    { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach thousands of students across Zambia.', color: 'hover:bg-yellow-50 hover:border-yellow-300' },
+    { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach students across Zambia.', color: 'hover:bg-yellow-50 hover:border-yellow-300' },
     { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-purple-50 hover:border-purple-300' },
   ];
 
@@ -176,30 +177,30 @@ export default function HomePageClient() {
   // ---- Combined Course Data ----
   const year1Courses = [
     // Semester 1
-    { code: 'CHE111', title: 'Introductory Chemistry', description: 'Atomic structure, bonding, and stoichiometry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.7, students: 950 },
-    { code: 'BIO111', title: 'Bio-molecules and Cells', description: 'Cell biology, genetics, and molecular foundations.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1200 },
-    { code: 'PHY101', title: 'Fundamentals of Physics', description: 'Mechanics, thermodynamics, and waves.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.6, students: 820 },
-    { code: 'MSM111', title: 'Mathematical Methods I', description: 'Limits, derivatives, and integrals.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.9, students: 1500 },
+    { code: 'CHE111', title: 'Introductory Chemistry', description: 'Atomic structure, bonding, and stoichiometry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop' },
+    { code: 'BIO111', title: 'Bio-molecules and Cells', description: 'Cell biology, genetics, and molecular foundations.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop' },
+    { code: 'PHY101', title: 'Fundamentals of Physics', description: 'Mechanics, thermodynamics, and waves.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop' },
+    { code: 'MSM111', title: 'Mathematical Methods I', description: 'Limits, derivatives, and integrals.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop' },
     // Semester 2
-    { code: 'BIO112', title: 'Molecular Biology and Genetics', description: 'DNA replication, transcription, and inheritance.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop', rating: 4.8, students: 1100 },
-    { code: 'PHY102', title: 'Introductory Physics II', description: 'Electromagnetism, optics, and modern physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop', rating: 4.5, students: 780 },
-    { code: 'MSM112', title: 'Mathematical Methods II', description: 'Differential equations, vectors, and matrices.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1300 },
-    { code: 'CHE112', title: 'Introductory Chemistry II', description: 'Organic chemistry, acids, and bases.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop', rating: 4.6, students: 880 },
+    { code: 'BIO112', title: 'Molecular Biology and Genetics', description: 'DNA replication, transcription, and inheritance.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop' },
+    { code: 'PHY102', title: 'Introductory Physics II', description: 'Electromagnetism, optics, and modern physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop' },
+    { code: 'MSM112', title: 'Mathematical Methods II', description: 'Differential equations, vectors, and matrices.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop' },
+    { code: 'CHE112', title: 'Introductory Chemistry II', description: 'Organic chemistry, acids, and bases.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop' },
   ];
 
   const year2Courses = [
     // Semester 1
-    { code: 'ICT402', title: 'Statistics and Empirical Methods for Computing', description: 'Statistical analysis, regression, and data interpretation.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 650 },
-    { code: 'ICT261', title: 'Intro to OOP and JAVA', description: 'Object-oriented programming principles with Java.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.8, students: 1800 },
-    { code: 'ICT221', title: 'Computer Architecture', description: 'CPU design, memory hierarchy, and instruction sets.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 920 },
-    { code: 'ICT241', title: 'Digital Design', description: 'Logic gates, flip-flops, and combinational circuits.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.4, students: 540 },
-    { code: 'ICT201', title: 'Discrete Mathematics', description: 'Logic, sets, relations, and graph theory.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop', rating: 4.7, students: 1020 },
+    { code: 'ICT402', title: 'Statistics and Empirical Methods for Computing', description: 'Statistical analysis, regression, and data interpretation.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop' },
+    { code: 'ICT261', title: 'Intro to OOP and JAVA', description: 'Object-oriented programming principles with Java.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop' },
+    { code: 'ICT221', title: 'Computer Architecture', description: 'CPU design, memory hierarchy, and instruction sets.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop' },
+    { code: 'ICT241', title: 'Digital Design', description: 'Logic gates, flip-flops, and combinational circuits.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop' },
+    { code: 'ICT201', title: 'Discrete Mathematics', description: 'Logic, sets, relations, and graph theory.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop' },
     // Semester 2
-    { code: 'ICT222', title: 'Operating Systems', description: 'Process management, memory, and file systems.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop', rating: 4.6, students: 850 },
-    { code: 'ICT242', title: 'Networking and Communication', description: 'OSI model, TCP/IP, and network security.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop', rating: 4.5, students: 720 },
-    { code: 'ICT202', title: 'Data Structures and Algorithms', description: 'Stacks, queues, trees, and sorting algorithms.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop', rating: 4.9, students: 2200 },
-    { code: 'ICT262', title: 'Intermediate Java Programming', description: 'Advanced OOP, collections, and multithreading.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop', rating: 4.7, students: 1350 },
-    { code: 'ICT271', title: 'Databases', description: 'SQL, database design, and transaction management.', image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=200&fit=crop', rating: 4.8, students: 1600 },
+    { code: 'ICT222', title: 'Operating Systems', description: 'Process management, memory, and file systems.', image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=200&fit=crop' },
+    { code: 'ICT242', title: 'Networking and Communication', description: 'OSI model, TCP/IP, and network security.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop' },
+    { code: 'ICT202', title: 'Data Structures and Algorithms', description: 'Stacks, queues, trees, and sorting algorithms.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop' },
+    { code: 'ICT262', title: 'Intermediate Java Programming', description: 'Advanced OOP, collections, and multithreading.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop' },
+    { code: 'ICT271', title: 'Databases', description: 'SQL, database design, and transaction management.', image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=200&fit=crop' },
   ];
 
   return (
@@ -256,100 +257,95 @@ export default function HomePageClient() {
         )}
       </nav>
 
-      {/* ===== HERO – FACEBOOK-STYLE WELCOME ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0 }}
-        variants={fadeInUp}
-        className="relative pt-20 pb-10 md:pt-24 md:pb-12 overflow-hidden"
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1600&h=800&fit=crop')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/70" />
-
+      {/* ===== HERO – GLOWING TEXT ===== */}
+      <section className="relative pt-20 pb-10 sm:pt-24 sm:pb-14 overflow-hidden" style={{ background: 'linear-gradient(135deg, #0a0a0a 0%, #1e3a8a 100%)' }}>
         <div className="relative w-full px-3 sm:px-4 z-10">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10">
             {/* Left – Text Content */}
             <div className="flex-[2] text-center lg:text-left w-full">
-              <div className="text-3xl sm:text-4xl lg:text-6xl font-bold text-white leading-[1.2]">
-                <span className="block">Your Goal.</span>
-                <span className="block text-blue-300 ml-4 sm:ml-10">Our tools.</span>
-                <span className="block text-xl sm:text-2xl lg:text-5xl font-normal text-gray-200 mt-2 ml-4 sm:ml-16">
-                  Your <span className="text-blue-300 font-bold lg:text-5xl">A+</span> result.
-                </span>
+              <div className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.1]">
+                <GlowingText text="A+ Mentality" duration={2.5} color="#60a5fa" className="block" />
               </div>
 
-              <p className="mt-4 text-base sm:text-lg text-gray-200 max-w-2xl mx-auto lg:mx-0">
-                A+ Mentality helps students study smarter, stay organized, and track progress 
-                so you can achieve more and stress less.
+              <p className="mt-3 text-base sm:text-lg text-blue-200/80 max-w-2xl mx-auto lg:mx-0">
+                Zambia's multi-university learning platform.
               </p>
 
-              <div className="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
-                <Link href="/sign-up" className="bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl">
-                  Get Started Free
+              <p className="mt-2 text-sm sm:text-base text-gray-300 max-w-xl mx-auto lg:mx-0">
+                Study smarter, stay organized, and track your progress — aligned with Zambian university standards.
+              </p>
+
+              <div className="mt-6 flex flex-wrap justify-center lg:justify-start gap-3">
+                <Link href="/sign-up" className="bg-blue-600 text-white px-6 sm:px-8 py-2.5 rounded-full font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl">
+                  Get started free
                 </Link>
-                <Link href="#explore" className="bg-white/20 backdrop-blur-sm text-white px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-white/30 transition border border-white/30">
-                  Explore Features
+                <Link href="#universities" className="bg-white/10 backdrop-blur-sm text-white px-6 sm:px-8 py-2.5 rounded-full font-medium hover:bg-white/20 transition border border-white/20">
+                  Browse universities
                 </Link>
               </div>
 
-              <div className="mt-8 flex flex-wrap justify-center lg:justify-start items-center gap-4 sm:gap-6 text-sm text-gray-300">
-                <span className="flex items-center gap-1">
-                  <span className="text-green-400">✓</span> Free to start
+              <div className="mt-6 flex flex-wrap justify-center lg:justify-start items-center gap-3 sm:gap-5 text-xs sm:text-sm text-gray-400">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-emerald-400" /> Built for Zambia
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="text-green-400">✓</span> Learn offline 
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-emerald-400" /> Works offline
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="text-green-400">✓</span> Mentors available
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="text-green-400">✓</span> Built for Zambians
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-emerald-400" /> Free for students
                 </span>
               </div>
             </div>
 
-            {/* Right – Hero Card with Brain & Icons */}
+            {/* Right – Feature Card */}
             <div className="flex-1 flex justify-center lg:justify-end w-full">
-              <div className="relative w-full max-w-sm lg:max-w-md">
-                <div className="absolute -inset-4 bg-gradient-to-r from-blue-300 to-blue-400 rounded-2xl blur-3xl opacity-20" />
-                <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-5 sm:p-8 shadow-xl text-center">
-                  <div className="flex justify-center mb-4">
-                    
-                  </div>
-
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">Built for Zambian Students</h3>
-                  <p className="text-blue-200 text-sm">By Zambians, for Zambians</p>
-
-                  <div className="mt-6 flex justify-center gap-6 sm:gap-8 text-sm">
-                    <div>
-                      <p className="font-bold text-white text-lg"></p>
-                      <p className="text-blue-200 text-xs">Quality Content</p>
+              <div className="relative w-full max-w-sm">
+                <div className="absolute -inset-4 bg-blue-500/20 rounded-2xl blur-3xl" />
+                <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 sm:p-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <BookOpen className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-white font-semibold text-sm">Curriculum-Aligned</p>
+                        <p className="text-blue-200/60 text-xs">Matched to Zambian university standards</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-bold text-white text-lg"></p>
-                      <p className="text-blue-200 text-xs">Expert Mentors</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <UsersIcon className="w-5 h-5 text-emerald-400" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-white font-semibold text-sm">Expert Mentors</p>
+                        <p className="text-blue-200/60 text-xs">Learn from experienced tutors</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-bold text-white text-lg"></p>
-                      <p className="text-blue-200 text-xs">Learn Offline</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Video className="w-5 h-5 text-purple-400" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-white font-semibold text-sm">Video Lessons</p>
+                        <p className="text-blue-200/60 text-xs">Watch, pause, rewatch anytime</p>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-white/20 text-center text-xs text-blue-200">
-                    Join the A+ Mentality community today
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Award className="w-5 h-5 text-amber-400" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-white font-semibold text-sm">Track Progress</p>
+                        <p className="text-blue-200/60 text-xs">See your improvement over time</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* ===== FOUR PILLARS ===== */}
       <motion.section
@@ -357,7 +353,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="py-12 bg-white border-b border-gray-100"
+        className="py-10 sm:py-12 bg-white border-b border-gray-100"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
@@ -389,72 +385,13 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
-      {/* ===== MONTHLY OVERVIEW ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0 }}
-        variants={fadeInUp}
-        className="py-12 bg-gray-50"
-      >
-        <div className="w-full px-3 sm:px-4">
-          <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-lg border border-gray-200 p-5 sm:p-8 md:p-12">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <div>
-                <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full mb-2">
-                   Welcome back, Future Achiever!
-                </span>
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                  Keep going. Great things take time.
-                </h2>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
-                <p className="text-xs font-medium text-gray-500">Courses</p>
-                <p className="text-2xl font-bold text-gray-900">6</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
-                <p className="text-xs font-medium text-gray-500">Completed</p>
-                <p className="text-2xl font-bold text-gray-900">3</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
-                <p className="text-xs font-medium text-gray-500">Study Hours</p>
-                <p className="text-2xl font-bold text-gray-900">24.5</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
-                <p className="text-xs font-medium text-gray-500">Average Score</p>
-                <p className="text-2xl font-bold text-yellow-600">87%</p>
-              </div>
-            </div>
-
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-sm font-medium text-gray-600">Study Planner:</span>
-                <button className="text-sm px-3 py-1 rounded-full bg-blue-600 text-white">Today</button>
-                <button className="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition">This Week</button>
-                <button className="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition">This Month</button>
-                <button className="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition">This Year</button>
-              </div>
-              <Link
-                href="/sign-up"
-                className="text-blue-600 font-medium hover:text-blue-800 transition inline-flex items-center gap-1 text-sm"
-              >
-                Continue Learning <span className="text-lg">→</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </motion.section>
-
       {/* ===== TOP ZAMBIAN UNIVERSITIES – FULL-WIDTH LOGO CARDS ===== */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="py-12 bg-white"
+        className="py-10 sm:py-12 bg-white"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
@@ -630,7 +567,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-12 bg-white"
+        className="py-10 sm:py-12 bg-white"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="text-center mb-10">
@@ -670,7 +607,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="py-12 bg-white"
+        className="py-10 sm:py-12 bg-white"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
@@ -717,11 +654,6 @@ export default function HomePageClient() {
                     <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
                     <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
                     <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-xs sm:text-sm">({course.students})</span>
-                      </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -773,11 +705,6 @@ export default function HomePageClient() {
                     <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
                     <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
                     <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-xs sm:text-sm">({course.students})</span>
-                      </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -829,11 +756,6 @@ export default function HomePageClient() {
                     <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
                     <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
                     <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-xs sm:text-sm">({course.students})</span>
-                      </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -885,11 +807,6 @@ export default function HomePageClient() {
                     <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
                     <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
                     <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="font-semibold text-gray-800">{course.rating}</span>
-                        <span className="text-gray-400 text-xs sm:text-sm">({course.students})</span>
-                      </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -914,20 +831,21 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-12 bg-white"
+        className="py-10 sm:py-12 bg-white"
       >
         <div className="w-full px-3 sm:px-4">
-          <div className="text-center mb-10">
+          <div className="text-center mb-8 sm:mb-10">
             <Award className="w-12 h-12 text-blue-600 mx-auto mb-4" />
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Zambian University Grading System</h2>
-            
+            <p className="mt-2 text-sm text-gray-500">Understanding how Zambian universities grade academic performance</p>
           </div>
 
           {/* ===== GRADING POINTS SYSTEM ===== */}
-          <div className="mb-12">
+          <div className="mb-8 sm:mb-12">
             <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Grading Points System</h3>
+            <p className="sm:hidden text-xs text-gray-400 text-center mb-2">← Swipe to see full table →</p>
             <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
                 <table className="w-full min-w-[500px]">
                   <thead className="bg-blue-600 text-white">
                     <tr>
@@ -993,6 +911,7 @@ export default function HomePageClient() {
           </div>
 
           {/* ===== DEGREE CLASSIFICATION SYSTEM ===== */}
+          <p className="sm:hidden text-xs text-gray-400 text-center mb-2">← Swipe to see full table →</p>
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 sm:px-6 py-4">
               <h3 className="text-lg sm:text-xl font-bold text-white text-center">Degree Classification System</h3>
@@ -1001,7 +920,7 @@ export default function HomePageClient() {
                 or 4th &amp; 5th Year Levels (5-Year programmes)
               </p>
             </div>
-            <div className="overflow-x-auto p-4">
+            <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0 p-2 sm:p-4">
               <table className="w-full min-w-[400px]">
                 <thead>
                   <tr className="border-b-2 border-gray-200">
@@ -1047,7 +966,10 @@ export default function HomePageClient() {
             </div>
           </div>
 
-          
+          {/* Source Note */}
+          <p className="text-xs text-gray-400 italic text-center mt-6 max-w-2xl mx-auto">
+            ℹ️ Source: Zambia Higher Education Authority (HEA) and university academic regulations. If your institution uses a different scale, check with your registrar.
+          </p>
         </div>
       </motion.section>
 
@@ -1057,14 +979,14 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-12 bg-gradient-to-r from-blue-50 to-purple-50"
+        className="py-10 sm:py-12 bg-gradient-to-r from-blue-50 to-purple-50"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8 md:p-12 text-center max-w-4xl mx-auto">
             <UserPlus className="w-16 h-16 text-blue-600 mx-auto mb-4" />
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Become a Tutor</h2>
             <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
-              Share your knowledge and expertise with thousands of Zambian students.
+              Share your knowledge and expertise with Zambian students.
               Join our community of professional tutors and make a difference.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
@@ -1100,12 +1022,12 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-12 bg-blue-50"
+        className="py-10 sm:py-12 bg-blue-50"
       >
         <div className="w-full px-3 sm:px-4 flex flex-col md:flex-row items-center justify-between bg-white rounded-2xl shadow-md border border-gray-200 p-6 sm:p-8 md:p-12 gap-6">
           <div className="text-center md:text-left">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Interested in advertising with us?</h2>
-            <p className="text-gray-600 mt-1">Reach thousands of Zambian students and educators.</p>
+            <p className="text-gray-600 mt-1">Reach Zambian students and educators.</p>
           </div>
           <div className="relative">
             <button
@@ -1142,7 +1064,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-12 bg-white overflow-hidden"
+        className="py-10 sm:py-12 bg-white overflow-hidden"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
@@ -1195,7 +1117,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-12 bg-white"
+        className="py-10 sm:py-12 bg-white"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-12">
@@ -1214,7 +1136,7 @@ export default function HomePageClient() {
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>Community Support</strong> – Join thousands of like‑minded Zambian learners.</span>
+                  <span><strong>Community Support</strong> – Join a community of like‑minded Zambian learners.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
@@ -1266,7 +1188,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-12 bg-blue-600 text-white"
+        className="py-10 sm:py-12 bg-blue-600 text-white"
       >
         <div className="w-full px-3 sm:px-4 text-center">
           <Heart className="w-12 h-12 mx-auto mb-4 text-blue-200" />
