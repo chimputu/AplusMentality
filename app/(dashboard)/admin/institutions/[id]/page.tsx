@@ -21,6 +21,7 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
   if (!institution) {
     notFound();
   }
+  const inst = institution!;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -45,73 +46,73 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
       {/* Institution Header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-start gap-4">
-          <span className="text-4xl">{TYPE_EMOJI[institution.type] || '🏫'}</span>
+          <span className="text-4xl">{TYPE_EMOJI[inst.type] || '🏫'}</span>
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {institution.name}
+              {inst.name}
             </h1>
             <div className="flex items-center gap-3 mt-1">
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                {institution.shortName} · {institution.slug}
+                {inst.shortName} · {inst.slug}
               </span>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                {institution.type.replace(/_/g, ' ')}
+                {inst.type.replace(/_/g, ' ')}
               </span>
               <span
                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  institution.isVerified
+                  inst.isVerified
                     ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                     : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
                 }`}
               >
-                {institution.isVerified ? 'Verified' : 'Unverified'}
+                {inst.isVerified ? 'Verified' : 'Unverified'}
               </span>
               <span
                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  institution.isActive
+                  inst.isActive
                     ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                     : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
                 }`}
               >
-                {institution.isActive ? 'Active' : 'Inactive'}
+                {inst.isActive ? 'Active' : 'Inactive'}
               </span>
             </div>
           </div>
         </div>
 
-        {institution.description && (
-          <p className="mt-4 text-gray-600 dark:text-gray-400">{institution.description}</p>
+        {inst.description && (
+          <p className="mt-4 text-gray-600 dark:text-gray-400">{inst.description}</p>
         )}
 
         <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
-          {institution.city && (
+          {inst.city && (
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="w-4 h-4" />
-              {institution.city}{institution.province && `, ${institution.province}`}
-              {institution.country && `, ${institution.country}`}
+              {inst.city}{inst.province && `, ${inst.province}`}
+              {inst.country && `, ${inst.country}`}
             </span>
           )}
-          {institution.website && (
+          {inst.website && (
             <a
-              href={institution.website}
+              href={inst.website}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 hover:underline"
             >
               <Globe className="w-4 h-4" />
-              {institution.website}
+              {inst.website}
             </a>
           )}
-          {institution.email && (
+          {inst.email && (
             <span className="inline-flex items-center gap-1.5">
               <Mail className="w-4 h-4" />
-              {institution.email}
+              {inst.email}
             </span>
           )}
-          {institution.phone && (
+          {inst.phone && (
             <span className="inline-flex items-center gap-1.5">
               <Phone className="w-4 h-4" />
-              {institution.phone}
+              {inst.phone}
             </span>
           )}
         </div>
@@ -125,7 +126,7 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
             <span className="text-sm">Levels</span>
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {institution.levels.length}
+            {inst.levels.length}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
@@ -134,7 +135,7 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
             <span className="text-sm">Faculties</span>
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {institution.faculties.length}
+            {inst.faculties.length}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
@@ -143,7 +144,7 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
             <span className="text-sm">Programmes</span>
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {institution.programmes.length}
+            {inst.programmes.length}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
@@ -152,7 +153,7 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
             <span className="text-sm">Users</span>
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {institution._count.users}
+            {inst._count.users}
           </p>
         </div>
       </div>
@@ -165,10 +166,10 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-              Levels ({institution.levelType})
+              Levels ({inst.levelType})
             </h3>
             <div className="space-y-1">
-              {institution.levels.map((level) => (
+              {inst.levels.map((level) => (
                 <div
                   key={level.id}
                   className="text-sm text-gray-700 dark:text-gray-300 py-1"
@@ -180,10 +181,10 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
           </div>
           <div>
             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-              Periods ({institution.periodType})
+              Periods ({inst.periodType})
             </h3>
             <div className="space-y-1">
-              {institution.periods.map((period) => (
+              {inst.periods.map((period) => (
                 <div
                   key={period.id}
                   className="text-sm text-gray-700 dark:text-gray-300 py-1"
@@ -197,13 +198,13 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
       </div>
 
       {/* Faculties */}
-      {institution.faculties.length > 0 && (
+      {inst.faculties.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Faculties
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {institution.faculties.map((faculty) => (
+            {inst.faculties.map((faculty) => (
               <div
                 key={faculty.id}
                 className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50"
@@ -221,13 +222,13 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
       )}
 
       {/* Programmes */}
-      {institution.programmes.length > 0 && (
+      {inst.programmes.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Programmes
           </h2>
           <div className="space-y-2">
-            {institution.programmes.map((prog) => (
+            {inst.programmes.map((prog) => (
               <div
                 key={prog.id}
                 className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50"

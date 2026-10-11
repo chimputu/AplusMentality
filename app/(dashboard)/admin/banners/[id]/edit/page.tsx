@@ -25,22 +25,23 @@ export default async function EditBannerPage({
   if (!banner) {
     notFound();
   }
+  const b = banner!;
 
-  const institutionIds = banner.targets.map((t) => t.institutionId);
+  const institutionIds = b.targets.map((t) => t.institutionId);
 
   const initialData = {
-    title: banner.title,
-    message: banner.message,
-    ctaLabel: banner.ctaLabel || '',
-    ctaUrl: banner.ctaUrl || '',
-    imageUrl: banner.imageUrl || '',
-    variant: banner.variant,
-    placement: banner.placement,
-    startsAt: banner.startsAt.toISOString().slice(0, 16),
-    endsAt: banner.endsAt ? banner.endsAt.toISOString().slice(0, 16) : '',
-    isActive: banner.isActive,
-    priority: banner.priority,
-    scope: banner.scope,
+    title: b.title,
+    message: b.message,
+    ctaLabel: b.ctaLabel || '',
+    ctaUrl: b.ctaUrl || '',
+    imageUrl: b.imageUrl || '',
+    variant: b.variant,
+    placement: b.placement,
+    startsAt: b.startsAt.toISOString().slice(0, 16),
+    endsAt: b.endsAt ? b.endsAt.toISOString().slice(0, 16) : '',
+    isActive: b.isActive,
+    priority: b.priority,
+    scope: b.scope,
     institutionIds,
   };
 

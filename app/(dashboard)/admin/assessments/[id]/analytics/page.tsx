@@ -44,8 +44,9 @@ export default async function AnalyticsPage({
   });
 
   if (!assessment) notFound();
+  const a = assessment!;
 
-  const attempts = assessment.attempts;
+  const attempts = a.attempts;
   const totalAttempts = attempts.length;
   const uniqueStudents = new Set(attempts.map((a: any) => a.userId)).size;
 
@@ -74,7 +75,7 @@ export default async function AnalyticsPage({
   const maxBucketCount = Math.max(...buckets.map((b) => b.count), 1);
 
   // Per-question stats
-  const questionStats = assessment.questions.map((q: any) => {
+  const questionStats = a.questions.map((q: any) => {
     const answers = q.answers || [];
     const totalAnswered = answers.length;
     const correctCount = answers.filter((a: any) => a.isCorrect === true).length;
@@ -122,7 +123,7 @@ export default async function AnalyticsPage({
           Back
         </Link>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Analytics: {assessment.title}
+          Analytics: {a.title}
         </h1>
       </div>
 

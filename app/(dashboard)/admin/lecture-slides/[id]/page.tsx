@@ -35,35 +35,36 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
   if (!slide) {
     notFound();
   }
+  const s = slide!;
 
-  const inlineUrl = getInlineUrl(slide.fileUrl);
-  const downloadUrl = slide.fileUrl || '';
+  const inlineUrl = getInlineUrl(s.fileUrl);
+  const downloadUrl = s.fileUrl || '';
 
   // ⭐ Detect PDF vs. Google Slides
   const isPdf =
-    slide.contentType === 'pdf' ||
-    (slide.fileUrl?.toLowerCase().endsWith('.pdf') ?? false);
-  const isGoogleSlides = slide.contentType === 'google_slides' && !!slide.embedUrl;
+    s.contentType === 'pdf' ||
+    (s.fileUrl?.toLowerCase().endsWith('.pdf') ?? false);
+  const isGoogleSlides = s.contentType === 'google_slides' && !!s.embedUrl;
 
   // ⭐ "Open in new tab" URL:
   // - Google Slides → the embed URL
   // - PDF → Google Docs Viewer (opens inline in new tab)
   // - Other → raw file URL
   const openUrl = isGoogleSlides
-    ? slide.embedUrl
-    : isPdf && slide.fileUrl
-      ? getGoogleDocsViewerUrl(slide.fileUrl)
-      : slide.fileUrl || '#';
+    ? s.embedUrl
+    : isPdf && s.fileUrl
+      ? getGoogleDocsViewerUrl(s.fileUrl)
+      : s.fileUrl || '#';
 
   // ⭐ Inline preview URL for the iframe:
   // - Google Slides → embed URL
   // - PDF → Google Docs Viewer
   // - Other file → raw URL
   const previewUrl = isGoogleSlides
-    ? slide.embedUrl!
-    : isPdf && slide.fileUrl
-      ? getGoogleDocsViewerUrl(slide.fileUrl)
-      : slide.fileUrl || '';
+    ? s.embedUrl!
+    : isPdf && s.fileUrl
+      ? getGoogleDocsViewerUrl(s.fileUrl)
+      : s.fileUrl || '';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -79,18 +80,18 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
         {/* ✅ Mobile-friendly action buttons */}
         <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
           <Link
-            href={`/admin/lecture-slides/${slide.id}/edit`}
+            href={`/admin/lecture-slides/${s.id}/edit`}
             className="inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
           >
             <Pencil className="w-4 h-4" /> Edit
           </Link>
 
           {/* View in App — only if there's a file (PDF/image) */}
-          {slide.fileUrl && (
+          {s.fileUrl && (
             <SlideViewerButton
-              fileUrl={slide.fileUrl}
-              title={slide.title}
-              fileType={slide.contentType}
+              fileUrl={s.fileUrl}
+              title={s.title}
+              fileType={s.contentType}
             />
           )}
 
@@ -107,7 +108,7 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
           )}
 
           {/* Download */}
-          {slide.fileUrl && (
+          {s.fileUrl && (
             <a
               href={downloadUrl}
               download
@@ -122,23 +123,23 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
       {/* Slide metadata */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {slide.title}
+          {s.title}
         </h1>
-        {slide.description && (
+        {s.description && (
           <p className="text-gray-600 dark:text-gray-300 mt-2">
-            {slide.description}
+            {s.description}
           </p>
         )}
         <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-500 dark:text-gray-400">
-          {slide.category && <span>Category: {slide.category}</span>}
-          {slide.course && (
+          {s.category && <span>Category: {s.category}</span>}
+          {s.course && (
             <span>
-              Course: {slide.course.code} – {slide.course.title}
+              Course: {s.course.code} – {s.course.title}
             </span>
           )}
-          {slide.creator && <span>Uploaded by: {slide.creator.name}</span>}
-          <span>Type: {slide.contentType || 'google_slides'}</span>
-          <span>Order: {slide.order}</span>
+          {s.creator && <span>Uploaded by: {s.creator.name}</span>}
+          <span>Type: {s.contentType || 'google_slides'}</span>
+          <span>Order: {s.order}</span>
         </div>
       </div>
 
@@ -150,7 +151,7 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
               src={previewUrl}
               className="w-full h-full"
               allowFullScreen
-              title={slide.title}
+              title={s.title}
             />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">

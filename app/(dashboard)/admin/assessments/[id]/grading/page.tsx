@@ -31,9 +31,10 @@ export default async function GradingPage({
   });
 
   if (!assessment) notFound();
+  const a = assessment!;
 
-  const essayQuestions = assessment.questions;
-  const attempts = assessment.attempts;
+  const essayQuestions = a.questions;
+  const attempts = a.attempts;
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -46,7 +47,7 @@ export default async function GradingPage({
           Back
         </Link>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Grade: {assessment.title}
+          Grade: {a.title}
         </h1>
       </div>
 
