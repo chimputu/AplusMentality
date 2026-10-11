@@ -7,7 +7,7 @@ import VideoList from './VideoList';
 import UserManagement from '@/components/UserManagement';
 import Link from 'next/link';
 import BannerCarousel from '@/components/banner-carousel';
-import type { Role } from '@/generated/prisma';
+import type { Role } from '@/generated/prisma/client';
 
 interface Announcement {
   id: string;

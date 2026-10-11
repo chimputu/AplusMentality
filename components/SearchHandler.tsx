@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { Megaphone, Video, Calendar, Clock, User, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import type { Role } from '@/generated/prisma';
+import type { Role } from '@/generated/prisma/client';
 
 interface Announcement {
   id: string;

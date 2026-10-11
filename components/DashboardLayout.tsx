@@ -37,7 +37,7 @@ import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
 import ThemeToggle from './ThemeToggle';
 import { UniversitySwitcher } from './UniversitySwitcher';
-import type { Role } from '@/generated/prisma';
+import type { Role } from '@/generated/prisma/client';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
