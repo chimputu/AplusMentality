@@ -156,3 +156,13 @@ Build the admin page for managing tutor application windows (open/close/schedule
 - Display windows in a table with status (open/closed), dates, and edit/delete controls
 - Add a "Create New Window" form with fields: institutionId (optional), opensAt, closesAt, publicMessage, isOpen
 - Link from the tutor applications list page
+
+### * Step 5: Fix Server Components render errors on student pages
+Apply retry logic to all student-facing server components to prevent transient DB failures from crashing pages.
+
+- Wrap all DB queries in `lib/auth.ts` `requireAuth()` and `getAuthUser()` with `withRetry()` — this protects all layouts
+- Fix `app/page.tsx` home page DB queries with retry logic
+- Fix `app/(dashboard)/student/page.tsx` DB queries with retry logic
+- Add auto-retry to `app/(dashboard)/error.tsx` dashboard error boundary (2s delay)
+- Wrap all Prisma queries in `lib/queries/exploration.ts` with `withRetry()`
+- TypeScript compilation passes with zero errors

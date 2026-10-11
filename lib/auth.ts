@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from './prisma';
+import { withRetry } from './retry';
 
 export async function requireAuth(allowedRoles?: string[]) {
   const { userId } = await auth();
@@ -9,12 +10,21 @@ export async function requireAuth(allowedRoles?: string[]) {
     redirect('/sign-in');
   }
 
-  let user = await prisma.user.findUnique({
-    where: { clerkId: userId },
-    include: {
-      institution: { select: { shortName: true, name: true } },
-    },
-  });
+  let user: any;
+  try {
+    user = await withRetry(
+      () => prisma.user.findUnique({
+        where: { clerkId: userId },
+        include: {
+          institution: { select: { shortName: true, name: true } },
+        },
+      }),
+      { attempts: 3, delayMs: 500 }
+    );
+  } catch (err: any) {
+    console.error('[requireAuth] Failed to find user:', err.message);
+    redirect('/unauthorized');
+  }
 
   if (user) {
     const role = user.role;
@@ -34,55 +44,90 @@ export async function requireAuth(allowedRoles?: string[]) {
     `user_${Date.now()}@temp.com`;
 
   try {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    let existingUser: any;
+    try {
+      existingUser = await withRetry(
+        () => prisma.user.findUnique({ where: { email } }),
+        { attempts: 3, delayMs: 500 }
+      );
+    } catch (err: any) {
+      console.error('[requireAuth] Failed to find user by email:', err.message);
+      redirect('/unauthorized');
+    }
 
     if (existingUser) {
-      user = await prisma.user.update({
-        where: { email },
-        data: { clerkId: userId },
-        include: { institution: { select: { shortName: true, name: true } } },
-      });
-      console.log('✅ User updated with clerkId:', user.email);
-    } else {
-      user = await prisma.user.create({
-        data: {
-          clerkId: userId,
-          email,
-          name: claims?.firstName
-            ? `${claims.firstName} ${claims.lastName || ''}`.trim()
-            : null,
-          role: 'STUDENT',
-        },
-        include: { institution: { select: { shortName: true, name: true } } },
-      });
-      console.log('✅ New user created:', user.email);
-    }
-  } catch (error) {
-    console.error('Failed to create/update user:', error);
-
-    try {
-      const uniqueEmail = `user_${Date.now()}_${userId.slice(-6)}@temp.com`;
-      user = await prisma.user.create({
-        data: {
-          clerkId: userId,
-          email: uniqueEmail,
-          name: null,
-          role: 'STUDENT',
-        },
-        include: { institution: { select: { shortName: true, name: true } } },
-      });
-      console.log('✅ User created with unique email:', uniqueEmail);
-    } catch (retryError) {
-      console.error('Fatal: Could not create user:', retryError);
-      user = await prisma.user.findUnique({
-        where: { clerkId: userId },
-        include: { institution: { select: { shortName: true, name: true } } },
-      });
-
-      if (!user) {
+      try {
+        user = await withRetry(
+          () => prisma.user.update({
+            where: { email },
+            data: { clerkId: userId },
+            include: { institution: { select: { shortName: true, name: true } } },
+          }),
+          { attempts: 3, delayMs: 500 }
+        );
+      } catch (err: any) {
+        console.error('[requireAuth] Failed to update user:', err.message);
         redirect('/unauthorized');
       }
+      console.log('✅ User updated with clerkId:', user.email);
+    } else {
+      try {
+        user = await withRetry(
+          () => prisma.user.create({
+            data: {
+              clerkId: userId,
+              email,
+              name: claims?.firstName
+                ? `${claims.firstName} ${claims.lastName || ''}`.trim()
+                : null,
+              role: 'STUDENT',
+            },
+            include: { institution: { select: { shortName: true, name: true } } },
+          }),
+          { attempts: 3, delayMs: 500 }
+        );
+      } catch (createError: any) {
+        console.error('[requireAuth] Failed to create user:', createError.message);
+        // Fallback: try with unique email
+        try {
+          const uniqueEmail = `user_${Date.now()}_${userId.slice(-6)}@temp.com`;
+          user = await withRetry(
+            () => prisma.user.create({
+              data: {
+                clerkId: userId,
+                email: uniqueEmail,
+                name: null,
+                role: 'STUDENT',
+              },
+              include: { institution: { select: { shortName: true, name: true } } },
+            }),
+            { attempts: 3, delayMs: 500 }
+          );
+          console.log('✅ User created with unique email:', uniqueEmail);
+        } catch (retryError: any) {
+          console.error('[requireAuth] Fatal: Could not create user:', retryError.message);
+          // Last resort: try to find by clerkId again
+          try {
+            user = await withRetry(
+              () => prisma.user.findUnique({
+                where: { clerkId: userId },
+                include: { institution: { select: { shortName: true, name: true } } },
+              }),
+              { attempts: 2, delayMs: 300 }
+            );
+          } catch (finalErr: any) {
+            console.error('[requireAuth] Final fallback failed:', finalErr.message);
+          }
+          if (!user) {
+            redirect('/unauthorized');
+          }
+        }
+      }
+      console.log('✅ New user created:', user.email);
     }
+  } catch (error: any) {
+    console.error('[requireAuth] Unexpected error:', error.message);
+    redirect('/unauthorized');
   }
 
   if (!user) {
@@ -103,12 +148,21 @@ export async function getAuthUser(allowedRoles?: string[]) {
   const { userId } = await auth();
   if (!userId) return null;
 
-  let user = await prisma.user.findUnique({
-    where: { clerkId: userId },
-    include: {
-      institution: { select: { shortName: true, name: true } },
-    },
-  });
+  let user: any;
+  try {
+    user = await withRetry(
+      () => prisma.user.findUnique({
+        where: { clerkId: userId },
+        include: {
+          institution: { select: { shortName: true, name: true } },
+        },
+      }),
+      { attempts: 3, delayMs: 500 }
+    );
+  } catch (err: any) {
+    console.error('[getAuthUser] Failed to find user:', err.message);
+    return null;
+  }
 
   if (user) {
     if (allowedRoles && !allowedRoles.includes(user.role)) return null;
@@ -125,29 +179,54 @@ export async function getAuthUser(allowedRoles?: string[]) {
     `user_${Date.now()}@temp.com`;
 
   try {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    let existingUser: any;
+    try {
+      existingUser = await withRetry(
+        () => prisma.user.findUnique({ where: { email } }),
+        { attempts: 3, delayMs: 500 }
+      );
+    } catch (err: any) {
+      console.error('[getAuthUser] Failed to find user by email:', err.message);
+      return null;
+    }
 
     if (existingUser) {
-      user = await prisma.user.update({
-        where: { email },
-        data: { clerkId: userId },
-        include: { institution: { select: { shortName: true, name: true } } },
-      });
+      try {
+        user = await withRetry(
+          () => prisma.user.update({
+            where: { email },
+            data: { clerkId: userId },
+            include: { institution: { select: { shortName: true, name: true } } },
+          }),
+          { attempts: 3, delayMs: 500 }
+        );
+      } catch (err: any) {
+        console.error('[getAuthUser] Failed to update user:', err.message);
+        return null;
+      }
     } else {
-      user = await prisma.user.create({
-        data: {
-          clerkId: userId,
-          email,
-          name: claims?.firstName
-            ? `${claims.firstName} ${claims.lastName || ''}`.trim()
-            : null,
-          role: 'STUDENT',
-        },
-        include: { institution: { select: { shortName: true, name: true } } },
-      });
+      try {
+        user = await withRetry(
+          () => prisma.user.create({
+            data: {
+              clerkId: userId,
+              email,
+              name: claims?.firstName
+                ? `${claims.firstName} ${claims.lastName || ''}`.trim()
+                : null,
+              role: 'STUDENT',
+            },
+            include: { institution: { select: { shortName: true, name: true } } },
+          }),
+          { attempts: 3, delayMs: 500 }
+        );
+      } catch (err: any) {
+        console.error('[getAuthUser] Failed to create user:', err.message);
+        return null;
+      }
     }
-  } catch (error) {
-    console.error('getAuthUser error:', error);
+  } catch (error: any) {
+    console.error('[getAuthUser] error:', error.message);
     return null;
   }
 
