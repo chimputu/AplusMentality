@@ -103,7 +103,7 @@ export const referencesSchema = z.object({
 export const offeringSchema = z.object({
   courseId: z.string().optional(),
   title: z.string().min(3).max(200),
-  description: z.string().min(20).max(2000),
+  description: z.string().min(20).max(2000).optional().or(z.string().length(0)),
   level: z.enum(['Beginner', 'Intermediate', 'Advanced']),
   priceZMW: z.number().int().min(0).max(100000),
   durationMinutes: z.number().int().min(15).max(300),
@@ -112,7 +112,7 @@ export const offeringSchema = z.object({
     .min(1, 'Select at least one mode'),
   schedule: z.any().optional(),
   prerequisites: z.string().max(1000).optional(),
-  learningOutcomes: z.array(z.string().min(3).max(200)).max(10),
+  learningOutcomes: z.array(z.string().min(3).max(200)).max(10).optional(),
 });
 
 export const offeringsSchema = z.object({

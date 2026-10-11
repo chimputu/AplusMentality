@@ -120,6 +120,8 @@ export const PLATFORM_FACTS = {
     'Stanford',
     'Yale',
     'Princeton',
+    'Caltech',
+    'Berkeley',
     'UC schools',
     'Cal State',
     'USC',
