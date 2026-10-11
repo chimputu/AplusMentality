@@ -72,9 +72,6 @@ export default async function ProgrammePage({ params }: PageProps) {
             </div>
           </div>
         </div>
-        {programme.description && (
-          <p className="mt-4 text-gray-600 dark:text-gray-300">{programme.description}</p>
-        )}
       </div>
 
       {/* Courses by Year */}

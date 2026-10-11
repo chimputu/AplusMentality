@@ -65,9 +65,8 @@ export async function fetchCoursesForDropdown(programmeId?: string) {
     select: {
       id: true,
       code: true,
-      name: true,
+      title: true,
       programmeId: true,
-      institutionId: true,
       levelId: true,
       periodId: true,
       programme: {
@@ -151,7 +150,6 @@ export async function fetchBranchesForDropdown(programmeId?: string) {
     select: {
       id: true,
       name: true,
-      code: true,
       programmeId: true,
     },
     orderBy: { name: 'asc' },

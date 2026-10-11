@@ -87,9 +87,9 @@ export default async function UniversityPage({ params }: PageProps) {
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {university._count.courses}
+              {university._count.programmes}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Courses</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Programmes</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">

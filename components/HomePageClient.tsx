@@ -1432,7 +1432,7 @@ export default function HomePageClient() {
       </footer>
 
       {/* ===== KEYFRAMES ===== */}
-      <style jsx>{`
+      <style>{`
         @keyframes scrollRightToLeft {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
