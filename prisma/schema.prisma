@@ -336,6 +336,8 @@ model Course {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  tutorOfferings TutorOffering[]
+
   @@unique([universityId, programmeId, year, period, code])
   @@index([isPublished])
   @@index([createdAt])
@@ -1191,6 +1193,46 @@ model TutorApplication {
   createdAt       DateTime               @default(now())
   updatedAt       DateTime               @updatedAt
 
+  // ─── IDENTITY VERIFICATION ───
+  profilePhotoUrl         String?
+  profilePhotoPublicId    String?
+  nrcFrontUrl             String?
+  nrcFrontPublicId        String?
+  nrcBackUrl              String?
+  nrcBackPublicId         String?
+  nrcNumber               String?
+
+  // ─── GRADE 12 RESULTS ───
+  grade12School           String?
+  grade12Year             Int?
+  grade12ResultsUrl       String?
+  grade12Summary          String?  @db.Text
+
+  // ─── CURRENT ACADEMIC RECORDS ───
+  currentInstitution      String?
+  currentProgramme        String?
+  currentYear             Int?
+  academicRecordsUrl      String?
+  academicSummary         String?  @db.Text
+
+  // ─── TEACHING MODES ───
+  teachingModes           String[] // ['ONLINE', 'HYBRID', 'PHYSICAL']
+  physicalLocation        String?
+
+  // ─── TEACHING SCHEDULE ───
+  teachingSchedule        Json?
+
+  // ─── PRICING ───
+  hourlyRateZMW           Int?
+  minimumBookingHours     Int?
+
+  // ─── ADMIN CONTROL ───
+  isReadyToTeach          Boolean  @default(false)
+
+  // ─── RELATIONS ───
+  references              TutorReference[]
+  offerings               TutorOffering[]
+
   @@index([status])
   @@index([institutionId])
   @@index([submittedAt])
@@ -1237,7 +1279,8 @@ model Institution {
   clerkOrgSlug   String?
 
   // Tutor applications
-  tutorApplications TutorApplication[]
+  tutorApplications   TutorApplication[]
+  applicationWindows  ApplicationWindow[]
 
   @@index([slug])
   @@index([type])
@@ -1380,4 +1423,76 @@ model ExplorationLog {
 
   @@index([userId, createdAt])
   @@index([institutionId])
+}
+
+// ============================================
+// TUTOR REFERENCES
+// ============================================
+model TutorReference {
+  id                  String   @id @default(cuid())
+  tutorApplicationId  String
+  tutorApplication    TutorApplication @relation(fields: [tutorApplicationId], references: [id], onDelete: Cascade)
+
+  fullName            String
+  relationship        String
+  email               String
+  phone               String?
+  institution         String?
+
+  createdAt           DateTime @default(now())
+
+  @@index([tutorApplicationId])
+}
+
+// ============================================
+// TUTOR COURSE OFFERINGS
+// ============================================
+model TutorOffering {
+  id                  String   @id @default(cuid())
+  tutorApplicationId  String
+  tutorApplication    TutorApplication @relation(fields: [tutorApplicationId], references: [id], onDelete: Cascade)
+
+  courseId            String?
+  course              Course?  @relation(fields: [courseId], references: [id])
+
+  title               String
+  description         String   @db.Text
+  level               String
+
+  priceZMW            Int
+  durationMinutes     Int      @default(60)
+  maxStudentsPerSession Int    @default(1)
+
+  modes               String[]
+  schedule            Json?
+
+  prerequisites       String?  @db.Text
+  learningOutcomes    String[]
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([tutorApplicationId])
+  @@index([courseId])
+}
+
+// ============================================
+// APPLICATION WINDOWS (Admin control for opening/closing tutor applications)
+// ============================================
+model ApplicationWindow {
+  id              String   @id @default(cuid())
+  institutionId   String?
+  institution     Institution? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  isOpen          Boolean  @default(false)
+  opensAt         DateTime?
+  closesAt        DateTime?
+  publicMessage   String?  @db.Text
+  notifiedAt      DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([institutionId, isOpen])
+  @@index([opensAt, closesAt])
 }

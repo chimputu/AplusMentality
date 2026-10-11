@@ -56,6 +56,10 @@ export async function submitTutorApplication(rawInput: unknown) {
   // Check if user already has an active application
   const existing = await prisma.tutorApplication.findUnique({
     where: { userId: user.id },
+    include: {
+      references: true,
+      offerings: true,
+    },
   });
 
   if (existing && existing.status !== 'REJECTED' && existing.status !== 'WITHDRAWN') {
@@ -65,7 +69,10 @@ export async function submitTutorApplication(rawInput: unknown) {
   let application;
 
   if (existing) {
-    // Re-apply after rejection/withdrawal
+    // Re-apply after rejection/withdrawal — delete old references and offerings
+    await prisma.tutorReference.deleteMany({ where: { tutorApplicationId: existing.id } });
+    await prisma.tutorOffering.deleteMany({ where: { tutorApplicationId: existing.id } });
+
     application = await prisma.tutorApplication.update({
       where: { id: existing.id },
       data: {
@@ -82,6 +89,62 @@ export async function submitTutorApplication(rawInput: unknown) {
         rejectionReason: null,
         reviewedAt: null,
         decidedAt: null,
+        // Identity
+        profilePhotoUrl: input.profilePhotoUrl,
+        profilePhotoPublicId: input.profilePhotoPublicId,
+        nrcFrontUrl: input.nrcFrontUrl,
+        nrcFrontPublicId: input.nrcFrontPublicId,
+        nrcBackUrl: input.nrcBackUrl,
+        nrcBackPublicId: input.nrcBackPublicId,
+        nrcNumber: input.nrcNumber || null,
+        // Grade 12
+        grade12School: input.grade12School,
+        grade12Year: input.grade12Year,
+        grade12ResultsUrl: input.grade12ResultsUrl,
+        grade12Summary: input.grade12Summary,
+        // Current Academic
+        currentInstitution: input.currentInstitution,
+        currentProgramme: input.currentProgramme,
+        currentYear: input.currentYear,
+        academicRecordsUrl: input.academicRecordsUrl,
+        academicSummary: input.academicSummary,
+        // Teaching
+        teachingModes: input.teachingModes,
+        physicalLocation: input.physicalLocation,
+        teachingSchedule: (input.teachingSchedule ?? null) as any,
+        hourlyRateZMW: input.hourlyRateZMW,
+        minimumBookingHours: input.minimumBookingHours,
+        isReadyToTeach: input.isReadyToTeach,
+        // References
+        references: {
+          create: input.references.map((ref) => ({
+            fullName: ref.fullName,
+            relationship: ref.relationship,
+            email: ref.email,
+            phone: ref.phone,
+            institution: ref.institution,
+          })),
+        },
+        // Offerings
+        offerings: {
+          create: input.offerings.map((off) => ({
+            courseId: off.courseId || null,
+            title: off.title,
+            description: off.description,
+            level: off.level,
+            priceZMW: off.priceZMW,
+            durationMinutes: off.durationMinutes,
+            maxStudentsPerSession: off.maxStudentsPerSession,
+            modes: off.modes,
+            schedule: (off.schedule ?? null) as any,
+            prerequisites: off.prerequisites,
+            learningOutcomes: off.learningOutcomes,
+          })),
+        },
+      },
+      include: {
+        references: true,
+        offerings: true,
       },
     });
   } else {
@@ -97,6 +160,62 @@ export async function submitTutorApplication(rawInput: unknown) {
         teachingPhilosophy: input.teachingPhilosophy,
         institutionId: input.institutionId,
         status: 'PENDING',
+        // Identity
+        profilePhotoUrl: input.profilePhotoUrl,
+        profilePhotoPublicId: input.profilePhotoPublicId,
+        nrcFrontUrl: input.nrcFrontUrl,
+        nrcFrontPublicId: input.nrcFrontPublicId,
+        nrcBackUrl: input.nrcBackUrl,
+        nrcBackPublicId: input.nrcBackPublicId,
+        nrcNumber: input.nrcNumber || null,
+        // Grade 12
+        grade12School: input.grade12School,
+        grade12Year: input.grade12Year,
+        grade12ResultsUrl: input.grade12ResultsUrl,
+        grade12Summary: input.grade12Summary,
+        // Current Academic
+        currentInstitution: input.currentInstitution,
+        currentProgramme: input.currentProgramme,
+        currentYear: input.currentYear,
+        academicRecordsUrl: input.academicRecordsUrl,
+        academicSummary: input.academicSummary,
+        // Teaching
+        teachingModes: input.teachingModes,
+        physicalLocation: input.physicalLocation,
+        teachingSchedule: (input.teachingSchedule ?? null) as any,
+        hourlyRateZMW: input.hourlyRateZMW,
+        minimumBookingHours: input.minimumBookingHours,
+        isReadyToTeach: input.isReadyToTeach,
+        // References
+        references: {
+          create: input.references.map((ref) => ({
+            fullName: ref.fullName,
+            relationship: ref.relationship,
+            email: ref.email,
+            phone: ref.phone,
+            institution: ref.institution,
+          })),
+        },
+        // Offerings
+        offerings: {
+          create: input.offerings.map((off) => ({
+            courseId: off.courseId || null,
+            title: off.title,
+            description: off.description,
+            level: off.level,
+            priceZMW: off.priceZMW,
+            durationMinutes: off.durationMinutes,
+            maxStudentsPerSession: off.maxStudentsPerSession,
+            modes: off.modes,
+            schedule: (off.schedule ?? null) as any,
+            prerequisites: off.prerequisites,
+            learningOutcomes: off.learningOutcomes,
+          })),
+        },
+      },
+      include: {
+        references: true,
+        offerings: true,
       },
     });
   }
@@ -328,10 +447,13 @@ export async function approveTutorApplication(rawInput: unknown) {
       },
     });
 
-    // Mark user as verified tutor
+    // Mark user as verified tutor and copy profile photo to their public profile
     await tx.user.update({
       where: { id: application.userId },
-      data: { isVerifiedTutor: true },
+      data: {
+        isVerifiedTutor: true,
+        imageUrl: application.profilePhotoUrl ?? undefined,
+      },
     });
   });
 

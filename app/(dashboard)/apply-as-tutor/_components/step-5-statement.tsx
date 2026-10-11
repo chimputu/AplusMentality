@@ -11,7 +11,7 @@ export default function Step5Statement({ formData, updateField }: Props) {
   const maxChars = 5000;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Teaching Philosophy <span className="text-red-500">*</span>
@@ -37,6 +37,26 @@ export default function Step5Statement({ formData, updateField }: Props) {
             {charCount}/{maxChars}
           </p>
         </div>
+      </div>
+
+      {/* Ready to Teach Confirmation */}
+      <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={formData.isReadyToTeach || false}
+            onChange={(e) => updateField('isReadyToTeach', e.target.checked)}
+            className="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <div>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              I confirm I am ready to teach
+            </span>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              By checking this, you confirm that all information provided is accurate and you are prepared to start teaching students on the A+ Mentality platform.
+            </p>
+          </div>
+        </label>
       </div>
     </div>
   );

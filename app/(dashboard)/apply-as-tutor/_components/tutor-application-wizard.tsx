@@ -5,16 +5,24 @@ import { useRouter } from 'next/navigation';
 import { submitTutorApplication } from '@/lib/actions/tutor-application';
 import Step1Personal from './step-1-personal';
 import Step2Professional from './step-2-professional';
+import Step3Identity from './step-3-identity';
 import Step3Qualifications from './step-3-qualifications';
 import Step4Documents from './step-4-documents';
+import Step6References from './step-6-references';
+import Step7Offerings from './step-7-offerings';
+import Step8Teaching from './step-8-teaching';
 import Step5Statement from './step-5-statement';
 import {
   ChevronRight,
   ChevronLeft,
   User,
   Briefcase,
+  Shield,
   GraduationCap,
   FileText,
+  Users,
+  BookOpen,
+  Clock,
   MessageSquare,
   Loader2,
   CheckCircle,
@@ -24,9 +32,13 @@ import {
 const steps = [
   { id: 1, title: 'Personal', icon: User },
   { id: 2, title: 'Professional', icon: Briefcase },
-  { id: 3, title: 'Qualifications', icon: GraduationCap },
-  { id: 4, title: 'Documents', icon: FileText },
-  { id: 5, title: 'Statement', icon: MessageSquare },
+  { id: 3, title: 'Identity', icon: Shield },
+  { id: 4, title: 'Qualifications', icon: GraduationCap },
+  { id: 5, title: 'Documents', icon: FileText },
+  { id: 6, title: 'References', icon: Users },
+  { id: 7, title: 'Courses', icon: BookOpen },
+  { id: 8, title: 'Teaching', icon: Clock },
+  { id: 9, title: 'Statement', icon: MessageSquare },
 ];
 
 export default function TutorApplicationWizard() {
@@ -37,14 +49,67 @@ export default function TutorApplicationWizard() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
+    // Personal
     fullName: '',
     email: '',
     phone: '',
+    // Professional
     experienceYears: 0,
     institutionId: '',
+    // Qualifications
     qualifications: [] as Array<{ degree: string; institution: string; year: number }>,
+    // Identity
+    profilePhotoUrl: '',
+    profilePhotoPublicId: '',
+    nrcFrontUrl: '',
+    nrcFrontPublicId: '',
+    nrcBackUrl: '',
+    nrcBackPublicId: '',
+    nrcNumber: '',
+    // Grade 12
+    grade12School: '',
+    grade12Year: 0,
+    grade12ResultsUrl: '',
+    grade12Summary: '',
+    // Current Academic
+    currentInstitution: '',
+    currentProgramme: '',
+    currentYear: 0,
+    academicRecordsUrl: '',
+    academicSummary: '',
+    // Documents
     cvUrl: '',
+    // References
+    references: [] as Array<{
+      fullName: string;
+      relationship: string;
+      email: string;
+      phone?: string;
+      institution?: string;
+    }>,
+    // Offerings
+    offerings: [] as Array<{
+      courseId?: string;
+      title: string;
+      description: string;
+      level: string;
+      priceZMW: number;
+      durationMinutes: number;
+      maxStudentsPerSession: number;
+      modes: string[];
+      schedule?: any;
+      prerequisites?: string;
+      learningOutcomes: string[];
+    }>,
+    // Teaching
+    teachingModes: [] as string[],
+    physicalLocation: '',
+    teachingSchedule: {} as Record<string, string[]>,
+    hourlyRateZMW: 0,
+    minimumBookingHours: 0,
+    // Statement
     teachingPhilosophy: '',
+    isReadyToTeach: false,
   });
 
   const updateField = (field: string, value: any) => {
@@ -58,18 +123,26 @@ export default function TutorApplicationWizard() {
       case 2:
         return true;
       case 3:
-        return true;
+        return formData.profilePhotoUrl && formData.nrcFrontUrl && formData.nrcBackUrl;
       case 4:
-        return true;
+        return formData.grade12School.length >= 3 && formData.grade12Year > 0 && formData.grade12Summary.length >= 3;
       case 5:
-        return formData.teachingPhilosophy.length >= 50;
+        return true;
+      case 6:
+        return (formData.references || []).length >= 2;
+      case 7:
+        return (formData.offerings || []).length >= 1;
+      case 8:
+        return (formData.teachingModes || []).length >= 1;
+      case 9:
+        return formData.teachingPhilosophy.length >= 50 && formData.isReadyToTeach;
       default:
         return false;
     }
   };
 
   const handleNext = () => {
-    if (currentStep < 5) setCurrentStep(currentStep + 1);
+    if (currentStep < 9) setCurrentStep(currentStep + 1);
   };
 
   const handleBack = () => {
@@ -110,7 +183,7 @@ export default function TutorApplicationWizard() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -122,16 +195,16 @@ export default function TutorApplicationWizard() {
       </div>
 
       {/* Progress bar */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+      <div className="mb-8 overflow-x-auto">
+        <div className="flex items-center justify-between min-w-[600px]">
           {steps.map((step, i) => {
             const Icon = step.icon;
             const isActive = step.id === currentStep;
             const isCompleted = step.id < currentStep;
             return (
-              <div key={step.id} className="flex flex-col items-center">
+              <div key={step.id} className="flex flex-col items-center relative flex-1">
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                     isCompleted
                       ? 'bg-green-500 text-white'
                       : isActive
@@ -146,7 +219,7 @@ export default function TutorApplicationWizard() {
                   )}
                 </div>
                 <span
-                  className={`text-xs mt-1 ${
+                  className={`text-xs mt-1 whitespace-nowrap ${
                     isActive
                       ? 'text-blue-600 dark:text-blue-400 font-medium'
                       : 'text-gray-500 dark:text-gray-400'
@@ -156,18 +229,22 @@ export default function TutorApplicationWizard() {
                 </span>
                 {i < steps.length - 1 && (
                   <div
-                    className={`absolute ml-12 w-8 h-0.5 ${
+                    className={`absolute top-5 left-[60%] w-[80%] h-0.5 ${
                       isCompleted
                         ? 'bg-green-500'
                         : 'bg-gray-200 dark:bg-gray-700'
                     }`}
-                    style={{ marginTop: '-20px' }}
                   />
                 )}
               </div>
             );
           })}
         </div>
+      </div>
+
+      {/* Step indicator */}
+      <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+        Step {currentStep} of {steps.length} · {steps[currentStep - 1]?.title}
       </div>
 
       {/* Error message */}
@@ -191,12 +268,24 @@ export default function TutorApplicationWizard() {
           <Step2Professional formData={formData} updateField={updateField} />
         )}
         {currentStep === 3 && (
-          <Step3Qualifications formData={formData} updateField={updateField} />
+          <Step3Identity formData={formData} updateField={updateField} />
         )}
         {currentStep === 4 && (
-          <Step4Documents formData={formData} updateField={updateField} />
+          <Step3Qualifications formData={formData} updateField={updateField} />
         )}
         {currentStep === 5 && (
+          <Step4Documents formData={formData} updateField={updateField} />
+        )}
+        {currentStep === 6 && (
+          <Step6References formData={formData} updateField={updateField} />
+        )}
+        {currentStep === 7 && (
+          <Step7Offerings formData={formData} updateField={updateField} />
+        )}
+        {currentStep === 8 && (
+          <Step8Teaching formData={formData} updateField={updateField} />
+        )}
+        {currentStep === 9 && (
           <Step5Statement formData={formData} updateField={updateField} />
         )}
       </div>
@@ -213,7 +302,7 @@ export default function TutorApplicationWizard() {
           Back
         </button>
 
-        {currentStep < 5 ? (
+        {currentStep < 9 ? (
           <button
             type="button"
             onClick={handleNext}

@@ -9,6 +9,7 @@ import {
   AlertCircle,
   FileText,
   Filter,
+  CalendarDays,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -133,12 +134,23 @@ export default async function AdminTutorApplicationsPage({
   return (
     <div className="p-4 md:p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Tutor Applications
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Review and manage tutor applications from students.
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              Tutor Applications
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Review and manage tutor applications from students.
+            </p>
+          </div>
+          <Link
+            href="/admin/tutor-applications/window"
+            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition"
+          >
+            <CalendarDays className="w-4 h-4" />
+            Manage Windows
+          </Link>
+        </div>
       </div>
 
       {/* Stats */}
