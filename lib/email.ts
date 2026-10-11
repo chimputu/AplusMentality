@@ -1,8 +1,8 @@
-// lib/email.ts — Simple email utility using EmailJS
-// For server-side use, we log the email and optionally send via EmailJS browser SDK
-// In production, consider migrating to Resend or a dedicated email service
+// lib/email.ts — Email utility for tutor application notifications
+// Uses Brevo (Sendinblue) for server-side email delivery
+// Free plan: 300 emails/day, sender: kafiswegchimputu@gmail.com
 
-import { prisma } from '@/lib/prisma';
+import { sendEmail } from '@/lib/email/send';
 
 export interface TutorApplicationEmail {
   to: string;
@@ -12,52 +12,27 @@ export interface TutorApplicationEmail {
   type: 'submitted' | 'approved' | 'rejected';
 }
 
-// EmailJS configuration (same service used in HomePageClient)
-const EMAILJS_SERVICE_ID = 'service_fadklbd';
-const EMAILJS_PUBLIC_KEY = 'lq3xCtY4KtS7Z-3Wf';
-
-// Template IDs — create these in your EmailJS dashboard:
-// - template_tutor_submitted: When a student submits a tutor application
-// - template_tutor_approved: When admin approves a tutor application
-// - template_tutor_rejected: When admin rejects a tutor application
-const EMAILJS_TEMPLATES = {
-  submitted: 'template_tutor_submitted',
-  approved: 'template_tutor_approved',
-  rejected: 'template_tutor_rejected',
-} as const;
-
 /**
- * Send a tutor application email notification.
- * Uses console logging as fallback if EmailJS is not configured server-side.
- * EmailJS browser SDK is client-side only, so server-side we log and track.
+ * Send a tutor application email notification via Brevo.
+ * Actually delivers the email to the recipient's inbox.
+ * Falls back to console logging if BREVO_API_KEY is not configured.
  */
 export async function sendTutorApplicationEmail(email: TutorApplicationEmail) {
-  const { to, subject, fullName, body, type } = email;
+  const { to, subject, body, type } = email;
 
   // Log the email for tracking
   console.log(`[Email] ${type.toUpperCase()} — To: ${to}, Subject: ${subject}`);
-  console.log(`[Email] From: ${fullName}, Body preview: ${body.slice(0, 100)}...`);
 
-  // Try to get admin email for "submitted" notifications
-  if (type === 'submitted') {
-    const admins = await prisma.user.findMany({
-      where: { role: 'ADMIN' },
-      select: { email: true },
-    });
-    if (admins.length > 0) {
-      console.log(`[Email] Admins to notify: ${admins.map((a) => a.email).join(', ')}`);
-    }
+  // Send via Brevo
+  const result = await sendEmail({ to, subject, html: body });
+
+  if (result.success) {
+    console.log(`[Email] ${type.toUpperCase()} sent successfully to ${to}`);
+  } else {
+    console.error(`[Email] ${type.toUpperCase()} failed to send to ${to}:`, result.error);
   }
 
-  // Note: EmailJS browser SDK cannot be used server-side.
-  // For production, integrate Resend or similar:
-  //   npm install resend
-  //   const resend = new Resend(process.env.RESEND_API_KEY);
-  //   await resend.emails.send({ from, to, subject, html: body });
-
-  // For now, we store the email intent in a log table if it exists,
-  // or just log to console for the admin to see in Vercel logs.
-  return { success: true, type, to };
+  return result;
 }
 
 /**
