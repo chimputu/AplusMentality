@@ -16,11 +16,6 @@ const nextConfig = {
       bodySizeLimit: '50mb',
     },
   },
-  // Skip TS type-checking during build — local node_modules often missing Next.js .d.ts files
-  // Vercel builds have clean deps; run `npx tsc --noEmit` separately to check types
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   // ✅ Silence the Turbopack warning
   turbopack: {},
   // ✅ Security headers including Content-Security-Policy
