@@ -19,6 +19,7 @@ import {
 import BannerCarousel from '@/components/banner-carousel';
 import GlowingText from '@/components/glowing-text';
 import { CourseCard } from '@/components/course-card';
+import { InstitutionLogo } from '@/components/institution-logo';
 
 const fadeInUp: any = {
   hidden: { opacity: 0, y: 30 },
@@ -90,17 +91,6 @@ export default function HomePageClient() {
   // ============================================================
   // ZAMBIA 2026 DATA — Based on HEA Gazette & University Websites
   // ============================================================
-
-  const institutions = [
-    { name: 'University of Zambia', logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&h=150&fit=crop' },
-    { name: 'Copperbelt University', logo: 'https://images.unsplash.com/photo-1562774053-701939374585?w=150&h=150&fit=crop' },
-    { name: 'Mulungushi University', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIpJBpFlsIFSEqF7L6i5PbFavqeIGWQTNlcc0djaiqjw&s=10' },
-    { name: 'Kwame Nkrumah University', logo: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=150&h=150&fit=crop' },
-    { name: 'Chalimbana University', logo: 'https://lens.usercontent.google.com/image?vsrid=CKKXidTP16nSKRACGAEiJDVjNTJmNDA2LTQyZWYtNGFiYi05ODZhLTE0ZDZhYWJiOGM4NjKBASICZWgoG0JzCi5sZmUtZHVtbXk6OGE2MzdlNDctZmQ3OC00N2YxLTgzMzAtZjg3M2ZkMjAyNGUxEkEKPy9ibnMvZWgvYm9yZy9laC9ibnMvbGVucy1mcm9udGVuZC1hcGkvcHJvZC5sZW5zLWZyb250ZW5kLWFwaS8zNFoECgJlaDjIv4DRh-GVAw&gsessionid=aXf0uimykXqoBUjXLIIfz3RXeNmT2546IYBEk1vpmcsUpNVwZQm3hQ' },
-    { name: 'Cavendish University Zambia', logo: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=150&h=150&fit=crop' },
-    { name: 'University of Lusaka', logo: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=150&h=150&fit=crop' },
-    { name: 'ZCAS University', logo: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&h=150&fit=crop' },
-  ];
 
   const testimonials = [
     { id: 1, name: 'Sarah Mwansa', role: 'Medical Student, UNZA', quote: 'A+ Mentality has completely transformed how I learn. The curated videos and past papers keep me ahead of my peers.', rating: 5 },
@@ -265,7 +255,7 @@ export default function HomePageClient() {
             {/* Left – Text Content */}
             <div className="flex-[2] text-center lg:text-left w-full">
               <div className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.1]">
-                <GlowingText text="A+ Mentality" duration={2.5} color="#60a5fa" className="block" />
+                <GlowingText text="A+ Mentality" cycleDuration={6} className="block" />
               </div>
 
               <p className="mt-3 text-base sm:text-lg text-blue-200/80 max-w-2xl mx-auto lg:mx-0">
@@ -273,7 +263,7 @@ export default function HomePageClient() {
               </p>
 
               <p className="mt-2 text-sm sm:text-base text-gray-300 max-w-xl mx-auto lg:mx-0">
-                Study smarter, stay organized, and track your progress — aligned with Zambian university standards.
+                Study smarter, stay organized, and track your progress. Aligned with Zambian university standards.
               </p>
 
               <div className="mt-6 flex flex-wrap justify-center lg:justify-start gap-3">
@@ -485,7 +475,7 @@ export default function HomePageClient() {
             <Crown className="w-12 h-12 text-blue-600 mx-auto mb-4" />
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">What We Offer</h2>
             <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
-              Everything you need to succeed in your academic journey – all in one place.
+              Everything you need to succeed in your academic journey. All in one place.
             </p>
           </motion.div>
 
@@ -615,8 +605,8 @@ export default function HomePageClient() {
             <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Your Course Journey</h2>
             <p className="mt-2 text-gray-600 max-w-3xl mx-auto">
-              From Natural Sciences to Computer Science – a complete academic pathway
-              aligned with Zambian university standards.
+              From Natural Sciences to Computer Science. A complete academic pathway
+               aligned with Zambian university standards.
             </p>
           </motion.div>
 
@@ -766,37 +756,37 @@ export default function HomePageClient() {
                     <tr className="bg-green-50/50 hover:bg-green-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-green-700 text-sm">A</td>
                       <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">2.0</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">76 – 85</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">76-85</td>
                       <td className="px-3 sm:px-4 py-3 text-green-700 font-medium text-sm">Distinction</td>
                     </tr>
                     <tr className="bg-blue-50 hover:bg-blue-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-blue-700 text-sm">B+</td>
                       <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">1.5</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">66 – 75</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">66-75</td>
                       <td className="px-3 sm:px-4 py-3 text-blue-700 font-medium text-sm">Merit</td>
                     </tr>
                     <tr className="bg-blue-50/50 hover:bg-blue-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-blue-700 text-sm">B</td>
                       <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">1.0</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">60 – 65</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">60-65</td>
                       <td className="px-3 sm:px-4 py-3 text-blue-700 font-medium text-sm">Credit</td>
                     </tr>
                     <tr className="bg-yellow-50 hover:bg-yellow-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-yellow-700 text-sm">C+</td>
                       <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0.5</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">55 – 59</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">55-59</td>
                       <td className="px-3 sm:px-4 py-3 text-yellow-700 font-medium text-sm">Clear Pass</td>
                     </tr>
                     <tr className="bg-yellow-50/50 hover:bg-yellow-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-yellow-700 text-sm">C</td>
                       <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0.25</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">50 – 54</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">50-54</td>
                       <td className="px-3 sm:px-4 py-3 text-yellow-700 font-medium text-sm">Bare Pass</td>
                     </tr>
                     <tr className="bg-red-50 hover:bg-red-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-red-700 text-sm">D+</td>
                       <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">45 – 49</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">45-49</td>
                       <td className="px-3 sm:px-4 py-3 text-red-700 font-medium text-sm">Bare Fail</td>
                     </tr>
                     <tr className="bg-red-50/50 hover:bg-red-100 transition">
@@ -839,7 +829,7 @@ export default function HomePageClient() {
                     </td>
                   </tr>
                   <tr className="hover:bg-blue-50 transition">
-                    <td className="px-3 sm:px-4 py-4 font-bold text-blue-700 text-sm">30 – 39.9 Points</td>
+                    <td className="px-3 sm:px-4 py-4 font-bold text-blue-700 text-sm">30-39.9 Points</td>
                     <td className="px-3 sm:px-4 py-4">
                       <span className="inline-block bg-blue-100 text-blue-800 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
                          Merit
@@ -847,7 +837,7 @@ export default function HomePageClient() {
                     </td>
                   </tr>
                   <tr className="hover:bg-yellow-50 transition">
-                    <td className="px-3 sm:px-4 py-4 font-bold text-yellow-700 text-sm">20 – 29.9 Points</td>
+                    <td className="px-3 sm:px-4 py-4 font-bold text-yellow-700 text-sm">20-29.9 Points</td>
                     <td className="px-3 sm:px-4 py-4">
                       <span className="inline-block bg-yellow-100 text-yellow-800 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
                          Credit
@@ -1029,19 +1019,19 @@ export default function HomePageClient() {
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>Curriculum-Aligned Content</strong> – All materials follow the Zambian syllabus and HEA standards.</span>
+                  <span><strong>Curriculum-Aligned Content</strong>. All materials follow the Zambian syllabus and HEA standards.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>Expert Mentors</strong> – Learn from qualified professionals who guide you every step.</span>
+                  <span><strong>Expert Mentors</strong>. Learn from qualified professionals who guide you every step.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>Community Support</strong> – Join a community of like‑minded Zambian learners.</span>
+                  <span><strong>Community Support</strong>. Join a community of like-minded Zambian learners.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>Progress Tracking</strong> – See your growth in real time and stay motivated.</span>
+                  <span><strong>Progress Tracking</strong>. See your growth in real time and stay motivated.</span>
                 </li>
               </ul>
               <div className="mt-6 flex flex-wrap justify-center md:justify-start gap-3">
@@ -1107,58 +1097,63 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ===== PARTNER INSTITUTIONS ===== */}
-      <section className="py-16 bg-white overflow-hidden">
-        <div className="w-full">
-          <div className="text-center mb-10 px-3 sm:px-4">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Aligns with Zambia's University Curriculum</h2>
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0 }}
+        variants={fadeInUp}
+        className="py-10 sm:py-12 bg-gray-50"
+      >
+        <div className="w-full px-3 sm:px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              Aligned with Zambia's University Curriculum
+            </h2>
             <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
-              Collaborating with Zambia's leading academic and financial institutions to support students.
+              Supporting students across Zambia's leading academic institutions
             </p>
           </div>
 
-          <div className="relative overflow-hidden">
-            <div className="absolute left-0 top-0 h-full w-12 sm:w-16 bg-gradient-to-r from-white to-transparent z-10" />
-            <div className="absolute right-0 top-0 h-full w-12 sm:w-16 bg-gradient-to-l from-white to-transparent z-10" />
-
-            <div
-              className="flex gap-4 sm:gap-6 items-center"
-              style={{
-                animation: 'scrollRightToLeft 35s linear infinite',
-                width: 'max-content',
-              }}
-            >
-              {[...institutions, ...institutions, ...institutions].map((inst, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 text-center hover:shadow-xl hover:border-blue-300 hover:scale-[1.05] transition-all duration-300 flex flex-col items-center justify-center min-w-[140px] sm:min-w-[160px] shadow-sm"
-                >
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-blue-200 shadow-md flex items-center justify-center bg-gray-50">
-                    <img
-                      src={inst.logo}
-                      alt={inst.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <p className="mt-3 text-xs sm:text-sm font-semibold text-gray-800 leading-tight">{inst.name}</p>
-                  <span className="mt-1 text-[10px] text-gray-400">Partner Institution</span>
-                </div>
-              ))}
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 max-w-6xl mx-auto">
+            {[
+              { name: 'University of Zambia', shortName: 'UNZA' },
+              { name: 'Copperbelt University', shortName: 'CBU' },
+              { name: 'Mulungushi University', shortName: 'MU' },
+              { name: 'Kwame Nkrumah University', shortName: 'NKU' },
+              { name: 'Chalimbana University', shortName: 'CU' },
+              { name: 'Cavendish University Zambia', shortName: 'CUZ' },
+            ].map((inst, idx) => (
+              <motion.div
+                key={idx}
+                variants={fadeInUp}
+                className="flex flex-col items-center text-center p-3 sm:p-4 bg-white rounded-xl border border-gray-200 hover:shadow-lg hover:border-blue-300 hover:scale-[1.02] transition-all duration-300"
+              >
+                <InstitutionLogo
+                  name={inst.name}
+                  shortName={inst.shortName}
+                  size="md"
+                />
+                <p className="mt-3 text-xs sm:text-sm font-semibold text-gray-800 leading-tight">
+                  {inst.name}
+                </p>
+                <p className="text-[10px] text-gray-400 mt-0.5">
+                  Zambian Institution
+                </p>
+              </motion.div>
+            ))}
           </div>
 
-          <div className="text-center mt-8 px-3 sm:px-4">
+          <div className="text-center mt-8">
             <Link
-              href="/partners"
-              className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium hover:bg-blue-700 transition shadow-md hover:shadow-lg"
+              href="/universities"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg"
             >
-              View All Partners <span className="text-lg">→</span>
+              View All Universities
+              <span className="text-lg">→</span>
             </Link>
           </div>
-
-          <p className="text-center text-xs text-gray-400 mt-6 px-3 sm:px-4">
-          </p>
         </div>
-      </section>
+      </motion.section>
 
       {/* ===== FOOTER ===== */}
       <footer className="bg-gray-900 text-gray-300">
