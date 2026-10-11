@@ -1,8 +1,27 @@
 'use client';
 
+import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+
+// Error boundary to prevent banner crashes from breaking the page
+class BannerErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
 
 interface Banner {
   id: string;
@@ -50,6 +69,20 @@ const variantStyles: Record<string, { bg: string; border: string; text: string; 
 };
 
 export default function BannerCarousel({
+  placement,
+  institutionId,
+}: {
+  placement: 'HOMEPAGE' | 'DASHBOARD';
+  institutionId?: string;
+}) {
+  return (
+    <BannerErrorBoundary>
+      <BannerCarouselInner placement={placement} institutionId={institutionId} />
+    </BannerErrorBoundary>
+  );
+}
+
+function BannerCarouselInner({
   placement,
   institutionId,
 }: {

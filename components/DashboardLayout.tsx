@@ -221,6 +221,12 @@ export default function DashboardLayout({
       section: 'Management'
     },
     { 
+      href: '/admin/tutor-applications', 
+      label: 'Tutor Applications', 
+      icon: GraduationCap,
+      section: 'Management'
+    },
+    { 
       href: '/admin/institutions', 
       label: 'Institutions', 
       icon: Building2,
@@ -277,6 +283,12 @@ export default function DashboardLayout({
       href: '/student/tutors', 
       label: 'Find Tutors', 
       icon: Users,
+      section: 'Learning'
+    },
+    { 
+      href: '/apply-as-tutor', 
+      label: 'Apply as Tutor', 
+      icon: GraduationCap,
       section: 'Learning'
     },
     {
@@ -431,8 +443,8 @@ export default function DashboardLayout({
           </h1>
         </div>
 
-        {/* Center Section - Search */}
-        <div className="flex items-center flex-1 max-w-2xl mx-6" ref={searchRef}>
+        {/* Center Section - Search (hidden on mobile) */}
+        <div className="hidden md:flex items-center flex-1 max-w-2xl mx-6 relative" ref={searchRef}>
           <form onSubmit={handleSearchSubmit} className="relative w-full flex items-center">
             <div className="relative flex-1">
               <input
@@ -767,6 +779,135 @@ export default function DashboardLayout({
           <UserButton />
         </div>
       </header>
+
+      {/* Mobile Search Overlay */}
+      {isSearchFocused && (
+        <div className="fixed inset-0 z-[60] md:hidden">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => {
+              setIsSearchFocused(false);
+              setLocalSearch('');
+            }}
+          />
+          <div className="relative bg-white dark:bg-gray-800 pt-4 px-4 pb-4">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex items-center gap-2 mb-4"
+            >
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="Search courses, videos, quizzes..."
+                  value={localSearch}
+                  onChange={(e) => {
+                    setLocalSearch(e.target.value);
+                    if (onSearchChange) {
+                      onSearchChange(e.target.value);
+                    }
+                  }}
+                  autoFocus
+                  className="w-full pl-10 pr-10 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 text-base transition text-gray-800 dark:text-gray-100"
+                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                {localSearch && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <XCircle className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSearchFocused(false);
+                  setLocalSearch('');
+                }}
+                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </form>
+
+            {/* Mobile Search Results */}
+            {localSearch.length >= 2 && (
+              <div className="max-h-[60vh] overflow-y-auto">
+                {totalResults === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="text-4xl mb-2">🔍</div>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+                      No results found
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {announcementResults.slice(0, 3).map((item: any) => (
+                      <Link
+                        key={item.id}
+                        href={item.href || `/${role.toLowerCase()}/announcements`}
+                        className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+                        onClick={() => {
+                          setIsSearchFocused(false);
+                          setLocalSearch('');
+                        }}
+                      >
+                        <Megaphone className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            {item.title}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {item.content}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                    {videoResults.slice(0, 3).map((item: any) => (
+                      <Link
+                        key={item.id}
+                        href={item.href || `/${role.toLowerCase()}/videos`}
+                        className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+                        onClick={() => {
+                          setIsSearchFocused(false);
+                          setLocalSearch('');
+                        }}
+                      >
+                        <Video className="w-5 h-5 text-red-500 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            {item.title}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                    {courseResults.slice(0, 3).map((item: any) => (
+                      <Link
+                        key={item.id}
+                        href={item.href || `/${role.toLowerCase()}/courses`}
+                        className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+                        onClick={() => {
+                          setIsSearchFocused(false);
+                          setLocalSearch('');
+                        }}
+                      >
+                        <BookOpen className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            {item.title || item.code}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Sidebar */}
       <aside
