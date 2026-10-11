@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { withRetry } from '@/lib/retry';
 import { redirect } from 'next/navigation';
 import OnboardingForm from './_components/onboarding-form';
 
@@ -9,7 +10,10 @@ export default async function OnboardingPage() {
 
   let user;
   try {
-    user = await prisma.user.findUnique({ where: { clerkId: userId } });
+    user = await withRetry(
+      () => prisma.user.findUnique({ where: { clerkId: userId } }),
+      { attempts: 3, delayMs: 500 }
+    );
   } catch (err: any) {
     console.error('[Onboarding] Failed to find user:', err.message);
     redirect('/sign-in');
@@ -29,34 +33,37 @@ export default async function OnboardingPage() {
   let universities: any[] = [];
 
   try {
-    [institutions, universities] = await Promise.all([
-      prisma.institution.findMany({
-        where: { isActive: true },
-        orderBy: { name: 'asc' },
-        include: {
-          programmes: {
-            orderBy: { name: 'asc' },
-            include: {
-              faculty: true,
-              branches: { orderBy: { name: 'asc' } },
+    [institutions, universities] = await withRetry(
+      () => Promise.all([
+        prisma.institution.findMany({
+          where: { isActive: true },
+          orderBy: { name: 'asc' },
+          include: {
+            programmes: {
+              orderBy: { name: 'asc' },
+              include: {
+                faculty: true,
+                branches: { orderBy: { name: 'asc' } },
+              },
+            },
+            levels: { orderBy: { order: 'asc' } },
+          },
+        }),
+        prisma.university.findMany({
+          orderBy: { name: 'asc' },
+          include: {
+            programmes: {
+              orderBy: { name: 'asc' },
+              include: {
+                faculty: true,
+                branches: { orderBy: { name: 'asc' } },
+              },
             },
           },
-          levels: { orderBy: { order: 'asc' } },
-        },
-      }).catch(() => [] as any[]),
-      prisma.university.findMany({
-        orderBy: { name: 'asc' },
-        include: {
-          programmes: {
-            orderBy: { name: 'asc' },
-            include: {
-              faculty: true,
-              branches: { orderBy: { name: 'asc' } },
-            },
-          },
-        },
-      }).catch(() => [] as any[]),
-    ]);
+        }),
+      ]),
+      { attempts: 3, delayMs: 500 }
+    );
   } catch (err: any) {
     console.error('[Onboarding] Failed to fetch data:', err.message);
   }
