@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import BannerCarousel from '@/components/banner-carousel';
 import GlowingText from '@/components/glowing-text';
+import { CourseCard } from '@/components/course-card';
 
 const fadeInUp: any = {
   hidden: { opacity: 0, y: 30 },
@@ -112,7 +113,7 @@ export default function HomePageClient() {
     { icon: <PlayCircle className="w-6 h-6" />, title: 'Watch Videos', description: 'Access educational videos aligned with the Zambian curriculum.', color: 'hover:bg-blue-50 hover:border-blue-300' },
     { icon: <Compass className="w-6 h-6" />, title: 'Course Pathways', description: 'Explore Natural Sciences and Computer Science.', color: 'hover:bg-green-50 hover:border-green-300' },
     { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach students across Zambia.', color: 'hover:bg-yellow-50 hover:border-yellow-300' },
-    { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-purple-50 hover:border-purple-300' },
+    { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-blue-50 hover:border-blue-300' },
   ];
 
   // ============================================================
@@ -322,8 +323,8 @@ export default function HomePageClient() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Video className="w-5 h-5 text-purple-400" />
+                      <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Video className="w-5 h-5 text-blue-400" />
                       </div>
                       <div className="text-left">
                         <p className="text-white font-semibold text-sm">Video Lessons</p>
@@ -376,8 +377,8 @@ export default function HomePageClient() {
               <h3 className="font-bold text-gray-800 text-sm">Reach Your Goals</h3>
             </motion.div>
             <motion.div variants={fadeInUp} className="text-center p-4">
-              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Crown className="w-7 h-7 text-purple-600" />
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Crown className="w-7 h-7 text-blue-600" />
               </div>
               <h3 className="font-bold text-gray-800 text-sm">Build an A+ Mindset</h3>
             </motion.div>
@@ -629,43 +630,18 @@ export default function HomePageClient() {
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Natural Sciences Foundation</h3>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {year1Courses.slice(0,4).map((course, idx) => (
-                <motion.div
+                <CourseCard
                   key={idx}
-                  variants={fadeInUp}
-                  className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
-                  onClick={() => handleEnroll(course.code)}
-                >
-                  <div className="relative w-full aspect-[16/9] bg-gray-200 overflow-hidden">
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {course.code}
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                      Natural Sciences
-                    </div>
-                  </div>
-                  <div className="p-3 sm:p-4 flex flex-col flex-1">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEnroll(course.code);
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full transition whitespace-nowrap"
-                      >
-                        Explore now
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
+                  code={course.code}
+                  title={course.title}
+                  description={course.description}
+                  image={course.image}
+                  category="Natural Sciences"
+                  variant="blue"
+                  onEnroll={() => handleEnroll(course.code)}
+                />
               ))}
             </div>
           </motion.div>
@@ -680,43 +656,18 @@ export default function HomePageClient() {
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Natural Sciences Advanced</h3>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {year1Courses.slice(4).map((course, idx) => (
-                <motion.div
+                <CourseCard
                   key={idx}
-                  variants={fadeInUp}
-                  className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
-                  onClick={() => handleEnroll(course.code)}
-                >
-                  <div className="relative w-full aspect-[16/9] bg-gray-200 overflow-hidden">
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {course.code}
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                      Natural Sciences
-                    </div>
-                  </div>
-                  <div className="p-3 sm:p-4 flex flex-col flex-1">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEnroll(course.code);
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full transition whitespace-nowrap"
-                      >
-                        Explore now
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
+                  code={course.code}
+                  title={course.title}
+                  description={course.description}
+                  image={course.image}
+                  category="Natural Sciences"
+                  variant="blue"
+                  onEnroll={() => handleEnroll(course.code)}
+                />
               ))}
             </div>
           </motion.div>
@@ -725,49 +676,24 @@ export default function HomePageClient() {
           <motion.div variants={fadeInUp} className="mb-12">
             <div className="flex flex-wrap items-center justify-between mb-4">
               <div>
-                <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
+                <span className="inline-block bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 2 - Semester 1
                 </span>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Computer Science Foundation</h3>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {year2Courses.slice(0,5).map((course, idx) => (
-                <motion.div
+                <CourseCard
                   key={idx}
-                  variants={fadeInUp}
-                  className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
-                  onClick={() => handleEnroll(course.code)}
-                >
-                  <div className="relative w-full aspect-[16/9] bg-gray-200 overflow-hidden">
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {course.code}
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                      Computer Science
-                    </div>
-                  </div>
-                  <div className="p-3 sm:p-4 flex flex-col flex-1">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEnroll(course.code);
-                        }}
-                        className="bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full transition whitespace-nowrap"
-                      >
-                        Explore now
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
+                  code={course.code}
+                  title={course.title}
+                  description={course.description}
+                  image={course.image}
+                  category="Computer Science"
+                  variant="emerald"
+                  onEnroll={() => handleEnroll(course.code)}
+                />
               ))}
             </div>
           </motion.div>
@@ -776,49 +702,24 @@ export default function HomePageClient() {
           <motion.div variants={fadeInUp}>
             <div className="flex flex-wrap items-center justify-between mb-4">
               <div>
-                <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
+                <span className="inline-block bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 2 - Semester 2
                 </span>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Computer Science Advanced</h3>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {year2Courses.slice(5).map((course, idx) => (
-                <motion.div
+                <CourseCard
                   key={idx}
-                  variants={fadeInUp}
-                  className="group bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex flex-col cursor-pointer"
-                  onClick={() => handleEnroll(course.code)}
-                >
-                  <div className="relative w-full aspect-[16/9] bg-gray-200 overflow-hidden">
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {course.code}
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                      Computer Science
-                    </div>
-                  </div>
-                  <div className="p-3 sm:p-4 flex flex-col flex-1">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{course.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex-1">{course.description}</p>
-                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEnroll(course.code);
-                        }}
-                        className="bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full transition whitespace-nowrap"
-                      >
-                        Explore now
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
+                  code={course.code}
+                  title={course.title}
+                  description={course.description}
+                  image={course.image}
+                  category="Computer Science"
+                  variant="emerald"
+                  onEnroll={() => handleEnroll(course.code)}
+                />
               ))}
             </div>
           </motion.div>
@@ -979,7 +880,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-gradient-to-r from-blue-50 to-purple-50"
+        className="py-10 sm:py-12 bg-gradient-to-r from-blue-50 to-emerald-50"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8 md:p-12 text-center max-w-4xl mx-auto">
