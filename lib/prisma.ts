@@ -9,17 +9,15 @@ import { PrismaClient } from "../generated/prisma/client";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
-  throw new Error(
-    "DATABASE_URL is not set. Check .env.local or .env in your project root."
-  );
-}
-
-if (process.env.NODE_ENV !== "production") {
+  console.error("⚠️ DATABASE_URL is not set. Database operations will fail.");
+} else if (process.env.NODE_ENV !== "production") {
   const host = connectionString.split("@")[1]?.split("/")[0];
   console.log(`🔌 Prisma connecting to: ${host}`);
 }
 
-const adapter = new PrismaPg({ connectionString });
-const prisma = new PrismaClient({ adapter });
+// Prisma 7.x requires an adapter. Use adapter-pg for both direct and Data Proxy connections.
+const prisma = new PrismaClient({
+  adapter: connectionString ? new PrismaPg({ connectionString }) : undefined,
+});
 
 export { prisma };

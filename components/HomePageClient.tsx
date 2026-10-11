@@ -18,16 +18,16 @@ import {
 } from 'lucide-react';
 import BannerCarousel from '@/components/banner-carousel';
 
-const fadeInUp = {
+const fadeInUp: any = {
   hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { duration: 0.6 } 
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6 },
   },
 };
 
-const staggerContainer = {
+const staggerContainer: any = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -36,7 +36,7 @@ const staggerContainer = {
 };
 
 // Mobile-safe animation: always visible, just fades in
-const mobileSafe = {
+const mobileSafe: any = {
   hidden: { opacity: 1, y: 0 },
   visible: { opacity: 1, y: 0 },
 };

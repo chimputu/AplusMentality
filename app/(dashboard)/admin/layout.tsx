@@ -12,6 +12,9 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   const { role, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
   const u = user!;
 
+  // Handle missing institution gracefully
+  const institutionName = u.institution?.shortName ?? u.institution?.name ?? null;
+
   return (
     <DashboardLayout role={role}>
       <div className="w-full">
@@ -20,7 +23,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <AIAssistant
         userFirstName={u.firstName ?? null}
         userRole={u.role ?? null}
-        userInstitution={u.institution?.shortName ?? u.institution?.name ?? null}
+        userInstitution={institutionName}
       />
     </DashboardLayout>
   );
