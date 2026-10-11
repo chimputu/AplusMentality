@@ -36,7 +36,7 @@ export default function SaveBookButton({
   useEffect(() => {
     if (initialSaved) return;
     fetch('/api/books/saved')
-      .then((r) => (r.ok ? r.json() : { books: [] }))
+      .then((r) => (r.ok ? r.json() : { books: [] as any[] }))
       .then((data) => {
         const found = (data.books || []).find(
           (b: any) => b.source === book.source && b.sourceId === book.sourceId

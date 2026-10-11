@@ -18,7 +18,7 @@ export default async function AssessmentResultPage({
   const attemptId = sp.attemptId;
   if (!attemptId) notFound();
 
-  const data = await getAttemptResult(attemptId).catch(() => null);
+  const data = await getAttemptResult(attemptId).catch((): null => null);
   if (!data) notFound();
 
   const { attempt, assessment, answers, showAnswers } = data;

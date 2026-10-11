@@ -30,7 +30,7 @@ export default function StudentBooksPage() {
   // Load user's saved book IDs (so we can show "Saved" badge)
   useEffect(() => {
     fetch('/api/books/saved')
-      .then((r) => (r.ok ? r.json() : { books: [] }))
+      .then((r) => (r.ok ? r.json() : { books: [] as any[] }))
       .then((data) => {
         const ids = new Set<string>(
           (data.books || []).map(
