@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { requireAuth } from '@/lib/auth';
 import DashboardLayout from '@/components/DashboardLayout';
 import { AIAssistant } from '@/components/ai/ai-assistant';
@@ -20,11 +20,14 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <div className="w-full">
         {children}
       </div>
-      <AIAssistant
-        userFirstName={u.firstName ?? null}
-        userRole={u.role ?? null}
-        userInstitution={institutionName}
-      />
+      {/* Wrap AIAssistant in Suspense to prevent server action errors from crashing the admin dashboard */}
+      <Suspense fallback={null}>
+        <AIAssistant
+          userFirstName={u.firstName ?? null}
+          userRole={u.role ?? null}
+          userInstitution={institutionName}
+        />
+      </Suspense>
     </DashboardLayout>
   );
 }
