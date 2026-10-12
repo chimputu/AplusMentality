@@ -278,11 +278,11 @@ export default function HomePageClient() {
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
-      {/* ===== BANNERS ===== */}
+      {/* ===== BANNERS — MUST BE FIRST so they appear above the navbar ===== */}
       <BannerCarousel placement="HOMEPAGE" institutionId={institutionId} />
 
-      {/* ===== NAVBAR ===== */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+      {/* ===== NAVBAR — sticky (sticks when scrolled to, sits below banner) ===== */}
+      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="w-full px-2 sm:px-4">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
