@@ -1,7 +1,6 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import { withRetry } from '@/lib/retry';
 import StudentContent from '@/components/StudentContent';
 
 interface SearchParams {
@@ -23,7 +22,6 @@ export default async function StudentPage({
     clerkUser = await currentUser();
   } catch (error) {
     console.error('Failed to fetch Clerk user:', error);
-    // Fallback: redirect to sign-in or show error page
     redirect('/sign-in');
   }
   if (!clerkUser) redirect('/sign-in');
@@ -31,22 +29,19 @@ export default async function StudentPage({
   // 3. Get user role and academic profile from database
   let dbUser: any;
   try {
-    dbUser = await withRetry(
-      () => prisma.user.findUnique({
-        where: { clerkId: userId },
-        select: {
-          role: true,
-          institutionId: true,
-          universityId: true,
-          programmeId: true,
-          year: true,
-          period: true,
-          university: { select: { name: true, code: true } },
-          programme: { select: { name: true, shortName: true } },
-        },
-      }),
-      { attempts: 3, delayMs: 500 }
-    );
+    dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      select: {
+        role: true,
+        institutionId: true,
+        universityId: true,
+        programmeId: true,
+        year: true,
+        period: true,
+        university: { select: { name: true, code: true } },
+        programme: { select: { name: true, shortName: true } },
+      },
+    });
   } catch (err: any) {
     console.error('[StudentPage] Failed to fetch user:', err.message);
     redirect('/unauthorized');
@@ -59,26 +54,22 @@ export default async function StudentPage({
   const params = await searchParams;
   const searchQuery = params?.search || '';
 
-  // 5. Fetch data in parallel with retry
+  // 5. Fetch data in parallel (prisma client has built-in retry)
   let announcementsData: any[] = [];
   let videosData: any[] = [];
   try {
-    [announcementsData, videosData] = await withRetry(
-      () => Promise.all([
-        prisma.announcement.findMany({
-          orderBy: { createdAt: 'desc' },
-          include: { author: { select: { name: true } } },
-        }),
-        prisma.video.findMany({
-          orderBy: { createdAt: 'desc' },
-          include: { uploader: { select: { name: true } } },
-        }),
-      ]),
-      { attempts: 3, delayMs: 500 }
-    );
+    [announcementsData, videosData] = await Promise.all([
+      prisma.announcement.findMany({
+        orderBy: { createdAt: 'desc' },
+        include: { author: { select: { name: true } } },
+      }),
+      prisma.video.findMany({
+        orderBy: { createdAt: 'desc' },
+        include: { uploader: { select: { name: true } } },
+      }),
+    ]);
   } catch (err: any) {
     console.error('[StudentPage] Failed to fetch announcements/videos:', err.message);
-    // Continue with empty data rather than crashing
   }
 
   // 6. Serialize dates

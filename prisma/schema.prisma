@@ -20,6 +20,7 @@ enum Role {
   SUPER_ADMIN
   STUDENT
   LECTURER
+  TUTOR
 }
 
 enum FormType {

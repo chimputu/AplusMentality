@@ -70,6 +70,7 @@ const createInstitutionSchema = z.object({
 const updateInstitutionSchema = z.object({
   name: z.string().min(3).optional(),
   shortName: z.string().optional(),
+  type: z.nativeEnum(InstitutionType).optional(),
   description: z.string().optional(),
   country: z.string().optional(),
   province: z.string().optional(),
