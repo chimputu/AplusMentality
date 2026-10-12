@@ -170,9 +170,32 @@ Apply retry logic to all student-facing server components to prevent transient D
 ### ✓ Step 6: Add universal Prisma retry middleware and fix remaining error boundaries
 Eliminate Server Component render errors by adding automatic retry at the Prisma client level and fixing all error boundaries.
 
-- Add `$use` middleware to `lib/prisma.ts` that automatically retries ALL Prisma queries on transient errors (3 attempts, 100ms → 200ms → 400ms exponential backoff)
+- Add `$extends` with `$allOperations` to `lib/prisma.ts` that automatically retries ALL Prisma queries on transient errors (3 attempts, 100ms → 200ms → 400ms exponential backoff) — Prisma v7 removed `$use`, so `$extends` is the replacement
 - This protects all 130+ files that import prisma, without modifying each one
 - Add auto-retry to root `app/error.tsx` error boundary (2s delay)
 - Add error handling to `app/onboarding/page.tsx` with try-catch fallbacks
 - Create `app/onboarding/error.tsx` error boundary with auto-retry
+- TypeScript compilation passes with zero errors
+
+### ✓ Step 7: Fix Prisma v7 $use → $extends migration (build crash)
+Fix Vercel build crash caused by Prisma v7 removing the `$use` middleware API.
+
+- Replace `(rawPrisma as any).$use()` with `basePrisma.$extends({ query: { $allOperations } })` in `lib/prisma.ts`
+- Use properly typed async callback for `$allOperations` with `{ model, operation, args, query }` parameters
+- Maintain the same retry logic: 3 attempts, 100ms → 200ms → 400ms exponential backoff
+- Skip retry for transaction queries (they have their own retry logic)
+- Fixes `TypeError: t.$use is not a function` build error
+- Fixes `Failed to collect page data for /api/admin/assessments/[id]` build error
+- TypeScript compilation passes with zero errors
+- Committed and pushed to origin/main
+
+### ✓ Step 8: Resolve Prisma migration P3009 error
+Fix the P3009 migration error where `20251011000000_add_tutor_application_fields` partially failed on the live database.
+
+- Diagnosed the issue: migration partially applied — TutorApplication and ExplorationLog tables existed, but TutorReference, TutorOffering, and ApplicationWindow were missing
+- Connected to the live database using `pg` client to inspect the state
+- Created the 3 missing tables with all indexes and foreign key constraints
+- Marked the migration as finished in `_prisma_migrations` by setting `finished_at = now()`
+- Verified with `prisma migrate status` — "Database schema is up to date!"
+- All 5 tables now exist: ApplicationWindow, ExplorationLog, TutorApplication, TutorOffering, TutorReference
 - TypeScript compilation passes with zero errors
