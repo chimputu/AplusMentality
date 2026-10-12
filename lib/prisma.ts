@@ -84,27 +84,32 @@ async function withRetry<T>(fn: () => Promise<T>, attempts = 3, delayMs = 100): 
   throw lastError;
 }
 
-// Prisma 7.x requires an adapter for direct connections.
-// However, Prisma Data Proxy (pooled.db.prisma.io) uses HTTP and does NOT need an adapter.
-// Using adapter-pg with Data Proxy causes P1002 connection errors on Vercel.
-// Detect Data Proxy URLs and skip the adapter in those cases.
+// Prisma 7.x requires either an adapter or an accelerateUrl.
+// For direct database connections, use an adapter (e.g., @prisma/adapter-pg).
+// For Prisma Data Proxy (db.prisma.io), pass the URL as accelerateUrl.
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
 const isDataProxy = connectionString?.includes('db.prisma.io') ?? false;
-const adapter = connectionString && !isDataProxy ? new PrismaPg({ connectionString }) : undefined;
 
+let basePrisma: PrismaClient;
 if (isDataProxy) {
-  console.log('🔌 Prisma using Data Proxy (HTTP) — no adapter needed');
+  console.log('🔌 Prisma using Data Proxy (HTTP) via accelerateUrl');
+  basePrisma =
+    globalForPrisma.prisma ??
+    new PrismaClient({
+      accelerateUrl: connectionString,
+      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    });
+} else {
+  basePrisma =
+    globalForPrisma.prisma ??
+    new PrismaClient({
+      adapter: new PrismaPg({ connectionString: connectionString! }),
+      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    });
 }
-
-const basePrisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    adapter,
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  });
 
 // Cache the client globally for ALL environments, not just development.
 // In production, without this, each serverless invocation creates a new client
