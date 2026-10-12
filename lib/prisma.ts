@@ -85,17 +85,18 @@ async function withRetry<T>(fn: () => Promise<T>, attempts = 3, delayMs = 100): 
 }
 
 // Prisma 7.x requires either an adapter or an accelerateUrl.
-// For direct database connections, use an adapter (e.g., @prisma/adapter-pg).
-// For Prisma Data Proxy (db.prisma.io), pass the URL as accelerateUrl.
+// - accelerateUrl: only for Prisma Accelerate HTTP connections (prisma:// or prisma+postgres:// protocol)
+// - adapter: for all standard PostgreSQL TCP connections including Prisma Postgres pooled (pooled.db.prisma.io)
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const isDataProxy = connectionString?.includes('db.prisma.io') ?? false;
+// Only use accelerateUrl if the URL actually starts with prisma:// or prisma+postgres://
+const isAccelerate = connectionString?.startsWith('prisma://') ?? connectionString?.startsWith('prisma+postgres://') ?? false;
 
 let basePrisma: PrismaClient;
-if (isDataProxy) {
-  console.log('🔌 Prisma using Data Proxy (HTTP) via accelerateUrl');
+if (isAccelerate) {
+  console.log('🔌 Prisma using Accelerate (HTTP) via accelerateUrl');
   basePrisma =
     globalForPrisma.prisma ??
     new PrismaClient({
@@ -103,6 +104,9 @@ if (isDataProxy) {
       log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     });
 } else {
+  // Standard PostgreSQL TCP connection, including Prisma Postgres pooled (pooled.db.prisma.io)
+  const adapterType = connectionString?.includes('pooled.db.prisma.io') ? 'Pooled TCP' : 'Direct TCP';
+  console.log(`🔌 Prisma using ${adapterType} via @prisma/adapter-pg`);
   basePrisma =
     globalForPrisma.prisma ??
     new PrismaClient({
