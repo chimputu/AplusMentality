@@ -99,37 +99,37 @@ export default async function AdminPage({
     console.error('[AdminPage] Failed to fetch courses:', err);
   }
 
-  // ✅ Serialize dates safely
-  const announcements = announcementsData.map((a) => ({
+  // ✅ Serialize dates safely — ensure arrays are always arrays even if data is null/undefined
+  const announcements = (Array.isArray(announcementsData) ? announcementsData : []).map((a) => ({
     ...a,
     createdAt: a.createdAt?.toISOString() ?? new Date().toISOString(),
   }));
 
-  const videos = videosData.map((v) => ({
+  const videos = (Array.isArray(videosData) ? videosData : []).map((v) => ({
     ...v,
     createdAt: v.createdAt?.toISOString() ?? new Date().toISOString(),
   }));
 
-  const users = usersData.map((u) => ({
+  const users = (Array.isArray(usersData) ? usersData : []).map((u) => ({
     ...u,
     createdAt: u.createdAt?.toISOString() ?? new Date().toISOString(),
   }));
 
-  const courses = coursesData.map((c) => ({
+  const courses = (Array.isArray(coursesData) ? coursesData : []).map((c) => ({
     ...c,
     createdAt: c.createdAt?.toISOString() ?? new Date().toISOString(),
     updatedAt: c.updatedAt?.toISOString() ?? new Date().toISOString(),
-    modules: (c.modules || []).map((m: any) => ({
+    modules: (Array.isArray(c.modules) ? c.modules : []).map((m: any) => ({
       ...m,
       createdAt: m.createdAt?.toISOString() ?? new Date().toISOString(),
       updatedAt: m.updatedAt?.toISOString() ?? new Date().toISOString(),
-      lessons: (m.lessons || []).map((l: any) => ({
+      lessons: (Array.isArray(m.lessons) ? m.lessons : []).map((l: any) => ({
         ...l,
         createdAt: l.createdAt?.toISOString() ?? new Date().toISOString(),
         updatedAt: l.updatedAt?.toISOString() ?? new Date().toISOString(),
       })),
     })),
-    enrollments: (c.enrollments || []).map((e: any) => ({
+    enrollments: (Array.isArray(c.enrollments) ? c.enrollments : []).map((e: any) => ({
       ...e,
       enrolledAt: e.enrolledAt?.toISOString() ?? new Date().toISOString(),
     })),

@@ -84,17 +84,25 @@ async function withRetry<T>(fn: () => Promise<T>, attempts = 3, delayMs = 100): 
   throw lastError;
 }
 
-// Prisma 7.x requires an adapter. Use adapter-pg for both direct and Data Proxy connections.
-// Use a global singleton to avoid creating a new client on every request in production,
-// which causes connection pool exhaustion and transient failures.
+// Prisma 7.x requires an adapter for direct connections.
+// However, Prisma Data Proxy (pooled.db.prisma.io) uses HTTP and does NOT need an adapter.
+// Using adapter-pg with Data Proxy causes P1002 connection errors on Vercel.
+// Detect Data Proxy URLs and skip the adapter in those cases.
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+const isDataProxy = connectionString?.includes('db.prisma.io') ?? false;
+const adapter = connectionString && !isDataProxy ? new PrismaPg({ connectionString }) : undefined;
+
+if (isDataProxy) {
+  console.log('🔌 Prisma using Data Proxy (HTTP) — no adapter needed');
+}
+
 const basePrisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    adapter: connectionString ? new PrismaPg({ connectionString }) : undefined,
+    adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 
