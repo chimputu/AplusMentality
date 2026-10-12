@@ -1,7 +1,7 @@
-import { ReactNode, Suspense } from 'react';
+import { ReactNode } from 'react';
 import { requireAuth } from '@/lib/auth';
 import DashboardLayout from '@/components/DashboardLayout';
-import { AIAssistant } from '@/components/ai/ai-assistant';
+import { AIAssistantWrapper } from '@/components/ai/ai-assistant-wrapper';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -20,14 +20,12 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <div className="w-full">
         {children}
       </div>
-      {/* Wrap AIAssistant in Suspense to prevent server action errors from crashing the admin dashboard */}
-      <Suspense fallback={null}>
-        <AIAssistant
-          userFirstName={u.firstName ?? null}
-          userRole={u.role ?? null}
-          userInstitution={institutionName}
-        />
-      </Suspense>
+      {/* Wrap AIAssistant in error boundary to prevent crashes from affecting the admin dashboard */}
+      <AIAssistantWrapper
+        userFirstName={u.firstName ?? null}
+        userRole={u.role ?? null}
+        userInstitution={institutionName}
+      />
     </DashboardLayout>
   );
 }
