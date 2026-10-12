@@ -90,11 +90,11 @@ export async function appendMessages(
   const user = await requireUser();
   const data = appendSchema.parse(input);
 
-  // Verify ownership
+  // Verify ownership — return error instead of throwing, so callers can handle gracefully
   const conversation = await prisma.chatConversation.findFirst({
     where: { id: data.conversationId, userId: user.id },
   });
-  if (!conversation) throw new Error('Conversation not found');
+  if (!conversation) return { success: false, error: 'Conversation not found' };
 
   // Insert messages and bump lastMessageAt
   await prisma.$transaction([

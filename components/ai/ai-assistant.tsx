@@ -81,6 +81,20 @@ export function AIAssistant({
   const isLoggedIn = isLoaded && isSignedIn;
   const [showSupport, setShowSupport] = useState(false);
 
+  // ── Clear stale conversation when user changes ──
+  useEffect(() => {
+    if (!isLoaded) return;
+    const lastUserId = localStorage.getItem('ai:user-id');
+    const currentUserId = user?.id;
+    if (lastUserId && currentUserId && lastUserId !== currentUserId) {
+      localStorage.removeItem(LAST_CONVO_KEY);
+      localStorage.removeItem('ai:user-id');
+    }
+    if (currentUserId) {
+      localStorage.setItem('ai:user-id', currentUserId);
+    }
+  }, [isLoaded, user?.id]);
+
   // ── Initialize: fetch or create conversation ──
   useEffect(() => {
     if (!isLoaded) return;
