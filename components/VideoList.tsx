@@ -70,7 +70,7 @@ export default function VideoList({ videos, isAdmin = false }: VideoListProps) {
     console.error(`Video failed to load: ${id}`);
   };
 
-  if (videos.length === 0) {
+  if (!videos || videos.length === 0) {
     return <p className="text-gray-500 text-center py-8 text-sm md:text-base">No videos uploaded yet.</p>;
   }
 

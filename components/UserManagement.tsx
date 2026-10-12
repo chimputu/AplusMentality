@@ -70,6 +70,8 @@ export default function UserManagement({ users }: UserManagementProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState<'ALL' | Role>('ALL');
 
+  const safeUsers = users ?? [];
+
   const handleRoleChange = async (userId: string, newRole: Role) => {
     if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
 
@@ -115,7 +117,7 @@ export default function UserManagement({ users }: UserManagementProps) {
     }
   };
 
-  const filteredUsers = users.filter((user) => {
+  const filteredUsers = safeUsers.filter((user) => {
     const q = searchTerm.toLowerCase();
     const matchesSearch =
       (user.name?.toLowerCase() || '').includes(q) ||
@@ -130,14 +132,14 @@ export default function UserManagement({ users }: UserManagementProps) {
   });
 
   const stats = {
-    total: users.length,
-    admins: users.filter((u) => u.role === 'ADMIN').length,
-    students: users.filter((u) => u.role === 'STUDENT').length,
+    total: safeUsers.length,
+    admins: safeUsers.filter((u) => u.role === 'ADMIN').length,
+    students: safeUsers.filter((u) => u.role === 'STUDENT').length,
   };
 
-  const totalEnrollments = users.reduce((acc, u) => acc + (u._count?.enrollments || 0), 0);
+  const totalEnrollments = safeUsers.reduce((acc, u) => acc + (u._count?.enrollments || 0), 0);
 
-  if (users.length === 0) {
+  if (safeUsers.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
         <Users className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />

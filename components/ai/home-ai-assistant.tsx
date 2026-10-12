@@ -1,11 +1,11 @@
 'use client';
 
-// Home-page AI Assistant — AWS-style floating widget
-// Reuses the same chat API as AIAssistant but with a distinct orange AWS-style design
+// Home-page AI Assistant — blue message-style floating widget
+// Reuses the same chat API as AIAssistant but with a distinct blue-500 message icon design
 import { useState, useRef, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import {
-  Send, X, Sparkles, RefreshCw, Loader2, Mail,
+  Send, X, MessageCircle, RefreshCw, Loader2, Mail,
 } from 'lucide-react';
 import { createConversation, getConversation } from '@/lib/actions/chat';
 import { toast } from 'sonner';
@@ -206,23 +206,17 @@ export function HomeAIAssistant() {
 
   return (
     <>
-      {/* AWS-style floating button — rounded square icon, orange gradient */}
+      {/* Floating button — blue-500 message icon */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-[14px] bg-gradient-to-br from-[#ff9900] via-[#ff6600] to-[#cc5200] text-white shadow-[0_4px_16px_rgba(255,102,0,0.4),0_1px_3px_rgba(0,0,0,0.12)] border-2 border-white/20 flex items-center justify-center hover:shadow-[0_8px_25px_rgba(255,102,0,0.5),0_2px_6px_rgba(0,0,0,0.15)] hover:scale-108 hover:opacity-100 transition-all duration-300 ease-out active:scale-95"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-500 text-white shadow-lg flex items-center justify-center hover:bg-blue-600 transition active:scale-95"
         aria-label="Open AI assistant"
         title="A+ AI Assistant"
       >
         {open ? (
           <X className="w-6 h-6" />
         ) : (
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)]">
-            {/* AWS-style AI icon — hexagonal shape with sparkles */}
-            <path d="M12 2L15.09 4.26L18.54 3.63L19.17 7.08L22 8.76L20.33 11.65L22 14.54L19.17 16.22L18.54 19.67L15.09 19.04L12 21.3L8.91 19.04L5.46 19.67L4.83 16.22L2 14.54L3.67 11.65L2 8.76L4.83 7.08L5.46 3.63L8.91 4.26L12 2Z" fill="white" fillOpacity="0.2" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-            <path d="M8 14C8 14 9.5 11 12 11C14.5 11 16 14 16 14" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            <circle cx="9.5" cy="9" r="1" fill="white"/>
-            <circle cx="14.5" cy="9" r="1" fill="white"/>
-          </svg>
+          <MessageCircle className="w-6 h-6" />
         )}
       </button>
 
@@ -236,14 +230,14 @@ export function HomeAIAssistant() {
           />
 
           <div className="fixed z-50 flex flex-col bottom-0 right-0 left-0 h-[70dvh] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700">
-            {/* AWS-style header — orange gradient */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-[#ff9900] to-[#ff6600] text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
+            {/* Header — blue-500 */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-blue-500 text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
               <div>
-                <h3 className="font-semibold flex items-center gap-2" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif', letterSpacing: '-0.01em' }}>
-                  <Sparkles className="w-4 h-4" />
+                <h3 className="font-semibold flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4" />
                   A+ Mentality Assistant
                 </h3>
-                <p className="text-xs text-orange-100">
+                <p className="text-xs text-blue-100">
                   {isLoggedIn ? `Logged in · A+ Mentality` : 'Public'}
                 </p>
               </div>
@@ -277,7 +271,7 @@ export function HomeAIAssistant() {
                   <div
                     className={`max-w-[85%] md:max-w-[80%] rounded-lg px-3 py-2 text-sm break-words ${
                       m.role === 'user'
-                        ? 'bg-gradient-to-br from-[#ff9900] to-[#ff6600] text-white'
+                        ? 'bg-blue-500 text-white'
                         : m.isError
                           ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
                           : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
@@ -306,7 +300,7 @@ export function HomeAIAssistant() {
                 </div>
               ))}
 
-              {/* Suggestion chips — AWS orange style */}
+              {/* Suggestion chips — blue style */}
               {messages.length <= 1 && (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {PUBLIC_SUGGESTIONS.map((s) => (
@@ -314,7 +308,7 @@ export function HomeAIAssistant() {
                       key={s}
                       onClick={() => handleSend(s)}
                       disabled={loading}
-                      className="text-xs px-3 py-1.5 rounded-full border-2 border-[#ff9900] text-[#cc5200] hover:bg-[#fff5e6] transition disabled:opacity-50 font-medium"
+                      className="text-xs px-3 py-1.5 rounded-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition disabled:opacity-50 font-medium"
                     >
                       {s}
                     </button>
@@ -358,12 +352,12 @@ export function HomeAIAssistant() {
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 placeholder="Ask about features…"
                 disabled={loading}
-                className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#ff9900] focus:border-transparent disabled:opacity-50"
+                className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               />
               <button
                 onClick={() => handleSend()}
                 disabled={loading || !input.trim()}
-                className="bg-gradient-to-br from-[#ff9900] to-[#ff6600] text-white px-3 rounded-lg hover:from-[#ffaa00] hover:to-[#ff7700] transition disabled:opacity-50 active:scale-95 shadow-sm"
+                className="bg-blue-500 text-white px-3 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 active:scale-95 shadow-sm"
                 aria-label="Send message"
               >
                 <Send className="w-4 h-4" />
@@ -380,7 +374,7 @@ export function HomeAIAssistant() {
             href="mailto:kafiswegchimputu@gmail.com"
             className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
-            <Mail className="w-3.5 h-3.5 text-[#ff6600]" />
+            <Mail className="w-3.5 h-3.5 text-blue-500" />
             Need more help? Email us
           </a>
         </div>
