@@ -43,7 +43,7 @@ export default function AnnouncementList({ announcements, isAdmin = false }: Ann
     }
   };
 
-  if (announcements.length === 0) {
+  if (!announcements || announcements.length === 0) {
     return (
       <div className="text-center py-8 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
         <p className="text-gray-500 dark:text-gray-400 text-sm">No announcements yet.</p>

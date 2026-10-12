@@ -99,7 +99,7 @@ export default function DashboardLayout({
           const res = await fetch(`/api/search?q=${encodeURIComponent(localSearch)}`);
           if (res.ok) {
             const data = await res.json();
-            setSearchResults(data);
+            setSearchResults(Array.isArray(data) ? data : []);
           }
         } catch (error) {
           console.error('Search error:', error);
