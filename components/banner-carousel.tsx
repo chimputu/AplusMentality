@@ -112,10 +112,14 @@ function BannerCarouselInner({
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
+        const bannerCount = (data.banners || []).length;
+        console.log(`[banner-carousel] Fetched ${bannerCount} banner(s) for placement=${placement} institution=${institutionId ?? 'none'}`);
         setBanners(data.banners || []);
+      } else {
+        console.error(`[banner-carousel] API returned ${res.status} for placement=${placement}`);
       }
     } catch (error) {
-      console.error('Failed to fetch banners:', error);
+      console.error('[banner-carousel] Failed to fetch banners:', error);
     }
   }, [placement, institutionId]);
 
