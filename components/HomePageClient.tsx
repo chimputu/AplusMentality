@@ -18,7 +18,6 @@ import {
   ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import BannerCarousel from '@/components/banner-carousel';
-import GlowingText from '@/components/glowing-text';
 import { CourseCard } from '@/components/course-card';
 import { InstitutionLogo } from '@/components/institution-logo';
 import { HomeAIAssistantWrapper } from '@/components/ai/home-ai-assistant-wrapper';
@@ -331,105 +330,121 @@ export default function HomePageClient() {
         )}
       </nav>
 
-      {/* ===== HERO – GLOWING TEXT ===== */}
+      {/* ===== HERO – BACKGROUND IMAGE ===== */}
       <section className="relative min-h-[85vh] md:min-h-screen flex items-center overflow-hidden">
-        {/* Hero background — clean navy gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#0f1729] to-[#1e3a8a]" />
-        {/* Subtle grid pattern overlay */}
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '60px 60px',
-          }}
+        {/* Background image */}
+        <Image
+          src="/mmst-grad-group.png"
+          alt=""
+          fill
+          priority
+          quality={85}
+          sizes="100vw"
+          className="object-cover object-center"
+          aria-hidden="true"
         />
+
+        {/* Dark overlay for text contrast */}
+        <div className="absolute inset-0 bg-black/60" />
+
+        {/* Content */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10">
-            {/* Left – Text Content */}
-            <div className="flex-[2] text-center lg:text-left w-full">
-              <div className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.1]">
-                <GlowingText text="A+ Mentality" cycleDuration={6} className="block" />
-              </div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
 
-              <p className="mt-3 text-base sm:text-lg text-blue-200/80 max-w-2xl mx-auto lg:mx-0">
-                Zambia's multi-university learning platform.
+            {/* LEFT: Headline + CTAs */}
+            <div className="text-center lg:text-left space-y-6">
+              {/* Headline */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+                <span className="block">Your Goal.</span>
+                <span className="block text-blue-400 mt-2">
+                  Our tools.
+                </span>
+                <span className="block mt-2">
+                  Your{' '}
+                  <span className="text-blue-400">A+</span>{' '}
+                  result.
+                </span>
+              </h1>
+
+              {/* Description */}
+              <p className="text-base sm:text-lg text-white/80 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                A+ Mentality helps students study smarter, stay organized, and track progress so you can achieve more and stress less.
               </p>
 
-              <p className="mt-2 text-sm sm:text-base text-gray-300 max-w-xl mx-auto lg:mx-0">
-                Study smarter, stay organized, and track your progress. Aligned with Zambian university standards.
-              </p>
-
-              <div className="mt-6 flex flex-wrap justify-center lg:justify-start gap-3">
-                <Link href="/sign-up" className="bg-blue-600 text-white px-6 sm:px-8 py-2.5 rounded-full font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl">
-                  Get started free
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                <Link
+                  href="/sign-up"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-medium transition-colors shadow-lg hover:shadow-xl"
+                >
+                  Get Started Free
                 </Link>
-                <Link href="#universities" className="bg-white/10 backdrop-blur-sm text-white px-6 sm:px-8 py-2.5 rounded-full font-medium hover:bg-white/20 transition border border-white/20">
-                  Browse universities
+                <Link
+                  href="#explore"
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium transition-colors border border-white/20"
+                >
+                  Explore Features
                 </Link>
               </div>
 
-              <div className="mt-6 flex flex-wrap justify-center lg:justify-start items-center gap-3 sm:gap-5 text-xs sm:text-sm text-gray-400">
+              {/* Trust indicators */}
+              <div className="flex flex-wrap gap-x-6 gap-y-3 justify-center lg:justify-start text-sm text-white/70 pt-4">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" /> Built for Zambia
+                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  Free to start
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" /> Works offline
+                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  Learn offline
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" /> Free for students
+                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  Mentors available
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  Built for Zambians
                 </span>
               </div>
             </div>
 
-            {/* Right – Feature Card */}
-            <div className="flex-1 flex justify-center lg:justify-end w-full">
-              <div className="relative w-full max-w-sm">
-                <div className="absolute -inset-4 bg-blue-500/20 rounded-2xl blur-3xl" />
-                <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 sm:p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <BookOpen className="w-5 h-5 text-blue-400" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-white font-semibold text-sm">Curriculum-Aligned</p>
-                        <p className="text-blue-200/60 text-xs">Matched to Zambian university standards</p>
-                      </div>
+            {/* RIGHT: Feature card */}
+            <div className="flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-md">
+                {/* Glow behind card */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-400/20 to-emerald-400/20 rounded-3xl blur-3xl" />
+
+                {/* Card */}
+                <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl text-center">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">
+                    Built for Zambian Students
+                  </h3>
+                  <p className="text-blue-200 text-sm">
+                    By Zambians, for Zambians
+                  </p>
+
+                  <div className="mt-6 flex justify-center gap-6 text-sm">
+                    <div>
+                      <p className="font-bold text-white text-lg">Quality</p>
+                      <p className="text-blue-200 text-xs">Content</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <UsersIcon className="w-5 h-5 text-emerald-400" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-white font-semibold text-sm">Expert Mentors</p>
-                        <p className="text-blue-200/60 text-xs">Learn from experienced tutors</p>
-                      </div>
+                    <div>
+                      <p className="font-bold text-white text-lg">Expert</p>
+                      <p className="text-blue-200 text-xs">Mentors</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Video className="w-5 h-5 text-blue-400" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-white font-semibold text-sm">Video Lessons</p>
-                        <p className="text-blue-200/60 text-xs">Watch, pause, rewatch anytime</p>
-                      </div>
+                    <div>
+                      <p className="font-bold text-white text-lg">Learn</p>
+                      <p className="text-blue-200 text-xs">Offline</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Award className="w-5 h-5 text-amber-400" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-white font-semibold text-sm">Track Progress</p>
-                        <p className="text-blue-200/60 text-xs">See your improvement over time</p>
-                      </div>
-                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/20 text-center text-xs text-blue-200">
+                    Join the A+ Mentality community today
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </section>
