@@ -1,5 +1,29 @@
-import { describe, it, expect } from 'vitest';
-import { prisma } from '@/lib/prisma';
+import { describe, it, expect, vi } from 'vitest';
+
+const mockPrisma = {
+  user: {
+    findUnique: vi.fn().mockResolvedValue({ id: 'test-user', clerkId: 'test-user-id', role: 'ADMIN', email: 'admin@test.com' }),
+    findFirst: vi.fn(),
+    findMany: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    count: vi.fn(),
+  },
+  programme: { findUnique: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
+  course: { findUnique: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
+  institution: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn() },
+  faculty: { findUnique: vi.fn(), findMany: vi.fn() },
+  tutor: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn() },
+  university: { findUnique: vi.fn(), findMany: vi.fn() },
+  academicLevel: { findUnique: vi.fn(), findMany: vi.fn() },
+  academicPeriod: { findMany: vi.fn() },
+  branch: { findMany: vi.fn() },
+};
+
+vi.mock('@/lib/prisma', () => ({ prisma: mockPrisma }));
+
+const prisma = mockPrisma;
 
 describe('listProgrammes', () => {
   it('returns paginated results with defaults', async () => {
