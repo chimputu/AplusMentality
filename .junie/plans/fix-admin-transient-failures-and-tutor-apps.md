@@ -199,3 +199,12 @@ Fix the P3009 migration error where `20251011000000_add_tutor_application_fields
 - Verified with `prisma migrate status` — "Database schema is up to date!"
 - All 5 tables now exist: ApplicationWindow, ExplorationLog, TutorApplication, TutorOffering, TutorReference
 - TypeScript compilation passes with zero errors
+
+### ✓ Step 9: Fix "Conversation not found" Server Component errors
+Eliminate recurring "Conversation not found" errors that crash /admin, /student, and /explore pages when a stale conversation ID is loaded from localStorage.
+
+- Root cause: `ai-assistant-page.tsx` calls `getConversation()` but accesses `convo.messages` without checking if `convo` is null — crashes the Server Component
+- Fix `ai-assistant-page.tsx`: Add null check after `getConversation()`, clear stale localStorage, create fresh conversation
+- Fix `lib/actions/chat.ts`: Change `appendMessages` to return `{ success: false, error: 'Conversation not found' }` instead of throwing
+- Add user-change cleanup to `ai-assistant.tsx`: Clear stale conversation ID when a different user logs in
+- TypeScript compilation passes with zero errors
