@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBanner, updateBanner } from '@/lib/actions/banner';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Loader2, Check } from 'lucide-react';
+import { toast } from 'sonner';
 import ScopeSelector from '@/app/admin/banners/_components/scope-selector';
 import BannerPreview from '@/app/admin/banners/_components/banner-preview';
 
@@ -90,16 +91,22 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
+      toast.error('Invalid file type', { description: 'Only JPG, PNG, or WebP images are allowed' });
       setError('Only JPG, PNG, or WebP images are allowed');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
+      toast.error('File too large', { description: 'Image must be under 5 MB' });
       setError('Image must be under 5 MB');
       return;
     }
 
     setUploadingImage(true);
     setError('');
+
+    // Show immediate local preview
+    const localPreview = URL.createObjectURL(file);
+    setImagePreview(localPreview);
 
     try {
       const uploadData = new FormData();
@@ -111,12 +118,19 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
         body: uploadData,
       });
 
-      if (!res.ok) throw new Error('Upload failed');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(errData.error || 'Upload failed');
+      }
       const data = await res.json();
       handleChange('imageUrl', data.secure_url);
       setImagePreview(data.secure_url);
+      toast.success('Image uploaded', { description: 'Your banner image is ready' });
     } catch (err: any) {
+      console.error('[banner-form] Upload error:', err);
+      setImagePreview('');
       setError(err.message || 'Failed to upload image');
+      toast.error('Upload failed', { description: err.message || 'Could not upload image' });
     } finally {
       setUploadingImage(false);
     }
@@ -137,12 +151,17 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
 
       if (bannerId) {
         await updateBanner(bannerId, payload);
+        toast.success('Banner updated', { description: 'The banner has been updated successfully' });
       } else {
         await createBanner(payload);
+        toast.success('Banner created', { description: 'The banner will appear shortly' });
       }
       router.push('/admin/banners');
     } catch (err: any) {
-      setError(err.message || 'Failed to save banner');
+      console.error('[banner-form] Submit error:', err);
+      const errorMsg = err.message || 'Failed to save banner';
+      setError(errorMsg);
+      toast.error('Failed to save banner', { description: errorMsg });
     } finally {
       setLoading(false);
     }
@@ -295,23 +314,45 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Banner Image (optional)
               </label>
-              <div className="flex items-center gap-3">
-                <label className="flex-1 cursor-pointer">
-                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-center hover:border-gray-400 transition">
-                    {uploadingImage ? (
+              {imagePreview && !uploadingImage ? (
+                <div className="relative border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                  <img
+                    src={imagePreview}
+                    alt="Banner preview"
+                    className="w-full h-32 object-cover"
+                  />
+                  {formData.imageUrl && (
+                    <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 font-medium">
+                      <Check className="w-3 h-3" /> Uploaded
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleChange('imageUrl', '');
+                      setImagePreview('');
+                    }}
+                    className="absolute top-2 right-2 bg-white dark:bg-gray-800 rounded-full p-1 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                  >
+                    <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </button>
+                </div>
+              ) : (
+                <label className={`flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-center hover:border-gray-400 transition cursor-pointer ${
+                  uploadingImage ? 'opacity-50 pointer-events-none' : ''
+                }`}>
+                  {uploadingImage ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
                       <span className="text-sm text-gray-500">Uploading...</span>
-                    ) : imagePreview ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <ImageIcon className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-500">Image uploaded</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center gap-2">
-                        <Upload className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-500">Click to upload image</span>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-1">
+                      <Upload className="w-6 h-6 text-gray-400" />
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Click to upload image</span>
+                      <span className="text-xs text-gray-400">JPG, PNG, WebP · Max 5 MB</span>
+                    </div>
+                  )}
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
@@ -319,19 +360,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                     className="hidden"
                   />
                 </label>
-                {imagePreview && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleChange('imageUrl', '');
-                      setImagePreview('');
-                    }}
-                    className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
+              )}
             </div>
 
             {/* Dates */}

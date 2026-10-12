@@ -28,7 +28,13 @@ export async function GET(request: NextRequest) {
             },
           ],
         }
-      : { scope: 'GLOBAL' };
+      : {
+          // Guest users see GLOBAL and ALL banners, but not SPECIFIC
+          OR: [
+            { scope: 'GLOBAL' },
+            { scope: 'ALL' },
+          ],
+        };
 
     const where: any = {
       isActive: true,

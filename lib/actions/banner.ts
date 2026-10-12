@@ -156,8 +156,13 @@ export async function getActiveBanners(
       ],
     });
   } else {
-    // Logged-out user — show only GLOBAL banners
-    where.AND.push({ scope: 'GLOBAL' });
+    // Logged-out user — show GLOBAL and ALL banners (not SPECIFIC)
+    where.AND.push({
+      OR: [
+        { scope: 'GLOBAL' },
+        { scope: 'ALL' },
+      ],
+    });
   }
 
   const banners = await prisma.banner.findMany({
