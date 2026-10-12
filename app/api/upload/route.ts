@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get('file') as File;
+    const folder = (formData.get('folder') as string) || 'assessments';
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
       type: file.type,
       size: file.size,
       resourceType,
+      folder,
     });
 
     const bytes = await file.arrayBuffer();
@@ -37,7 +39,7 @@ export async function POST(req: NextRequest) {
       cloudinary.uploader
         .upload_stream(
           {
-            folder: 'aplus/assessments',
+            folder: `aplus/${folder}`,
             resource_type: resourceType,
             // ⭐ Preserve the original filename for easier debugging
             use_filename: true,

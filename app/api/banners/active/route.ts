@@ -89,12 +89,12 @@ export async function GET(request: NextRequest) {
       targets: b.targets.map((t) => t.institution),
     }));
 
-    return NextResponse.json({ banners: result });
+    console.log(`[banners] Fetched ${result.length} banners for placement=${placement} institution=${institutionId ?? 'none'}`);
+
+    return NextResponse.json({ banners: result, count: result.length });
   } catch (error) {
-    console.error('Error fetching active banners:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch banners' },
-      { status: 500 }
-    );
+    console.error('[banners] Error:', error);
+    // Never return 500 — return empty banners array so the client doesn't crash
+    return NextResponse.json({ banners: [], count: 0 });
   }
 }
