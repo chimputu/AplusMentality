@@ -90,12 +90,10 @@ export default function AdminContent({
     setTimeout(() => scrollToSection(activeTab), 200);
   }
 
-  // Calculate course stats
-  const totalModules = courses.reduce((acc: number, c: any) => acc + (c.modules?.length || 0), 0);
-  const totalLessons = courses.reduce((acc: number, c: any) => 
-    acc + c.modules?.reduce((a: number, m: any) => a + (m.lessons?.length || 0), 0) || 0, 0
-  );
-  const totalStudents = courses.reduce((acc: number, c: any) => acc + (c.enrollments?.length || 0), 0);
+  // Calculate course stats from lightweight _count fields
+  const totalModules = courses.reduce((acc: number, c: any) => acc + (c._count?.modules || 0), 0);
+  const totalLessons = 0; // Not fetched on dashboard to keep query lightweight
+  const totalStudents = courses.reduce((acc: number, c: any) => acc + (c._count?.enrollments || 0), 0);
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">

@@ -30,92 +30,88 @@ export default async function AdminPage({
     }
   }
 
-  // ✅ Fetch data with retry logic for transient failures
+  // ✅ Fetch each data source independently so one failure doesn't crash the whole page
+  // This matches the student page pattern: continue with empty data on failure
   let announcementsData: any[] = [];
   let videosData: any[] = [];
   let usersData: any[] = [];
   let coursesData: any[] = [];
-  let fetchError: Error | null = null;
 
+  // Fetch announcements
   try {
-    [announcementsData, videosData, usersData, coursesData] = await withRetry(
-      async () => {
-        return await Promise.all([
-          prisma.announcement.findMany({
-            take: 50,
-            orderBy: { createdAt: 'desc' },
-            include: { author: { select: { name: true } } },
-          }),
-          prisma.video.findMany({
-            take: 50,
-            orderBy: { createdAt: 'desc' },
-            include: { uploader: { select: { name: true } } },
-          }),
-          prisma.user.findMany({
-            take: 200,
-            select: {
-              id: true,
-              clerkId: true,
-              email: true,
-              username: true,
-              firstName: true,
-              lastName: true,
-              name: true,
-              imageUrl: true,
-              role: true,
-              createdAt: true,
-            },
-            orderBy: { createdAt: 'desc' },
-          }),
-          prisma.course.findMany({
-            take: 100,
-            include: {
-              modules: {
-                include: {
-                  lessons: true,
-                },
-              },
-              enrollments: true,
-              creator: {
-                select: { name: true },
-              },
-            },
-            orderBy: { createdAt: 'desc' },
-          }),
-        ]);
-      },
-      {
-        attempts: 3,
-        delayMs: 500,
-        backoff: 2,
-        onRetry: (attempt, err) => {
-          console.log(`Admin page data fetch retry ${attempt}:`, err.message);
-        },
-      }
+    announcementsData = await withRetry(
+      () => prisma.announcement.findMany({
+        take: 50,
+        orderBy: { createdAt: 'desc' },
+        include: { author: { select: { name: true } } },
+      }),
+      { attempts: 3, delayMs: 500 }
     );
   } catch (err) {
-    console.error('Failed to fetch admin data after retries:', err);
-    Sentry.captureException(err);
-    fetchError = err instanceof Error ? err : new Error(String(err));
+    console.error('[AdminPage] Failed to fetch announcements:', err);
   }
 
-  // If all retries failed, show error state
-  if (fetchError) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
-        <AlertTriangle className="w-16 h-16 text-amber-500 mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Couldn&apos;t load dashboard</h1>
-        <p className="text-gray-600 mb-6 max-w-md">
-          We&apos;re having trouble connecting to the database. Please try again in a moment.
-        </p>
-        <a
-          href="/admin"
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition"
-        >
-          Try again
-        </a>
-      </div>
+  // Fetch videos
+  try {
+    videosData = await withRetry(
+      () => prisma.video.findMany({
+        take: 50,
+        orderBy: { createdAt: 'desc' },
+        include: { uploader: { select: { name: true } } },
+      }),
+      { attempts: 3, delayMs: 500 }
     );
+  } catch (err) {
+    console.error('[AdminPage] Failed to fetch videos:', err);
+  }
+
+  // Fetch users
+  try {
+    usersData = await withRetry(
+      () => prisma.user.findMany({
+        take: 200,
+        select: {
+          id: true,
+          clerkId: true,
+          email: true,
+          username: true,
+          firstName: true,
+          lastName: true,
+          name: true,
+          imageUrl: true,
+          role: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      { attempts: 3, delayMs: 500 }
+    );
+  } catch (err) {
+    console.error('[AdminPage] Failed to fetch users:', err);
+  }
+
+  // Fetch courses (lightweight — no nested modules/lessons/enrollments on dashboard)
+  try {
+    coursesData = await withRetry(
+      () => prisma.course.findMany({
+        take: 50,
+        select: {
+          id: true,
+          title: true,
+          code: true,
+          description: true,
+          thumbnail: true,
+          createdAt: true,
+          updatedAt: true,
+          creator: { select: { name: true } },
+          _count: { select: { modules: true, enrollments: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      { attempts: 3, delayMs: 500 }
+    );
+  } catch (err) {
+    console.error('[AdminPage] Failed to fetch courses:', err);
   }
 
   // ✅ Serialize dates safely
