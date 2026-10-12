@@ -1,8 +1,8 @@
 // app/(dashboard)/student/layout.tsx
-import { ReactNode, Suspense } from 'react';
+import { ReactNode } from 'react';
 import { requireAuth } from '@/lib/auth';
 import DashboardLayout from '@/components/DashboardLayout';
-import { AIAssistant } from '@/components/ai/ai-assistant';
+import { AIAssistantWrapper } from '@/components/ai/ai-assistant-wrapper';
 import { redirect } from 'next/navigation';
 
 interface StudentLayoutProps {
@@ -22,14 +22,12 @@ export default async function StudentLayout({ children }: StudentLayoutProps) {
   return (
     <DashboardLayout role={role}>
       {children}
-      {/* Wrap AIAssistant in Suspense to prevent server action errors from crashing the dashboard */}
-      <Suspense fallback={null}>
-        <AIAssistant
-          userFirstName={user.firstName ?? null}
-          userRole={user.role ?? null}
-          userInstitution={user.institution?.shortName ?? user.institution?.name ?? null}
-        />
-      </Suspense>
+      {/* Wrap AIAssistant in error boundary to prevent crashes from affecting the dashboard */}
+      <AIAssistantWrapper
+        userFirstName={user.firstName ?? null}
+        userRole={user.role ?? null}
+        userInstitution={user.institution?.shortName ?? user.institution?.name ?? null}
+      />
     </DashboardLayout>
   );
 }

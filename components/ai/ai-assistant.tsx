@@ -30,6 +30,12 @@ interface AIAssistantProps {
 
 const LAST_CONVO_KEY = 'ai:last-conversation-id';
 
+// Validate conversation ID format (CUID: 'c' + 20+ alphanumeric chars)
+function isValidConvoId(id: string | null): boolean {
+  if (!id) return false;
+  return /^c[a-z0-9]{20,}$/.test(id);
+}
+
 // Contact info constants
 const CONTACT = {
   email: 'kafiswegchimputu@gmail.com',
@@ -96,10 +102,14 @@ export function AIAssistant({
   }, [isLoaded, user?.id]);
 
   // ── Initialize: fetch or create conversation ──
+  // IMPORTANT: DO NOT add firstName or isLoggedIn to deps — they cause the effect to re-run in a loop.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!isLoaded) return;
 
-    if (!isLoggedIn) {
+    const isLoggedInNow = isLoaded && isSignedIn;
+
+    if (!isLoggedInNow) {
       // Public mode: greeting only, no persistence
       setMessages([
         {
@@ -112,46 +122,61 @@ export function AIAssistant({
       return;
     }
 
-    // Logged-in mode: load or create conversation
-    async function init() {
-      // 1. Try localStorage for last active conversation
-      let convoId =
-        initialConversationId ?? localStorage.getItem(LAST_CONVO_KEY);
+    let cancelled = false;
 
-      // 2. If none, create a fresh conversation
-      if (!convoId) {
-        try {
-          const convo = await createConversation({ mode: 'LOGGED_IN' });
-          convoId = convo.id;
-          localStorage.setItem(LAST_CONVO_KEY, convoId);
-        } catch {
+    async function init() {
+      try {
+        // Step 1: Check localStorage
+        let convoId = localStorage.getItem(LAST_CONVO_KEY);
+
+        // Step 2: Validate the ID format
+        if (convoId && !isValidConvoId(convoId)) {
+          localStorage.removeItem(LAST_CONVO_KEY);
           convoId = null;
         }
-      }
 
-      setConversationId(convoId);
-
-      // 3. Load messages from server
-      if (convoId) {
-        try {
+        // Step 3: Fetch the conversation if we have a valid ID
+        if (convoId) {
           const convo = await getConversation(convoId);
-          // Conversation was deleted or doesn't exist — clear stale ID and start fresh
+
+          if (cancelled) return;
+
+          // Step 4: Handle missing conversation
           if (!convo) {
             localStorage.removeItem(LAST_CONVO_KEY);
-            setConversationId(null);
-            const newConvo = await createConversation({ mode: 'LOGGED_IN' });
-            setConversationId(newConvo.id);
-            localStorage.setItem(LAST_CONVO_KEY, newConvo.id);
-            setMessages([
-              {
-                id: 'greeting',
-                role: 'assistant',
-                content: `Hi ${firstName ?? 'there'}! 👋 I'm your A+ Mentality assistant. What can I help you with today?`,
-              },
-            ]);
+            convoId = null;
+          } else {
+            setConversationId(convoId);
+            if (convo.messages.length === 0) {
+              setMessages([
+                {
+                  id: 'greeting',
+                  role: 'assistant',
+                  content: `Hi ${firstName ?? 'there'}! 👋 I'm your A+ Mentality assistant. What can I help you with today?`,
+                },
+              ]);
+            } else {
+              setMessages(
+                convo.messages.map((m: any) => ({
+                  id: m.id,
+                  role: m.role as 'user' | 'assistant',
+                  content: m.content,
+                  isError: m.isError,
+                }))
+              );
+            }
             return;
           }
-          if (convo.messages.length === 0) {
+        }
+
+        // Step 5: Create a fresh conversation if needed
+        if (!convoId && !cancelled) {
+          try {
+            const fresh = await createConversation({ mode: 'LOGGED_IN' });
+            if (cancelled) return;
+
+            setConversationId(fresh.id);
+            localStorage.setItem(LAST_CONVO_KEY, fresh.id);
             setMessages([
               {
                 id: 'greeting',
@@ -159,26 +184,37 @@ export function AIAssistant({
                 content: `Hi ${firstName ?? 'there'}! 👋 I'm your A+ Mentality assistant. What can I help you with today?`,
               },
             ]);
-          } else {
-            setMessages(
-              convo.messages.map((m: any) => ({
-                id: m.id,
-                role: m.role as 'user' | 'assistant',
-                content: m.content,
-                isError: m.isError,
-              }))
-            );
+          } catch (err) {
+            console.error('[ai] Failed to create conversation:', err);
+            setMessages([
+              {
+                id: 'greeting',
+                role: 'assistant',
+                content: `Hi ${firstName ?? 'there'}! 👋`,
+              },
+            ]);
           }
-        } catch {
-          // If loading fails, clear stale ID and show empty state
-          localStorage.removeItem(LAST_CONVO_KEY);
-          setMessages([]);
         }
+      } catch (err) {
+        if (cancelled) return;
+        console.error('[ai] Init error:', err);
+        // NEVER crash the parent — show fallback greeting
+        setMessages([
+          {
+            id: 'greeting',
+            role: 'assistant',
+            content: `Hi there! 👋`,
+          },
+        ]);
       }
     }
 
     init();
-  }, [isLoaded, isLoggedIn, firstName, initialConversationId]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoaded]);
 
   // ── Scroll to bottom on new messages ──
   useEffect(() => {
