@@ -438,12 +438,13 @@ export async function approveTutorApplication(rawInput: unknown) {
     throw new Error('Only pending or under-review applications can be approved');
   }
 
-  // Fetch application with user and institution for email and Clerk org
+  // Fetch application with user, institution, and offerings for email, Clerk org, and Tutor creation
   const fullApplication = await prisma.tutorApplication.findUnique({
     where: { id: input.applicationId },
     include: {
       user: { select: { id: true, clerkId: true, email: true } },
       institution: { select: { id: true, name: true, shortName: true, clerkOrgId: true } },
+      offerings: true,
     },
   });
 
@@ -469,6 +470,56 @@ export async function approveTutorApplication(rawInput: unknown) {
         imageUrl: application.profilePhotoUrl ?? undefined,
       },
     });
+
+    // Auto-create Tutor record if one doesn't already exist for this user
+    const existingTutor = await tx.tutor.findUnique({
+      where: { userId: application.userId },
+    });
+
+    if (!existingTutor) {
+      // Derive mode from the first offering's modes, defaulting to 'online'
+      const firstOffering = fullApplication.offerings[0];
+      const mode = (firstOffering?.modes?.[0] ?? 'online').toLowerCase();
+
+      const createdTutor = await tx.tutor.create({
+        data: {
+          userId: application.userId,
+          fullName: application.fullName,
+          email: application.email,
+          phone: application.phone,
+          bio: application.teachingPhilosophy,
+          avatarUrl: application.profilePhotoUrl,
+          yearsExperience: application.experienceYears,
+          mode,
+          isVerified: true,
+          isActive: true,
+        },
+      });
+
+      // Create TutorSpecialty records from the application's course offerings
+      const validOfferings = fullApplication.offerings.filter(
+        (offering) => offering.courseId != null
+      );
+
+      if (validOfferings.length > 0) {
+        const specialtyData = validOfferings.map((offering) => ({
+          tutorId: createdTutor.id,
+          courseId: offering.courseId!,
+          personalRate: offering.priceZMW ? parseFloat(String(offering.priceZMW)) : undefined,
+          groupEnabled: offering.maxStudentsPerSession > 1,
+          groupRate:
+            offering.maxStudentsPerSession > 1 && offering.priceZMW
+              ? parseFloat(String(offering.priceZMW))
+              : undefined,
+          groupMaxSize: offering.maxStudentsPerSession > 1 ? offering.maxStudentsPerSession : undefined,
+        }));
+
+        await tx.tutorSpecialty.createMany({
+          data: specialtyData,
+          skipDuplicates: true,
+        });
+      }
+    }
   });
 
   // Send approval email to the applicant
@@ -490,6 +541,7 @@ export async function approveTutorApplication(rawInput: unknown) {
   }
 
   revalidatePath('/admin/tutor-applications');
+  revalidatePath('/api/student/tutors');
   return { success: true };
 }
 

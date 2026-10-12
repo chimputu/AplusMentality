@@ -1,9 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { withRetry } from '@/lib/retry';
 import AdminContent from '@/components/AdminContent';
-import * as Sentry from '@sentry/nextjs';
-import { AlertTriangle } from 'lucide-react';
 
 interface SearchParams {
   tab?: string;
@@ -25,13 +22,13 @@ export default async function AdminPage({
       const user = await prisma.user.findUnique({ where: { clerkId: userId } });
       userInstitutionId = user?.institutionId || undefined;
     } catch (err) {
-      console.error('Failed to fetch user institution:', err);
-      Sentry.captureException(err);
+      console.error('[AdminPage] Failed to fetch user institution:', err);
     }
   }
 
-  // ✅ Fetch each data source independently so one failure doesn't crash the whole page
-  // This matches the student page pattern: continue with empty data on failure
+  // ✅ Fetch each data source independently so one failure doesn't crash the whole page.
+  // The prisma client already has built-in retry via $extends middleware, so no need
+  // for additional withRetry wrappers that cause excessive delays.
   let announcementsData: any[] = [];
   let videosData: any[] = [];
   let usersData: any[] = [];
@@ -39,77 +36,65 @@ export default async function AdminPage({
 
   // Fetch announcements
   try {
-    announcementsData = await withRetry(
-      () => prisma.announcement.findMany({
-        take: 50,
-        orderBy: { createdAt: 'desc' },
-        include: { author: { select: { name: true } } },
-      }),
-      { attempts: 3, delayMs: 500 }
-    );
+    announcementsData = await prisma.announcement.findMany({
+      take: 50,
+      orderBy: { createdAt: 'desc' },
+      include: { author: { select: { name: true } } },
+    });
   } catch (err) {
     console.error('[AdminPage] Failed to fetch announcements:', err);
   }
 
   // Fetch videos
   try {
-    videosData = await withRetry(
-      () => prisma.video.findMany({
-        take: 50,
-        orderBy: { createdAt: 'desc' },
-        include: { uploader: { select: { name: true } } },
-      }),
-      { attempts: 3, delayMs: 500 }
-    );
+    videosData = await prisma.video.findMany({
+      take: 50,
+      orderBy: { createdAt: 'desc' },
+      include: { uploader: { select: { name: true } } },
+    });
   } catch (err) {
     console.error('[AdminPage] Failed to fetch videos:', err);
   }
 
   // Fetch users
   try {
-    usersData = await withRetry(
-      () => prisma.user.findMany({
-        take: 200,
-        select: {
-          id: true,
-          clerkId: true,
-          email: true,
-          username: true,
-          firstName: true,
-          lastName: true,
-          name: true,
-          imageUrl: true,
-          role: true,
-          createdAt: true,
-        },
-        orderBy: { createdAt: 'desc' },
-      }),
-      { attempts: 3, delayMs: 500 }
-    );
+    usersData = await prisma.user.findMany({
+      take: 200,
+      select: {
+        id: true,
+        clerkId: true,
+        email: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        name: true,
+        imageUrl: true,
+        role: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   } catch (err) {
     console.error('[AdminPage] Failed to fetch users:', err);
   }
 
   // Fetch courses (lightweight — no nested modules/lessons/enrollments on dashboard)
   try {
-    coursesData = await withRetry(
-      () => prisma.course.findMany({
-        take: 50,
-        select: {
-          id: true,
-          title: true,
-          code: true,
-          description: true,
-          thumbnail: true,
-          createdAt: true,
-          updatedAt: true,
-          creator: { select: { name: true } },
-          _count: { select: { modules: true, enrollments: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-      }),
-      { attempts: 3, delayMs: 500 }
-    );
+    coursesData = await prisma.course.findMany({
+      take: 50,
+      select: {
+        id: true,
+        title: true,
+        code: true,
+        description: true,
+        thumbnail: true,
+        createdAt: true,
+        updatedAt: true,
+        creator: { select: { name: true } },
+        _count: { select: { modules: true, enrollments: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   } catch (err) {
     console.error('[AdminPage] Failed to fetch courses:', err);
   }

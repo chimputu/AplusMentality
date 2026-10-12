@@ -32,6 +32,7 @@ import {
   Sparkles,
   Building2,
   Compass,
+  Star,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
@@ -371,7 +372,60 @@ export default function DashboardLayout({
     },
   ];
 
-  let navItems = (role === 'ADMIN' || role === 'SUPER_ADMIN') ? adminNavItems : studentNavItems;
+  // Tutor Navigation Items
+  const tutorNavItems: NavItem[] = [
+    { 
+      href: '/tutor', 
+      label: 'Dashboard', 
+      icon: LayoutDashboard,
+      section: 'Overview'
+    },
+    { 
+      href: '/tutor/requests', 
+      label: 'Tutor Requests', 
+      icon: MessageSquare,
+      section: 'Tutoring'
+    },
+    { 
+      href: '/tutor/specialties', 
+      label: 'My Specialties', 
+      icon: BookOpen,
+      section: 'Tutoring'
+    },
+    { 
+      href: '/tutor/offerings', 
+      label: 'My Offerings', 
+      icon: GraduationCap,
+      section: 'Tutoring'
+    },
+    { 
+      href: '/tutor/reviews', 
+      label: 'Reviews', 
+      icon: Star,
+      section: 'Tutoring'
+    },
+    { 
+      href: '/apply-as-tutor/status', 
+      label: 'Application Status', 
+      icon: FileText,
+      section: 'Account'
+    },
+    { 
+      href: '/tutor/settings', 
+      label: 'Settings', 
+      icon: Settings,
+      section: 'Account'
+    },
+  ];
+
+  let navItems: NavItem[];
+  if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+    navItems = adminNavItems;
+  } else if (role === 'TUTOR') {
+    navItems = tutorNavItems;
+  } else {
+    navItems = studentNavItems;
+  }
 
   // Filter nav items by role requirements (e.g., SUPER_ADMIN only)
   if (role === 'ADMIN') {
