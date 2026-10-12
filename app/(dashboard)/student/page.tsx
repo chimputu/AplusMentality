@@ -72,13 +72,13 @@ export default async function StudentPage({
     console.error('[StudentPage] Failed to fetch announcements/videos:', err.message);
   }
 
-  // 6. Serialize dates
-  const announcements = announcementsData.map((a) => ({
+  // 6. Serialize dates — ensure arrays are always arrays
+  const announcements = (Array.isArray(announcementsData) ? announcementsData : []).map((a) => ({
     ...a,
     createdAt: a.createdAt.toISOString(),
   }));
 
-  const videos = videosData.map((v) => ({
+  const videos = (Array.isArray(videosData) ? videosData : []).map((v) => ({
     ...v,
     createdAt: v.createdAt.toISOString(),
   }));
