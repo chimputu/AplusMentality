@@ -42,14 +42,17 @@ export default async function AdminPage({
       async () => {
         return await Promise.all([
           prisma.announcement.findMany({
+            take: 50,
             orderBy: { createdAt: 'desc' },
             include: { author: { select: { name: true } } },
           }),
           prisma.video.findMany({
+            take: 50,
             orderBy: { createdAt: 'desc' },
             include: { uploader: { select: { name: true } } },
           }),
           prisma.user.findMany({
+            take: 200,
             select: {
               id: true,
               clerkId: true,
@@ -65,6 +68,7 @@ export default async function AdminPage({
             orderBy: { createdAt: 'desc' },
           }),
           prisma.course.findMany({
+            take: 100,
             include: {
               modules: {
                 include: {
