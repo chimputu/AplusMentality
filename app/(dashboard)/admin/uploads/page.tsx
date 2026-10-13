@@ -16,6 +16,7 @@ import {
   AlertCircle,
   File,
 } from 'lucide-react';
+import { formatDate } from '@/lib/date-format';
 
 interface PendingUpload {
   id: string;
@@ -303,7 +304,7 @@ export default function AdminUploadsPage() {
                           {upload.originalName}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {new Date(upload.createdAt).toLocaleDateString()}
+                          {formatDate(upload.createdAt)}
                         </p>
                       </div>
                     </div>

@@ -21,6 +21,7 @@ import {
   CreditCard,
   MapPin,
 } from 'lucide-react';
+import { formatDateTime } from '@/lib/date-format';
 
 const statusBadge = (status: string) => {
   const config: Record<string, { icon: any; color: string; label: string }> = {
@@ -547,26 +548,14 @@ export default async function ApplicationDetailPage({
             <div>
               <dt className="text-gray-500 dark:text-gray-400">Submitted</dt>
               <dd className="text-gray-900 dark:text-gray-100 font-medium">
-                {application.submittedAt.toLocaleDateString('en-GB', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {formatDateTime(application.submittedAt)}
               </dd>
             </div>
             {application.reviewedAt && (
               <div>
                 <dt className="text-gray-500 dark:text-gray-400">Reviewed</dt>
                 <dd className="text-gray-900 dark:text-gray-100 font-medium">
-                  {application.reviewedAt.toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {formatDateTime(application.reviewedAt)}
                 </dd>
               </div>
             )}
@@ -574,13 +563,7 @@ export default async function ApplicationDetailPage({
               <div>
                 <dt className="text-gray-500 dark:text-gray-400">Decision Made</dt>
                 <dd className="text-gray-900 dark:text-gray-100 font-medium">
-                  {application.decidedAt.toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {formatDateTime(application.decidedAt)}
                 </dd>
               </div>
             )}

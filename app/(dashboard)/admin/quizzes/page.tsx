@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Plus, FileQuestion, ExternalLink, Calendar, Users, Eye } from 'lucide-react';
 import DeleteButton from '@/components/DeleteButton';
+import { formatDate } from '@/lib/date-format';
 
 export default async function AdminQuizzesPage() {
   await requireAuth(['ADMIN']);
@@ -113,7 +114,7 @@ export default async function AdminQuizzesPage() {
                         {quiz.dueDate ? (
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            {new Date(quiz.dueDate).toLocaleDateString('en-GB')}
+                            {formatDate(quiz.dueDate)}
                           </div>
                         ) : (
                           'No due date'

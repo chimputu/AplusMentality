@@ -18,6 +18,7 @@ import {
   rejectTutorApplication,
   requestMoreInfo,
 } from '@/lib/actions/tutor-application';
+import { formatDate } from '@/lib/date-format';
 
 interface Application {
   id: string;
@@ -150,7 +151,7 @@ export default function ApplicationTable({ applications, total }: Props) {
                 </td>
                 <td className="py-3 px-4">{statusBadge(app.status)}</td>
                 <td className="py-3 px-4 hidden lg:table-cell text-gray-500 dark:text-gray-400 text-xs">
-                  {new Date(app.submittedAt).toLocaleDateString('en-GB')}
+                  {formatDate(app.submittedAt)}
                 </td>
                 <td className="py-3 px-4">
                   <div className="flex items-center justify-end gap-1">

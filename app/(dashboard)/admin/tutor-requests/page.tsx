@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Filter, Mail, Phone } from 'lucide-react';
+import { formatDateTime } from '@/lib/date-format';
 
 interface Request {
   id: string;
@@ -139,13 +140,7 @@ export default function AdminTutorRequestsPage() {
               </p>
 
               <p className="mt-2 text-xs text-gray-400">
-                {new Date(req.createdAt).toLocaleDateString('en-GB', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {formatDateTime(req.createdAt)}
               </p>
             </div>
           ))}

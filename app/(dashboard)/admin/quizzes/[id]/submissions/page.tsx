@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Download, ExternalLink, FileText, X } from 'lucide-react';
+import { formatDateTime } from '@/lib/date-format';
 
 interface Submission {
   id: string;
@@ -255,7 +256,7 @@ export default function AdminQuizSubmissionsPage() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-gray-500 text-xs">
-                      {new Date(sub.submittedAt).toLocaleString('en-GB')}
+                      {formatDateTime(sub.submittedAt)}
                     </td>
                     <td className="px-4 py-3">
                       <span

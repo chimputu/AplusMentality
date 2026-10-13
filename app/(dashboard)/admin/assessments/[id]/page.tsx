@@ -6,6 +6,7 @@ import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import { formatDate, formatDateTime } from '@/lib/date-format';
 import {
   getAssessment,
   updateAssessment,
@@ -524,8 +525,8 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                 { label: 'Max Attempts', value: assessment.attemptsMax },
                 { label: 'Shuffle', value: assessment.shuffleQs ? 'Yes' : 'No' },
                 { label: 'Show Answers', value: assessment.showAnswersAfter.replace(/_/g, ' ') },
-                { label: 'Open At', value: assessment.openAt ? new Date(assessment.openAt).toLocaleString() : 'Immediately' },
-                { label: 'Close At', value: assessment.closeAt ? new Date(assessment.closeAt).toLocaleString() : 'No deadline' },
+                { label: 'Open At', value: assessment.openAt ? formatDateTime(assessment.openAt) : 'Immediately' },
+                { label: 'Close At', value: assessment.closeAt ? formatDateTime(assessment.closeAt) : 'No deadline' },
               ].map(({ label, value }) => (
                 <div key={label} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                   <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
@@ -694,7 +695,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                         {attempt.submittedAt
-                          ? new Date(attempt.submittedAt).toLocaleString()
+                          ? formatDateTime(attempt.submittedAt)
                           : 'In progress'}
                       </td>
                     </tr>
