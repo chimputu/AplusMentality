@@ -65,7 +65,7 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
         const res = await fetch('/api/admin/universities');
         if (res.ok) {
           const data = await res.json();
-          setUniversities(data);
+          setUniversities(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
         }
       } catch {
         console.error('Failed to load universities');
@@ -85,7 +85,7 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
         const res = await fetch(`/api/admin/programmes?universityId=${universityId}`);
         if (res.ok) {
           const data = await res.json();
-          setProgrammes(data);
+          setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
         }
       } catch {
         console.error('Failed to load programmes');
@@ -111,7 +111,7 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
         const res = await fetch(`/api/courses?${params}`);
         if (res.ok) {
           const data = await res.json();
-          setCourses(data);
+          setCourses(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
         }
       } catch {
         console.error('Failed to load courses');
