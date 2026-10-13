@@ -18,6 +18,7 @@ import {
   FileQuestion
 } from 'lucide-react';
 import ModuleList from '@/components/ModuleList';
+import { formatDate } from '@/lib/date-format';
 
 interface PageProps {
   params: Promise<{
@@ -212,7 +213,7 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
             </div>
             <div>
               <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {new Date(course.createdAt).toLocaleDateString()}
+                {formatDate(course.createdAt)}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Created</p>
             </div>
@@ -285,7 +286,7 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                      {formatDate(enrollment.enrolledAt)}
                     </td>
                   </tr>
                 ))}

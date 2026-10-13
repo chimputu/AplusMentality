@@ -13,6 +13,7 @@ import {
   X,
   Download,
 } from 'lucide-react';
+import { formatDateTime } from '@/lib/date-format';
 
 interface Submission {
   id: string;
@@ -368,7 +369,7 @@ export default function AdminSubmissionsPage() {
 
                     {/* Submitted */}
                     <td className="px-4 py-3 text-gray-500 text-xs">
-                      {new Date(sub.submittedAt).toLocaleString()}
+                      {formatDateTime(sub.submittedAt)}
                     </td>
 
                     {/* Status */}

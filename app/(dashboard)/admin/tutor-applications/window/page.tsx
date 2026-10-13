@@ -112,6 +112,15 @@ export default async function WindowManagementPage() {
     orderBy: { createdAt: 'desc' },
   });
 
+  // Serialize dates to ISO strings to avoid timezone hydration mismatches
+  const serializedWindows = windows.map((win) => ({
+    ...win,
+    opensAt: win.opensAt?.toISOString() ?? null,
+    closesAt: win.closesAt?.toISOString() ?? null,
+    createdAt: win.createdAt.toISOString(),
+    notifiedAt: win.notifiedAt?.toISOString() ?? null,
+  }));
+
   return (
     <div className="p-4 md:p-8">
       {/* Header */}
@@ -204,7 +213,7 @@ export default async function WindowManagementPage() {
           </h2>
         </div>
 
-        {windows.length === 0 ? (
+        {serializedWindows.length === 0 ? (
           <div className="text-center py-12 text-gray-500 dark:text-gray-400">
             <Clock className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
             <p>No application windows yet.</p>
@@ -212,7 +221,7 @@ export default async function WindowManagementPage() {
           </div>
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-gray-700">
-            {windows.map((win) => (
+            {serializedWindows.map((win) => (
               <WindowRow key={win.id} window={win} />
             ))}
           </div>
@@ -226,7 +235,7 @@ export default async function WindowManagementPage() {
 // Window Row Component
 // ============================================
 
-async function WindowRow({ window: win }: { window: any }) {
+function WindowRow({ window: win }: { window: any }) {
   return (
     <div className="p-6">
       <div className="flex items-start justify-between gap-4">
@@ -246,12 +255,12 @@ async function WindowRow({ window: win }: { window: any }) {
             )}
             {win.opensAt && (
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                Opens: {new Date(win.opensAt).toLocaleString()}
+                Opens: {new Date(win.opensAt).toISOString().replace('T', ' ').substring(0, 16).replace('T', ' ')}
               </span>
             )}
             {win.closesAt && (
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                Closes: {new Date(win.closesAt).toLocaleString()}
+                Closes: {new Date(win.closesAt).toISOString().replace('T', ' ').substring(0, 16).replace('T', ' ')}
               </span>
             )}
           </div>
@@ -265,8 +274,8 @@ async function WindowRow({ window: win }: { window: any }) {
 
           {/* Metadata */}
           <p className="text-xs text-gray-400 dark:text-gray-500">
-            Created {new Date(win.createdAt).toLocaleString()}
-            {win.notifiedAt && ` · Notified ${new Date(win.notifiedAt).toLocaleString()}`}
+            Created {new Date(win.createdAt).toISOString().replace('T', ' ').substring(0, 16).replace('T', ' ')}
+            {win.notifiedAt && ` · Notified ${new Date(win.notifiedAt).toISOString().replace('T', ' ').substring(0, 16).replace('T', ' ')}`}
           </p>
         </div>
 

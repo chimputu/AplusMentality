@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Plus, FileCheck, ExternalLink, Calendar, Users, Eye } from 'lucide-react';
 import DeleteButton from '@/components/DeleteButton';
+import { formatDate } from '@/lib/date-format';
 
 export default async function AdminTestsPage() {
   await requireAuth(['ADMIN']);
@@ -119,7 +120,7 @@ export default async function AdminTestsPage() {
                         {test.dueDate ? (
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            {new Date(test.dueDate).toLocaleDateString('en-GB')}
+                            {formatDate(test.dueDate)}
                           </div>
                         ) : (
                           'No due date'

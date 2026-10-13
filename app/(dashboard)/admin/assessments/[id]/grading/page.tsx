@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, Clock, User } from 'lucide-react';
+import { formatDate } from '@/lib/date-format';
 
 export default async function GradingPage({
   params,
@@ -141,7 +142,7 @@ export default async function GradingPage({
                       <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                         <Clock className="w-3 h-3" />
                         {attempt.submittedAt
-                          ? new Date(attempt.submittedAt).toLocaleDateString()
+                          ? formatDate(attempt.submittedAt)
                           : '—'}
                       </div>
                     </td>

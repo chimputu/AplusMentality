@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Plus, Edit, Eye, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
 import { deleteBanner, toggleBannerActive } from '@/lib/actions/banner';
+import { formatDate } from '@/lib/date-format';
 
 export default async function AdminBannersPage({
   searchParams,
@@ -219,10 +220,10 @@ export default async function AdminBannersPage({
                       {getTargetBadge(banner)}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {new Date(banner.startsAt).toLocaleDateString()}
+                      {formatDate(banner.startsAt)}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {banner.endsAt ? new Date(banner.endsAt).toLocaleDateString() : '—'}
+                      {banner.endsAt ? formatDate(banner.endsAt) : '—'}
                     </td>
                     <td className="px-4 py-3">
                       <form

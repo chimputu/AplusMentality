@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Plus, BookOpen, Users, PlayCircle, Calendar } from 'lucide-react';
 import ModuleList from '@/components/ModuleList';
+import { formatDate } from '@/lib/date-format';
 
 interface PageProps {
   params: Promise<{ courseId: string }>;  // ✅ Changed from 'id' to 'courseId'
@@ -139,7 +140,7 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <Calendar className="w-4 h-4" />
-            Created {new Date(course.createdAt).toLocaleDateString()}
+            Created {formatDate(course.createdAt)}
           </div>
         </div>
       </div>
