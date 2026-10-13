@@ -34,7 +34,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
               "connect-src 'self' https://*.clerk.accounts.dev https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io",
-              "frame-src 'self' https://*.clerk.accounts.dev",
+              "frame-src 'self' https://*.clerk.accounts.dev https://www.youtube.com https://youtube.com",
               "worker-src 'self' blob:",
               "frame-ancestors 'self'",
             ].join('; '),
@@ -66,6 +66,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'encrypted-tbn0.gstatic.com', // For the Mulungushi logo
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.youtube.com', // For YouTube video thumbnails
       },
     ],
   },
