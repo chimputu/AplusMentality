@@ -250,15 +250,15 @@ export default function HomePageClient() {
   // ---- Combined Course Data ----
   const year1Courses = [
     // Semester 1
-    { code: 'CHE111', title: 'Introductory Chemistry', description: 'Atomic structure, bonding, and stoichiometry.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop' },
-    { code: 'BIO111', title: 'Bio-molecules and Cells', description: 'Cell biology, genetics, and molecular foundations.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop' },
-    { code: 'PHY101', title: 'Fundamentals of Physics', description: 'Mechanics, thermodynamics, and waves.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop' },
+    { code: 'CHE111', title: 'Introductory Chemistry', description: 'Atomic structure, bonding, and stoichiometry.', image: '/photos/chem111.png' },
+    { code: 'BIO111', title: 'Bio-molecules and Cells', description: 'Cell biology, genetics, and molecular foundations.', image: '/photos/bio111.png' },
+    { code: 'PHY101', title: 'Fundamentals of Physics', description: 'Mechanics, thermodynamics, and waves.', image: '/photos/phy101.png' },
     { code: 'MSM111', title: 'Mathematical Methods I', description: 'Limits, derivatives, and integrals.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop' },
     // Semester 2
-    { code: 'BIO112', title: 'Molecular Biology and Genetics', description: 'DNA replication, transcription, and inheritance.', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400&h=200&fit=crop' },
-    { code: 'PHY102', title: 'Introductory Physics II', description: 'Electromagnetism, optics, and modern physics.', image: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=200&fit=crop' },
+    { code: 'BIO112', title: 'Molecular Biology and Genetics', description: 'DNA replication, transcription, and inheritance.', image: '/photos/bio111.png' },
+    { code: 'PHY102', title: 'Introductory Physics II', description: 'Electromagnetism, optics, and modern physics.', image: '/photos/phy101.png' },
     { code: 'MSM112', title: 'Mathematical Methods II', description: 'Differential equations, vectors, and matrices.', image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop' },
-    { code: 'CHE112', title: 'Introductory Chemistry II', description: 'Organic chemistry, acids, and bases.', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=200&fit=crop' },
+    { code: 'CHE112', title: 'Introductory Chemistry II', description: 'Organic chemistry, acids, and bases.', image: '/photos/chem111.png' },
   ];
 
   const year2Courses = [
@@ -273,7 +273,7 @@ export default function HomePageClient() {
     { code: 'ICT242', title: 'Networking and Communication', description: 'OSI model, TCP/IP, and network security.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop' },
     { code: 'ICT202', title: 'Data Structures and Algorithms', description: 'Stacks, queues, trees, and sorting algorithms.', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop' },
     { code: 'ICT262', title: 'Intermediate Java Programming', description: 'Advanced OOP, collections, and multithreading.', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=200&fit=crop' },
-    { code: 'ICT271', title: 'Databases', description: 'SQL, database design, and transaction management.', image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=200&fit=crop' },
+    { code: 'ICT271', title: 'Databases', description: 'SQL, database design, and transaction management.', image: '/photos/databases.png' },
   ];
 
   return (
@@ -595,7 +595,7 @@ export default function HomePageClient() {
               {
                 title: 'Expert Tutors',
                 description: 'Learn from qualified professionals.',
-                image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=400&fit=crop'
+                image: '/photos/expertTutors.png'
               },
               {
                 title: 'Lecture Slides',
@@ -605,12 +605,12 @@ export default function HomePageClient() {
               {
                 title: 'Past Exam Papers',
                 description: 'Practice with past papers from Zambia.',
-                image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=400&fit=crop'
+                image: '/photos/exampapers.png'
               },
               {
                 title: 'E-Books & Notes',
                 description: 'Curated e-books and study notes.',
-                image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&h=400&fit=crop'
+                image: '/photos/e-book&notes.png'
               },
               {
                 title: 'Video Lessons',
@@ -620,7 +620,7 @@ export default function HomePageClient() {
               {
                 title: 'Interactive Quizzes',
                 description: 'Test your knowledge with instant feedback.',
-                image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&h=400&fit=crop'
+                image: '/photos/quizzes.png'
               },
               {
                 title: 'Mentorship & Support',
@@ -630,7 +630,7 @@ export default function HomePageClient() {
               {
                 title: 'Career Guidance',
                 description: 'Prepare for your future with career resources.',
-                image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&h=400&fit=crop'
+                image: '/photos/careerGuidance.png'
               },
             ].map((item, idx) => (
               <motion.div
