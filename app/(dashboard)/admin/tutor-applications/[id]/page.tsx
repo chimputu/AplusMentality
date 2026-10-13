@@ -1,4 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
@@ -164,9 +165,11 @@ export default async function ApplicationDetailPage({
                 <dt className="text-gray-500 dark:text-gray-400 mb-2">Profile Photo</dt>
                 <dd>
                   <div className="flex items-center gap-4">
-                    <img
+                    <Image
                       src={application.profilePhotoUrl}
                       alt="Profile"
+                      width={64}
+                      height={64}
                       className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
                     />
                     <div className="space-x-2">
@@ -215,10 +218,12 @@ export default async function ApplicationDetailPage({
                           rel="noopener noreferrer"
                           className="block w-32 rounded overflow-hidden border border-gray-200 dark:border-gray-700"
                         >
-                          <img
+                          <Image
                             src={application.nrcFrontUrl}
                             alt="NRC Front"
-                            className="w-full object-cover aspect-[1.6/1]"
+                            width={128}
+                            height={80}
+                            className="w-full object-cover"
                           />
                         </a>
                         <div className="mt-1 space-x-2">
@@ -249,10 +254,12 @@ export default async function ApplicationDetailPage({
                           rel="noopener noreferrer"
                           className="block w-32 rounded overflow-hidden border border-gray-200 dark:border-gray-700"
                         >
-                          <img
+                          <Image
                             src={application.nrcBackUrl}
                             alt="NRC Back"
-                            className="w-full object-cover aspect-[1.6/1]"
+                            width={128}
+                            height={80}
+                            className="w-full object-cover"
                           />
                         </a>
                         <div className="mt-1 space-x-2">

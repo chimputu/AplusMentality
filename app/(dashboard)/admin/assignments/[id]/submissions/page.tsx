@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Download, ExternalLink, FileText, X } from 'lucide-react';
@@ -228,10 +229,11 @@ export default function AdminSubmissionsPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         {sub.user.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
+                          <Image
                             src={sub.user.imageUrl}
                             alt=""
+                            width={32}
+                            height={32}
                             className="w-8 h-8 rounded-full object-cover"
                           />
                         ) : (
