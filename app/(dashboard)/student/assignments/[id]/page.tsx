@@ -2,6 +2,7 @@ import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Clock, ClipboardList } from 'lucide-react';
 import AssignmentSubmitButton from '@/components/AssignmentSubmitButton';
 
@@ -93,7 +94,17 @@ export default async function StudentSubmitAssignmentPage({ params }: PageProps)
             <div className="aspect-video w-full bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
               {isGoogleForm && <iframe src={assignment.embedUrl} className="w-full h-full" allowFullScreen />}
               {isPDF && assignment.fileUrl && <iframe src={assignment.fileUrl} className="w-full h-full" />}
-              {isImage && assignment.fileUrl && <img src={assignment.fileUrl} alt={assignment.title} className="w-full h-full object-contain" />}
+              {isImage && assignment.fileUrl && (
+                <div className="relative w-full h-full">
+                  <Image
+                    src={assignment.fileUrl}
+                    alt={assignment.title}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-contain"
+                  />
+                </div>
+              )}
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-3 text-center">
               {isGoogleForm

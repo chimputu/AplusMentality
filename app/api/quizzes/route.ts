@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET – List all quizzes
 export async function GET(req: NextRequest) {
   try {
-    await requireAuth();
+    const auth = await getAuthUser();
+    if (!auth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     const { searchParams } = new URL(req.url);
     const universityId = searchParams.get('university');
 

@@ -1,7 +1,7 @@
 'use server';
 
 import { auth } from '@clerk/nextjs/server';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { BannerVariant, BannerPlacement, BannerScope } from '../../generated/prisma/client';
@@ -257,6 +257,7 @@ export async function createBanner(rawInput: unknown) {
   revalidatePath('/');
   revalidatePath('/dashboard');
   revalidatePath('/admin/banners');
+  updateTag('banners');
 
   return { success: true, bannerId: banner.id };
 }
@@ -331,6 +332,7 @@ export async function updateBanner(id: string, rawInput: unknown) {
   revalidatePath('/');
   revalidatePath('/dashboard');
   revalidatePath('/admin/banners');
+  updateTag('banners');
 
   return { success: true, bannerId: banner.id };
 }
@@ -343,6 +345,7 @@ export async function deleteBanner(id: string) {
   revalidatePath('/');
   revalidatePath('/dashboard');
   revalidatePath('/admin/banners');
+  updateTag('banners');
 
   return { success: true };
 }
@@ -363,6 +366,7 @@ export async function toggleBannerActive(id: string) {
   revalidatePath('/');
   revalidatePath('/dashboard');
   revalidatePath('/admin/banners');
+  updateTag('banners');
 
   return { success: true, isActive: !existing.isActive };
 }

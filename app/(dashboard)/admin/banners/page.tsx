@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { unstable_cache } from 'next/cache';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
@@ -7,38 +8,42 @@ import { deleteBanner, toggleBannerActive } from '@/lib/actions/banner';
 import { formatDate } from '@/lib/date-format';
 
 // Cached banner query with revalidation
-const getCachedBanners = async (scope?: string) => {
-  const where: any = {};
-  if (scope) where.scope = scope;
+const getCachedBanners = unstable_cache(
+  async (scope?: string) => {
+    const where: any = {};
+    if (scope) where.scope = scope;
 
-  const banners = await prisma.banner.findMany({
-    where,
-    orderBy: [{ priority: 'desc' }, { startsAt: 'desc' }],
-    include: {
-      institution: {
-        select: { id: true, name: true },
-      },
-      targets: {
-        include: {
-          institution: { select: { id: true, name: true } },
+    const banners = await prisma.banner.findMany({
+      where,
+      orderBy: [{ priority: 'desc' }, { startsAt: 'desc' }],
+      include: {
+        institution: {
+          select: { id: true, name: true },
+        },
+        targets: {
+          include: {
+            institution: { select: { id: true, name: true } },
+          },
         },
       },
-    },
-  });
+    });
 
-  return banners.map((b) => ({
-    ...b,
-    startsAt: b.startsAt.toISOString(),
-    endsAt: b.endsAt?.toISOString() ?? null,
-    createdAt: b.createdAt.toISOString(),
-    updatedAt: b.updatedAt.toISOString(),
-    targets: b.targets.map((t) => ({
-      id: t.id,
-      institutionId: t.institutionId,
-      institution: t.institution,
-    })),
-  }));
-};
+    return banners.map((b) => ({
+      ...b,
+      startsAt: b.startsAt.toISOString(),
+      endsAt: b.endsAt?.toISOString() ?? null,
+      createdAt: b.createdAt.toISOString(),
+      updatedAt: b.updatedAt.toISOString(),
+      targets: b.targets.map((t) => ({
+        id: t.id,
+        institutionId: t.institutionId,
+        institution: t.institution,
+      })),
+    }));
+  },
+  ['banners-list'],
+  { revalidate: 60, tags: ['banners'] }
+);
 
 function BannersSkeleton() {
   return (
@@ -147,8 +152,10 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
         </span>
       );
     }
-    const count = banner.targets?.length ?? 0;
-    const names = banner.targets?.map((t: any) => t.institution?.name).filter(Boolean) ?? [];
+    const count = (Array.isArray(banner.targets) ? banner.targets : []).length;
+    const names = (Array.isArray(banner.targets) ? banner.targets : [])
+      .map((t: any) => t.institution?.name)
+      .filter(Boolean);
     return (
       <span
         title={names.join(', ')}
@@ -213,7 +220,7 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-            {banners.map((banner: any) => (
+            {(Array.isArray(banners) ? banners : []).map((banner: any) => (
               <tr key={banner.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                 <td className="px-4 py-3">
                   <div>
@@ -255,7 +262,7 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
                       await toggleBannerActive(banner.id);
                     }}
                   >
-                    <button type="submit" className="cursor-pointer">
+                    <button type="submit" className="cursor-pointer" aria-label={banner.isActive ? 'Deactivate banner' : 'Activate banner'}>
                       {banner.isActive ? (
                         <ToggleRight className="w-5 h-5 text-green-500" />
                       ) : (

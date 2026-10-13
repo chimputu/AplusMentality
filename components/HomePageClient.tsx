@@ -21,6 +21,7 @@ import BannerCarousel from '@/components/banner-carousel';
 import { CourseCard } from '@/components/course-card';
 import { InstitutionLogo } from '@/components/institution-logo';
 import { HomeAIAssistantWrapper } from '@/components/ai/home-ai-assistant-wrapper';
+import { HeroVideoFacade } from '@/components/HeroVideoFacade';
 
 const fadeInUp: any = {
   hidden: { opacity: 0, y: 30 },
@@ -76,7 +77,7 @@ function UniversitiesCarousel() {
       </button>
 
       {/* Swipe hint for mobile */}
-      <p className="sm:hidden text-xs text-gray-400 text-center mb-3">← Swipe to see more →</p>
+      <p className="sm:hidden text-xs text-gray-500 text-center mb-3">← Swipe to see more →</p>
 
       {/* Scrollable container */}
       <div
@@ -106,7 +107,7 @@ function UniversitiesCarousel() {
               <p className="mt-3 text-sm font-semibold text-gray-800 leading-tight">
                 {inst.name}
               </p>
-              <p className="text-[10px] text-gray-400 mt-1">
+              <p className="text-[10px] text-gray-500 mt-1">
                 Zambian Institution
               </p>
             </div>
@@ -408,39 +409,12 @@ export default function HomePageClient() {
               </div>
             </div>
 
-            {/* RIGHT: Feature card */}
+            {/* RIGHT: YouTube motivational video */}
             <div className="flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-md">
-                {/* Glow behind card */}
-                <div className="absolute -inset-4 bg-gradient-to-r from-blue-400/20 to-emerald-400/20 rounded-3xl blur-3xl" />
-
-                {/* Card */}
-                <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl text-center">
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">
-                    Built for Zambian Students
-                  </h3>
-                  <p className="text-blue-200 text-sm">
-                    By Zambians, for Zambians
-                  </p>
-
-                  <div className="mt-6 flex justify-center gap-6 text-sm">
-                    <div>
-                      <p className="font-bold text-white text-lg">Quality</p>
-                      <p className="text-blue-200 text-xs">Content</p>
-                    </div>
-                    <div>
-                      <p className="font-bold text-white text-lg">Expert</p>
-                      <p className="text-blue-200 text-xs">Mentors</p>
-                    </div>
-                    <div>
-                      <p className="font-bold text-white text-lg">Learn</p>
-                      <p className="text-blue-200 text-xs">Offline</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-white/20 text-center text-xs text-blue-200">
-                    Join the A+ Mentality community today
-                  </div>
+              <div className="relative w-full max-w-xl">
+                {/* Glass container with padding */}
+                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-3 shadow-2xl">
+                  <HeroVideoFacade />
                 </div>
               </div>
             </div>
@@ -845,7 +819,7 @@ export default function HomePageClient() {
           {/* ===== GRADING POINTS SYSTEM ===== */}
           <div className="mb-8 sm:mb-12">
             <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Grading Points System</h3>
-            <p className="sm:hidden text-xs text-gray-400 text-center mb-2">← Swipe to see full table →</p>
+            <p className="sm:hidden text-xs text-gray-500 text-center mb-2">← Swipe to see full table →</p>
             <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
                 <table className="w-full min-w-[500px]">
@@ -969,7 +943,7 @@ export default function HomePageClient() {
           </div>
 
           {/* Source Note */}
-          <p className="text-xs text-gray-400 italic text-center mt-6 max-w-2xl mx-auto">
+          <p className="text-xs text-gray-500 italic text-center mt-6 max-w-2xl mx-auto">
             ℹ️ Source: Zambia Higher Education Authority (HEA) and university academic regulations. If your institution uses a different scale, check with your registrar.
           </p>
         </div>
@@ -1280,14 +1254,14 @@ export default function HomePageClient() {
                 </div>
                 <span className="text-xl font-bold text-white">Mentality</span>
               </Link>
-              <p className="mt-4 text-sm text-gray-400">
+              <p className="mt-4 text-sm text-gray-300">
                 Empowering Zambian lifelong learners through curated content, mentorship, and community support.
               </p>
               <div className="mt-4 flex space-x-4">
-                <a href="#" className="text-gray-400 hover:text-blue-400 transition"><Share2 className="w-5 h-5" /></a>
-                <a href="#" className="text-gray-400 hover:text-blue-400 transition"><Globe className="w-5 h-5" /></a>
-                <a href="#" className="text-gray-400 hover:text-blue-400 transition"><AtSign className="w-5 h-5" /></a>
-                <a href="#" className="text-gray-400 hover:text-blue-400 transition"><LinkIcon className="w-5 h-5" /></a>
+                <a href="#" className="text-gray-300 hover:text-blue-400 transition" aria-label="Share"><Share2 className="w-5 h-5" /></a>
+                <a href="#" className="text-gray-300 hover:text-blue-400 transition" aria-label="Website"><Globe className="w-5 h-5" /></a>
+                <a href="#" className="text-gray-300 hover:text-blue-400 transition" aria-label="Email"><AtSign className="w-5 h-5" /></a>
+                <a href="#" className="text-gray-300 hover:text-blue-400 transition" aria-label="Link"><LinkIcon className="w-5 h-5" /></a>
               </div>
             </div>
             <div>
@@ -1332,14 +1306,18 @@ export default function HomePageClient() {
             <div>
               <h4 className="text-white font-semibold mb-4">Subscribe to Our Newsletter</h4>
               <form onSubmit={handleSubscribe} className="space-y-3">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full px-4 py-2 rounded-full bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div>
+                  <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+                  <input
+                    id="newsletter-email"
+                    type="email"
+                    placeholder="Your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full px-4 py-2 rounded-full bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
                 <button 
                   type="submit" 
                   className="w-full bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center space-x-2"

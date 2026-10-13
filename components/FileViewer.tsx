@@ -3,6 +3,7 @@
 
 import { X, Download, ExternalLink, FileText } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface FileViewerProps {
   isOpen: boolean;
@@ -120,7 +121,15 @@ export default function FileViewer({
       <div className="flex-1 overflow-auto bg-gray-950 relative">
         {/* ============ IMAGE ============ */}
         {isImage && (
-          <img src={fileUrl} alt={title} className="w-full h-auto" />
+          <div className="relative w-full h-full flex items-center justify-center">
+            <Image
+              src={fileUrl}
+              alt={title}
+              fill
+              sizes="100vw"
+              className="object-contain"
+            />
+          </div>
         )}
 
         {/* ============ PDF (via Google Docs Viewer) ============ */}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Upload, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -78,15 +79,19 @@ export function ImageUploader({
               <p className="text-sm text-gray-600 dark:text-gray-400">PDF uploaded</p>
             </div>
           ) : (
-            <img 
-              src={value} 
-              alt={label}
-              className={`w-full object-cover ${
-                aspectRatio === 'square' ? 'aspect-square max-w-[200px]' :
-                aspectRatio === 'card' ? 'aspect-[1.6/1]' :
-                'aspect-video'
-              }`}
-            />
+            <div className={`relative w-full ${
+              aspectRatio === 'square' ? 'aspect-square max-w-[200px]' :
+              aspectRatio === 'card' ? 'aspect-[1.6/1]' :
+              'aspect-video'
+            }`}>
+              <Image
+                src={value}
+                alt={label}
+                fill
+                sizes="(max-width: 200px) 100vw, 200px"
+                className="object-cover"
+              />
+            </div>
           )}
           <button
             type="button"
