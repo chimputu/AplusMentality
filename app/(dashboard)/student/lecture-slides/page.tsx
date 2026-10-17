@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, ExternalLink } from 'lucide-react';
+import { Search, ExternalLink, FileText } from 'lucide-react';
 import Link from 'next/link';
 
 interface Course {
@@ -69,18 +69,22 @@ export default function StudentLectureSlidesPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    setError(false);
 
     const params = new URLSearchParams();
     if (universityFilter) params.set('university', universityFilter);
     fetch(`/api/lecture-slides${params.toString() ? '?' + params.toString() : ''}`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`API returned ${res.status}`);
-        return res.json();
+      .then(async (res) => {
+        if (!res.ok) {
+          console.error('Failed to fetch lecture slides:', res.status);
+          return [];
+        }
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+        console.error('Unexpected slides API response:', data);
+        return [];
       })
       .then((data: LectureSlide[]) => {
         setSlides(data);
@@ -97,13 +101,9 @@ export default function StudentLectureSlidesPage() {
           .then((coursesData: Course[]) => setCourses(coursesData))
           .catch(() => setCourses([]));
       })
-      .catch((err) => {
-        console.error('Failed to fetch lecture slides:', err);
-        // Set error state without triggering a re-fetch loop
-        setError(true);
-      })
+      .catch(() => setSlides([]))
       .finally(() => setLoading(false));
-  }, [universityFilter]); // Empty dependency array prevents re-execution on every render
+  }, [universityFilter]);
 
   useEffect(() => {
     let result = slides;
@@ -124,19 +124,7 @@ export default function StudentLectureSlidesPage() {
     setFiltered(result);
   }, [search, categoryFilter, courseFilter, slides]);
 
-  if (loading) return <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading...</div>;
-
-  if (error) {
-    return (
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Lecture Slides</h1>
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-          <p className="text-lg font-medium">Failed to load lecture slides</p>
-          <p className="text-sm mt-2">Please try refreshing the page or check back later.</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading lecture slides...</div>;
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -183,8 +171,16 @@ export default function StudentLectureSlidesPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-          No lecture slides found.
+        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+          <FileText className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+            {slides.length === 0 ? 'No lecture slides available yet' : 'No slides match your filters'}
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+            {slides.length === 0
+              ? 'Tutors have not uploaded any slides yet. Check back later.'
+              : 'Try adjusting your search or filter criteria.'}
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
