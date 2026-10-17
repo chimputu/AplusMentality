@@ -51,15 +51,23 @@ async function requireAdmin() {
 
 export async function submitTutorApplication(rawInput: unknown) {
   try {
+    console.log('[submitTutorApplication] Starting submission...');
+
     const user = await requireAuth();
+    console.log('[submitTutorApplication] Authenticated user:', user.id);
 
     let input: any;
     try {
       input = fullApplicationSchema.parse(rawInput);
     } catch (validationErr: any) {
+      console.error('[submitTutorApplication] Validation failed:', {
+        errors: validationErr.errors?.map((e: any) => e.message),
+        message: validationErr.message,
+      });
       const firstError = validationErr.errors?.[0]?.message ?? validationErr.message ?? 'Invalid application data';
       throw new Error(firstError);
     }
+    console.log('[submitTutorApplication] Validation passed');
 
     // Check if user already has an active application
     const existing = await withRetry(
@@ -69,6 +77,7 @@ export async function submitTutorApplication(rawInput: unknown) {
       }),
       { attempts: 3, delayMs: 500 }
     );
+    console.log('[submitTutorApplication] Existing application check:', existing ? `found (${existing.status})` : 'none');
 
     if (existing && existing.status !== 'REJECTED' && existing.status !== 'WITHDRAWN') {
       throw new Error('You already have a pending or approved application');
@@ -77,6 +86,7 @@ export async function submitTutorApplication(rawInput: unknown) {
     let application;
 
     if (existing) {
+      console.log('[submitTutorApplication] Updating existing application:', existing.id);
       await withRetry(
         async () => prisma.tutorReference.deleteMany({ where: { tutorApplicationId: existing.id } }),
         { attempts: 3, delayMs: 500 }
@@ -154,6 +164,7 @@ export async function submitTutorApplication(rawInput: unknown) {
         });
       }, { attempts: 3, delayMs: 500 });
     } else {
+      console.log('[submitTutorApplication] Creating new application for user:', user.id);
       application = await withRetry(async () => {
         return prisma.tutorApplication.create({
           data: {
@@ -219,6 +230,8 @@ export async function submitTutorApplication(rawInput: unknown) {
       }, { attempts: 3, delayMs: 500 });
     }
 
+    console.log('[submitTutorApplication] Application saved:', application.id);
+
     // Send email notification to admins
     const admins = await withRetry(
       async () => prisma.user.findMany({
@@ -227,21 +240,42 @@ export async function submitTutorApplication(rawInput: unknown) {
       }),
       { attempts: 3, delayMs: 500 }
     );
+    console.log('[submitTutorApplication] Found admins to notify:', admins.length);
     for (const admin of admins) {
       const email = createSubmittedEmail(admin.email, input.fullName, input.email);
-      await sendTutorApplicationEmail(email).catch(console.error);
+      await sendTutorApplicationEmail(email).catch((e) =>
+        console.error('[submitTutorApplication] Failed to send email to', admin.email, e?.message)
+      );
     }
 
     revalidatePath('/apply-as-tutor');
+    console.log('[submitTutorApplication] Submission completed successfully');
     return { success: true, applicationId: application.id };
   } catch (err: any) {
+    // Log full error details for Vercel diagnostics
+    console.error('[submitTutorApplication] Fatal error:', {
+      message: err?.message,
+      code: err?.code,
+      meta: err?.meta,
+      type: err?.constructor?.name,
+      stack: err?.stack?.split('\n').slice(0, 5).join('\n'),
+    });
+
     // Handle database errors with user-friendly messages
-    console.error('[submitTutorApplication] Error:', err);
     if (err.code === 'P2021' || err.code === 'P2025') {
       throw new Error('Application system is currently being set up. Please try again later.');
     }
     if (err.code === 'P1001' || err.code === 'P1002' || err.code === 'P1008') {
       throw new Error('Database connection issue. Please try again in a moment.');
+    }
+    // Handle constraint violations (e.g. field too long, not null violation)
+    if (err.code === 'P2002') {
+      console.error('[submitTutorApplication] Unique constraint violation:', err?.meta);
+      throw new Error('A unique constraint was violated. Please check your data and try again.');
+    }
+    if (err.code === 'P2000') {
+      console.error('[submitTutorApplication] Constraint violation:', err?.meta);
+      throw new Error('Data constraint violation. Please check your input and try again.');
     }
     // Re-throw other errors (validation, business logic) as-is
     throw err;

@@ -22,6 +22,11 @@ export async function GET(req: NextRequest) {
         const universityId =
             searchParams.get('universityId') || searchParams.get('university');
 
+        // Pagination support to prevent timeout on large datasets
+        const page = parseInt(searchParams.get('page') || '1');
+        const limit = Math.min(parseInt(searchParams.get('limit') || '100'), 200);
+        const skip = (page - 1) * limit;
+
         const where: any = {};
 
         if (courseId) where.courseId = courseId;
@@ -39,10 +44,26 @@ export async function GET(req: NextRequest) {
             };
         }
 
+        // Only fetch fields the student UI actually needs — avoid deep joins
+        // that cause timeouts (programme → institution, etc.)
         const slides = await prisma.lectureSlide.findMany({
             where,
+            skip,
+            take: limit,
             orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
-            include: {
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                embedUrl: true,
+                fileUrl: true,
+                contentType: true,
+                order: true,
+                category: true,
+                courseId: true,
+                isPreview: true,
+                createdAt: true,
+                updatedAt: true,
                 course: {
                     select: {
                         id: true,
@@ -55,25 +76,10 @@ export async function GET(req: NextRequest) {
                                 code: true,
                             },
                         },
-                        programme: {
-                            select: {
-                                id: true,
-                                name: true,
-                                institutionId: true,
-                                institution: {
-                                    select: {
-                                        id: true,
-                                        name: true,
-                                        slug: true,
-                                        shortName: true,
-                                    },
-                                },
-                            },
-                        },
                     },
                 },
                 creator: {
-                    select: { name: true, email: true },
+                    select: { name: true },
                 },
             },
         });
