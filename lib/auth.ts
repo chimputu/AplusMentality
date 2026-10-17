@@ -163,7 +163,11 @@ export async function getAuthUser(allowedRoles?: string[]) {
       { attempts: 3, delayMs: 500 }
     );
   } catch (err: any) {
-    console.error('[getAuthUser] Failed to find user:', err.message);
+    console.error('[getAuthUser] Failed to find user for clerkId=%s:', userId, {
+      message: err?.message,
+      code: err?.code,
+      meta: err?.meta,
+    });
     return null;
   }
 
@@ -189,7 +193,10 @@ export async function getAuthUser(allowedRoles?: string[]) {
         { attempts: 3, delayMs: 500 }
       );
     } catch (err: any) {
-      console.error('[getAuthUser] Failed to find user by email:', err.message);
+      console.error('[getAuthUser] Failed to find user by email for clerkId=%s:', userId, {
+        message: err?.message,
+        code: err?.code,
+      });
       return null;
     }
 
@@ -204,7 +211,10 @@ export async function getAuthUser(allowedRoles?: string[]) {
           { attempts: 3, delayMs: 500 }
         );
       } catch (err: any) {
-        console.error('[getAuthUser] Failed to update user:', err.message);
+        console.error('[getAuthUser] Failed to update user for clerkId=%s:', userId, {
+          message: err?.message,
+          code: err?.code,
+        });
         return null;
       }
     } else {
@@ -224,12 +234,19 @@ export async function getAuthUser(allowedRoles?: string[]) {
           { attempts: 3, delayMs: 500 }
         );
       } catch (err: any) {
-        console.error('[getAuthUser] Failed to create user:', err.message);
+        console.error('[getAuthUser] Failed to create user for clerkId=%s:', userId, {
+          message: err?.message,
+          code: err?.code,
+        });
         return null;
       }
     }
   } catch (error: any) {
-    console.error('[getAuthUser] error:', error.message);
+    console.error('[getAuthUser] Unexpected error for clerkId=%s:', userId, {
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack?.split('\n').slice(0, 3).join('\n'),
+    });
     return null;
   }
 

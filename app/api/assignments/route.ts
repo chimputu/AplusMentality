@@ -78,10 +78,19 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(assignments);
-  } catch (error) {
+  } catch (error: any) {
     console.error('[assignments GET] Error:', error);
+    console.error('[assignments GET] Error details:', {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta,
+      stack: error?.stack?.split('\n').slice(0, 3).join('\n'),
+    });
     return NextResponse.json(
-        { error: 'Failed to fetch assignments' },
+        {
+          error: 'Failed to fetch assignments',
+          details: process.env.NODE_ENV === 'development' ? error?.message : undefined,
+        },
         { status: 500 }
     );
   }

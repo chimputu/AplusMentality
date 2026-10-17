@@ -69,13 +69,6 @@ export async function GET(req: NextRequest) {
             email: true,
           },
         },
-        lessons: {
-          select: {
-            id: true,
-            title: true,
-            moduleId: true,
-          },
-        },
         course: {
           select: {
             id: true,

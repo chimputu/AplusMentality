@@ -32,7 +32,18 @@ export default function StudentVideosPage() {
     const params = new URLSearchParams();
     if (universityFilter) params.set('university', universityFilter);
     fetch(`/api/videos${params.toString() ? '?' + params.toString() : ''}`)
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          console.error('Failed to fetch videos:', res.status);
+          return [];
+        }
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          return data;
+        }
+        console.error('Unexpected videos API response:', data);
+        return [];
+      })
       .then((data: Video[]) => {
         setVideos(data);
       })
