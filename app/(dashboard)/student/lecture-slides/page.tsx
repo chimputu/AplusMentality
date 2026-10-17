@@ -69,12 +69,19 @@ export default function StudentLectureSlidesPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    setError(false);
+
     const params = new URLSearchParams();
     if (universityFilter) params.set('university', universityFilter);
     fetch(`/api/lecture-slides${params.toString() ? '?' + params.toString() : ''}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`API returned ${res.status}`);
+        return res.json();
+      })
       .then((data: LectureSlide[]) => {
         setSlides(data);
         setFiltered(data);
@@ -90,9 +97,13 @@ export default function StudentLectureSlidesPage() {
           .then((coursesData: Course[]) => setCourses(coursesData))
           .catch(() => setCourses([]));
       })
-      .catch(() => setSlides([]))
+      .catch((err) => {
+        console.error('Failed to fetch lecture slides:', err);
+        // Set error state without triggering a re-fetch loop
+        setError(true);
+      })
       .finally(() => setLoading(false));
-  }, [universityFilter]);
+  }, [universityFilter]); // Empty dependency array prevents re-execution on every render
 
   useEffect(() => {
     let result = slides;
@@ -114,6 +125,18 @@ export default function StudentLectureSlidesPage() {
   }, [search, categoryFilter, courseFilter, slides]);
 
   if (loading) return <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading...</div>;
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Lecture Slides</h1>
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+          <p className="text-lg font-medium">Failed to load lecture slides</p>
+          <p className="text-sm mt-2">Please try refreshing the page or check back later.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto">
