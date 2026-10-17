@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Search, ExternalLink, Clock, CheckCircle, User } from 'lucide-react';
+import { Search, ExternalLink, Clock, CheckCircle, User, FileQuestion } from 'lucide-react';
 
 interface Quiz {
   id: string;
@@ -38,7 +38,16 @@ export default function StudentQuizzesPage() {
     const params = new URLSearchParams();
     if (universityFilter) params.set('university', universityFilter);
     fetch(`/api/quizzes${params.toString() ? '?' + params.toString() : ''}`)
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          console.error('Failed to fetch quizzes:', res.status);
+          return [];
+        }
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+        console.error('Unexpected quizzes API response:', data);
+        return [];
+      })
       .then((data: Quiz[]) => {
         setQuizzes(data);
         setFiltered(data);
@@ -95,8 +104,16 @@ export default function StudentQuizzesPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-          No quizzes found.
+        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+          <FileQuestion className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+            {quizzes.length === 0 ? 'No quizzes available yet' : 'No quizzes match your filters'}
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+            {quizzes.length === 0
+              ? 'Tutors have not created any quizzes yet. Check back later.'
+              : 'Try adjusting your search or filter criteria.'}
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
