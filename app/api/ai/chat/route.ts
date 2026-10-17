@@ -1,4 +1,5 @@
 // Unified AI chat endpoint — replaces /api/ai/public and /api/ai/student
+
 // Determines mode via getAIContext(), persists messages for logged-in users
 // Injects factual constraints and validates AI responses to prevent hallucinations
 import { NextResponse } from 'next/server';

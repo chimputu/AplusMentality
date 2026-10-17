@@ -8,11 +8,17 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/prisma/client";
 
 const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  console.error("⚠️ DATABASE_URL is not set. Database operations will fail.");
+if (!connectionString || connectionString.trim() === '') {
+  console.error(
+    "🚨 DATABASE_URL is not set or is empty. " +
+    "All database operations will fail with 500 errors. " +
+    "Set DATABASE_URL in your Vercel project Settings > Environment Variables."
+  );
 } else if (process.env.NODE_ENV !== "production") {
   const host = connectionString.split("@")[1]?.split("/")[0];
   console.log(`🔌 Prisma connecting to: ${host}`);
+} else {
+  console.log('🔌 Prisma client initialized with DATABASE_URL');
 }
 
 /**
@@ -95,7 +101,18 @@ const globalForPrisma = globalThis as unknown as {
 const isAccelerate = connectionString?.startsWith('prisma://') ?? connectionString?.startsWith('prisma+postgres://') ?? false;
 
 let basePrisma: PrismaClient;
-if (isAccelerate) {
+if (!connectionString || connectionString.trim() === '') {
+  // Without a connection string, create a client that will fail with a clear
+  // error message on the first query instead of crashing at import time.
+  console.error(
+    '⚠️ Creating Prisma client without DATABASE_URL — queries will fail at runtime. '
+  );
+  // Use a dummy URL so the adapter initializes; queries will fail with a clear error
+  basePrisma = new PrismaClient({
+    adapter: new PrismaPg({ connectionString: 'postgresql://dummy:dummy@localhost:5432/dummy' }),
+    log: ['error'],
+  });
+} else if (isAccelerate) {
   console.log('🔌 Prisma using Accelerate (HTTP) via accelerateUrl');
   basePrisma =
     globalForPrisma.prisma ??

@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
 const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z.string().min(1).refine(
+    (val) => {
+      try { new URL(val); return true; } catch { return false; }
+    },
+    { message: 'DATABASE_URL must be a valid URL (e.g. postgresql://...)' }
+  ),
   CLERK_SECRET_KEY: z.string().min(1),
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
   CLERK_WEBHOOK_SECRET: z.string().optional(),
@@ -10,9 +15,22 @@ const envSchema = z.object({
 
 const parsed = envSchema.safeParse(process.env);
 if (!parsed.success) {
-  // Log the error but don't crash the app — let individual features fail gracefully
-  console.error('⚠️ Invalid env vars:', parsed.error.flatten().fieldErrors);
-  // Provide fallback values for missing required fields
+  const missing = parsed.error.flatten().fieldErrors;
+  console.error('⚠️ Invalid env vars:', missing);
+
+  // Fail fast in production for critical missing vars — a silent empty string
+  // causes cryptic 500 errors at runtime (e.g. Prisma connection refused).
+  const criticalFields: (keyof typeof missing)[] = ['DATABASE_URL', 'CLERK_SECRET_KEY', 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY'];
+  const criticalMissing = criticalFields.filter((key) => missing[key]?.length);
+
+  if (criticalMissing.length > 0) {
+    console.error(
+      `🚨 Missing critical env vars: ${criticalMissing.join(', ')}. ` +
+      `The app will not function correctly. Set these in your Vercel project settings.`
+    );
+  }
+
+  // Provide fallback values for non-critical fields only
   parsed.data = {
     DATABASE_URL: process.env.DATABASE_URL || '',
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY || '',
