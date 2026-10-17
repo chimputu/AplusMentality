@@ -2,49 +2,96 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET – List all assignments
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const auth = await getAuthUser();
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
     const { searchParams } = new URL(req.url);
-    const universityId = searchParams.get('university');
+
+    const courseId = searchParams.get('courseId');
+
+    const institutionId =
+        searchParams.get('institutionId') || searchParams.get('institution');
+
+    const universityId =
+        searchParams.get('universityId') || searchParams.get('university');
 
     const where: any = {};
-    if (universityId) {
-      where.course = { universityId };
+
+    if (courseId) where.courseId = courseId;
+
+    if (institutionId) {
+      where.course = {
+        programme: {
+          institutionId,
+        },
+      };
+    } else if (universityId) {
+      where.course = {
+        universityId,
+      };
     }
 
     const assignments = await prisma.assignment.findMany({
       where,
       include: {
-        creator: { select: { name: true, email: true } },
+        creator: {
+          select: { name: true, email: true },
+        },
         course: {
           select: {
             id: true,
             code: true,
             title: true,
-            university: { select: { id: true, name: true, code: true } },
+            university: {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+              },
+            },
+            programme: {
+              select: {
+                id: true,
+                name: true,
+                institutionId: true,
+                institution: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    shortName: true,
+                  },
+                },
+              },
+            },
           },
         },
         submissions: true,
       },
       orderBy: { createdAt: 'desc' },
     });
+
     return NextResponse.json(assignments);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to fetch assignments' }, { status: 500 });
+    console.error('[assignments GET] Error:', error);
+    return NextResponse.json(
+        { error: 'Failed to fetch assignments' },
+        { status: 500 }
+    );
   }
 }
 
-// POST – Create a new assignment
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await requireAuth(['ADMIN']);
     const body = await req.json();
+
     const {
       title,
       description,
@@ -54,42 +101,85 @@ export async function POST(req: NextRequest) {
       maxScore,
       fileUrl,
       contentType,
+      courseId,
     } = body;
 
     if (!title) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
+    if (!courseId) {
+      return NextResponse.json({ error: 'Course is required' }, { status: 400 });
+    }
+
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      select: { id: true },
+    });
+
+    if (!course) {
+      return NextResponse.json({ error: 'Course not found' }, { status: 404 });
+    }
+
     const assignment = await prisma.assignment.create({
       data: {
         title,
-        description,
-        embedUrl,
-        formUrl,
+        description: description || null,
+        embedUrl: embedUrl || '',
+        formUrl: formUrl || embedUrl || '',
         dueDate: dueDate ? new Date(dueDate) : null,
-        maxScore: maxScore ? parseInt(maxScore) : null,
+        maxScore: maxScore ? parseInt(String(maxScore)) : null,
         fileUrl: fileUrl || null,
         contentType: contentType || 'google_form',
+        courseId,
         createdBy: userId,
         isPublished: true,
       },
+      include: {
+        course: {
+          select: {
+            id: true,
+            code: true,
+            title: true,
+          },
+        },
+      },
     });
+
     return NextResponse.json(assignment, { status: 201 });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to create assignment' }, { status: 500 });
+    console.error('[assignments POST] Error:', error);
+    return NextResponse.json(
+        { error: 'Failed to create assignment' },
+        { status: 500 }
+    );
   }
 }
 
-// PUT – Update an assignment
 export async function PUT(req: NextRequest) {
   try {
     await requireAuth(['ADMIN']);
     const body = await req.json();
-    const { id, title, description, embedUrl, formUrl, dueDate, maxScore, fileUrl, contentType, isPublished } = body;
+
+    const {
+      id,
+      title,
+      description,
+      embedUrl,
+      formUrl,
+      dueDate,
+      maxScore,
+      fileUrl,
+      contentType,
+      isPublished,
+      courseId,
+    } = body;
 
     if (!id) {
-      return NextResponse.json({ error: 'Assignment ID is required' }, { status: 400 });
+      return NextResponse.json(
+          { error: 'Assignment ID is required' },
+          { status: 400 }
+      );
     }
 
     const assignment = await prisma.assignment.update({
@@ -100,38 +190,62 @@ export async function PUT(req: NextRequest) {
         embedUrl,
         formUrl,
         dueDate: dueDate ? new Date(dueDate) : null,
-        maxScore: maxScore ? parseInt(maxScore) : null,
+        maxScore: maxScore ? parseInt(String(maxScore)) : null,
         fileUrl: fileUrl || null,
         contentType: contentType || 'google_form',
         isPublished,
+        courseId,
       },
     });
+
     return NextResponse.json(assignment);
   } catch (error: any) {
-    console.error(error);
+    console.error('[assignments PUT] Error:', error);
+
     if (error.code === 'P2025') {
-      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
+      return NextResponse.json(
+          { error: 'Assignment not found' },
+          { status: 404 }
+      );
     }
-    return NextResponse.json({ error: 'Failed to update assignment' }, { status: 500 });
+
+    return NextResponse.json(
+        { error: 'Failed to update assignment' },
+        { status: 500 }
+    );
   }
 }
 
-// DELETE – Delete an assignment
 export async function DELETE(req: NextRequest) {
   try {
     await requireAuth(['ADMIN']);
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
+
     if (!id) {
-      return NextResponse.json({ error: 'Assignment ID is required' }, { status: 400 });
+      return NextResponse.json(
+          { error: 'Assignment ID is required' },
+          { status: 400 }
+      );
     }
+
     await prisma.assignment.delete({ where: { id } });
+
     return NextResponse.json({ message: 'Assignment deleted successfully' });
   } catch (error: any) {
-    console.error(error);
+    console.error('[assignments DELETE] Error:', error);
+
     if (error.code === 'P2025') {
-      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
+      return NextResponse.json(
+          { error: 'Assignment not found' },
+          { status: 404 }
+      );
     }
-    return NextResponse.json({ error: 'Failed to delete assignment' }, { status: 500 });
+
+    return NextResponse.json(
+        { error: 'Failed to delete assignment' },
+        { status: 500 }
+    );
   }
 }

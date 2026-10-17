@@ -2,49 +2,96 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET – List all quizzes
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const auth = await getAuthUser();
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
     const { searchParams } = new URL(req.url);
-    const universityId = searchParams.get('university');
+
+    const courseId = searchParams.get('courseId');
+
+    const institutionId =
+        searchParams.get('institutionId') || searchParams.get('institution');
+
+    const universityId =
+        searchParams.get('universityId') || searchParams.get('university');
 
     const where: any = {};
-    if (universityId) {
-      where.course = { universityId };
+
+    if (courseId) where.courseId = courseId;
+
+    if (institutionId) {
+      where.course = {
+        programme: {
+          institutionId,
+        },
+      };
+    } else if (universityId) {
+      where.course = {
+        universityId,
+      };
     }
 
     const quizzes = await prisma.quiz.findMany({
       where,
       include: {
-        creator: { select: { name: true, email: true } },
+        creator: {
+          select: { name: true, email: true },
+        },
         course: {
           select: {
             id: true,
             code: true,
             title: true,
-            university: { select: { id: true, name: true, code: true } },
+            university: {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+              },
+            },
+            programme: {
+              select: {
+                id: true,
+                name: true,
+                institutionId: true,
+                institution: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    shortName: true,
+                  },
+                },
+              },
+            },
           },
         },
         submissions: true,
       },
       orderBy: { createdAt: 'desc' },
     });
+
     return NextResponse.json(quizzes);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to fetch quizzes' }, { status: 500 });
+    console.error('[quizzes GET] Error:', error);
+    return NextResponse.json(
+        { error: 'Failed to fetch quizzes' },
+        { status: 500 }
+    );
   }
 }
 
-// POST – Create a new quiz
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await requireAuth(['ADMIN']);
     const body = await req.json();
+
     const {
       title,
       description,
@@ -53,38 +100,77 @@ export async function POST(req: NextRequest) {
       dueDate,
       fileUrl,
       contentType,
+      courseId,
     } = body;
 
     if (!title) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
+    if (!courseId) {
+      return NextResponse.json({ error: 'Course is required' }, { status: 400 });
+    }
+
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      select: { id: true },
+    });
+
+    if (!course) {
+      return NextResponse.json({ error: 'Course not found' }, { status: 404 });
+    }
+
     const quiz = await prisma.quiz.create({
       data: {
         title,
-        description,
-        embedUrl,
-        formUrl,
+        description: description || null,
+        embedUrl: embedUrl || '',
+        formUrl: formUrl || embedUrl || '',
         dueDate: dueDate ? new Date(dueDate) : null,
         fileUrl: fileUrl || null,
         contentType: contentType || 'google_form',
+        courseId,
         createdBy: userId,
         isPublished: true,
       },
+      include: {
+        course: {
+          select: {
+            id: true,
+            code: true,
+            title: true,
+          },
+        },
+      },
     });
+
     return NextResponse.json(quiz, { status: 201 });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to create quiz' }, { status: 500 });
+    console.error('[quizzes POST] Error:', error);
+    return NextResponse.json(
+        { error: 'Failed to create quiz' },
+        { status: 500 }
+    );
   }
 }
 
-// PUT – Update a quiz
 export async function PUT(req: NextRequest) {
   try {
     await requireAuth(['ADMIN']);
     const body = await req.json();
-    const { id, title, description, embedUrl, formUrl, dueDate, fileUrl, contentType, isPublished } = body;
+
+    const {
+      id,
+      title,
+      description,
+      embedUrl,
+      formUrl,
+      dueDate,
+      fileUrl,
+      contentType,
+      isPublished,
+      courseId,
+    } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Quiz ID is required' }, { status: 400 });
@@ -101,34 +187,49 @@ export async function PUT(req: NextRequest) {
         fileUrl: fileUrl || null,
         contentType: contentType || 'google_form',
         isPublished,
+        courseId,
       },
     });
+
     return NextResponse.json(quiz);
   } catch (error: any) {
-    console.error(error);
+    console.error('[quizzes PUT] Error:', error);
+
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
     }
-    return NextResponse.json({ error: 'Failed to update quiz' }, { status: 500 });
+
+    return NextResponse.json(
+        { error: 'Failed to update quiz' },
+        { status: 500 }
+    );
   }
 }
 
-// DELETE – Delete a quiz
 export async function DELETE(req: NextRequest) {
   try {
     await requireAuth(['ADMIN']);
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
+
     if (!id) {
       return NextResponse.json({ error: 'Quiz ID is required' }, { status: 400 });
     }
+
     await prisma.quiz.delete({ where: { id } });
+
     return NextResponse.json({ message: 'Quiz deleted successfully' });
   } catch (error: any) {
-    console.error(error);
+    console.error('[quizzes DELETE] Error:', error);
+
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
     }
-    return NextResponse.json({ error: 'Failed to delete quiz' }, { status: 500 });
+
+    return NextResponse.json(
+        { error: 'Failed to delete quiz' },
+        { status: 500 }
+    );
   }
 }
