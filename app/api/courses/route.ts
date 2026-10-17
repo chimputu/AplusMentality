@@ -2,19 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET - List all courses
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
-    // Support query params for filtering (used by tag form)
     const { searchParams } = new URL(req.url);
-    const universityId = searchParams.get('universityId') || searchParams.get('university');
+
+    const institutionId =
+        searchParams.get('institutionId') || searchParams.get('institution');
+
+    const universityId =
+        searchParams.get('universityId') || searchParams.get('university');
+
     const programmeId = searchParams.get('programmeId');
     const year = searchParams.get('year');
     const period = searchParams.get('period');
     const all = searchParams.get('all');
 
-    // If filtering params are present, use lighter auth (for tag form)
-    const hasFilters = universityId || programmeId || year || period;
+    const hasFilters =
+        institutionId || universityId || programmeId || year || period || all;
 
     let userId: string;
     let role: string;
@@ -24,6 +30,7 @@ export async function GET(req: NextRequest) {
       if (!auth) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
+
       userId = auth.userId;
       role = auth.role;
     } else {
@@ -32,35 +39,96 @@ export async function GET(req: NextRequest) {
       role = authResult.role;
     }
 
-    // If student, only show published courses
     const where: any = role === 'ADMIN' ? {} : { isPublished: true };
 
-    if (universityId) where.universityId = universityId;
+    if (institutionId) {
+      where.programme = {
+        institutionId,
+      };
+    }
+
+    if (universityId) {
+      where.universityId = universityId;
+    }
+
     if (programmeId) where.programmeId = programmeId;
     if (year) where.year = parseInt(year);
     if (period !== null) where.period = period === '' ? '' : period;
 
-    // If filtering, return lightweight data
-    if (hasFilters || all) {
+    if (hasFilters) {
       const courses = await prisma.course.findMany({
         where,
         select: {
           id: true,
           code: true,
           title: true,
-          university: { select: { name: true } },
-          programme: { select: { name: true } },
+          description: true,
+          category: true,
+          level: true,
+          thumbnail: true,
+          universityId: true,
+          programmeId: true,
           year: true,
           period: true,
+          isPublished: true,
+          university: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+          programme: {
+            select: {
+              id: true,
+              name: true,
+              shortName: true,
+              code: true,
+              institutionId: true,
+              institution: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  shortName: true,
+                },
+              },
+            },
+          },
         },
-        orderBy: { code: 'asc' },
+        orderBy: [{ code: 'asc' }, { title: 'asc' }],
       });
+
       return NextResponse.json({ data: courses, count: courses.length });
     }
 
     const courses = await prisma.course.findMany({
       where,
       include: {
+        university: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        programme: {
+          select: {
+            id: true,
+            name: true,
+            shortName: true,
+            code: true,
+            institutionId: true,
+            institution: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                shortName: true,
+              },
+            },
+          },
+        },
         modules: {
           include: {
             lessons: {
@@ -91,35 +159,68 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Error fetching courses:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch courses' },
-      { status: 500 }
+        { error: 'Failed to fetch courses' },
+        { status: 500 }
     );
   }
 }
 
-// POST - Create a new course (Admin only)
 export async function POST(req: NextRequest) {
   try {
-    // ✅ Require ADMIN role
-    const { userId, role, user } = await requireAuth(['ADMIN']);
-    
+    const { userId, user } = await requireAuth(['ADMIN']);
+
     console.log(`📝 Admin ${user.email} creating course`);
 
     const body = await req.json();
-    const { code, title, description, category, level, thumbnail, universityId, programmeId, year, period } = body;
 
-    // Validate required fields
+    const {
+      code,
+      title,
+      description,
+      category,
+      level,
+      thumbnail,
+      institutionId,
+      universityId,
+      programmeId,
+      year,
+      period,
+    } = body;
+
     if (!code || !title) {
       return NextResponse.json(
-        { error: 'Code and title are required' },
-        { status: 400 }
+          { error: 'Code and title are required' },
+          { status: 400 }
       );
     }
 
-    if (!universityId || !programmeId || year === undefined) {
+    if (!programmeId || year === undefined || year === null || year === '') {
       return NextResponse.json(
-        { error: 'University, programme, and year are required' },
-        { status: 400 }
+          { error: 'Programme and year are required' },
+          { status: 400 }
+      );
+    }
+
+    const programme = await prisma.programme.findUnique({
+      where: { id: programmeId },
+      select: {
+        id: true,
+        institutionId: true,
+        universityId: true,
+      },
+    });
+
+    if (!programme) {
+      return NextResponse.json(
+          { error: 'Programme not found' },
+          { status: 404 }
+      );
+    }
+
+    if (institutionId && programme.institutionId !== institutionId) {
+      return NextResponse.json(
+          { error: 'Programme does not belong to the selected institution' },
+          { status: 400 }
       );
     }
 
@@ -127,11 +228,11 @@ export async function POST(req: NextRequest) {
       data: {
         code,
         title,
-        description,
-        category,
-        level,
-        thumbnail,
-        universityId,
+        description: description || null,
+        category: category || null,
+        level: level || null,
+        thumbnail: thumbnail || null,
+        universityId: universityId || programme.universityId || null,
         programmeId,
         year: parseInt(String(year)),
         period: period || null,
@@ -142,44 +243,77 @@ export async function POST(req: NextRequest) {
         creator: {
           select: { name: true, email: true },
         },
-        university: { select: { code: true, name: true } },
-        programme: { select: { name: true } },
+        university: {
+          select: {
+            id: true,
+            code: true,
+            name: true,
+          },
+        },
+        programme: {
+          select: {
+            id: true,
+            name: true,
+            institution: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
+          },
+        },
       },
     });
 
     return NextResponse.json(course, { status: 201 });
   } catch (error: any) {
     console.error('Error creating course:', error);
-    
+
     if (error.code === 'P2002') {
       return NextResponse.json(
-        { error: 'A course with this code already exists for this university/programme/year/period combination' },
-        { status: 400 }
+          {
+            error:
+                'A course with this code already exists for this programme/year/period combination',
+          },
+          { status: 400 }
       );
     }
-    
+
     return NextResponse.json(
-      { error: 'Failed to create course' },
-      { status: 500 }
+        { error: 'Failed to create course' },
+        { status: 500 }
     );
   }
 }
 
-// PUT - Update a course (Admin only)
 export async function PUT(req: NextRequest) {
   try {
     const { userId, role } = await requireAuth(['ADMIN']);
     const body = await req.json();
-    const { id, code, title, description, category, level, thumbnail, isPublished } = body;
+
+    const {
+      id,
+      code,
+      title,
+      description,
+      category,
+      level,
+      thumbnail,
+      isPublished,
+      programmeId,
+      universityId,
+      year,
+      period,
+    } = body;
 
     if (!id) {
       return NextResponse.json(
-        { error: 'Course ID is required' },
-        { status: 400 }
+          { error: 'Course ID is required' },
+          { status: 400 }
       );
     }
 
-    // Optional: Check if user owns this course or is admin
     const existingCourse = await prisma.course.findUnique({
       where: { id },
       select: { createdBy: true },
@@ -187,16 +321,15 @@ export async function PUT(req: NextRequest) {
 
     if (!existingCourse) {
       return NextResponse.json(
-        { error: 'Course not found' },
-        { status: 404 }
+          { error: 'Course not found' },
+          { status: 404 }
       );
     }
 
-    // Only allow if user created it or is admin
     if (existingCourse.createdBy !== userId && role !== 'ADMIN') {
       return NextResponse.json(
-        { error: 'You can only edit your own courses' },
-        { status: 403 }
+          { error: 'You can only edit your own courses' },
+          { status: 403 }
       );
     }
 
@@ -210,43 +343,48 @@ export async function PUT(req: NextRequest) {
         level,
         thumbnail,
         isPublished,
+        programmeId,
+        universityId,
+        year:
+            year !== undefined && year !== null
+                ? parseInt(String(year))
+                : undefined,
+        period,
       },
     });
 
     return NextResponse.json(course);
   } catch (error: any) {
     console.error('Error updating course:', error);
-    
+
     if (error.code === 'P2025') {
       return NextResponse.json(
-        { error: 'Course not found' },
-        { status: 404 }
+          { error: 'Course not found' },
+          { status: 404 }
       );
     }
-    
+
     return NextResponse.json(
-      { error: 'Failed to update course' },
-      { status: 500 }
+        { error: 'Failed to update course' },
+        { status: 500 }
     );
   }
 }
 
-// DELETE - Delete a course (Admin only)
 export async function DELETE(req: NextRequest) {
   try {
     const { userId, role } = await requireAuth(['ADMIN']);
-    
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
     if (!id) {
       return NextResponse.json(
-        { error: 'Course ID is required' },
-        { status: 400 }
+          { error: 'Course ID is required' },
+          { status: 400 }
       );
     }
 
-    // Check if user owns this course
     const existingCourse = await prisma.course.findUnique({
       where: { id },
       select: { createdBy: true },
@@ -254,15 +392,15 @@ export async function DELETE(req: NextRequest) {
 
     if (!existingCourse) {
       return NextResponse.json(
-        { error: 'Course not found' },
-        { status: 404 }
+          { error: 'Course not found' },
+          { status: 404 }
       );
     }
 
     if (existingCourse.createdBy !== userId && role !== 'ADMIN') {
       return NextResponse.json(
-        { error: 'You can only delete your own courses' },
-        { status: 403 }
+          { error: 'You can only delete your own courses' },
+          { status: 403 }
       );
     }
 
@@ -273,17 +411,17 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ message: 'Course deleted successfully' });
   } catch (error: any) {
     console.error('Error deleting course:', error);
-    
+
     if (error.code === 'P2025') {
       return NextResponse.json(
-        { error: 'Course not found' },
-        { status: 404 }
+          { error: 'Course not found' },
+          { status: 404 }
       );
     }
-    
+
     return NextResponse.json(
-      { error: 'Failed to delete course' },
-      { status: 500 }
+        { error: 'Failed to delete course' },
+        { status: 500 }
     );
   }
 }

@@ -1,26 +1,19 @@
-// Sentry Server Configuration
-// Captures server-side errors from Server Components, Server Actions, and Route Handlers
-import * as Sentry from '@sentry/nextjs';
+// This file configures the initialization of Sentry on the server.
+// The config you add here will be used whenever the server handles a request.
+// https://docs.sentry.io/platforms/javascript/guides/nextjs/
+
+import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  // DSN for server-side. Uses SENTRY_DSN env var (not NEXT_PUBLIC_).
-  dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN,
+  dsn: "https://93dd68e98728f8986b5942f36c813441@o4512270513274880.ingest.de.sentry.io/4512270534508624",
 
-  // Adjust this value in production
+  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1,
 
-  // Enable Spotlight in development
-  spotlight: process.env.NODE_ENV === 'development',
-
-  // Ignore certain errors
-  ignoreErrors: [
-    'Non-Error promise rejection captured',
-    'Script error.',
-  ],
-
-  // Auto-instrument Server Actions
-  // Captures errors and performance data from 'use server' functions
-  integrations: [
-    Sentry.httpIntegration(),
-  ],
+  dataCollection: {
+    // To disable sending user data and HTTP bodies, uncomment the lines below. For more info visit:
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#dataCollection
+    // userInfo: false,
+    // httpBodies: [],
+  },
 });
