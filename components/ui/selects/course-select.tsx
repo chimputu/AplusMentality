@@ -47,8 +47,9 @@ export function CourseSelect({
         params.set('all', 'true');
         const res = await fetch(`/api/courses?${params.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch');
-        const data = await res.json();
-        return data.data || [];
+        const json = await res.json();
+        const data = json.data;
+        return Array.isArray(data) ? data : [];
       }}
       dependencies={[programmeId, universityId, year, period]}
       getValue={(c: any) => c.id}
