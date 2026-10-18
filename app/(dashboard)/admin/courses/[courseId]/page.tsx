@@ -27,7 +27,7 @@ interface PageProps {
 }
 
 export default async function AdminCourseDetailPage({ params }: PageProps) {
-  await requireAuth(['ADMIN']);
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const { courseId } = await params;
 
   // Fetch course with all related data

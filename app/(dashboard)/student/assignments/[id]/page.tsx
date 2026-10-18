@@ -14,16 +14,21 @@ export default async function StudentSubmitAssignmentPage({ params }: PageProps)
   const { userId } = await requireAuth(['STUDENT']);
   const { id } = await params;
 
-  const assignment = await prisma.assignment.findUnique({
-    where: { id },
-    include: {
-      creator: { select: { name: true } },
-      submissions: {
-        where: { userId },
-        select: { id: true, score: true, status: true, submittedAt: true },
+  let assignment: any = null;
+  try {
+    assignment = await prisma.assignment.findUnique({
+      where: { id },
+      include: {
+        creator: { select: { name: true } },
+        submissions: {
+          where: { userId },
+          select: { id: true, score: true, status: true, submittedAt: true },
+        },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[StudentSubmitAssignment] Failed to fetch assignment:', err);
+  }
 
   if (!assignment || !assignment.isPublished) {
     notFound();

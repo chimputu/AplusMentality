@@ -7,28 +7,32 @@ import DeleteButton from '@/components/DeleteButton';
 import { formatDate } from '@/lib/date-format';
 
 export default async function AdminTestsPage() {
-  await requireAuth(['ADMIN']);
-
-  const testsData = await prisma.test.findMany({
-    include: {
-      creator: {
-        select: { name: true, email: true },
-      },
-      submissions: {
-        select: {
-          id: true,
-          score: true,
-          status: true,
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  let testsData: any[] = [];
+  try {
+    testsData = await prisma.test.findMany({
+      include: {
+        creator: {
+          select: { name: true, email: true },
+        },
+        submissions: {
+          select: {
+            id: true,
+            score: true,
+            status: true,
+          },
         },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[AdminTests] Failed to fetch tests:', err);
+  }
 
-  const tests = testsData.map((t) => ({
+  const tests = (Array.isArray(testsData) ? testsData : []).map((t) => ({
     ...t,
-    createdAt: t.createdAt.toISOString(),
-    updatedAt: t.updatedAt.toISOString(),
+    createdAt: t.createdAt?.toISOString() ?? new Date().toISOString(),
+    updatedAt: t.updatedAt?.toISOString() ?? new Date().toISOString(),
     dueDate: t.dueDate ? t.dueDate.toISOString() : null,
   }));
 
@@ -92,7 +96,7 @@ export default async function AdminTestsPage() {
                 {tests.map((test) => {
                   const totalSubs = test.submissions.length;
                   const gradedSubs = test.submissions.filter(
-                    (s) => s.status === 'GRADED'
+                    (s: any) => s.status === 'GRADED'
                   ).length;
                   const pendingSubs = totalSubs - gradedSubs;
 

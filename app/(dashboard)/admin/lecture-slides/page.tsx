@@ -36,14 +36,19 @@ function getSlideOpenUrl(slide: {
 }
 
 export default async function AdminLectureSlidesPage() {
-  await requireAuth(['ADMIN']);
-  const slides = await prisma.lectureSlide.findMany({
-    include: {
-      creator: { select: { name: true } },
-      course: { select: { id: true, title: true, code: true } },
-    },
-    orderBy: { order: 'asc' },
-  });
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  let slides: any[] = [];
+  try {
+    slides = await prisma.lectureSlide.findMany({
+      include: {
+        creator: { select: { name: true } },
+        course: { select: { id: true, title: true, code: true } },
+      },
+      orderBy: { order: 'asc' },
+    });
+  } catch (err) {
+    console.error('[AdminLectureSlides] Failed to fetch slides:', err);
+  }
 
   return (
     <div className="max-w-6xl mx-auto">

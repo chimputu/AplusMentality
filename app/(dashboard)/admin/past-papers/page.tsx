@@ -21,14 +21,18 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default async function AdminPastPapersPage() {
-  await requireAuth(['ADMIN']);
-
-  const papers = await prisma.pastPaper.findMany({
-    include: {
-      creator: { select: { name: true } },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  let papers: any[] = [];
+  try {
+    papers = await prisma.pastPaper.findMany({
+      include: {
+        creator: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[AdminPastPapers] Failed to fetch papers:', err);
+  }
 
   return (
     <div className="max-w-6xl mx-auto">

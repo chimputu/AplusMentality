@@ -23,16 +23,21 @@ export default async function StudentTakeQuizPage({ params }: PageProps) {
   const { userId } = await requireAuth(['STUDENT']);
   const { id } = await params;
 
-  const quiz = await prisma.quiz.findUnique({
-    where: { id },
-    include: {
-      creator: { select: { name: true } },
-      submissions: {
-        where: { userId },
-        select: { id: true, score: true, status: true, submittedAt: true },
+  let quiz: any = null;
+  try {
+    quiz = await prisma.quiz.findUnique({
+      where: { id },
+      include: {
+        creator: { select: { name: true } },
+        submissions: {
+          where: { userId },
+          select: { id: true, score: true, status: true, submittedAt: true },
+        },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[StudentTakeQuiz] Failed to fetch quiz:', err);
+  }
 
   if (!quiz || !quiz.isPublished) {
     notFound();

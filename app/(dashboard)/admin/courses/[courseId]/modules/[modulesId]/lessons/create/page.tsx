@@ -13,7 +13,7 @@ interface PageProps {
 }
 
 export default async function CreateLessonPage({ params }: PageProps) {
-  await requireAuth(['ADMIN']);
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const { courseId, modulesId } = await params;
 
   const [course, module] = await Promise.all([

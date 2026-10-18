@@ -9,8 +9,7 @@ export default async function EditQuestionPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireAuth(['ADMIN', 'SUPER_ADMIN']);
-
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const { id } = await params;
   const question = await getQuestion(id).catch((): null => null);
   if (!question) notFound();
@@ -27,13 +26,10 @@ export default async function EditQuestionPage({
       <QuestionForm
         question={question}
         onSubmit={async (data: any) => {
-          'use server';
           try {
             await updateQuestion(id, data);
-            toast.success('Question updated');
             redirect('/admin/questions');
           } catch (err: any) {
-            toast.error(err.message || 'Failed to update question');
             throw err;
           }
         }}

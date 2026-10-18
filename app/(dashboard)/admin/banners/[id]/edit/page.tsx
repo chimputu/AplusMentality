@@ -8,8 +8,7 @@ export default async function EditBannerPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireAuth(['ADMIN']);
-
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const { id } = await params;
 
   const banner = await prisma.banner.findUnique({

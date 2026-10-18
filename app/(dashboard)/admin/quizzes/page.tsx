@@ -7,28 +7,32 @@ import DeleteButton from '@/components/DeleteButton';
 import { formatDate } from '@/lib/date-format';
 
 export default async function AdminQuizzesPage() {
-  await requireAuth(['ADMIN']);
-
-  const quizzesData = await prisma.quiz.findMany({
-    include: {
-      creator: {
-        select: { name: true, email: true },
-      },
-      submissions: {
-        select: {
-          id: true,
-          score: true,
-          status: true,
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  let quizzesData: any[] = [];
+  try {
+    quizzesData = await prisma.quiz.findMany({
+      include: {
+        creator: {
+          select: { name: true, email: true },
+        },
+        submissions: {
+          select: {
+            id: true,
+            score: true,
+            status: true,
+          },
         },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[AdminQuizzes] Failed to fetch quizzes:', err);
+  }
 
-  const quizzes = quizzesData.map((q) => ({
+  const quizzes = (Array.isArray(quizzesData) ? quizzesData : []).map((q) => ({
     ...q,
-    createdAt: q.createdAt.toISOString(),
-    updatedAt: q.updatedAt.toISOString(),
+    createdAt: q.createdAt?.toISOString() ?? new Date().toISOString(),
+    updatedAt: q.updatedAt?.toISOString() ?? new Date().toISOString(),
     dueDate: q.dueDate ? q.dueDate.toISOString() : null,
   }));
 
@@ -89,7 +93,7 @@ export default async function AdminQuizzesPage() {
                 {quizzes.map((quiz) => {
                   const totalSubs = quiz.submissions.length;
                   const gradedSubs = quiz.submissions.filter(
-                    (s) => s.status === 'GRADED'
+                    (s: any) => s.status === 'GRADED'
                   ).length;
                   const pendingSubs = totalSubs - gradedSubs;
 

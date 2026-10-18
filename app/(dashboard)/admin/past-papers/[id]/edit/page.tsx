@@ -13,7 +13,7 @@ interface PageProps {
 }
 
 export default async function EditPastPaperPage({ params }: PageProps) {
-  await requireAuth(['ADMIN']);
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const { id } = await params;
 
   const paper = await prisma.pastPaper.findUnique({

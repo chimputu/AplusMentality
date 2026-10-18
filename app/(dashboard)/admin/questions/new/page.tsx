@@ -5,8 +5,7 @@ import { QuestionForm } from '@/app/(dashboard)/admin/questions/components/quest
 import { toast } from 'sonner';
 
 export default async function NewQuestionPage() {
-  await requireAuth(['ADMIN', 'SUPER_ADMIN']);
-
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
@@ -18,13 +17,10 @@ export default async function NewQuestionPage() {
 
       <QuestionForm
         onSubmit={async (data: any) => {
-          'use server';
           try {
             await createQuestion(data);
-            toast.success('Question created');
             redirect('/admin/questions');
           } catch (err: any) {
-            toast.error(err.message || 'Failed to create question');
             throw err;
           }
         }}

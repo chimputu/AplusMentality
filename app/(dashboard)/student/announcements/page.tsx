@@ -4,22 +4,27 @@ import AnnouncementList from '@/components/AnnouncementList';
 import PageHeader from '@/components/PageHeader';
 
 export default async function StudentAnnouncementsPage() {
-  await requireAuth(['STUDENT']);
+  // Auth handled by layout (STUDENT)
 
-  // ✅ Fetch all announcements
-  const announcementsData = await prisma.announcement.findMany({
-    include: {
-      author: {
-        select: { name: true },
+  // ✅ Fetch all announcements with error handling
+  let announcementsData: any[] = [];
+  try {
+    announcementsData = await prisma.announcement.findMany({
+      include: {
+        author: {
+          select: { name: true },
+        },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[StudentAnnouncements] Failed to fetch announcements:', err);
+  }
 
-  // ✅ Serialize dates
-  const announcements = announcementsData.map((a) => ({
+  // ✅ Serialize dates with null safety
+  const announcements = (Array.isArray(announcementsData) ? announcementsData : []).map((a) => ({
     ...a,
-    createdAt: a.createdAt.toISOString(),
+    createdAt: a.createdAt?.toISOString() ?? new Date().toISOString(),
   }));
 
   return (

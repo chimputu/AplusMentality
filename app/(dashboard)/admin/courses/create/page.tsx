@@ -3,17 +3,21 @@ import { prisma } from '@/lib/prisma';
 import CreateCourseForm from '@/components/CreateCourseForm';
 
 export default async function CreateCoursePage() {
-  await requireAuth(['ADMIN']);
-
-  // Load universities server-side to avoid client-side auth issues
-  const universities = await prisma.university.findMany({
-    orderBy: { name: 'asc' },
-    include: {
-      programmes: {
-        orderBy: { name: 'asc' },
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  let universities: any[] = [];
+  try {
+    // Load universities server-side to avoid client-side auth issues
+    universities = await prisma.university.findMany({
+      orderBy: { name: 'asc' },
+      include: {
+        programmes: {
+          orderBy: { name: 'asc' },
+        },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[CreateCourse] Failed to fetch universities:', err);
+  }
 
   return (
     <div className="max-w-3xl mx-auto">

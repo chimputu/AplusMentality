@@ -21,7 +21,7 @@ function getGoogleDocsViewerUrl(fileUrl: string): string {
 }
 
 export default async function AdminLectureSlidePage({ params }: PageProps) {
-  await requireAuth(['ADMIN']);
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const { id } = await params;
 
   const slide = await prisma.lectureSlide.findUnique({

@@ -10,7 +10,7 @@ interface PageProps {
 }
 
 export default async function EditLectureSlidePage({ params }: PageProps) {
-  await requireAuth(['ADMIN']);
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const { id } = await params;
   const slide = await prisma.lectureSlide.findUnique({ where: { id } });
   if (!slide) notFound();

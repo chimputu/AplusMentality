@@ -40,33 +40,39 @@ export default async function AdminTutorApplicationsPage({
   const where: any = {};
   if (status) where.status = status;
 
-  const [total, applications] = await Promise.all([
-    prisma.tutorApplication.count({ where }),
-    prisma.tutorApplication.findMany({
-      where,
-      skip,
-      take: 20,
-      orderBy: { submittedAt: 'desc' },
-      include: {
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            imageUrl: true,
-            role: true,
+  let total = 0;
+  let applications: any[] = [];
+  let counts: any[] = [];
+  try {
+    [total, applications] = await Promise.all([
+      prisma.tutorApplication.count({ where }),
+      prisma.tutorApplication.findMany({
+        where,
+        skip,
+        take: 20,
+        orderBy: { submittedAt: 'desc' },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              imageUrl: true,
+              role: true,
+            },
           },
+          institution: { select: { id: true, name: true, shortName: true } },
         },
-        institution: { select: { id: true, name: true, shortName: true } },
-      },
-    }),
-  ]);
-
-  const counts = await prisma.tutorApplication.groupBy({
-    by: ['status'],
-    _count: { status: true },
-  });
+      }),
+    ]);
+    counts = await prisma.tutorApplication.groupBy({
+      by: ['status'],
+      _count: { status: true },
+    });
+  } catch (err) {
+    console.error('[AdminTutorApplications] Failed to fetch data:', err);
+  }
 
   const stats = {
     PENDING: 0,

@@ -6,32 +6,40 @@ import EmptyState from '@/components/EmptyState';
 import { Video } from 'lucide-react';
 
 export default async function AdminVideosPage() {
-  // ✅ NO AUTH - layout handles it
-  // ✅ NO DashboardLayout - layout handles it
-
-  const videosData = await prisma.video.findMany({
-    include: {
-      uploader: {
-        select: { name: true },
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  let videosData: any[] = [];
+  let universities: any[] = [];
+  try {
+    videosData = await prisma.video.findMany({
+      include: {
+        uploader: {
+          select: { name: true },
+        },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[AdminVideos] Failed to fetch videos:', err);
+  }
 
-  const videos = videosData.map((v) => ({
+  const videos = (Array.isArray(videosData) ? videosData : []).map((v) => ({
     ...v,
-    createdAt: v.createdAt.toISOString(),
+    createdAt: v.createdAt?.toISOString() ?? new Date().toISOString(),
   }));
 
   // Load universities server-side for the upload form dropdown
-  const universities = await prisma.university.findMany({
-    orderBy: { name: 'asc' },
-    include: {
-      programmes: {
-        orderBy: { name: 'asc' },
+  try {
+    universities = await prisma.university.findMany({
+      orderBy: { name: 'asc' },
+      include: {
+        programmes: {
+          orderBy: { name: 'asc' },
+        },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[AdminVideos] Failed to fetch universities:', err);
+  }
 
   // ✅ Clean, focused content with consistent header
   return (

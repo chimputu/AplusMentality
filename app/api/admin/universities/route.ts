@@ -3,7 +3,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+// Map Institution periodType to academic system string
+function mapPeriodTypeToAcademicSystem(periodType: string | null): string {
+  if (!periodType) return 'SEMESTERLY';
+  switch (periodType) {
+    case 'SEMESTER':
+      return 'SEMESTERLY';
+    case 'TERM':
+      return 'TRIMESTERLY';
+    case 'QUARTER':
+      return 'QUARTERLY';
+    default:
+      return 'SEMESTERLY';
+  }
+}
+
 // GET — list universities with programmes (authenticated users)
+// Returns BOTH University model records AND Institution model records (type=UNIVERSITY)
 export async function GET() {
   try {
     const auth = await getAuthUser();
@@ -11,6 +27,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Fetch University model records
     const universities = await prisma.university.findMany({
       include: {
         programmes: {
@@ -20,7 +37,34 @@ export async function GET() {
       orderBy: { name: 'asc' },
     });
 
-    return NextResponse.json({ data: universities, count: universities.length });
+    // Fetch Institution model records where type is UNIVERSITY
+    const institutions = await prisma.institution.findMany({
+      where: {
+        type: 'UNIVERSITY',
+      },
+      include: {
+        programmes: {
+          orderBy: { name: 'asc' },
+        },
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    // Normalize Institution records to match University interface shape
+    const normalizedInstitutions = institutions.map((inst) => ({
+      id: `inst-${inst.id}`, // Prefix to distinguish from University IDs
+      name: inst.name,
+      code: inst.slug || inst.shortName || inst.id,
+      academicSystem: mapPeriodTypeToAcademicSystem(inst.periodType),
+      programmes: inst.programmes,
+    }));
+
+    // Combine and sort by name
+    const combined = [...universities, ...normalizedInstitutions].sort(
+      (a, b) => a.name.localeCompare(b.name)
+    );
+
+    return NextResponse.json({ data: combined, count: combined.length });
   } catch (error) {
     console.error('[admin/universities GET] Error:', error);
     return NextResponse.json(

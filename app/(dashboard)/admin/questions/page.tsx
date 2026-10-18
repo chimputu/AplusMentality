@@ -21,14 +21,21 @@ export default async function AdminQuestionsPage({
 }: {
   searchParams?: Promise<{ search?: string; type?: string; page?: string }>;
 }) {
-  await requireAuth(['ADMIN', 'SUPER_ADMIN']);
-
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const params = searchParams ? await searchParams : {};
   const search = params.search || undefined;
   const type = params.type as QuestionType | undefined;
   const page = params.page ? parseInt(params.page) : 1;
 
-  const { questions, pagination } = await listQuestions({ search, type, page, pageSize: 20 });
+  let questions: any[] = [];
+  let pagination: any = { page: 1, totalPages: 1, total: 0 };
+  try {
+    const result = await listQuestions({ search, type, page, pageSize: 20 });
+    questions = result.questions;
+    pagination = result.pagination;
+  } catch (err) {
+    console.error('[AdminQuestions] Failed to fetch questions:', err);
+  }
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -170,7 +177,6 @@ export default async function AdminQuestionsPage({
                         </Link>
                         <form
                           action={async () => {
-                            'use server';
                             await duplicateQuestion(q.id);
                           }}
                         >
@@ -184,7 +190,6 @@ export default async function AdminQuestionsPage({
                         </form>
                         <form
                           action={async () => {
-                            'use server';
                             if (confirm('Are you sure you want to delete this question?')) {
                               await deleteQuestion(q.id);
                             }
