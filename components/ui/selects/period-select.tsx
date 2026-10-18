@@ -32,8 +32,9 @@ export function PeriodSelect({
         if (!institutionId) return [];
         const res = await fetch(`/api/admin/periods?institutionId=${institutionId}`);
         if (!res.ok) throw new Error('Failed to fetch');
-        const data = await res.json();
-        return data.data || [];
+        const json = await res.json();
+        const data = json.data;
+        return Array.isArray(data) ? data : [];
       }}
       dependencies={[institutionId]}
       getValue={(p: any) => p.id}

@@ -80,7 +80,11 @@ export function DataSelect<T>({
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchFn();
+      let data = await fetchFn();
+      // Ensure the fetch result is always an array
+      if (!Array.isArray(data)) {
+        data = [];
+      }
       setItems(data);
       if (autoSelectFirst && data.length > 0 && !value) {
         onChange(getValue(data[0]));
@@ -101,7 +105,7 @@ export function DataSelect<T>({
 
   // Apply search filtering
   const filteredItems = search && search.trim() !== ''
-    ? (filter
+    ? (typeof filter === 'function'
         ? filter(items, search.trim())
         : items.filter((item) => getLabel(item).toLowerCase().includes(search.trim().toLowerCase())))
     : items;

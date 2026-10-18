@@ -32,8 +32,9 @@ export function BranchSelect({
         if (!programmeId) return [];
         const res = await fetch(`/api/admin/branches?programmeId=${programmeId}`);
         if (!res.ok) throw new Error('Failed to fetch');
-        const data = await res.json();
-        return data.data || [];
+        const json = await res.json();
+        const data = json.data;
+        return Array.isArray(data) ? data : [];
       }}
       dependencies={[programmeId]}
       getValue={(b: any) => b.id}
