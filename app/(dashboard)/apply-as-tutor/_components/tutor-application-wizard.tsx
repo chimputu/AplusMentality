@@ -6,12 +6,12 @@ import { submitTutorApplication } from '@/lib/actions/tutor-application';
 import Step1Personal from './step-1-personal';
 import Step2Professional from './step-2-professional';
 import Step3Identity from './step-3-identity';
-import Step3Qualifications from './step-3-qualifications';
-import Step4Documents from './step-4-documents';
+import Step4Qualifications from './step-4-qualifications';
+import Step5Documents from './step-5-documents';
 import Step6References from './step-6-references';
 import Step7Offerings from './step-7-offerings';
 import Step8Teaching from './step-8-teaching';
-import Step5Statement from './step-5-statement';
+import Step9Statement from './step-9-statement';
 import {
   ChevronRight,
   ChevronLeft,
@@ -271,10 +271,10 @@ export default function TutorApplicationWizard() {
           <Step3Identity formData={formData} updateField={updateField} />
         )}
         {currentStep === 4 && (
-          <Step3Qualifications formData={formData} updateField={updateField} />
+          <Step4Qualifications formData={formData} updateField={updateField} />
         )}
         {currentStep === 5 && (
-          <Step4Documents formData={formData} updateField={updateField} />
+          <Step5Documents formData={formData} updateField={updateField} />
         )}
         {currentStep === 6 && (
           <Step6References formData={formData} updateField={updateField} />
@@ -286,7 +286,7 @@ export default function TutorApplicationWizard() {
           <Step8Teaching formData={formData} updateField={updateField} />
         )}
         {currentStep === 9 && (
-          <Step5Statement formData={formData} updateField={updateField} />
+          <Step9Statement formData={formData} updateField={updateField} />
         )}
       </div>
 
