@@ -218,6 +218,9 @@ model User {
   tutorRequests      TutorRequest[]
   tutorApplication   TutorApplication?
 
+  // Institution change requests
+  institutionChangeRequests InstitutionChangeRequest[]
+
   // Clerk Organization relations
   clerkOrgId                 String?
   clerkOrgRole               String?
@@ -1283,6 +1286,10 @@ model Institution {
   tutorApplications   TutorApplication[]
   applicationWindows  ApplicationWindow[]
 
+  // Institution change requests
+  changeRequestsCurrent InstitutionChangeRequest[] @relation("ChangeRequestCurrentInst")
+  changeRequestsNew     InstitutionChangeRequest[] @relation("ChangeRequestNewInst")
+
   @@index([slug])
   @@index([type])
   @@index([isActive, isVerified])
@@ -1475,6 +1482,48 @@ model TutorOffering {
 
   @@index([tutorApplicationId])
   @@index([courseId])
+}
+
+// ============================================
+// INSTITUTION CHANGE REQUEST (Student requests to change institution)
+// ============================================
+enum InstitutionChangeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model InstitutionChangeRequest {
+  id              String                    @id @default(cuid())
+  userId          String
+  user            User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Current institution
+  currentInstitutionId  String?
+  currentInstitution    Institution?        @relation("ChangeRequestCurrentInst", fields: [currentInstitutionId], references: [id], onDelete: SetNull)
+  currentProgrammeId    String?
+  currentYear           Int?
+  currentPeriod         String?
+
+  // Requested new institution
+  newInstitutionId      String?
+  newInstitution        Institution?        @relation("ChangeRequestNewInst", fields: [newInstitutionId], references: [id], onDelete: SetNull)
+  newProgrammeId        String?
+  newYear               Int?
+  newPeriod             String?
+
+  reason                String?             @db.Text
+  status                InstitutionChangeStatus @default(PENDING)
+  adminNotes            String?             @db.Text
+  reviewedBy            String?
+  reviewedAt            DateTime?
+
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  @@index([userId, status])
+  @@index([status])
+  @@index([createdAt])
 }
 
 // ============================================

@@ -1,12 +1,23 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { InstitutionSelect } from '@/components/ui/selects/institution-select';
+import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
+import { CourseSelect } from '@/components/ui/selects/course-select';
+
+interface University {
+  id: string;
+  name: string;
+  code: string;
+  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
+}
 
 export default function CreateQuizPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [universities, setUniversities] = useState<University[]>([]);
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -14,8 +25,53 @@ export default function CreateQuizPage() {
     embedUrl: '',
     formUrl: '',
     dueDate: '',
+    institutionId: '',
+    programmeId: '',
+    year: 1,
+    period: '',
+    courseId: '',
   });
   const [file, setFile] = useState<File | null>(null);
+
+  // Load universities for academic system lookup
+  useEffect(() => {
+    async function loadUniversities() {
+      try {
+        const res = await fetch('/api/admin/universities');
+        if (res.ok) {
+          const data = await res.json();
+          setUniversities(data);
+        }
+      } catch {
+        console.error('Failed to load universities');
+      }
+    }
+    loadUniversities();
+  }, []);
+
+  // Get period options based on selected university's academic system
+  const getPeriodOptions = () => {
+    const uni = universities.find((u) => u.id === form.institutionId);
+    if (!uni) return [];
+
+    switch (uni.academicSystem) {
+      case 'YEARLY':
+        return [{ value: '', label: 'Full Year' }];
+      case 'SEMESTERLY':
+        return [
+          { value: '1', label: 'Semester 1' },
+          { value: '2', label: 'Semester 2' },
+        ];
+      case 'TRIMESTERLY':
+        return [
+          { value: '1', label: 'Trimester 1' },
+          { value: '2', label: 'Trimester 2' },
+          { value: '3', label: 'Trimester 3' },
+        ];
+      default:
+        return [];
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -61,6 +117,8 @@ export default function CreateQuizPage() {
     }
   };
 
+  const selectedUni = universities.find((u) => u.id === form.institutionId);
+
   return (
     <div className="max-w-3xl mx-auto">
       <Link href="/admin/quizzes" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
@@ -68,29 +126,115 @@ export default function CreateQuizPage() {
       </Link>
       <h1 className="text-2xl font-bold mb-6">Create Quiz</h1>
       <form onSubmit={handleSubmit} className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow border">
+
+        {/* ── Academic Scoping ── */}
+        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          Academic Scoping
+        </h2>
+
+        {/* Institution */}
+        <InstitutionSelect
+          value={form.institutionId}
+          onChange={(v) => setForm({ ...form, institutionId: v, programmeId: '', period: '', courseId: '' })}
+          label="University *"
+        />
+
+        {/* Programme */}
+        <ProgrammeSelect
+          institutionId={form.institutionId}
+          value={form.programmeId}
+          onChange={(v) => setForm({ ...form, programmeId: v, courseId: '' })}
+          label="Programme *"
+        />
+        {form.institutionId && (
+          <p className="text-xs text-gray-400 dark:text-gray-500">
+            Showing programmes for {selectedUni?.name}
+          </p>
+        )}
+
+        {/* Year */}
         <div>
-          <label className="block text-sm font-medium">Title *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Year *
+          </label>
+          <select
+            value={form.year}
+            onChange={(e) => setForm({ ...form, year: parseInt(e.target.value), courseId: '' })}
+            required
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          >
+            {[1, 2, 3, 4, 5, 6, 7].map((y) => (
+              <option key={y} value={y}>
+                Year {y}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Period */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Period *
+          </label>
+          <select
+            value={form.period}
+            onChange={(e) => setForm({ ...form, period: e.target.value, courseId: '' })}
+            required
+            disabled={!form.institutionId}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+          >
+            <option value="">Select period</option>
+            {getPeriodOptions().map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Course */}
+        <CourseSelect
+          programmeId={form.programmeId}
+          universityId={form.institutionId}
+          year={form.year}
+          period={form.period}
+          value={form.courseId}
+          onChange={(v) => setForm({ ...form, courseId: v })}
+          label="Course *"
+        />
+
+        <hr className="border-gray-200 dark:border-gray-700" />
+
+        {/* ── Quiz Details ── */}
+        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          Quiz Details
+        </h2>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title *</label>
           <input
             type="text"
             required
-            className="w-full border rounded px-4 py-2"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
+            placeholder="e.g., Week 4 Quiz"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium">Description</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
           <textarea
             rows={3}
-            className="w-full border rounded px-4 py-2"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="Quiz description and instructions..."
           />
         </div>
         <div>
-          <label className="block text-sm font-medium">Content Type</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Content Type</label>
           <select
-            className="w-full border rounded px-4 py-2"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             value={form.contentType}
             onChange={(e) => setForm({ ...form, contentType: e.target.value })}
           >
@@ -102,30 +246,32 @@ export default function CreateQuizPage() {
         {form.contentType === 'google_form' && (
           <>
             <div>
-              <label className="block text-sm font-medium">Embed URL</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Embed URL *</label>
               <input
                 type="url"
-                className="w-full border rounded px-4 py-2"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 value={form.embedUrl}
                 onChange={(e) => setForm({ ...form, embedUrl: e.target.value })}
                 required
+                placeholder="https://docs.google.com/forms/d/e/..."
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Shareable Link</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Shareable Link *</label>
               <input
                 type="url"
-                className="w-full border rounded px-4 py-2"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 value={form.formUrl}
                 onChange={(e) => setForm({ ...form, formUrl: e.target.value })}
                 required
+                placeholder="https://forms.gle/..."
               />
             </div>
           </>
         )}
         {(form.contentType === 'pdf' || form.contentType === 'image') && (
           <div>
-            <label className="block text-sm font-medium">Upload File</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upload File *</label>
             <input
               type="file"
               accept={form.contentType === 'pdf' ? '.pdf' : 'image/*'}
@@ -137,10 +283,10 @@ export default function CreateQuizPage() {
           </div>
         )}
         <div>
-          <label className="block text-sm font-medium">Due Date (optional)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date (optional)</label>
           <input
             type="datetime-local"
-            className="w-full border rounded px-4 py-2"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             value={form.dueDate}
             onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
           />
@@ -148,9 +294,16 @@ export default function CreateQuizPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2 font-medium"
         >
-          {loading ? <Loader2 className="animate-spin inline" /> : 'Create Quiz'}
+          {loading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Creating Quiz...
+            </>
+          ) : (
+            'Create Quiz'
+          )}
         </button>
       </form>
     </div>
