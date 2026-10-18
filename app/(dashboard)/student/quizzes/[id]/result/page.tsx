@@ -12,36 +12,41 @@ export default async function StudentQuizResultsPage({ params }: PageProps) {
   const { userId } = await requireAuth(['STUDENT']);
   const { id } = await params;
 
-  // Fetch quiz and submission
-  const quizData = await prisma.quiz.findUnique({
-    where: { id },
-    include: {
-      creator: {
-        select: { name: true },
-      },
-      submissions: {
-        where: { userId },
-        include: {
-          user: {
-            select: { name: true },
+  // Fetch quiz and submission with error handling
+  let quizData: any = null;
+  try {
+    quizData = await prisma.quiz.findUnique({
+      where: { id },
+      include: {
+        creator: {
+          select: { name: true },
+        },
+        submissions: {
+          where: { userId },
+          include: {
+            user: {
+              select: { name: true },
+            },
           },
         },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[StudentQuizResults] Failed to fetch quiz:', err);
+  }
 
   if (!quizData || !quizData.isPublished) {
     notFound();
   }
 
-  // Convert dates to strings
+  // Convert dates to strings with null safety
   const quiz = {
     ...quizData,
-    createdAt: quizData.createdAt.toISOString(),
+    createdAt: quizData.createdAt?.toISOString() ?? new Date().toISOString(),
     dueDate: quizData.dueDate ? quizData.dueDate.toISOString() : null,
-    submissions: quizData.submissions.map((s: any) => ({
+    submissions: (Array.isArray(quizData.submissions) ? quizData.submissions : []).map((s: any) => ({
       ...s,
-      submittedAt: s.submittedAt.toISOString(),
+      submittedAt: s.submittedAt?.toISOString() ?? new Date().toISOString(),
       gradedAt: s.gradedAt ? s.gradedAt.toISOString() : null,
     })),
   };

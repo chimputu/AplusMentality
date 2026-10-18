@@ -82,7 +82,11 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
     }
     async function loadProgrammes() {
       try {
-        const res = await fetch(`/api/admin/programmes?universityId=${universityId}`);
+        // If universityId starts with 'inst-', it's an Institution record — use institutionId param
+        const isInstitution = universityId.startsWith('inst-');
+        const actualId = isInstitution ? universityId.slice(5) : universityId;
+        const param = isInstitution ? 'institutionId' : 'universityId';
+        const res = await fetch(`/api/admin/programmes?${param}=${actualId}`);
         if (res.ok) {
           const data = await res.json();
           setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));

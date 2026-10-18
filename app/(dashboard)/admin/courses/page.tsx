@@ -5,24 +5,29 @@ import EmptyState from '@/components/EmptyState';
 import CourseList from '@/components/CourseList';
 
 export default async function AdminCoursesPage() {
-  const coursesData = await prisma.course.findMany({
-    include: {
-      creator: {
-        select: { name: true },
-      },
-      _count: {
-        select: {
-          modules: true,
-          enrollments: true,
+  let coursesData: any[] = [];
+  try {
+    coursesData = await prisma.course.findMany({
+      include: {
+        creator: {
+          select: { name: true },
+        },
+        _count: {
+          select: {
+            modules: true,
+            enrollments: true,
+          },
         },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[AdminCourses] Failed to fetch courses:', err);
+  }
 
-  const courses = coursesData.map((c) => ({
+  const courses = (Array.isArray(coursesData) ? coursesData : []).map((c) => ({
     ...c,
-    createdAt: c.createdAt.toISOString(),
+    createdAt: c.createdAt?.toISOString() ?? new Date().toISOString(),
   }));
 
   return (

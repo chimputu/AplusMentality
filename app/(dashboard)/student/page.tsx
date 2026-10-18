@@ -75,12 +75,12 @@ export default async function StudentPage({
   // 6. Serialize dates — ensure arrays are always arrays
   const announcements = (Array.isArray(announcementsData) ? announcementsData : []).map((a) => ({
     ...a,
-    createdAt: a.createdAt.toISOString(),
+    createdAt: a.createdAt?.toISOString() ?? new Date().toISOString(),
   }));
 
   const videos = (Array.isArray(videosData) ? videosData : []).map((v) => ({
     ...v,
-    createdAt: v.createdAt.toISOString(),
+    createdAt: v.createdAt?.toISOString() ?? new Date().toISOString(),
   }));
 
   // 7. Build display name

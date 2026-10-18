@@ -7,28 +7,32 @@ import DeleteButton from '@/components/DeleteButton';
 import { formatDate } from '@/lib/date-format';
 
 export default async function AdminAssignmentsPage() {
-  await requireAuth(['ADMIN']);
-
-  const assignmentsData = await prisma.assignment.findMany({
-    include: {
-      creator: {
-        select: { name: true, email: true },
-      },
-      submissions: {
-        select: {
-          id: true,
-          score: true,
-          status: true,
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  let assignmentsData: any[] = [];
+  try {
+    assignmentsData = await prisma.assignment.findMany({
+      include: {
+        creator: {
+          select: { name: true, email: true },
+        },
+        submissions: {
+          select: {
+            id: true,
+            score: true,
+            status: true,
+          },
         },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[AdminAssignments] Failed to fetch assignments:', err);
+  }
 
-  const assignments = assignmentsData.map((a) => ({
+  const assignments = (Array.isArray(assignmentsData) ? assignmentsData : []).map((a) => ({
     ...a,
-    createdAt: a.createdAt.toISOString(),
-    updatedAt: a.updatedAt.toISOString(),
+    createdAt: a.createdAt?.toISOString() ?? new Date().toISOString(),
+    updatedAt: a.updatedAt?.toISOString() ?? new Date().toISOString(),
     dueDate: a.dueDate ? a.dueDate.toISOString() : null,
   }));
 
@@ -82,7 +86,7 @@ export default async function AdminAssignmentsPage() {
                 {assignments.map((assignment) => {
                   const totalSubs = assignment.submissions.length;
                   const gradedSubs = assignment.submissions.filter(
-                    (s) => s.status === 'GRADED'
+                    (s: any) => s.status === 'GRADED'
                   ).length;
                   const pendingSubs = totalSubs - gradedSubs;
 

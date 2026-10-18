@@ -12,36 +12,41 @@ export default async function StudentAssignmentResultsPage({ params }: PageProps
   const { userId } = await requireAuth(['STUDENT']);
   const { id } = await params;
 
-  // Fetch assignment and submission
-  const assignmentData = await prisma.assignment.findUnique({
-    where: { id },
-    include: {
-      creator: {
-        select: { name: true },
-      },
-      submissions: {
-        where: { userId },
-        include: {
-          user: {
-            select: { name: true },
+  // Fetch assignment and submission with error handling
+  let assignmentData: any = null;
+  try {
+    assignmentData = await prisma.assignment.findUnique({
+      where: { id },
+      include: {
+        creator: {
+          select: { name: true },
+        },
+        submissions: {
+          where: { userId },
+          include: {
+            user: {
+              select: { name: true },
+            },
           },
         },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[StudentAssignmentResults] Failed to fetch assignment:', err);
+  }
 
   if (!assignmentData || !assignmentData.isPublished) {
     notFound();
   }
 
-  // Convert dates to strings
+  // Convert dates to strings with null safety
   const assignment = {
     ...assignmentData,
-    createdAt: assignmentData.createdAt.toISOString(),
+    createdAt: assignmentData.createdAt?.toISOString() ?? new Date().toISOString(),
     dueDate: assignmentData.dueDate ? assignmentData.dueDate.toISOString() : null,
-    submissions: assignmentData.submissions.map((s: any) => ({
+    submissions: (Array.isArray(assignmentData.submissions) ? assignmentData.submissions : []).map((s: any) => ({
       ...s,
-      submittedAt: s.submittedAt.toISOString(),
+      submittedAt: s.submittedAt?.toISOString() ?? new Date().toISOString(),
       gradedAt: s.gradedAt ? s.gradedAt.toISOString() : null,
     })),
   };

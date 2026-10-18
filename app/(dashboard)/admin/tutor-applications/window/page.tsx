@@ -303,7 +303,6 @@ function WindowRow({ window: win }: { window: any }) {
           {/* Delete */}
           <form
             action={async () => {
-              'use server';
               await deleteWindowAction(win.id);
             }}
           >

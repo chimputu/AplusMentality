@@ -12,15 +12,20 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
   const { userId } = await requireAuth(['STUDENT']);
   const { courseId } = await params;
 
-  // Check if student is enrolled
-  const enrollmentData = await prisma.enrollment.findUnique({
-    where: {
-      courseId_userId: {
-        courseId,
-        userId,
+  // Check if student is enrolled with error handling
+  let enrollmentData: any = null;
+  try {
+    enrollmentData = await prisma.enrollment.findUnique({
+      where: {
+        courseId_userId: {
+          courseId,
+          userId,
+        },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[StudentCourseDetail] Failed to fetch enrollment:', err);
+  }
 
   if (!enrollmentData) {
     return (
@@ -40,89 +45,104 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
     );
   }
 
-  const courseData = await prisma.course.findUnique({
-    where: { id: courseId },
-    include: {
-      modules: {
-        orderBy: { order: 'asc' },
-        include: {
-          lessons: {
-            orderBy: { order: 'asc' },
-            include: {
-              video: true,
-              slides: true,
-              quiz: true,
+  let courseData: any = null;
+  try {
+    courseData = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        modules: {
+          orderBy: { order: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { order: 'asc' },
+              include: {
+                video: true,
+                slides: true,
+                quiz: true,
+              },
             },
           },
         },
+        creator: {
+          select: { name: true },
+        },
       },
-      creator: {
-        select: { name: true },
-      },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[StudentCourseDetail] Failed to fetch course:', err);
+  }
 
   if (!courseData || !courseData.isPublished) {
     notFound();
   }
 
-  // Convert dates to strings
+  // Convert dates to strings with null safety
   const course = {
     ...courseData,
-    createdAt: courseData.createdAt.toISOString(),
-    updatedAt: courseData.updatedAt.toISOString(),
-    modules: courseData.modules.map((module) => ({
+    createdAt: courseData.createdAt?.toISOString() ?? new Date().toISOString(),
+    updatedAt: courseData.updatedAt?.toISOString() ?? new Date().toISOString(),
+    modules: (Array.isArray(courseData.modules) ? courseData.modules : []).map((module: any) => ({
       ...module,
-      createdAt: module.createdAt.toISOString(),
-      updatedAt: module.updatedAt.toISOString(),
-      lessons: module.lessons.map((lesson) => ({
+      createdAt: module.createdAt?.toISOString() ?? new Date().toISOString(),
+      updatedAt: module.updatedAt?.toISOString() ?? new Date().toISOString(),
+      lessons: (Array.isArray(module.lessons) ? module.lessons : []).map((lesson: any) => ({
         ...lesson,
-        createdAt: lesson.createdAt.toISOString(),
-        updatedAt: lesson.updatedAt.toISOString(),
+        createdAt: lesson.createdAt?.toISOString() ?? new Date().toISOString(),
+        updatedAt: lesson.updatedAt?.toISOString() ?? new Date().toISOString(),
       })),
     })),
   };
 
   const enrollment = {
     ...enrollmentData,
-    enrolledAt: enrollmentData.enrolledAt.toISOString(),
+    enrolledAt: enrollmentData.enrolledAt?.toISOString() ?? new Date().toISOString(),
   };
 
   const totalLessons = course.modules.reduce(
-    (acc, module) => acc + module.lessons.length,
+    (acc: number, module: any) => acc + module.lessons.length,
     0
   );
 
-  // Fetch assessments for this course
-  const assessments = await prisma.assessment.findMany({
-    where: { courseId, isPublished: true },
-    select: {
-      id: true,
-      title: true,
-      type: true,
-      mode: true,
-      timeLimit: true,
-      openAt: true,
-      closeAt: true,
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+  // Fetch assessments for this course with error handling
+  let assessments: any[] = [];
+  try {
+    assessments = await prisma.assessment.findMany({
+      where: { courseId, isPublished: true },
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        mode: true,
+        timeLimit: true,
+        openAt: true,
+        closeAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[StudentCourseDetail] Failed to fetch assessments:', err);
+  }
 
-  // Fetch student's attempts for this course's assessments
-  const studentAttempts = await prisma.assessmentAttempt.findMany({
-    where: {
-      userId,
-      assessment: { courseId },
-    },
-    select: {
-      id: true,
-      assessmentId: true,
-      score: true,
-      totalPoints: true,
-      percentage: true,
-      submittedAt: true,
-    },
-  });
+  // Fetch student's attempts for this course's assessments with error handling
+  let studentAttempts: any[] = [];
+  try {
+    studentAttempts = await prisma.assessmentAttempt.findMany({
+      where: {
+        userId,
+        assessment: { courseId },
+      },
+      select: {
+        id: true,
+        assessmentId: true,
+        score: true,
+        totalPoints: true,
+        percentage: true,
+        submittedAt: true,
+      },
+    });
+  } catch (err) {
+    console.error('[StudentCourseDetail] Failed to fetch attempts:', err);
+  }
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -183,7 +203,7 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Course Content</h2>
 
-        {course.modules.map((module, index) => (
+        {course.modules.map((module: any, index: number) => (
           <div
             key={module.id}
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden"
@@ -212,7 +232,7 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
 
               {module.lessons.length > 0 && (
                 <div className="mt-4 space-y-2">
-                  {module.lessons.map((lesson) => (
+                  {module.lessons.map((lesson: any) => (
                     <Link
                       key={lesson.id}
                       href={`/student/lessons/${lesson.id}`}

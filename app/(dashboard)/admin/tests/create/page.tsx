@@ -70,7 +70,11 @@ export default function CreateTestPage() {
     }
     async function loadProgrammes() {
       try {
-        const res = await fetch(`/api/admin/programmes?universityId=${form.universityId}`);
+        // If universityId starts with 'inst-', it's an Institution record — use institutionId param
+        const isInstitution = form.universityId.startsWith('inst-');
+        const actualId = isInstitution ? form.universityId.slice(5) : form.universityId;
+        const param = isInstitution ? 'institutionId' : 'universityId';
+        const res = await fetch(`/api/admin/programmes?${param}=${actualId}`);
         if (res.ok) {
           const data = await res.json();
           setProgrammes(data);

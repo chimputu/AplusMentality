@@ -4,17 +4,22 @@ import { Plus, CheckCircle, XCircle } from 'lucide-react';
 import TutorAvatar from '@/components/tutor-avatar';
 
 export default async function AdminTutorsPage() {
-  const tutors = await prisma.tutor.findMany({
-    include: {
-      university: true,
-      programme: true,
-      specialties: {
-        include: { course: true },
+  let tutors: any[] = [];
+  try {
+    tutors = await prisma.tutor.findMany({
+      include: {
+        university: true,
+        programme: true,
+        specialties: {
+          include: { course: true },
+        },
+        _count: { select: { requests: true } },
       },
-      _count: { select: { requests: true } },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[AdminTutors] Failed to fetch tutors:', err);
+  }
 
   return (
     <div className="space-y-6">

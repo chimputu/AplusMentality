@@ -5,16 +5,20 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 export default async function CreateLectureSlidePage() {
-  await requireAuth(['ADMIN']);
-
-  const universities = await prisma.university.findMany({
-    orderBy: { name: 'asc' },
-    include: {
-      programmes: {
-        orderBy: { name: 'asc' },
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  let universities: any[] = [];
+  try {
+    universities = await prisma.university.findMany({
+      orderBy: { name: 'asc' },
+      include: {
+        programmes: {
+          orderBy: { name: 'asc' },
+        },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[CreateLectureSlide] Failed to fetch universities:', err);
+  }
 
   return (
     <div className="max-w-3xl mx-auto">

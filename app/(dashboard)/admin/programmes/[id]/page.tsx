@@ -8,8 +8,7 @@ export default async function ProgrammeDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireAuth(['ADMIN']);
-
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const { id } = await params;
 
   const programme = await prisma.programme.findUnique({

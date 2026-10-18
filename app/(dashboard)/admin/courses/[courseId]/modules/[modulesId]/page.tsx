@@ -11,8 +11,8 @@ interface PageProps {
 }
 
 export default async function AdminCourseDetailPage({ params }: PageProps) {
-  await requireAuth(['ADMIN']);
-  const { courseId } = await params;  // ✅ Changed from 'id' to 'courseId'
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  const { courseId } = await params;
 
   const courseData = await prisma.course.findUnique({
     where: { id: courseId },  // ✅ Use courseId

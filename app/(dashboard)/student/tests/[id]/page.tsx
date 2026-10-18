@@ -23,16 +23,21 @@ export default async function StudentTakeTestPage({ params }: PageProps) {
   const { userId } = await requireAuth(['STUDENT']);
   const { id } = await params;
 
-  const test = await prisma.test.findUnique({
-    where: { id },
-    include: {
-      creator: { select: { name: true } },
-      submissions: {
-        where: { userId },
-        select: { id: true, score: true, status: true, submittedAt: true },
+  let test: any = null;
+  try {
+    test = await prisma.test.findUnique({
+      where: { id },
+      include: {
+        creator: { select: { name: true } },
+        submissions: {
+          where: { userId },
+          select: { id: true, score: true, status: true, submittedAt: true },
+        },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[StudentTakeTest] Failed to fetch test:', err);
+  }
 
   if (!test || !test.isPublished) {
     notFound();

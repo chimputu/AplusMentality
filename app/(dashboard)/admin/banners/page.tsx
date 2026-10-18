@@ -67,8 +67,7 @@ export default async function AdminBannersPage({
 }: {
   searchParams?: Promise<{ scope?: string }>;
 }) {
-  await requireAuth(['ADMIN']);
-
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const params = searchParams ? await searchParams : {};
   const scopeFilter = params.scope || undefined;
 
@@ -258,7 +257,6 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
                 <td className="px-4 py-3">
                   <form
                     action={async () => {
-                      'use server';
                       await toggleBannerActive(banner.id);
                     }}
                   >
@@ -293,7 +291,6 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
                     </Link>
                     <form
                       action={async () => {
-                        'use server';
                         if (confirm('Are you sure you want to delete this banner?')) {
                           await deleteBanner(banner.id);
                         }

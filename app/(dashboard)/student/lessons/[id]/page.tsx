@@ -26,26 +26,31 @@ export default async function StudentLessonPage({ params }: PageProps) {
   const { userId } = await requireAuth(['STUDENT']);
   const { id } = await params;
 
-  const lesson = await prisma.lesson.findUnique({
-    where: { id },
-    include: {
-      video: true,
-      slides: true,
-      quiz: true,
-      module: {
-        include: {
-          course: {
-            include: {
-              enrollments: {
-                where: { userId },
-                select: { id: true, progress: true },
+  let lesson: any = null;
+  try {
+    lesson = await prisma.lesson.findUnique({
+      where: { id },
+      include: {
+        video: true,
+        slides: true,
+        quiz: true,
+        module: {
+          include: {
+            course: {
+              include: {
+                enrollments: {
+                  where: { userId },
+                  select: { id: true, progress: true },
+                },
               },
             },
           },
         },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[StudentLesson] Failed to fetch lesson:', err);
+  }
 
   if (!lesson) {
     notFound();
@@ -73,33 +78,38 @@ export default async function StudentLessonPage({ params }: PageProps) {
     );
   }
 
-  // Compute next lesson
-  const courseWithModules = await prisma.course.findUnique({
-    where: { id: course.id },
-    include: {
-      modules: {
-        orderBy: { order: 'asc' },
-        include: {
-          lessons: {
-            orderBy: { order: 'asc' },
+  // Compute next lesson with error handling
+  let courseWithModules: any = null;
+  try {
+    courseWithModules = await prisma.course.findUnique({
+      where: { id: course.id },
+      include: {
+        modules: {
+          orderBy: { order: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { order: 'asc' },
+            },
           },
         },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[StudentLesson] Failed to fetch course modules:', err);
+  }
 
   let nextLessonId: string | null = null;
 
   if (courseWithModules) {
     const modules = courseWithModules.modules;
-    const currentModule = modules.find((m) => m.id === lesson.moduleId);
+    const currentModule = modules.find((m: any) => m.id === lesson.moduleId);
     if (currentModule) {
       const lessons = currentModule.lessons;
-      const currentIndex = lessons.findIndex((l) => l.id === lesson.id);
+      const currentIndex = lessons.findIndex((l: any) => l.id === lesson.id);
       if (currentIndex !== -1 && currentIndex + 1 < lessons.length) {
         nextLessonId = lessons[currentIndex + 1].id;
       } else {
-        const moduleIndex = modules.findIndex((m) => m.id === lesson.moduleId);
+        const moduleIndex = modules.findIndex((m: any) => m.id === lesson.moduleId);
         if (moduleIndex !== -1 && moduleIndex + 1 < modules.length) {
           const nextModule = modules[moduleIndex + 1];
           if (nextModule.lessons.length > 0) {
@@ -110,15 +120,20 @@ export default async function StudentLessonPage({ params }: PageProps) {
     }
   }
 
-  // Check completion
-  const completion = await prisma.lessonCompletion.findUnique({
-    where: {
-      userId_lessonId: {
-        userId,
-        lessonId: lesson.id,
+  // Check completion with error handling
+  let completion: any = null;
+  try {
+    completion = await prisma.lessonCompletion.findUnique({
+      where: {
+        userId_lessonId: {
+          userId,
+          lessonId: lesson.id,
+        },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[StudentLesson] Failed to fetch completion:', err);
+  }
   const isCompleted = !!completion;
 
   function extractYouTubeId(url: string): string | null {

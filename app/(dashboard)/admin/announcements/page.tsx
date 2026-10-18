@@ -4,22 +4,27 @@ import CreateAnnouncementForm from '@/components/CreateAnnouncementForm';
 import AnnouncementList from '@/components/AnnouncementList';
 
 export default async function AdminAnnouncementsPage() {
-  await requireAuth(['ADMIN']);
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
 
   // ✅ Fetch data
-  const announcementsData = await prisma.announcement.findMany({
-    include: {
-      author: {
-        select: { name: true },
+  let announcementsData: any[] = [];
+  try {
+    announcementsData = await prisma.announcement.findMany({
+      include: {
+        author: {
+          select: { name: true },
+        },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[AdminAnnouncements] Failed to fetch announcements:', err);
+  }
 
   // ✅ Convert Date to string for the component
-  const announcements = announcementsData.map((a) => ({
+  const announcements = (Array.isArray(announcementsData) ? announcementsData : []).map((a) => ({
     ...a,
-    createdAt: a.createdAt.toISOString(),
+    createdAt: a.createdAt?.toISOString() ?? new Date().toISOString(),
   }));
 
   return (

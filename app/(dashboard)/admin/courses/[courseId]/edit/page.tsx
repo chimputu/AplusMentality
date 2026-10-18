@@ -12,7 +12,7 @@ interface PageProps {
 }
 
 export default async function AdminCourseEditPage({ params }: PageProps) {
-  await requireAuth(['ADMIN']);
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
   const { courseId } = await params;
 
   const course = await prisma.course.findUnique({

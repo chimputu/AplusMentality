@@ -3,48 +3,52 @@ import { prisma } from '@/lib/prisma';
 import UserManagement from '@/components/UserManagement';
 
 export default async function AdminUsersPage() {
-  await requireAuth(['ADMIN']);
-
-  const usersData = await prisma.user.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: {
-      enrollments: {
-        include: {
-          course: {
-            select: {
-              title: true,
+  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  let usersData: any[] = [];
+  try {
+    usersData = await prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        enrollments: {
+          include: {
+            course: {
+              select: {
+                title: true,
+              },
             },
           },
         },
-      },
-      courses: {
-        select: {
-          title: true,
+        courses: {
+          select: {
+            title: true,
+          },
+        },
+        _count: {
+          select: {
+            enrollments: true,
+            courses: true,
+            announcements: true,
+            videos: true,
+            quizzes: true,
+            tests: true,
+            assignments: true,
+          },
         },
       },
-      _count: {
-        select: {
-          enrollments: true,
-          courses: true,
-          announcements: true,
-          videos: true,
-          quizzes: true,
-          tests: true,
-          assignments: true,
-        },
-      },
-    },
-  });
+    });
+  } catch (err) {
+    console.error('[AdminUsers] Failed to fetch users:', err);
+  }
 
   // ✅ Convert Date to string for user (NOT enrolledAt - it's nested)
-  const users = usersData.map((user) => ({
+  const users = (Array.isArray(usersData) ? usersData : []).map((user) => ({
     ...user,
-    createdAt: user.createdAt.toISOString(),
+    createdAt: user.createdAt?.toISOString() ?? new Date().toISOString(),
     // ✅ Only convert top-level dates
     // enrolledAt is inside enrollments, not on user directly
-    enrollments: user.enrollments.map((enrollment) => ({
+    enrollments: (Array.isArray(user.enrollments) ? user.enrollments : []).map((enrollment: any) => ({
       ...enrollment,
-      enrolledAt: enrollment.enrolledAt.toISOString(),
+      enrolledAt: enrollment.enrolledAt?.toISOString() ?? new Date().toISOString(),
     })),
   }));
 

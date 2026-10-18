@@ -12,42 +12,47 @@ export default async function StudentCoursesPage({
   const params = await searchParams;
   const universityId = params.university || null;
 
-  // Get enrolled courses
-  const enrollmentsData = await prisma.enrollment.findMany({
-    where: { userId },
-    include: {
-      course: {
-        include: {
-          modules: {
-            include: {
-              lessons: true,
+  // Get enrolled courses with error handling
+  let enrollmentsData: any[] = [];
+  try {
+    enrollmentsData = await prisma.enrollment.findMany({
+      where: { userId },
+      include: {
+        course: {
+          include: {
+            modules: {
+              include: {
+                lessons: true,
+              },
             },
-          },
-          creator: {
-            select: { name: true },
-          },
-          university: {
-            select: { id: true, name: true, code: true },
+            creator: {
+              select: { name: true },
+            },
+            university: {
+              select: { id: true, name: true, code: true },
+            },
           },
         },
       },
-    },
-    orderBy: { enrolledAt: 'desc' },
-  });
+      orderBy: { enrolledAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('[StudentCourses] Failed to fetch enrollments:', err);
+  }
 
-  // ✅ Convert dates
-  const enrollments = enrollmentsData.map((e) => ({
+  // ✅ Convert dates with null safety
+  const enrollments = (Array.isArray(enrollmentsData) ? enrollmentsData : []).map((e: any) => ({
     ...e,
-    enrolledAt: e.enrolledAt.toISOString(),
+    enrolledAt: e.enrolledAt?.toISOString() ?? new Date().toISOString(),
     course: {
       ...e.course,
-      createdAt: e.course.createdAt.toISOString(),
-      modules: e.course.modules.map((m) => ({
+      createdAt: e.course?.createdAt?.toISOString() ?? new Date().toISOString(),
+      modules: (Array.isArray(e.course?.modules) ? e.course.modules : []).map((m: any) => ({
         ...m,
-        createdAt: m.createdAt.toISOString(),
-        lessons: m.lessons.map((l) => ({
+        createdAt: m.createdAt?.toISOString() ?? new Date().toISOString(),
+        lessons: (Array.isArray(m.lessons) ? m.lessons : []).map((l: any) => ({
           ...l,
-          createdAt: l.createdAt.toISOString(),
+          createdAt: l.createdAt?.toISOString() ?? new Date().toISOString(),
         })),
       })),
     },
@@ -58,55 +63,65 @@ export default async function StudentCoursesPage({
     ? enrollments.filter((e) => e.course.university?.id === universityId)
     : enrollments;
 
-  // Get available courses
-  const availableCoursesData = await prisma.course.findMany({
-    where: {
-      isPublished: true,
-      ...(universityId ? { universityId } : {}),
-      NOT: {
-        enrollments: {
-          some: { userId },
+  // Get available courses with error handling
+  let availableCoursesData: any[] = [];
+  try {
+    availableCoursesData = await prisma.course.findMany({
+      where: {
+        isPublished: true,
+        ...(universityId ? { universityId } : {}),
+        NOT: {
+          enrollments: {
+            some: { userId },
+          },
         },
       },
-    },
-    include: {
-      modules: {
-        include: {
-          lessons: true,
+      include: {
+        modules: {
+          include: {
+            lessons: true,
+          },
+        },
+        creator: {
+          select: { name: true },
+        },
+        university: {
+          select: { id: true, name: true, code: true },
         },
       },
-      creator: {
-        select: { name: true },
-      },
-      university: {
-        select: { id: true, name: true, code: true },
-      },
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 12,
-  });
+      orderBy: { createdAt: 'desc' },
+      take: 12,
+    });
+  } catch (err) {
+    console.error('[StudentCourses] Failed to fetch available courses:', err);
+  }
 
-  // ✅ Convert dates
-  const availableCourses = availableCoursesData.map((c) => ({
+  // ✅ Convert dates with null safety
+  const availableCourses = (Array.isArray(availableCoursesData) ? availableCoursesData : []).map((c: any) => ({
     ...c,
-    createdAt: c.createdAt.toISOString(),
-    modules: c.modules.map((m) => ({
+    createdAt: c.createdAt?.toISOString() ?? new Date().toISOString(),
+    modules: (Array.isArray(c.modules) ? c.modules : []).map((m: any) => ({
       ...m,
-      createdAt: m.createdAt.toISOString(),
-      lessons: m.lessons.map((l) => ({
+      createdAt: m.createdAt?.toISOString() ?? new Date().toISOString(),
+      lessons: (Array.isArray(m.lessons) ? m.lessons : []).map((l: any) => ({
         ...l,
-        createdAt: l.createdAt.toISOString(),
+        createdAt: l.createdAt?.toISOString() ?? new Date().toISOString(),
       })),
     })),
   }));
 
   // Fetch university name for the filter indicator
-  const selectedUniversity = universityId
-    ? await prisma.university.findUnique({
+  let selectedUniversity: any = null;
+  if (universityId) {
+    try {
+      selectedUniversity = await prisma.university.findUnique({
         where: { id: universityId },
         select: { name: true, code: true },
-      })
-    : null;
+      });
+    } catch (err) {
+      console.error('[StudentCourses] Failed to fetch university:', err);
+    }
+  }
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -148,7 +163,7 @@ export default async function StudentCoursesPage({
             {filteredEnrollments.map((enrollment) => {
               const { course } = enrollment;
               const totalLessons = course.modules.reduce(
-                (acc, m) => acc + m.lessons.length,
+                (acc: number, m: any) => acc + m.lessons.length,
                 0
               );
 
@@ -235,7 +250,7 @@ export default async function StudentCoursesPage({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {availableCourses.map((course) => {
               const totalLessons = course.modules.reduce(
-                (acc, m) => acc + m.lessons.length,
+                (acc: number, m: any) => acc + m.lessons.length,
                 0
               );
 

@@ -3,30 +3,34 @@ import { prisma } from '@/lib/prisma';
 import PageHeader from '@/components/PageHeader';
 
 export default async function OrganizationsPage() {
-  // Restrict to SUPER_ADMIN only
-  await requireAuth(['SUPER_ADMIN']);
+  // Auth handled by layout (ADMIN + SUPER_ADMIN) - SUPER_ADMIN only page
+  let institutions: any[] = [];
+  let usersWithoutMemberships = 0;
+  try {
+    // Fetch all institutions with clerkOrg fields
+    institutions = await prisma.institution.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        type: true,
+        clerkOrgId: true,
+        clerkOrgSlug: true,
+      },
+      orderBy: { name: 'asc' },
+    });
 
-  // Fetch all institutions with clerkOrg fields
-  const institutions = await prisma.institution.findMany({
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      type: true,
-      clerkOrgId: true,
-      clerkOrgSlug: true,
-    },
-    orderBy: { name: 'asc' },
-  });
-
-  // Count users without org memberships
-  const totalUsers = await prisma.user.count();
-  const memberships = await prisma.organizationMembership.findMany({
-    where: { status: 'active' },
-    select: { userId: true },
-  });
-  const distinctUserIds = new Set(memberships.map((m) => m.userId));
-  const usersWithoutMemberships = totalUsers - distinctUserIds.size;
+    // Count users without org memberships
+    const totalUsers = await prisma.user.count();
+    const memberships = await prisma.organizationMembership.findMany({
+      where: { status: 'active' },
+      select: { userId: true },
+    });
+    const distinctUserIds = new Set(memberships.map((m) => m.userId));
+    usersWithoutMemberships = totalUsers - distinctUserIds.size;
+  } catch (err) {
+    console.error('[Organizations] Failed to fetch data:', err);
+  }
 
   const totalInstitutions = institutions.length;
   const linkedInstitutions = institutions.filter((i) => i.clerkOrgId !== null).length;

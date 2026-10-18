@@ -27,13 +27,18 @@ export default async function StudentLectureSlideDetailPage({
   await requireAuth(['STUDENT', 'ADMIN']);
   const { id } = await params;
 
-  const slide = await prisma.lectureSlide.findUnique({
-    where: { id },
-    include: {
-      course: true,
-      creator: true,
-    },
-  });
+  let slide: any = null;
+  try {
+    slide = await prisma.lectureSlide.findUnique({
+      where: { id },
+      include: {
+        course: true,
+        creator: true,
+      },
+    });
+  } catch (err) {
+    console.error('[StudentLectureSlideDetail] Failed to fetch slide:', err);
+  }
 
   if (!slide) {
     notFound();

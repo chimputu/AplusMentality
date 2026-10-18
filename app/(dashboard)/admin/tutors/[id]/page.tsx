@@ -13,23 +13,27 @@ export default async function AdminTutorDetailPage({
 }) {
   const { id } = await params;
 
-  const tutor = await prisma.tutor.findUnique({
-    where: { id },
-    include: {
-      university: true,
-      programme: true,
-      branch: true,
-      specialties: { include: { course: true } },
-      _count: { select: { requests: true } },
-    },
-  });
+  let tutor: any = null;
+  try {
+    tutor = await prisma.tutor.findUnique({
+      where: { id },
+      include: {
+        university: true,
+        programme: true,
+        branch: true,
+        specialties: { include: { course: true } },
+        _count: { select: { requests: true } },
+      },
+    });
+  } catch (err) {
+    console.error('[AdminTutorDetail] Failed to fetch tutor:', err);
+  }
 
   if (!tutor) {
     notFound();
   }
 
   const handleUpdate = async (formData: FormData) => {
-    'use server';
     await updateTutor(id, {
       fullName: formData.get('fullName') as string,
       email: formData.get('email') as string,
@@ -268,7 +272,7 @@ export default async function AdminTutorDetailPage({
               </p>
             ) : (
               <div className="flex flex-wrap gap-2">
-                {tutor.specialties.map((s) => (
+                {tutor.specialties.map((s: any) => (
                   <span
                     key={s.id}
                     className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded"

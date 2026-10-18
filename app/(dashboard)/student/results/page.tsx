@@ -34,60 +34,67 @@ interface Submission {
 export default async function StudentResultsPage() {
   const { userId } = await requireAuth(['STUDENT']);
 
-  // Fetch all submissions in parallel
-  const [quizSubmissions, testSubmissions, assignmentSubmissions] = await Promise.all([
-    prisma.quizSubmission.findMany({
-      where: { userId },
-      include: {
-        quiz: {
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            dueDate: true,
-            creator: { select: { name: true } },
+  // Fetch all submissions in parallel with error handling
+  let quizSubmissions: any[] = [];
+  let testSubmissions: any[] = [];
+  let assignmentSubmissions: any[] = [];
+  try {
+    [quizSubmissions, testSubmissions, assignmentSubmissions] = await Promise.all([
+      prisma.quizSubmission.findMany({
+        where: { userId },
+        include: {
+          quiz: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              dueDate: true,
+              creator: { select: { name: true } },
+            },
           },
         },
-      },
-      orderBy: { submittedAt: 'desc' },
-    }),
-    prisma.testSubmission.findMany({
-      where: { userId },
-      include: {
-        test: {
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            dueDate: true,
-            maxScore: true,
-            creator: { select: { name: true } },
+        orderBy: { submittedAt: 'desc' },
+      }),
+      prisma.testSubmission.findMany({
+        where: { userId },
+        include: {
+          test: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              dueDate: true,
+              maxScore: true,
+              creator: { select: { name: true } },
+            },
           },
         },
-      },
-      orderBy: { submittedAt: 'desc' },
-    }),
-    prisma.assignmentSubmission.findMany({
-      where: { userId },
-      include: {
-        assignment: {
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            dueDate: true,
-            maxScore: true,
-            creator: { select: { name: true } },
+        orderBy: { submittedAt: 'desc' },
+      }),
+      prisma.assignmentSubmission.findMany({
+        where: { userId },
+        include: {
+          assignment: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              dueDate: true,
+              maxScore: true,
+              creator: { select: { name: true } },
+            },
           },
         },
-      },
-      orderBy: { submittedAt: 'desc' },
-    }),
-  ]);
+        orderBy: { submittedAt: 'desc' },
+      }),
+    ]);
+  } catch (err) {
+    console.error('[StudentResults] Failed to fetch submissions:', err);
+  }
 
-  // Normalize all submissions into a unified format
+  // Normalize all submissions into a unified format with null safety
   const allSubmissions: Submission[] = [
-    ...quizSubmissions.map((s) => ({
+    ...(Array.isArray(quizSubmissions) ? quizSubmissions : []).map((s: any) => ({
       id: s.quiz.id,
       type: 'quiz' as SubmissionType,
       title: s.quiz.title,
@@ -96,12 +103,12 @@ export default async function StudentResultsPage() {
       total: s.total,
       feedback: s.feedback,
       status: s.status,
-      submittedAt: s.submittedAt.toISOString(),
+      submittedAt: s.submittedAt?.toISOString() ?? new Date().toISOString(),
       gradedAt: s.gradedAt?.toISOString() || null,
       dueDate: s.quiz.dueDate?.toISOString() || null,
       creatorName: s.quiz.creator?.name || null,
     })),
-    ...testSubmissions.map((s) => ({
+    ...(Array.isArray(testSubmissions) ? testSubmissions : []).map((s: any) => ({
       id: s.test.id,
       type: 'test' as SubmissionType,
       title: s.test.title,
@@ -110,13 +117,13 @@ export default async function StudentResultsPage() {
       total: s.total,
       feedback: s.feedback,
       status: s.status,
-      submittedAt: s.submittedAt.toISOString(),
+      submittedAt: s.submittedAt?.toISOString() ?? new Date().toISOString(),
       gradedAt: s.gradedAt?.toISOString() || null,
       dueDate: s.test.dueDate?.toISOString() || null,
       creatorName: s.test.creator?.name || null,
       maxScore: s.test.maxScore,
     })),
-    ...assignmentSubmissions.map((s) => ({
+    ...(Array.isArray(assignmentSubmissions) ? assignmentSubmissions : []).map((s: any) => ({
       id: s.assignment.id,
       type: 'assignment' as SubmissionType,
       title: s.assignment.title,
@@ -125,7 +132,7 @@ export default async function StudentResultsPage() {
       total: s.total,
       feedback: s.feedback,
       status: s.status,
-      submittedAt: s.submittedAt.toISOString(),
+      submittedAt: s.submittedAt?.toISOString() ?? new Date().toISOString(),
       gradedAt: s.gradedAt?.toISOString() || null,
       dueDate: s.assignment.dueDate?.toISOString() || null,
       creatorName: s.assignment.creator?.name || null,
