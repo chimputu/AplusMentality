@@ -7,6 +7,9 @@ import Link from 'next/link';
 import { createAssessment } from '@/lib/actions/assessments';
 import { listQuestions } from '@/lib/actions/questions';
 import { DataSelect } from '@/components/ui/data-select';
+import { InstitutionSelect } from '@/components/ui/selects/institution-select';
+import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
+import { CourseSelect } from '@/components/ui/selects/course-select';
 import {
   ArrowRight,
   ArrowLeft,
@@ -25,6 +28,13 @@ interface Course {
   title: string;
 }
 
+interface University {
+  id: string;
+  name: string;
+  code: string;
+  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
+}
+
 interface BankQuestion {
   id: string;
   type: string;
@@ -41,6 +51,10 @@ interface Step2Data {
   title: string;
   description: string;
   type: AssessmentType;
+  institutionId: string;
+  programmeId: string;
+  year: number;
+  period: string;
   courseId: string;
   timeLimit: string;
   openAt: string;
@@ -81,6 +95,10 @@ export default function NewAssessmentPage() {
     title: '',
     description: '',
     type: 'QUIZ',
+    institutionId: '',
+    programmeId: '',
+    year: 1,
+    period: '',
     courseId: '',
     timeLimit: '',
     openAt: '',
@@ -100,23 +118,49 @@ export default function NewAssessmentPage() {
   });
 
   // Data
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [universities, setUniversities] = useState<University[]>([]);
   const [bankQuestions, setBankQuestions] = useState<BankQuestion[]>([]);
   const [questionSearch, setQuestionSearch] = useState('');
   const [questionTypeFilter, setQuestionTypeFilter] = useState('');
 
-  // Fetch courses
-  const fetchCourses = useCallback(async () => {
-    const res = await fetch('/api/courses?all=true');
-    if (!res.ok) throw new Error('Failed to fetch');
-    const data = await res.json();
-    setCourses(Array.isArray(data) ? data : []);
-    return Array.isArray(data) ? data : [];
+  // Load universities for academic system lookup
+  useEffect(() => {
+    async function loadUniversities() {
+      try {
+        const res = await fetch('/api/admin/universities');
+        if (res.ok) {
+          const data = await res.json();
+          setUniversities(data);
+        }
+      } catch {
+        console.error('Failed to load universities');
+      }
+    }
+    loadUniversities();
   }, []);
 
-  useEffect(() => {
-    fetchCourses();
-  }, [fetchCourses]);
+  // Get period options based on selected university's academic system
+  const getPeriodOptions = () => {
+    const uni = universities.find((u) => u.id === step2.institutionId);
+    if (!uni) return [];
+    switch (uni.academicSystem) {
+      case 'YEARLY':
+        return [{ value: '', label: 'Full Year' }];
+      case 'SEMESTERLY':
+        return [
+          { value: '1', label: 'Semester 1' },
+          { value: '2', label: 'Semester 2' },
+        ];
+      case 'TRIMESTERLY':
+        return [
+          { value: '1', label: 'Trimester 1' },
+          { value: '2', label: 'Trimester 2' },
+          { value: '3', label: 'Trimester 3' },
+        ];
+      default:
+        return [];
+    }
+  };
 
   // Fetch bank questions when course is selected
   useEffect(() => {
@@ -376,18 +420,63 @@ export default function NewAssessmentPage() {
                 </select>
               </div>
 
-              <DataSelect
+              <InstitutionSelect
+                value={step2.institutionId}
+                onChange={(v) => setStep2({ ...step2, institutionId: v, programmeId: '', period: '', courseId: '' })}
+                label="University *"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ProgrammeSelect
+                institutionId={step2.institutionId}
+                value={step2.programmeId}
+                onChange={(v) => setStep2({ ...step2, programmeId: v, courseId: '' })}
+                label="Programme *"
+              />
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Year *
+                </label>
+                <select
+                  value={step2.year}
+                  onChange={(e) => setStep2({ ...step2, year: parseInt(e.target.value), courseId: '' })}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {[1, 2, 3, 4, 5, 6, 7].map((y) => (
+                    <option key={y} value={y}>Year {y}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Period *
+                </label>
+                <select
+                  value={step2.period}
+                  onChange={(e) => setStep2({ ...step2, period: e.target.value, courseId: '' })}
+                  disabled={!step2.institutionId}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                >
+                  <option value="">Select period</option>
+                  {getPeriodOptions().map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <CourseSelect
+                programmeId={step2.programmeId}
+                universityId={step2.institutionId}
+                year={step2.year}
+                period={step2.period}
                 value={step2.courseId}
                 onChange={(v) => setStep2({ ...step2, courseId: v })}
                 label="Course *"
-                fetchFn={fetchCourses}
-                dependencies={[]}
-                getValue={(c: any) => c.id}
-                getLabel={(c: any) => `${c.code} — ${c.title}`}
-                placeholder="Select a course..."
-                emptyMessage="No courses available."
-                emptyAction={{ label: 'Create course', href: '/admin/courses/new' }}
-                errorMessage="Couldn't load courses."
               />
             </div>
 
