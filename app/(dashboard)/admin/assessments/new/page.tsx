@@ -591,8 +591,7 @@ export default function NewAssessmentPage() {
             Select Questions
           </h2>
           <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
-            Choose questions from the bank for{' '}
-            {courses.find((c) => c.id === step2.courseId)?.code || 'selected course'}.{' '}
+            Choose questions from the bank for the selected course.{' '}
             {step3a.questionIds.length} selected, {totalPoints} total points.
           </p>
 
