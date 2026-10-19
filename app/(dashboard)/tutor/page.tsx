@@ -6,7 +6,7 @@ import TutorContent from '@/components/TutorContent';
 export default async function TutorPage() {
   // 1. Authenticate with Clerk
   const { userId } = await auth();
-  if (!userId) redirect('/login');
+  if (!userId) redirect('/sign-in');
 
   // 2. Fetch Clerk user
   let clerkUser;
@@ -14,9 +14,9 @@ export default async function TutorPage() {
     clerkUser = await currentUser();
   } catch (error) {
     console.error('Failed to fetch Clerk user:', error);
-    redirect('/login');
+    redirect('/sign-in');
   }
-  if (!clerkUser) redirect('/login');
+  if (!clerkUser) redirect('/sign-in');
 
   // 3. Get user role from database
   let dbUser: any;

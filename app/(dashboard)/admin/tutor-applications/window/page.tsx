@@ -101,7 +101,7 @@ export async function deleteWindowAction(id: string) {
 
 export default async function WindowManagementPage() {
   const { userId } = await auth();
-  if (!userId) redirect('/login');
+  if (!userId) redirect('/sign-in');
 
   const user = await prisma.user.findUnique({ where: { clerkId: userId! } });
   if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
