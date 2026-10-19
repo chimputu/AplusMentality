@@ -405,6 +405,54 @@ export default function DashboardLayout({
       section: 'Tutoring'
     },
     { 
+      href: '/tutor/courses', 
+      label: 'Courses', 
+      icon: BookOpen,
+      section: 'Content'
+    },
+    { 
+      href: '/tutor/announcements', 
+      label: 'Announcements', 
+      icon: Megaphone,
+      section: 'Content'
+    },
+    { 
+      href: '/tutor/videos', 
+      label: 'Videos', 
+      icon: Video,
+      section: 'Content'
+    },
+    { 
+      href: '/tutor/lecture-slides', 
+      label: 'Lecture Slides', 
+      icon: Presentation,
+      section: 'Content'
+    },
+    { 
+      href: '/tutor/past-papers', 
+      label: 'Past Papers', 
+      icon: FileText,
+      section: 'Content'
+    },
+    { 
+      href: '/tutor/assignments', 
+      label: 'Assignments', 
+      icon: ClipboardList,
+      section: 'Assessments'
+    },
+    { 
+      href: '/tutor/quizzes', 
+      label: 'Quizzes', 
+      icon: FileQuestion,
+      section: 'Assessments'
+    },
+    { 
+      href: '/tutor/tests', 
+      label: 'Tests', 
+      icon: FileText,
+      section: 'Assessments'
+    },
+    { 
       href: '/apply-as-tutor/status', 
       label: 'Application Status', 
       icon: FileText,
