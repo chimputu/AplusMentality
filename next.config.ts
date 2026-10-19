@@ -29,11 +29,12 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
+              "manifest-src 'self' https://vercel.com",
               "img-src 'self' https://res.cloudinary.com https://img.clerk.com data: blob:",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://*.clerk.accounts.dev https://js.sentry-cdn.com https://browser.sentry-cdn.com",
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.clerk.accounts.dev https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io",
+              "connect-src 'self' https://*.clerk.accounts.dev https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io https://vercel.com",
               "frame-src 'self' https://*.clerk.accounts.dev https://www.youtube.com https://youtube.com",
               "worker-src 'self' blob:",
               "frame-ancestors 'self'",
