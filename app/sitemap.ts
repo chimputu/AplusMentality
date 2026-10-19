@@ -4,14 +4,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://aplusmentality.vercel.app';
 
   const routes = [
-    '',
-    '/explore',
+    { path: '', priority: 1, frequency: 'daily' as const },
+    { path: '/explore', priority: 0.8, frequency: 'daily' as const },
+    { path: '/privacy-policy', priority: 0.5, frequency: 'monthly' as const },
+    { path: '/terms-of-service', priority: 0.5, frequency: 'monthly' as const },
   ];
 
   return routes.map((route) => ({
-    url: `${baseUrl}${route}`,
+    url: `${baseUrl}${route.path}`,
     lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route === '' ? 1 : 0.8,
+    changeFrequency: route.frequency,
+    priority: route.priority,
   }));
 }

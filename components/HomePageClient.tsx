@@ -1336,7 +1336,20 @@ export default function HomePageClient() {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} A+ Mentality Zambia. All rights reserved. Built  for Zambian lifelong learners.
+            &copy; {new Date().getFullYear()} A+ Mentality Zambia. All rights reserved. Built for Zambian lifelong learners.
+            <div className="mt-3 flex items-center justify-center gap-4">
+              <Link href="/privacy-policy" className="text-xs text-gray-400 hover:text-blue-400 transition">
+                Privacy Policy
+              </Link>
+              <span className="text-gray-600">•</span>
+              <Link href="/terms-of-service" className="text-xs text-gray-400 hover:text-blue-400 transition">
+                Terms of Service
+              </Link>
+              <span className="text-gray-600">•</span>
+              <Link href="/api/health" className="text-xs text-gray-400 hover:text-blue-400 transition">
+                System Status
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
