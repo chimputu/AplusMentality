@@ -1169,22 +1169,16 @@ export default function HomePageClient() {
 
             {/* RIGHT SIDE: YouTube Video */}
             <div className="relative w-full max-w-xl mx-auto lg:mx-0">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200 bg-white p-2">
-                <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black">
-                  <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src="https://www.youtube.com/embed/g6BtbIiJ_rc?start=6&rel=0&modestbranding=1"
-                    title="A+ Student Mentality - Best Study Motivation"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-              <div className="mt-4 text-center lg:text-left">
-                <p className="text-sm font-semibold text-gray-900">Built for Zambian Students</p>
-                <p className="text-xs text-gray-500">A+ Student Mentality - Best Study Motivation</p>
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black">
+                <iframe
+                  className="absolute inset-0 w-full h-full"
+                  src="https://www.youtube.com/embed/g6BtbIiJ_rc?start=6&rel=0&modestbranding=1"
+                  title="A+ Student Mentality - Best Study Motivation"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="lazy"
+                />
               </div>
             </div>
 

@@ -59,9 +59,46 @@ const mockPrisma = {
   },
   tutor: {
     findUnique: vi.fn(),
+    findFirst: vi.fn(),
     findMany: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),
+    delete: vi.fn(),
+  },
+  tutorRequest: {
+    findUnique: vi.fn(),
+    findFirst: vi.fn(),
+    findMany: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    count: vi.fn(),
+  },
+  tutorApplication: {
+    findUnique: vi.fn(),
+    findFirst: vi.fn(),
+    findMany: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+  },
+  tutorSpecialty: {
+    findUnique: vi.fn(),
+    findFirst: vi.fn(),
+    findMany: vi.fn(),
+    create: vi.fn(),
+    delete: vi.fn(),
+  },
+  tutorOffering: {
+    findUnique: vi.fn(),
+    findMany: vi.fn(),
+    create: vi.fn(),
+    delete: vi.fn(),
+  },
+  tutorReference: {
+    findUnique: vi.fn(),
+    findMany: vi.fn(),
+    create: vi.fn(),
     delete: vi.fn(),
   },
   university: {
@@ -99,6 +136,30 @@ vi.mock('sonner', () => ({
     info: vi.fn(),
   },
 }));
+
+// Mock Next.js navigation
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn(() => {
+    const err = new Error('NEXT_REDIRECT');
+    throw err;
+  }),
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+  })),
+}));
+
+// Mock Next.js Link
+vi.mock('next/link', async () => {
+  const React = await vi.importActual('react');
+  return {
+    default: ({ children, href, ...props }: any) => {
+      // @ts-ignore
+      return React.createElement('a', { href, ...props }, children);
+    },
+  };
+});
 
 afterEach(() => {
   vi.clearAllMocks();
