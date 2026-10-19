@@ -48,7 +48,7 @@ export default async function ApplicationDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { userId } = await auth();
-  if (!userId) redirect('/sign-in');
+  if (!userId) redirect('/login');
 
   const user = await prisma.user.findUnique({ where: { clerkId: userId! } });
   if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {

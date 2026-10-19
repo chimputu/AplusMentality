@@ -6,7 +6,7 @@ import OnboardingForm from './_components/onboarding-form';
 
 export default async function OnboardingPage() {
   const { userId } = await auth();
-  if (!userId) redirect('/sign-in');
+  if (!userId) redirect('/login');
 
   let user;
   try {
@@ -16,10 +16,10 @@ export default async function OnboardingPage() {
     );
   } catch (err: any) {
     console.error('[Onboarding] Failed to find user:', err.message);
-    redirect('/sign-in');
+    redirect('/login');
   }
   if (!user) {
-    redirect('/sign-in');
+    redirect('/login');
   }
 
   // If already onboarded, redirect to dashboard

@@ -7,7 +7,7 @@ export async function requireAuth(allowedRoles?: string[]) {
   const { userId } = await auth();
 
   if (!userId) {
-    redirect('/sign-in');
+    redirect('/login');
   }
 
   let user: any;
