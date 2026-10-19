@@ -116,7 +116,7 @@ export default function ModuleList({ modules, courseId, isAdmin = true }: Module
               onClick={() => toggleModule(module.id)}
             >
               <div className="flex items-center gap-3 flex-1">
-                <button className="text-gray-400 dark:text-gray-500">
+                <button className="text-gray-400 dark:text-gray-500" aria-label={isExpanded ? `Collapse ${module.title}` : `Expand ${module.title}`}>
                   {isExpanded ? (
                     <ChevronDown className="w-5 h-5" />
                   ) : (

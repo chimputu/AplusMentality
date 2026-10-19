@@ -480,6 +480,7 @@ export default function DashboardLayout({
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="lg:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            aria-label="Toggle mobile menu"
           >
             <Menu className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
@@ -519,6 +520,7 @@ export default function DashboardLayout({
                   type="button"
                   onClick={handleClearSearch}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
+                  aria-label="Clear search"
                 >
                   <XCircle className="w-5 h-5" />
                 </button>
@@ -527,6 +529,7 @@ export default function DashboardLayout({
             <button
               type="submit"
               className="px-6 py-2 bg-gray-100 dark:bg-gray-700 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-full hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-center"
+              aria-label="Search"
             >
               <Search className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             </button>
@@ -869,6 +872,7 @@ export default function DashboardLayout({
                     type="button"
                     onClick={handleClearSearch}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    aria-label="Clear search"
                   >
                     <XCircle className="w-5 h-5" />
                   </button>
@@ -881,6 +885,7 @@ export default function DashboardLayout({
                   setLocalSearch('');
                 }}
                 className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                aria-label="Close search"
               >
                 <X className="w-6 h-6" />
               </button>
