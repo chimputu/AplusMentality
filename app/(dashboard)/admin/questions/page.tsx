@@ -31,11 +31,15 @@ export default async function AdminQuestionsPage({
   let pagination: any = { page: 1, totalPages: 1, total: 0 };
   try {
     const result = await listQuestions({ search, type, page, pageSize: 20 });
-    questions = result.questions;
-    pagination = result.pagination;
+    // SAFETY GUARD: Ensure questions is always a safe array, even if the query returns malformed data
+    questions = Array.isArray(result?.questions) ? result.questions : [];
+    pagination = result?.pagination ?? { page: 1, totalPages: 1, total: 0 };
   } catch (err) {
     console.error('[AdminQuestions] Failed to fetch questions:', err);
+    questions = [];
   }
+  // Ensure questions is always an array before rendering
+  const safeQuestions = Array.isArray(questions) ? questions : [];
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -95,7 +99,7 @@ export default async function AdminQuestionsPage({
         <button type="submit" className="sr-only">Search</button>
       </form>
 
-      {questions.length === 0 ? (
+      {safeQuestions.length === 0 ? (
         <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
           <div className="text-4xl mb-4">📝</div>
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
@@ -139,31 +143,36 @@ export default async function AdminQuestionsPage({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                {questions.map((q: any) => (
+                {safeQuestions.map((q: any) => {
+                  // SAFETY GUARDS: Protect against missing/undefined fields on individual question records
+                  const safeType = q.type ?? 'ESSAY';
+                  const safeAssessmentItems = Array.isArray(q.assessmentItems) ? q.assessmentItems : [];
+                  const safeDifficulty = typeof q.difficulty === 'number' ? Math.min(5, Math.max(1, q.difficulty)) : 1;
+                  return (
                   <tr key={q.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
-                          typeColors[q.type] || typeColors.ESSAY
+                          typeColors[safeType] || typeColors.ESSAY
                         }`}
                       >
-                        {q.type.replace(/_/g, ' ')}
+                        {safeType.replace(/_/g, ' ')}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <p className="text-sm text-gray-900 dark:text-gray-100 truncate max-w-xs">
-                        {q.prompt}
+                        {q.prompt ?? ''}
                       </p>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                      {q.points}
+                      {q.points ?? 1}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                      {'★'.repeat(q.difficulty)}{'☆'.repeat(5 - q.difficulty)}
+                      {'★'.repeat(safeDifficulty)}{'☆'.repeat(5 - safeDifficulty)}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {q.assessmentItems.length > 0
-                        ? `${q.assessmentItems.length} assessment${q.assessmentItems.length > 1 ? 's' : ''}`
+                      {safeAssessmentItems.length > 0
+                        ? `${safeAssessmentItems.length} assessment${safeAssessmentItems.length > 1 ? 's' : ''}`
                         : '—'}
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -206,7 +215,8 @@ export default async function AdminQuestionsPage({
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

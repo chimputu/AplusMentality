@@ -8,7 +8,7 @@ interface AdminLayoutProps {
 }
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
-  // ✅ Protect ALL admin routes
+  // ✅ Protect ALL admin routes — requireAuth handles redirect on failure
   const { role, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
   const u = user!;
 
