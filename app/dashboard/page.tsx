@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
 export default async function DashboardRedirect() {
   const { userId, orgRole } = await auth();
 
-  if (!userId) redirect('/sign-in');
+  if (!userId) redirect('/login');
 
   // Admins go to the admin dashboard
   if (orgRole === 'org:admin') redirect('/admin');
