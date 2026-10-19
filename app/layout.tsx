@@ -6,6 +6,7 @@ import { Providers } from './providers';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
+import CookieConsentModal from '@/components/CookieConsentModal';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -68,6 +69,7 @@ export default function RootLayout({
             <div id="main-content">{children}</div>
             <Toaster />
             <Analytics />
+            <CookieConsentModal />
           </Providers>
         </body>
       </html>
