@@ -68,7 +68,16 @@ export async function listQuestions(filters?: {
   page?: number;
   pageSize?: number;
 }) {
-  await requireAdmin();
+  // SAFETY GUARD: Return empty defaults if auth or DB fails, so the Server Component never crashes
+  try {
+    await requireAdmin();
+  } catch (err: any) {
+    console.error('[listQuestions] Auth check failed:', err.message);
+    return {
+      questions: [] as any[],
+      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+    };
+  }
 
   const where: any = {};
   if (filters?.search) {
@@ -88,19 +97,30 @@ export async function listQuestions(filters?: {
   const pageSize = filters?.pageSize ?? 20;
   const skip = (page - 1) * pageSize;
 
-  const [questions, total] = await prisma.$transaction([
-    prisma.question.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      skip,
-      take: pageSize,
-      include: {
-        questionOptions: { orderBy: { order: 'asc' } },
-        assessmentItems: { select: { assessmentId: true, assessment: { select: { title: true } } } },
-      },
-    }),
-    prisma.question.count({ where }),
-  ]);
+  let questions: any[] = [];
+  let total = 0;
+
+  try {
+    const result = await prisma.$transaction([
+      prisma.question.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: pageSize,
+        include: {
+          questionOptions: { orderBy: { order: 'asc' } },
+          assessmentItems: { select: { assessmentId: true, assessment: { select: { title: true } } } },
+        },
+      }),
+      prisma.question.count({ where }),
+    ]);
+    questions = result[0] ?? [];
+    total = result[1] ?? 0;
+  } catch (err: any) {
+    console.error('[listQuestions] DB query failed:', err.message);
+    questions = [];
+    total = 0;
+  }
 
   return {
     questions,
@@ -108,7 +128,7 @@ export async function listQuestions(filters?: {
       page,
       pageSize,
       total,
-      totalPages: Math.ceil(total / pageSize),
+      totalPages: total > 0 ? Math.ceil(total / pageSize) : 0,
     },
   };
 }
