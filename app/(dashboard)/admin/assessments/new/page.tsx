@@ -767,8 +767,7 @@ export default function NewAssessmentPage() {
                   Course
                 </dt>
                 <dd className="text-gray-900 dark:text-gray-100 mt-1">
-                  {courses.find((c) => c.id === step2.courseId)?.code} —{' '}
-                  {courses.find((c) => c.id === step2.courseId)?.title}
+                  {step2.courseId ? `Course ID: ${step2.courseId}` : 'Not selected'}
                 </dd>
               </div>
               <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">

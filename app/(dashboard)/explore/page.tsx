@@ -3,8 +3,24 @@ import { Compass, MapPin, BookOpen, Building2, ArrowRight } from 'lucide-react';
 import { listExplorableUniversities } from '@/lib/queries/exploration';
 
 export const metadata = {
-  title: 'Explore Universities | A+ Mentality',
-  description: 'Browse other Zambian universities and preview their course materials',
+  title: 'Explore Universities',
+  description: 'Browse other Zambian universities and preview their course materials on A+ Mentality.',
+  openGraph: {
+    title: 'Explore Universities — A+ Mentality',
+    description: 'Browse other Zambian universities and preview their course materials.',
+    url: 'https://aplusmentality.vercel.app/explore',
+    siteName: 'A+ Mentality',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Explore Universities — A+ Mentality',
+    description: 'Browse Zambian universities and preview course materials.',
+  },
+  alternates: {
+    canonical: 'https://aplusmentality.vercel.app/explore',
+  },
 };
 
 export default async function ExplorePage() {

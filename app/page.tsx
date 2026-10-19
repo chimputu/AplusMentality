@@ -1,8 +1,30 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { withRetry } from '@/lib/retry';
 import { redirect } from 'next/navigation';
 import HomePageClient from '@/components/HomePageClient';
+
+export const metadata: Metadata = {
+  title: 'Home',
+  description: 'A+ Mentality — your one-stop learning platform for Zambian universities. Access courses, quizzes, assignments, past papers, and connect with tutors.',
+  openGraph: {
+    title: 'A+ Mentality — Learning Platform for Zambian Universities',
+    description: 'Access courses, quizzes, assignments, past papers, and connect with tutors.',
+    url: 'https://aplusmentality.vercel.app',
+    siteName: 'A+ Mentality',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'A+ Mentality — Learning Platform',
+    description: 'Courses, quizzes, assignments, past papers, and tutor services.',
+  },
+  alternates: {
+    canonical: 'https://aplusmentality.vercel.app',
+  },
+};
 
 export default async function HomePage() {
   const { userId } = await auth();
@@ -69,5 +91,29 @@ export default async function HomePage() {
     redirect((role === 'ADMIN' || role === 'SUPER_ADMIN') ? '/admin' : '/student');
   }
 
-  return <HomePageClient />;
+  return (
+    <>
+      {/* Structured data: WebSite with SearchAction */}
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'A+ Mentality',
+            url: 'https://aplusmentality.vercel.app',
+            description:
+              'Learning Management System for Zambian universities — courses, quizzes, assignments, past papers, and tutor services.',
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: 'https://aplusmentality.vercel.app/search?q={search_term_string}',
+              'query-input': 'required name=search_term_string',
+            },
+          }),
+        }}
+      />
+      <HomePageClient />
+    </>
+  );
 }
