@@ -496,10 +496,11 @@ export async function approveTutorApplication(rawInput: unknown) {
       },
     });
 
-    // Mark user as verified tutor and copy profile photo to their public profile
+    // Mark user as verified tutor, update role to TUTOR, and copy profile photo to their public profile
     await tx.user.update({
       where: { id: application.userId },
       data: {
+        role: 'TUTOR',
         isVerifiedTutor: true,
         imageUrl: application.profilePhotoUrl ?? undefined,
       },
