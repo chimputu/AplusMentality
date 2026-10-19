@@ -47,7 +47,7 @@ const statusConfig: Record<string, { icon: any; color: string; label: string; de
 
 export default async function ApplicationStatusPage() {
   const { userId } = await auth();
-  if (!userId) redirect('/login');
+  if (!userId) redirect('/sign-in');
 
   let user;
   try {
@@ -57,9 +57,9 @@ export default async function ApplicationStatusPage() {
     );
   } catch (err: any) {
     console.error('[AppStatus] Failed to find user:', err.message);
-    redirect('/login');
+    redirect('/sign-in');
   }
-  if (!user) redirect('/login');
+  if (!user) redirect('/sign-in');
   const u = user;
 
   let application;

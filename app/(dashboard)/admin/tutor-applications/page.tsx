@@ -24,7 +24,7 @@ export default async function AdminTutorApplicationsPage({
   searchParams?: Promise<SearchParams>;
 }) {
   const { userId } = await auth();
-  if (!userId) redirect('/login');
+  if (!userId) redirect('/sign-in');
 
   const user = await prisma.user.findUnique({ where: { clerkId: userId! } });
   if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {

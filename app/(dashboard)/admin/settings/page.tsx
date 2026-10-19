@@ -77,7 +77,7 @@ export default function AdminSettingsPage() {
 
     try {
       await signOut();
-      router.push('/login');
+      router.push('/sign-in');
     } catch (error) {
       console.error('Sign out failed:', error);
       alert('Failed to sign out. Please try again.');

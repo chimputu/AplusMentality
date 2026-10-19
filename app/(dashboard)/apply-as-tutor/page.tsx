@@ -6,7 +6,7 @@ import TutorApplicationWizard from './_components/tutor-application-wizard';
 
 export default async function ApplyAsTutorPage() {
   const { userId } = await auth();
-  if (!userId) redirect('/login');
+  if (!userId) redirect('/sign-in');
 
   let user;
   try {
@@ -16,9 +16,9 @@ export default async function ApplyAsTutorPage() {
     );
   } catch (err: any) {
     console.error('[ApplyAsTutor] Failed to find user:', err.message);
-    redirect('/login');
+    redirect('/sign-in');
   }
-  if (!user) redirect('/login');
+  if (!user) redirect('/sign-in');
   const u = user;
   if (u.role !== 'STUDENT') redirect('/unauthorized');
 
