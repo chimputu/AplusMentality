@@ -53,7 +53,7 @@ export default function CreateTestPage() {
         const res = await fetch('/api/admin/universities');
         if (res.ok) {
           const data = await res.json();
-          setUniversities(data);
+          setUniversities(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
         }
       } catch {
         console.error('Failed to load universities');
@@ -77,7 +77,7 @@ export default function CreateTestPage() {
         const res = await fetch(`/api/admin/programmes?${param}=${actualId}`);
         if (res.ok) {
           const data = await res.json();
-          setProgrammes(data);
+          setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
         }
       } catch {
         console.error('Failed to load programmes');
@@ -102,7 +102,7 @@ export default function CreateTestPage() {
         const res = await fetch(`/api/courses?${qs}`);
         if (res.ok) {
           const data = await res.json();
-          setCourses(data);
+          setCourses(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
         }
       } catch {
         console.error('Failed to load courses');

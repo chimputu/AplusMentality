@@ -41,7 +41,7 @@ export default function CreateAssignmentPage() {
         const res = await fetch('/api/admin/universities');
         if (res.ok) {
           const data = await res.json();
-          setUniversities(data);
+          setUniversities(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
         }
       } catch {
         console.error('Failed to load universities');
