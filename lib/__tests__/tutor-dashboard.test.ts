@@ -9,6 +9,42 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
+// Mock types for test data
+interface MockTutorRequest {
+  id: string;
+  studentName?: string | null;
+  courseNeeded?: string | null | undefined;
+  message?: string | null;
+  status?: string;
+  createdAt?: Date;
+}
+
+interface MockApplication {
+  id: string;
+  status: string;
+  rejectionReason?: string | null;
+}
+
+interface MockSpecialty {
+  id: string;
+  courseId?: string;
+  course: { code: string; title?: string };
+}
+
+interface MockTutorProfile {
+  id?: string;
+  userId?: string;
+  isVerified?: boolean;
+  isActive?: boolean;
+  specialties: MockSpecialty[];
+}
+
+interface MockClerkUser {
+  firstName: string | null;
+  fullName: string | null;
+  emailAddresses?: Array<{ emailAddress: string }>;
+}
+
 describe('Tutor dashboard — auth guards', () => {
   it('requires TUTOR role for tutor pages', async () => {
     // Override to return a STUDENT — should be rejected
@@ -54,7 +90,7 @@ describe('Tutor dashboard — auth guards', () => {
 
 describe('Tutor dashboard — stats calculation', () => {
   it('calculates pending requests count', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', status: 'PENDING' },
       { id: '2', status: 'PENDING' },
       { id: '3', status: 'ACCEPTED' },
@@ -62,12 +98,12 @@ describe('Tutor dashboard — stats calculation', () => {
       { id: '5', status: 'COMPLETED' },
     ];
 
-    const pendingCount = requests.filter((r: any) => r.status === 'PENDING').length;
+    const pendingCount = requests.filter((r) => r.status === 'PENDING').length;
     expect(pendingCount).toBe(2);
   });
 
   it('calculates accepted requests count', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', status: 'PENDING' },
       { id: '2', status: 'ACCEPTED' },
       { id: '3', status: 'ACCEPTED' },
@@ -75,34 +111,34 @@ describe('Tutor dashboard — stats calculation', () => {
       { id: '5', status: 'REJECTED' },
     ];
 
-    const acceptedCount = requests.filter((r: any) => r.status === 'ACCEPTED').length;
+    const acceptedCount = requests.filter((r) => r.status === 'ACCEPTED').length;
     expect(acceptedCount).toBe(3);
   });
 
   it('calculates rejected requests count', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', status: 'PENDING' },
       { id: '2', status: 'REJECTED' },
       { id: '3', status: 'REJECTED' },
     ];
 
-    const rejectedCount = requests.filter((r: any) => r.status === 'REJECTED').length;
+    const rejectedCount = requests.filter((r) => r.status === 'REJECTED').length;
     expect(rejectedCount).toBe(2);
   });
 
   it('calculates completed requests count', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', status: 'COMPLETED' },
       { id: '2', status: 'COMPLETED' },
       { id: '3', status: 'PENDING' },
     ];
 
-    const completedCount = requests.filter((r: any) => r.status === 'COMPLETED').length;
+    const completedCount = requests.filter((r) => r.status === 'COMPLETED').length;
     expect(completedCount).toBe(2);
   });
 
   it('calculates total requests', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', status: 'PENDING' },
       { id: '2', status: 'ACCEPTED' },
       { id: '3', status: 'REJECTED' },
@@ -113,12 +149,12 @@ describe('Tutor dashboard — stats calculation', () => {
   });
 
   it('handles empty requests array', () => {
-    const requests: any[] = [];
+    const requests: MockTutorRequest[] = [];
 
-    const pendingCount = requests.filter((r: any) => r.status === 'PENDING').length;
-    const acceptedCount = requests.filter((r: any) => r.status === 'ACCEPTED').length;
-    const rejectedCount = requests.filter((r: any) => r.status === 'REJECTED').length;
-    const completedCount = requests.filter((r: any) => r.status === 'COMPLETED').length;
+    const pendingCount = requests.filter((r) => r.status === 'PENDING').length;
+    const acceptedCount = requests.filter((r) => r.status === 'ACCEPTED').length;
+    const rejectedCount = requests.filter((r) => r.status === 'REJECTED').length;
+    const completedCount = requests.filter((r) => r.status === 'COMPLETED').length;
 
     expect(pendingCount).toBe(0);
     expect(acceptedCount).toBe(0);
@@ -130,7 +166,7 @@ describe('Tutor dashboard — stats calculation', () => {
 
 describe('Tutor dashboard — request filtering', () => {
   it('filters requests by student name', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', studentName: 'John Doe', courseNeeded: 'MATH101', message: 'Need help' },
       { id: '2', studentName: 'Jane Smith', courseNeeded: 'CS101', message: 'Quiz prep' },
       { id: '3', studentName: 'John Smith', courseNeeded: 'PHYS101', message: 'Exam help' },
@@ -139,19 +175,19 @@ describe('Tutor dashboard — request filtering', () => {
     const searchQuery = 'john';
     const q = searchQuery.toLowerCase();
     const filtered = requests.filter(
-      (r: any) =>
+      (r) =>
         r.studentName?.toLowerCase().includes(q) ||
         r.courseNeeded?.toLowerCase().includes(q) ||
         r.message?.toLowerCase().includes(q)
     );
 
     expect(filtered).toHaveLength(2);
-    expect(filtered.map((r: any) => r.id)).toContain('1');
-    expect(filtered.map((r: any) => r.id)).toContain('3');
+    expect(filtered.map((r) => r.id)).toContain('1');
+    expect(filtered.map((r) => r.id)).toContain('3');
   });
 
   it('filters requests by course name', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', studentName: 'John Doe', courseNeeded: 'MATH101', message: 'Need help' },
       { id: '2', studentName: 'Jane Smith', courseNeeded: 'CS101', message: 'Quiz prep' },
       { id: '3', studentName: 'Bob', courseNeeded: 'MATH201', message: 'Calculus' },
@@ -160,19 +196,19 @@ describe('Tutor dashboard — request filtering', () => {
     const searchQuery = 'math';
     const q = searchQuery.toLowerCase();
     const filtered = requests.filter(
-      (r: any) =>
+      (r) =>
         r.studentName?.toLowerCase().includes(q) ||
         r.courseNeeded?.toLowerCase().includes(q) ||
         r.message?.toLowerCase().includes(q)
     );
 
     expect(filtered).toHaveLength(2);
-    expect(filtered.map((r: any) => r.id)).toContain('1');
-    expect(filtered.map((r: any) => r.id)).toContain('3');
+    expect(filtered.map((r) => r.id)).toContain('1');
+    expect(filtered.map((r) => r.id)).toContain('3');
   });
 
   it('filters requests by message content', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', studentName: 'John Doe', courseNeeded: 'MATH101', message: 'Need help with calculus' },
       { id: '2', studentName: 'Jane Smith', courseNeeded: 'CS101', message: 'Quiz prep' },
       { id: '3', studentName: 'Bob', courseNeeded: 'PHYS101', message: 'Calculus exam help' },
@@ -181,7 +217,7 @@ describe('Tutor dashboard — request filtering', () => {
     const searchQuery = 'calculus';
     const q = searchQuery.toLowerCase();
     const filtered = requests.filter(
-      (r: any) =>
+      (r) =>
         r.studentName?.toLowerCase().includes(q) ||
         r.courseNeeded?.toLowerCase().includes(q) ||
         r.message?.toLowerCase().includes(q)
@@ -191,7 +227,7 @@ describe('Tutor dashboard — request filtering', () => {
   });
 
   it('returns no results when search matches nothing', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', studentName: 'John Doe', courseNeeded: 'MATH101', message: 'Need help' },
       { id: '2', studentName: 'Jane Smith', courseNeeded: 'CS101', message: 'Quiz prep' },
     ];
@@ -199,7 +235,7 @@ describe('Tutor dashboard — request filtering', () => {
     const searchQuery = 'xyz';
     const q = searchQuery.toLowerCase();
     const filtered = requests.filter(
-      (r: any) =>
+      (r) =>
         r.studentName?.toLowerCase().includes(q) ||
         r.courseNeeded?.toLowerCase().includes(q) ||
         r.message?.toLowerCase().includes(q)
@@ -209,7 +245,7 @@ describe('Tutor dashboard — request filtering', () => {
   });
 
   it('handles null/undefined fields in search filter', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', studentName: null, courseNeeded: undefined, message: 'Help' },
       { id: '2', studentName: 'John', courseNeeded: null, message: null },
     ];
@@ -217,7 +253,7 @@ describe('Tutor dashboard — request filtering', () => {
     const searchQuery = 'help';
     const q = searchQuery.toLowerCase();
     const filtered = requests.filter(
-      (r: any) =>
+      (r) =>
         r.studentName?.toLowerCase().includes(q) ||
         r.courseNeeded?.toLowerCase().includes(q) ||
         r.message?.toLowerCase().includes(q)
@@ -228,7 +264,7 @@ describe('Tutor dashboard — request filtering', () => {
   });
 
   it('filters by status', () => {
-    const requests = [
+    const requests: MockTutorRequest[] = [
       { id: '1', status: 'PENDING' },
       { id: '2', status: 'ACCEPTED' },
       { id: '3', status: 'PENDING' },
@@ -236,10 +272,10 @@ describe('Tutor dashboard — request filtering', () => {
     ];
 
     const statusFilter = 'PENDING';
-    const filtered = requests.filter((r: any) => r.status === statusFilter);
+    const filtered = requests.filter((r) => r.status === statusFilter);
 
     expect(filtered).toHaveLength(2);
-    expect(filtered.every((r: any) => r.status === 'PENDING')).toBe(true);
+    expect(filtered.every((r) => r.status === 'PENDING')).toBe(true);
   });
 });
 
@@ -314,12 +350,12 @@ describe('Tutor dashboard — tutor profile checks', () => {
 
 describe('Tutor dashboard — application status', () => {
   it('identifies pending application', () => {
-    const application = { id: 'app-1', status: 'PENDING' };
+    const application: MockApplication = { id: 'app-1', status: 'PENDING' };
     expect(application.status).toBe('PENDING');
   });
 
   it('identifies rejected application with reason', () => {
-    const application = {
+    const application: MockApplication = {
       id: 'app-1',
       status: 'REJECTED',
       rejectionReason: 'Insufficient experience',
@@ -329,19 +365,19 @@ describe('Tutor dashboard — application status', () => {
   });
 
   it('identifies approved application', () => {
-    const application = { id: 'app-1', status: 'APPROVED' };
+    const application: MockApplication = { id: 'app-1', status: 'APPROVED' };
     expect(application.status).toBe('APPROVED');
   });
 
   it('handles missing application', () => {
-    const application = null;
+    const application: MockApplication | null = null;
     expect(application).toBeNull();
   });
 });
 
 describe('Tutor dashboard — specialty count', () => {
   it('counts specialties from tutor profile', () => {
-    const tutorProfile = {
+    const tutorProfile: MockTutorProfile = {
       specialties: [
         { id: 's1', course: { code: 'MATH101' } },
         { id: 's2', course: { code: 'CS101' } },
@@ -354,13 +390,13 @@ describe('Tutor dashboard — specialty count', () => {
   });
 
   it('returns zero when no specialties', () => {
-    const tutorProfile = { specialties: [] };
+    const tutorProfile: MockTutorProfile = { specialties: [] };
     const specialtyCount = tutorProfile?.specialties?.length || 0;
     expect(specialtyCount).toBe(0);
   });
 
   it('returns zero when tutor profile is null', () => {
-    const tutorProfile = null;
+    const tutorProfile: MockTutorProfile | null = null;
     const specialtyCount = tutorProfile?.specialties?.length || 0;
     expect(specialtyCount).toBe(0);
   });
@@ -368,7 +404,7 @@ describe('Tutor dashboard — specialty count', () => {
 
 describe('Tutor dashboard — display name resolution', () => {
   it('resolves display name from firstName', () => {
-    const clerkUser = { firstName: 'John', fullName: 'John Doe' };
+    const clerkUser: MockClerkUser = { firstName: 'John', fullName: 'John Doe' };
     const displayName =
       clerkUser.firstName ||
       clerkUser.fullName ||
@@ -377,7 +413,7 @@ describe('Tutor dashboard — display name resolution', () => {
   });
 
   it('falls back to fullName when firstName is missing', () => {
-    const clerkUser = { firstName: null, fullName: 'John Doe' };
+    const clerkUser: MockClerkUser = { firstName: null, fullName: 'John Doe' };
     const displayName =
       clerkUser.firstName ||
       clerkUser.fullName ||
@@ -386,7 +422,7 @@ describe('Tutor dashboard — display name resolution', () => {
   });
 
   it('falls back to email when name is missing', () => {
-    const clerkUser = {
+    const clerkUser: MockClerkUser = {
       firstName: null,
       fullName: null,
       emailAddresses: [{ emailAddress: 'tutor@example.com' }],
@@ -400,7 +436,7 @@ describe('Tutor dashboard — display name resolution', () => {
   });
 
   it('falls back to Tutor when nothing is available', () => {
-    const clerkUser = { firstName: null, fullName: null };
+    const clerkUser: MockClerkUser = { firstName: null, fullName: null };
     const displayName =
       clerkUser.firstName ||
       clerkUser.fullName ||
@@ -453,7 +489,7 @@ describe('Tutor dashboard — status style helper', () => {
 
 describe('Tutor dashboard — tutor request data model', () => {
   it('serializes createdAt to ISO string', () => {
-    const request = {
+    const request: MockTutorRequest = {
       id: '1',
       studentName: 'John',
       status: 'PENDING',
@@ -469,7 +505,7 @@ describe('Tutor dashboard — tutor request data model', () => {
   });
 
   it('handles missing createdAt', () => {
-    const request = {
+    const request: MockTutorRequest = {
       id: '1',
       studentName: 'John',
       status: 'PENDING',

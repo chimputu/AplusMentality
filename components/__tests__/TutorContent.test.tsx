@@ -2,8 +2,58 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import TutorContent from '@/components/TutorContent';
 
+interface MockCourse {
+  code: string;
+  title: string;
+}
+
+interface MockSpecialty {
+  id: string;
+  courseId: string;
+  course: MockCourse;
+}
+
+interface MockTutorProfile {
+  id: string;
+  userId: string;
+  isVerified: boolean;
+  isActive: boolean;
+  specialties: MockSpecialty[];
+}
+
+interface MockRequest {
+  id: string;
+  studentName: string;
+  courseNeeded: string | null;
+  status: string;
+  createdAt: Date;
+}
+
+interface MockApplication {
+  id: string;
+  status: string;
+  rejectionReason?: string | null;
+}
+
+interface MockStats {
+  pendingRequests: number;
+  acceptedRequests: number;
+  totalRequests: number;
+  specialtyCount: number;
+  isVerified: boolean;
+  isActive: boolean;
+  applicationStatus: string | null;
+}
+
 describe('TutorContent component', () => {
-  const baseProps = {
+  const baseProps: {
+    displayName: string;
+    tutorProfile: MockTutorProfile;
+    requests: MockRequest[];
+    application: MockApplication | null;
+    stats: MockStats;
+    institutionName: string | null;
+  } = {
     displayName: 'John Doe',
     tutorProfile: {
       id: 'tutor-1',
@@ -272,7 +322,7 @@ describe('TutorContent component', () => {
   });
 
   it('renders general tutoring when courseNeeded is missing', () => {
-    const propsWithMissingCourse = {
+    const propsWithMissingCourse: typeof baseProps = {
       ...baseProps,
       requests: [
         {
