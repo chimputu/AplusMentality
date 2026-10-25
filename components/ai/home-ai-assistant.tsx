@@ -209,7 +209,7 @@ export function HomeAIAssistant() {
       {/* Floating button — blue-500 message icon */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-500 text-white shadow-lg flex items-center justify-center hover:bg-blue-600 transition active:scale-95"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-500 text-foreground shadow-lg flex items-center justify-center hover:bg-blue-600 transition active:scale-95"
         aria-label="Open AI assistant"
         title="A+ AI Assistant"
       >
@@ -229,9 +229,9 @@ export function HomeAIAssistant() {
             onClick={() => setOpen(false)}
           />
 
-          <div className="fixed z-50 flex flex-col bottom-0 right-0 left-0 h-[70dvh] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700">
+          <div className="fixed z-50 flex flex-col bottom-0 right-0 left-0 h-[70dvh] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-card shadow-2xl border border-border">
             {/* Header — blue-500 */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-blue-500 text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
+            <div className="p-4 border-b border-border bg-blue-500 text-foreground rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="font-semibold flex items-center gap-2">
                   <MessageCircle className="w-4 h-4" />
@@ -245,7 +245,7 @@ export function HomeAIAssistant() {
                 <button
                   onClick={handleReset}
                   disabled={loading}
-                  className="p-1 rounded-full hover:bg-white/20 transition disabled:opacity-50"
+                  className="p-1 rounded-full hover:bg-card/20 transition disabled:opacity-50"
                   aria-label="Start over"
                   title="Start over"
                 >
@@ -253,7 +253,7 @@ export function HomeAIAssistant() {
                 </button>
                 <button
                   onClick={() => setOpen(false)}
-                  className="p-1 rounded-full hover:bg-white/20 transition"
+                  className="p-1 rounded-full hover:bg-card/20 transition"
                   aria-label="Close chat"
                 >
                   <X className="w-5 h-5" />
@@ -271,10 +271,10 @@ export function HomeAIAssistant() {
                   <div
                     className={`max-w-[85%] md:max-w-[80%] rounded-lg px-3 py-2 text-sm break-words ${
                       m.role === 'user'
-                        ? 'bg-blue-500 text-white'
+                        ? 'bg-blue-500 text-foreground'
                         : m.isError
                           ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                          : 'bg-muted text-foreground'
                     }`}
                   >
                     {m.role === 'assistant' ? (
@@ -318,9 +318,9 @@ export function HomeAIAssistant() {
 
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
-                    <span className="text-xs text-gray-400">Thinking...</span>
+                  <div className="bg-muted rounded-lg px-3 py-2 flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Thinking...</span>
                   </div>
                 </div>
               )}
@@ -344,7 +344,7 @@ export function HomeAIAssistant() {
             </div>
 
             {/* Input area */}
-            <div className="p-3 border-t border-gray-200 dark:border-gray-700 flex gap-2 flex-shrink-0 pb-safe">
+            <div className="p-3 border-t border-border flex gap-2 flex-shrink-0 pb-safe">
               <input
                 ref={inputRef}
                 value={input}
@@ -352,12 +352,12 @@ export function HomeAIAssistant() {
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 placeholder="Ask about features…"
                 disabled={loading}
-                className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               />
               <button
                 onClick={() => handleSend()}
                 disabled={loading || !input.trim()}
-                className="bg-blue-500 text-white px-3 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 active:scale-95 shadow-sm"
+                className="bg-blue-500 text-foreground px-3 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 active:scale-95 shadow-sm"
                 aria-label="Send message"
               >
                 <Send className="w-4 h-4" />
@@ -372,7 +372,7 @@ export function HomeAIAssistant() {
         <div className="fixed bottom-24 right-6 z-40 md:bottom-[520px] md:right-6">
           <a
             href="mailto:kafiswegchimputu@gmail.com"
-            className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+            className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg shadow-lg border border-border text-xs text-muted-foreground dark:text-foreground hover:bg-muted  transition"
           >
             <Mail className="w-3.5 h-3.5 text-blue-500" />
             Need more help? Email us

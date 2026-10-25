@@ -520,28 +520,28 @@ export default function DashboardLayout({
   const totalResults = searchResults.length;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Top Navbar */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-4 lg:px-6">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-16 flex items-center justify-between px-4 lg:px-6">
         {/* Left Section - Logo */}
         <div className="flex items-center space-x-4">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            className="lg:hidden p-2 rounded-full hover:bg-muted transition"
             aria-label="Toggle mobile menu"
           >
-            <Menu className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <Menu className="w-5 h-5 text-muted-foreground" />
           </button>
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-500 dark:bg-gray-700 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-sm">A+</span>
+            <div className="w-8 h-8 bg-blue-500 dark:bg-muted rounded-xl flex items-center justify-center">
+              <span className="text-foreground font-bold text-sm">A+</span>
             </div>
-            <span className="text-xl font-bold text-gray-800 dark:text-gray-100 hidden sm:block">
+            <span className="text-xl font-bold text-foreground hidden sm:block">
               Mentality
             </span>
           </Link>
-          <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 hidden lg:block" />
-          <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100 hidden lg:block">
+          <div className="h-6 w-px border-border bg-border hidden lg:block" />
+          <h1 className="text-lg font-semibold text-foreground hidden lg:block">
             {navItems.find(item => item.href === pathname || (item.href.includes('#') && pathname === item.href.split('#')[0]))?.label || 'Dashboard'}
           </h1>
         </div>
@@ -561,13 +561,13 @@ export default function DashboardLayout({
                   }
                 }}
                 onFocus={() => setIsSearchFocused(true)}
-                className="w-full pl-4 pr-12 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-l-full rounded-r-none focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 text-sm transition text-gray-800 dark:text-gray-100"
+                className="w-full pl-4 pr-12 py-2 bg-muted border border-border rounded-l-full rounded-r-none focus:outline-none focus:border-blue-500 focus:bg-card text-sm transition text-foreground"
               />
               {localSearch && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground dark:hover:text-foreground transition"
                   aria-label="Clear search"
                 >
                   <XCircle className="w-5 h-5" />
@@ -576,34 +576,34 @@ export default function DashboardLayout({
             </div>
             <button
               type="submit"
-              className="px-6 py-2 bg-gray-100 dark:bg-gray-700 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-full hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-center"
+              className="px-6 py-2 bg-muted border border-l-0 border-border rounded-r-full hover:bg-accent transition flex items-center justify-center"
               aria-label="Search"
             >
-              <Search className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <Search className="w-5 h-5 text-muted-foreground" />
             </button>
           </form>
 
           {/* Search Results Dropdown */}
           {isSearchFocused && localSearch.length >= 2 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl max-h-[70vh] overflow-y-auto z-50">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-2xl max-h-[70vh] overflow-y-auto z-50">
               {totalResults === 0 ? (
                 <div className="p-6 text-center">
                   <div className="text-4xl mb-2">🔍</div>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">No results found</p>
+                  <p className="text-muted-foreground text-sm font-medium">No results found</p>
                 </div>
               ) : (
                 <div>
                   {/* ANNOUNCEMENTS */}
                   {announcementResults.length > 0 && (
                     <div className="p-3">
-                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
                         Announcements ({announcementResults.length})
                       </div>
                       {announcementResults.slice(0, 5).map((item: any) => (
                         <Link
                           key={item.id}
                           href={item.href || `/${role.toLowerCase()}/announcements`}
-                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-card-hover rounded-lg transition"
                           onClick={() => {
                             setIsSearchFocused(false);
                             setLocalSearch('');
@@ -616,10 +616,10 @@ export default function DashboardLayout({
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                            <div className="text-sm font-medium text-foreground truncate">
                               {item.title}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                            <div className="text-xs text-muted-foreground truncate">{item.content}</div>
                           </div>
                         </Link>
                       ))}
@@ -628,15 +628,15 @@ export default function DashboardLayout({
 
                   {/* VIDEOS */}
                   {videoResults.length > 0 && (
-                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
-                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                    <div className="p-3 border-t border-border">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
                         Videos ({videoResults.length})
                       </div>
                       {videoResults.slice(0, 5).map((item: any) => (
                         <Link
                           key={item.id}
                           href={item.href || `/${role.toLowerCase()}/videos`}
-                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-card-hover rounded-lg transition"
                           onClick={() => {
                             setIsSearchFocused(false);
                             setLocalSearch('');
@@ -649,10 +649,10 @@ export default function DashboardLayout({
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                            <div className="text-sm font-medium text-foreground truncate">
                               {item.title}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                            <div className="text-xs text-muted-foreground truncate">{item.content}</div>
                           </div>
                         </Link>
                       ))}
@@ -661,15 +661,15 @@ export default function DashboardLayout({
 
                   {/* PAST PAPERS */}
                   {pastPaperResults.length > 0 && (
-                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
-                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                    <div className="p-3 border-t border-border">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
                         Past Papers ({pastPaperResults.length})
                       </div>
                       {pastPaperResults.slice(0, 5).map((item: any) => (
                         <Link
                           key={item.id}
                           href={item.href}
-                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-card-hover rounded-lg transition"
                           onClick={() => {
                             setIsSearchFocused(false);
                             setLocalSearch('');
@@ -682,10 +682,10 @@ export default function DashboardLayout({
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                            <div className="text-sm font-medium text-foreground truncate">
                               {item.title}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                            <div className="text-xs text-muted-foreground truncate">{item.content}</div>
                           </div>
                         </Link>
                       ))}
@@ -694,15 +694,15 @@ export default function DashboardLayout({
 
                   {/* COURSES */}
                   {courseResults.length > 0 && (
-                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
-                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                    <div className="p-3 border-t border-border">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
                         Courses ({courseResults.length})
                       </div>
                       {courseResults.slice(0, 5).map((item: any) => (
                         <Link
                           key={item.id}
                           href={item.href}
-                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-card-hover rounded-lg transition"
                           onClick={() => {
                             setIsSearchFocused(false);
                             setLocalSearch('');
@@ -715,10 +715,10 @@ export default function DashboardLayout({
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                            <div className="text-sm font-medium text-foreground truncate">
                               {item.title}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                            <div className="text-xs text-muted-foreground truncate">{item.content}</div>
                           </div>
                         </Link>
                       ))}
@@ -727,15 +727,15 @@ export default function DashboardLayout({
 
                   {/* LECTURE SLIDES */}
                   {lectureSlideResults.length > 0 && (
-                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
-                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                    <div className="p-3 border-t border-border">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
                         Lecture Slides ({lectureSlideResults.length})
                       </div>
                       {lectureSlideResults.slice(0, 5).map((item: any) => (
                         <Link
                           key={item.id}
                           href={item.href}
-                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-card-hover rounded-lg transition"
                           onClick={() => {
                             setIsSearchFocused(false);
                             setLocalSearch('');
@@ -748,10 +748,10 @@ export default function DashboardLayout({
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                            <div className="text-sm font-medium text-foreground truncate">
                               {item.title}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                            <div className="text-xs text-muted-foreground truncate">{item.content}</div>
                           </div>
                         </Link>
                       ))}
@@ -760,15 +760,15 @@ export default function DashboardLayout({
 
                   {/* QUIZZES */}
                   {quizResults.length > 0 && (
-                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
-                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                    <div className="p-3 border-t border-border">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
                         Quizzes ({quizResults.length})
                       </div>
                       {quizResults.slice(0, 5).map((item: any) => (
                         <Link
                           key={item.id}
                           href={item.href}
-                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-card-hover rounded-lg transition"
                           onClick={() => {
                             setIsSearchFocused(false);
                             setLocalSearch('');
@@ -781,10 +781,10 @@ export default function DashboardLayout({
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                            <div className="text-sm font-medium text-foreground truncate">
                               {item.title}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                            <div className="text-xs text-muted-foreground truncate">{item.content}</div>
                           </div>
                         </Link>
                       ))}
@@ -793,15 +793,15 @@ export default function DashboardLayout({
 
                   {/* TESTS */}
                   {testResults.length > 0 && (
-                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
-                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                    <div className="p-3 border-t border-border">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
                         Tests ({testResults.length})
                       </div>
                       {testResults.slice(0, 5).map((item: any) => (
                         <Link
                           key={item.id}
                           href={item.href}
-                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-card-hover rounded-lg transition"
                           onClick={() => {
                             setIsSearchFocused(false);
                             setLocalSearch('');
@@ -814,10 +814,10 @@ export default function DashboardLayout({
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                            <div className="text-sm font-medium text-foreground truncate">
                               {item.title}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                            <div className="text-xs text-muted-foreground truncate">{item.content}</div>
                           </div>
                         </Link>
                       ))}
@@ -826,15 +826,15 @@ export default function DashboardLayout({
 
                   {/* ASSIGNMENTS */}
                   {assignmentResults.length > 0 && (
-                    <div className="p-3 border-t border-gray-100 dark:border-gray-700">
-                      <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1.5">
+                    <div className="p-3 border-t border-border">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
                         Assignments ({assignmentResults.length})
                       </div>
                       {assignmentResults.slice(0, 5).map((item: any) => (
                         <Link
                           key={item.id}
                           href={item.href}
-                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition"
+                          className="flex items-start space-x-3 px-3 py-2.5 hover:bg-card-hover rounded-lg transition"
                           onClick={() => {
                             setIsSearchFocused(false);
                             setLocalSearch('');
@@ -847,10 +847,10 @@ export default function DashboardLayout({
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                            <div className="text-sm font-medium text-foreground truncate">
                               {item.title}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.content}</div>
+                            <div className="text-xs text-muted-foreground truncate">{item.content}</div>
                           </div>
                         </Link>
                       ))}
@@ -858,7 +858,7 @@ export default function DashboardLayout({
                   )}
 
                   {/* VIEW ALL */}
-                  <div className="p-3 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 rounded-b-xl">
+                  <div className="p-3 border-t border-border bg-muted rounded-b-xl">
                     <Link
                       href={`/${role.toLowerCase()}?search=${encodeURIComponent(localSearch)}`}
                       className="flex items-center justify-center space-x-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 py-1.5 transition"
@@ -878,10 +878,18 @@ export default function DashboardLayout({
         <div className="flex items-center space-x-2">
           <ThemeToggle />
           <NotificationBell role={role} />
-          <span className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
+          <span className="text-sm text-muted-foreground hidden sm:block">
             {role === 'ADMIN' ? 'Admin' : 'Student'}
           </span>
-          <UserButton />
+          <UserButton
+            appearance={{
+              variables: {
+                colorPrimary: 'var(--primary)',
+                colorBackground: 'var(--card)',
+                colorText: 'var(--foreground)',
+              },
+            }}
+          />
         </div>
       </header>
 
@@ -889,13 +897,13 @@ export default function DashboardLayout({
       {isSearchFocused && (
         <div className="fixed inset-0 z-[60] md:hidden">
           <div
-            className="absolute inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/30 dark:bg-black/60"
             onClick={() => {
               setIsSearchFocused(false);
               setLocalSearch('');
             }}
           />
-          <div className="relative bg-white dark:bg-gray-800 pt-4 px-4 pb-4">
+          <div className="relative bg-card pt-4 px-4 pb-4">
             <form
               onSubmit={handleSearchSubmit}
               className="flex items-center gap-2 mb-4"
@@ -912,14 +920,14 @@ export default function DashboardLayout({
                     }
                   }}
                   autoFocus
-                  className="w-full pl-10 pr-10 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 text-base transition text-gray-800 dark:text-gray-100"
+                  className="w-full pl-10 pr-10 py-3 bg-muted border border-border rounded-xl focus:outline-none focus:border-blue-500 focus:bg-card text-base transition text-foreground"
                 />
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 {localSearch && (
                   <button
                     type="button"
                     onClick={handleClearSearch}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     aria-label="Clear search"
                   >
                     <XCircle className="w-5 h-5" />
@@ -932,7 +940,7 @@ export default function DashboardLayout({
                   setIsSearchFocused(false);
                   setLocalSearch('');
                 }}
-                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="p-2 text-muted-foreground text-muted-foreground hover:text-foreground"
                 aria-label="Close search"
               >
                 <X className="w-6 h-6" />
@@ -945,7 +953,7 @@ export default function DashboardLayout({
                 {totalResults === 0 ? (
                   <div className="text-center py-8">
                     <div className="text-4xl mb-2">🔍</div>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       No results found
                     </p>
                   </div>
@@ -955,7 +963,7 @@ export default function DashboardLayout({
                       <Link
                         key={item.id}
                         href={item.href || `/${role.toLowerCase()}/announcements`}
-                        className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+                        className="flex items-center gap-3 p-3 bg-muted rounded-xl"
                         onClick={() => {
                           setIsSearchFocused(false);
                           setLocalSearch('');
@@ -963,10 +971,10 @@ export default function DashboardLayout({
                       >
                         <Megaphone className="w-5 h-5 text-blue-500 flex-shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                          <p className="text-sm font-medium text-foreground truncate">
                             {item.title}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          <p className="text-xs text-muted-foreground truncate">
                             {item.content}
                           </p>
                         </div>
@@ -976,7 +984,7 @@ export default function DashboardLayout({
                       <Link
                         key={item.id}
                         href={item.href || `/${role.toLowerCase()}/videos`}
-                        className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+                        className="flex items-center gap-3 p-3 bg-muted rounded-xl"
                         onClick={() => {
                           setIsSearchFocused(false);
                           setLocalSearch('');
@@ -984,7 +992,7 @@ export default function DashboardLayout({
                       >
                         <Video className="w-5 h-5 text-red-500 flex-shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                          <p className="text-sm font-medium text-foreground truncate">
                             {item.title}
                           </p>
                         </div>
@@ -994,7 +1002,7 @@ export default function DashboardLayout({
                       <Link
                         key={item.id}
                         href={item.href || `/${role.toLowerCase()}/courses`}
-                        className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+                        className="flex items-center gap-3 p-3 bg-muted rounded-xl"
                         onClick={() => {
                           setIsSearchFocused(false);
                           setLocalSearch('');
@@ -1002,7 +1010,7 @@ export default function DashboardLayout({
                       >
                         <BookOpen className="w-5 h-5 text-green-500 flex-shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                          <p className="text-sm font-medium text-foreground truncate">
                             {item.title || item.code}
                           </p>
                         </div>
@@ -1019,7 +1027,7 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
+          fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] bg-card border-r border-border
           transition-all duration-300 ease-in-out
           ${isCollapsed ? 'w-16' : 'w-64'}
           lg:translate-x-0
@@ -1029,10 +1037,10 @@ export default function DashboardLayout({
       >
         <div className="flex flex-col h-full">
           {/* Role Badge */}
-          <div className={`px-4 py-4 border-b border-gray-100 dark:border-gray-700 ${isCollapsed ? 'flex justify-center' : ''}`}>
+          <div className={`px-4 py-4 border-b border-border ${isCollapsed ? 'flex justify-center' : ''}`}>
             <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
-              {!isCollapsed && <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Role</span>}
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 ${isCollapsed ? 'text-[10px] px-2' : ''}`}>
+              {!isCollapsed && <span className="text-xs font-medium text-muted-foreground">Role</span>}
+              <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-muted text-foreground ${isCollapsed ? 'text-[10px] px-2' : ''}`}>
                 {role}
               </span>
             </div>
@@ -1046,7 +1054,7 @@ export default function DashboardLayout({
             {Object.entries(groupedNavItems).map(([section, items]) => (
               <div key={section} className="mb-4">
                 {!isCollapsed && (
-                  <div className="px-3 py-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                  <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     {section}
                   </div>
                 )}
@@ -1065,7 +1073,7 @@ export default function DashboardLayout({
                           ${isCollapsed ? 'justify-center px-2' : ''}
                           ${isActive 
                             ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-medium' 
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:text-foreground'
                           }
                           group relative
                         `}
@@ -1073,12 +1081,12 @@ export default function DashboardLayout({
                       >
                         <Icon className={`
                           transition-all duration-200 flex-shrink-0
-                          ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'}
+                          ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-muted-foreground group-hover:text-foreground dark:group-hover:text-foreground'}
                           ${isCollapsed ? 'w-6 h-6' : 'w-5 h-5'}
                         `} />
                         {!isCollapsed && <span className="text-sm">{item.label}</span>}
                         {isCollapsed && (
-                          <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-gray-800 dark:bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                          <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-foreground text-background text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
                             {item.label}
                           </div>
                         )}
@@ -1091,31 +1099,39 @@ export default function DashboardLayout({
           </nav>
 
           {/* Bottom Section */}
-          <div className="px-2 py-3 border-t border-gray-100 dark:border-gray-700">
+          <div className="px-2 py-3 border-t border-border">
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
               className={`
-                flex items-center w-full px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition
+                flex items-center w-full px-3 py-2 rounded-lg hover:bg-muted transition
                 ${isCollapsed ? 'justify-center' : 'justify-between'}
               `}
             >
-              {!isCollapsed && <span className="text-xs text-gray-500 dark:text-gray-400">Collapse</span>}
+              {!isCollapsed && <span className="text-xs text-muted-foreground">Collapse</span>}
               {isCollapsed ? (
-                <ChevronRight className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
               ) : (
-                <ChevronLeft className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                <ChevronLeft className="w-5 h-5 text-muted-foreground" />
               )}
             </button>
           </div>
 
           {/* User Info */}
-          <div className={`px-2 py-4 border-t border-gray-100 dark:border-gray-700 ${isCollapsed ? 'flex justify-center' : ''}`}>
+          <div className={`px-2 py-4 border-t border-border ${isCollapsed ? 'flex justify-center' : ''}`}>
             <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'}`}>
-              <UserButton />
+              <UserButton
+                appearance={{
+                  variables: {
+                    colorPrimary: 'var(--primary)',
+                    colorBackground: 'var(--card)',
+                    colorText: 'var(--foreground)',
+                  },
+                }}
+              />
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{userName}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{role}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{userName}</p>
+                  <p className="text-xs text-muted-foreground truncate">{role}</p>
                 </div>
               )}
             </div>
@@ -1133,7 +1149,7 @@ export default function DashboardLayout({
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/30 dark:bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/20 dark:bg-black/60 z-30 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

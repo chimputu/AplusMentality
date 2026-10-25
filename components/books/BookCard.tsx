@@ -43,9 +43,9 @@ export default function BookCard({ book, onSave, isSaved }: BookCardProps) {
   };
 
   return (
-    <div className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
+    <div className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
       {/* Cover */}
-      <Link href={detailUrl} className="block relative aspect-[3/4] bg-gray-100 dark:bg-gray-900 overflow-hidden">
+      <Link href={detailUrl} className="block relative aspect-[3/4] bg-muted dark:bg-background overflow-hidden">
         {book.coverUrl && !imageError ? (
           <Image
             src={book.coverUrl}
@@ -58,13 +58,13 @@ export default function BookCard({ book, onSave, isSaved }: BookCardProps) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <BookOpen className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+            <BookOpen className="w-12 h-12 text-foreground dark:text-muted-foreground" />
           </div>
         )}
 
         {/* Free download badge */}
         {hasFreeDownload && (
-          <div className="absolute top-2 left-2 bg-green-500 text-white text-[10px] font-semibold px-2 py-1 rounded-full flex items-center gap-1">
+          <div className="absolute top-2 left-2 bg-green-500 text-foreground text-[10px] font-semibold px-2 py-1 rounded-full flex items-center gap-1">
             <Download className="w-3 h-3" />
             Free
           </div>
@@ -74,14 +74,14 @@ export default function BookCard({ book, onSave, isSaved }: BookCardProps) {
       {/* Info */}
       <div className="p-3 flex flex-col flex-1">
         <Link href={detailUrl} className="block flex-1">
-          <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+          <h3 className="font-semibold text-sm text-foreground line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
             {book.title}
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
+          <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
             {book.authors}
           </p>
           {book.publishYear && (
-            <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+            <p className="text-[10px] text-muted-foreground mt-0.5">
               {book.publishYear}
             </p>
           )}
@@ -102,7 +102,7 @@ export default function BookCard({ book, onSave, isSaved }: BookCardProps) {
               className={`p-1.5 rounded-lg transition ${
                 isSaved
                   ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  : 'bg-muted text-muted-foreground hover:bg-muted '
               } disabled:opacity-70`}
               aria-label={isSaved ? 'Saved' : 'Save to library'}
               title={isSaved ? 'In your library' : 'Save to library'}

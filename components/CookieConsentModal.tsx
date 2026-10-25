@@ -153,7 +153,7 @@ export default function CookieConsentModal() {
         aria-modal="true"
         aria-labelledby="cookie-consent-title"
       >
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-[80vh] overflow-y-auto">
+        <div className="bg-card rounded-2xl shadow-2xl border border-border max-h-[80vh] overflow-y-auto">
           {/* Header */}
           <div className="flex items-start justify-between p-6 pb-4">
             <div className="flex items-center gap-3">
@@ -163,11 +163,11 @@ export default function CookieConsentModal() {
               <div>
                 <h2
                   id="cookie-consent-title"
-                  className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+                  className="text-lg font-semibold text-foreground"
                 >
                   {showPreferences ? 'Cookie Preferences' : 'Manage Cookies'}
                 </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   {showPreferences
                     ? 'Choose which cookies to allow'
                     : 'We use cookies to improve your experience'}
@@ -182,7 +182,7 @@ export default function CookieConsentModal() {
                   handleRejectAll();
                 }
               }}
-              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
+              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted dark:hover:bg-card text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground transition"
               aria-label={showPreferences ? 'Close preferences' : 'Dismiss cookie notice'}
             >
               <X className="w-4 h-4" />
@@ -195,11 +195,11 @@ export default function CookieConsentModal() {
               {categories.map((cat) => (
                 <div
                   key={cat.id}
-                  className="flex items-start justify-between gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-800"
+                  className="flex items-start justify-between gap-4 p-4 rounded-xl bg-muted"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm text-gray-900 dark:text-gray-100">
+                      <span className="font-medium text-sm text-foreground">
                         {cat.name}
                       </span>
                       {cat.required && (
@@ -208,7 +208,7 @@ export default function CookieConsentModal() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {cat.description}
                     </p>
                   </div>
@@ -221,7 +221,7 @@ export default function CookieConsentModal() {
                       className="sr-only peer"
                       aria-label={`Toggle ${cat.name}`}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
+                    <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-border peer-checked:bg-blue-600" />
                   </label>
                 </div>
               ))}
@@ -229,19 +229,19 @@ export default function CookieConsentModal() {
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={handleRejectAll}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-foreground bg-muted dark:bg-card hover:bg-muted  rounded-xl transition"
                 >
                   Reject All
                 </button>
                 <button
                   onClick={handleAcceptAll}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-foreground bg-blue-600 hover:bg-blue-700 rounded-xl transition"
                 >
                   Accept All
                 </button>
                 <button
                   onClick={handleSavePreferences}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-xl transition flex items-center justify-center gap-1.5"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-foreground bg-green-600 hover:bg-green-700 rounded-xl transition flex items-center justify-center gap-1.5"
                 >
                   <Check className="w-4 h-4" />
                   Save
@@ -262,27 +262,27 @@ export default function CookieConsentModal() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleRejectAll}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-foreground bg-muted dark:bg-card hover:bg-muted  rounded-xl transition"
                 >
                   Reject All
                 </button>
                 <button
                   onClick={() => setShowPreferences(true)}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition flex items-center justify-center gap-1.5"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-foreground bg-muted dark:bg-card hover:bg-muted  rounded-xl transition flex items-center justify-center gap-1.5"
                 >
                   <Settings className="w-4 h-4" />
                   Manage
                 </button>
                 <button
                   onClick={handleAcceptAll}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition flex items-center justify-center gap-1.5"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-foreground bg-blue-600 hover:bg-blue-700 rounded-xl transition flex items-center justify-center gap-1.5"
                 >
                   <Check className="w-4 h-4" />
                   Accept All
                 </button>
               </div>
 
-              <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
+              <p className="text-xs text-muted-foreground text-center">
                 By accepting, you agree to our{' '}
                 <a
                   href="/privacy-policy"

@@ -163,14 +163,14 @@ export default function CreateCourseForm({
     <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
       {/* University */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           University *
         </label>
         <select
           value={formData.universityId}
           onChange={(e) => setFormData({ ...formData, universityId: e.target.value, programmeId: '', period: '' })}
           required
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         >
           <option value="">Select university</option>
           {universities.map((uni) => (
@@ -183,7 +183,7 @@ export default function CreateCourseForm({
 
       {/* Programme */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Programme *
         </label>
         <select
@@ -191,7 +191,7 @@ export default function CreateCourseForm({
           onChange={(e) => setFormData({ ...formData, programmeId: e.target.value })}
           required
           disabled={!formData.universityId}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
         >
           <option value="">Select programme</option>
           {programmes.map((prog) => (
@@ -201,7 +201,7 @@ export default function CreateCourseForm({
           ))}
         </select>
         {formData.universityId && programmes.length > 0 && (
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Showing programmes for {selectedUni?.name}
           </p>
         )}
@@ -209,14 +209,14 @@ export default function CreateCourseForm({
 
       {/* Year */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Year *
         </label>
         <select
           value={formData.year}
           onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
           required
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         >
           {[1, 2, 3, 4, 5, 6, 7].map((y) => (
             <option key={y} value={y}>
@@ -228,7 +228,7 @@ export default function CreateCourseForm({
 
       {/* Period */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Period *
         </label>
         <select
@@ -236,7 +236,7 @@ export default function CreateCourseForm({
           onChange={(e) => setFormData({ ...formData, period: e.target.value })}
           required
           disabled={!formData.universityId}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
         >
           <option value="">Select period</option>
           {getPeriodOptions().map((opt) => (
@@ -247,11 +247,11 @@ export default function CreateCourseForm({
         </select>
       </div>
 
-      <hr className="border-gray-200 dark:border-gray-700" />
+      <hr className="border-border" />
 
       {/* Course Code */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Course Code *
         </label>
         <input
@@ -261,12 +261,12 @@ export default function CreateCourseForm({
           onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
           required
           disabled={isEditing}
-          className={`w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
+          className={`w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
             isEditing ? 'opacity-60 cursor-not-allowed' : ''
           }`}
         />
         {isEditing && (
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Course code cannot be changed
           </p>
         )}
@@ -274,7 +274,7 @@ export default function CreateCourseForm({
 
       {/* Course Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Course Title *
         </label>
         <input
@@ -283,13 +283,13 @@ export default function CreateCourseForm({
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         />
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Description
         </label>
         <textarea
@@ -297,13 +297,13 @@ export default function CreateCourseForm({
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           rows={4}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
         />
       </div>
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Category
         </label>
         <input
@@ -311,19 +311,19 @@ export default function CreateCourseForm({
           placeholder="e.g., Computer Science, Mathematics"
           value={formData.category}
           onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         />
       </div>
 
       {/* Level */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Level
         </label>
         <select
           value={formData.level}
           onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         >
           <option value="Beginner">Beginner</option>
           <option value="Intermediate">Intermediate</option>
@@ -336,7 +336,7 @@ export default function CreateCourseForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2 font-medium"
+        className="w-full bg-blue-600 text-foreground px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2 font-medium"
       >
         {loading ? (
           <>

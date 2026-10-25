@@ -43,7 +43,7 @@ export default function TutorContent({
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-foreground">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Welcome back, {displayName}!</h1>
@@ -130,8 +130,8 @@ export default function TutorContent({
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+      <div className="bg-card rounded-xl border border-border p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">
           Quick Actions
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -175,9 +175,9 @@ export default function TutorContent({
       </div>
 
       {/* Recent Requests */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-semibold text-foreground">
             Recent Requests
           </h2>
           <Link
@@ -190,9 +190,9 @@ export default function TutorContent({
 
         {requests.length === 0 ? (
           <div className="text-center py-8">
-            <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No tutoring requests yet</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+            <MessageSquare className="w-12 h-12 text-foreground dark:text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground">No tutoring requests yet</p>
+            <p className="text-sm text-muted-foreground mt-1">
               Students will appear here when they request your help
             </p>
           </div>
@@ -201,17 +201,17 @@ export default function TutorContent({
             {requests.slice(0, 5).map((request: any) => (
               <div
                 key={request.id}
-                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg"
+                className="flex items-center justify-between p-4 bg-muted dark:bg-background rounded-lg"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                     <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                    <p className="font-medium text-foreground">
                       {request.studentName}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       {request.courseNeeded || 'General tutoring'}
                     </p>
                   </div>
@@ -220,7 +220,7 @@ export default function TutorContent({
                   <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(request.status)}`}>
                     {request.status}
                   </span>
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                  <span className="text-xs text-muted-foreground">
                     {new Date(request.createdAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -232,8 +232,8 @@ export default function TutorContent({
 
       {/* Specialties */}
       {tutorProfile?.specialties?.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Your Specialties
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -261,11 +261,11 @@ function StatCard({ icon, label, value, color, bgColor }: {
   bgColor: string;
 }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+    <div className="bg-card rounded-xl border border-border p-5">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{value}</p>
+          <p className="text-sm text-muted-foreground">{label}</p>
+          <p className="text-2xl font-bold text-foreground mt-1">{value}</p>
         </div>
         <div className={`w-10 h-10 ${bgColor} ${color} rounded-lg flex items-center justify-center`}>
           {icon}
@@ -284,14 +284,14 @@ function QuickActionCard({ icon, title, description, href }: {
   return (
     <Link
       href={href}
-      className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition group"
+      className="flex items-start gap-3 p-4 bg-muted dark:bg-background rounded-lg hover:bg-muted dark:hover:bg-card transition group"
     >
       <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition">
         {icon}
       </div>
       <div>
-        <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">{title}</p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>
+        <p className="font-medium text-foreground text-sm">{title}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
       </div>
     </Link>
   );
@@ -308,6 +308,6 @@ function getStatusStyle(status: string) {
     case 'COMPLETED':
       return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300';
     default:
-      return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
+      return 'bg-muted dark:bg-card text-foreground';
   }
 }

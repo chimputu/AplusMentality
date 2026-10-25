@@ -34,7 +34,7 @@ export default function PastPaperAdminActions({ paper }: PastPaperAdminActionsPr
         href={getInlineUrl(paper.fileUrl)}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 inline-flex items-center gap-1 text-sm"
+        className="text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground inline-flex items-center gap-1 text-sm"
         title="Open in new tab"
       >
         <ExternalLink className="w-4 h-4" />
@@ -44,7 +44,7 @@ export default function PastPaperAdminActions({ paper }: PastPaperAdminActionsPr
       <a
         href={paper.fileUrl}
         download
-        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 inline-flex items-center gap-1 text-sm"
+        className="text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground inline-flex items-center gap-1 text-sm"
         title="Download"
       >
         <Download className="w-4 h-4" />

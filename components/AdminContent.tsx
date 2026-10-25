@@ -101,68 +101,68 @@ export default function AdminContent({
       <BannerCarousel placement="DASHBOARD" institutionId={institutionId} />
 
       {/* Welcome Section */}
-      <div id="dashboard" className="bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-8 text-white shadow-lg scroll-mt-20">
+      <div id="dashboard" className="bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-8 text-foreground shadow-lg scroll-mt-20">
         <div className="flex items-center space-x-3 mb-2">
           <h1 className="text-2xl font-bold">Welcome back, {displayName}! </h1>
         </div>
-        <p className="text-gray-300 text-sm">
+        <p className="text-foreground text-sm">
           Manage announcements, upload videos, and keep your students engaged.
         </p>
         <div className="flex gap-4 mt-4 flex-wrap">
-          <div className="bg-white/10 rounded-lg px-4 py-2">
-            <span className="text-sm text-gray-300">Announcements</span>
-            <p className="text-xl font-bold text-white">{announcements.length}</p>
+          <div className="bg-card/10 rounded-lg px-4 py-2">
+            <span className="text-sm text-foreground">Announcements</span>
+            <p className="text-xl font-bold text-foreground">{announcements.length}</p>
           </div>
-          <div className="bg-white/10 rounded-lg px-4 py-2">
-            <span className="text-sm text-gray-300">Videos</span>
-            <p className="text-xl font-bold text-white">{videos.length}</p>
+          <div className="bg-card/10 rounded-lg px-4 py-2">
+            <span className="text-sm text-foreground">Videos</span>
+            <p className="text-xl font-bold text-foreground">{videos.length}</p>
           </div>
-          <div className="bg-white/10 rounded-lg px-4 py-2">
-            <span className="text-sm text-gray-300">Users</span>
-            <p className="text-xl font-bold text-white">{users.length}</p>
+          <div className="bg-card/10 rounded-lg px-4 py-2">
+            <span className="text-sm text-foreground">Users</span>
+            <p className="text-xl font-bold text-foreground">{users.length}</p>
           </div>
-          <div className="bg-white/10 rounded-lg px-4 py-2">
-            <span className="text-sm text-gray-300">Courses</span>
-            <p className="text-xl font-bold text-white">{courses.length}</p>
+          <div className="bg-card/10 rounded-lg px-4 py-2">
+            <span className="text-sm text-foreground">Courses</span>
+            <p className="text-xl font-bold text-foreground">{courses.length}</p>
           </div>
         </div>
       </div>
 
       {/* Quick Stats - Courses Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-4">
           <div className="flex items-center gap-3">
             <BookOpen className="w-5 h-5 text-blue-500" />
             <div>
-              <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{courses.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Courses</p>
+              <p className="text-2xl font-bold text-foreground">{courses.length}</p>
+              <p className="text-sm text-muted-foreground">Total Courses</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-4">
           <div className="flex items-center gap-3">
             <FileText className="w-5 h-5 text-green-500" />
             <div>
-              <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{totalModules}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Modules</p>
+              <p className="text-2xl font-bold text-foreground">{totalModules}</p>
+              <p className="text-sm text-muted-foreground">Modules</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-4">
           <div className="flex items-center gap-3">
             <Video className="w-5 h-5 text-red-500" />
             <div>
-              <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{totalLessons}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Lessons</p>
+              <p className="text-2xl font-bold text-foreground">{totalLessons}</p>
+              <p className="text-sm text-muted-foreground">Lessons</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-4">
           <div className="flex items-center gap-3">
             <GraduationCap className="w-5 h-5 text-purple-500" />
             <div>
-              <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{totalStudents}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Enrolled Students</p>
+              <p className="text-2xl font-bold text-foreground">{totalStudents}</p>
+              <p className="text-sm text-muted-foreground">Enrolled Students</p>
             </div>
           </div>
         </div>
@@ -172,49 +172,49 @@ export default function AdminContent({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Link
           href="/admin/submissions"
-          className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl p-4 text-center transition border border-gray-100 dark:border-gray-700"
+          className="bg-card hover:bg-muted  rounded-xl p-4 text-center transition border border-border"
         >
           <ListTodo className="w-6 h-6 text-red-500 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">View Submissions</span>
+          <span className="text-sm font-medium text-foreground">View Submissions</span>
         </Link>
         <Link
           href="/admin/courses"
-          className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl p-4 text-center transition border border-gray-100 dark:border-gray-700"
+          className="bg-card hover:bg-muted  rounded-xl p-4 text-center transition border border-border"
         >
           <BookOpen className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Manage Courses</span>
+          <span className="text-sm font-medium text-foreground">Manage Courses</span>
         </Link>
         <Link
           href="/admin/quizzes"
-          className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl p-4 text-center transition border border-gray-100 dark:border-gray-700"
+          className="bg-card hover:bg-muted  rounded-xl p-4 text-center transition border border-border"
         >
           <FileText className="w-6 h-6 text-green-500 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Manage Quizzes</span>
+          <span className="text-sm font-medium text-foreground">Manage Quizzes</span>
         </Link>
         <Link
           href="/admin/users"
-          className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl p-4 text-center transition border border-gray-100 dark:border-gray-700"
+          className="bg-card hover:bg-muted  rounded-xl p-4 text-center transition border border-border"
         >
           <Users className="w-6 h-6 text-purple-500 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Manage Users</span>
+          <span className="text-sm font-medium text-foreground">Manage Users</span>
         </Link>
         <Link
           href="/admin/settings"
-          className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl p-4 text-center transition border border-gray-100 dark:border-gray-700"
+          className="bg-card hover:bg-muted  rounded-xl p-4 text-center transition border border-border"
         >
           <Settings className="w-6 h-6 text-yellow-500 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Settings</span>
+          <span className="text-sm font-medium text-foreground">Settings</span>
         </Link>
       </div>
 
       {/* Announcements Section */}
-      <section id="announcements" className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 scroll-mt-20">
+      <section id="announcements" className="bg-card rounded-2xl shadow-sm border border-border p-6 scroll-mt-20">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
-            <Megaphone className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Announcements</h2>
+            <Megaphone className="w-5 h-5 text-foreground" />
+            <h2 className="text-xl font-semibold text-foreground">Announcements</h2>
           </div>
-          <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 px-3 py-1 rounded-full">
+          <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">
             {announcements.length} total
           </span>
         </div>
@@ -225,13 +225,13 @@ export default function AdminContent({
       </section>
 
       {/* Videos Section */}
-      <section id="videos" className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 scroll-mt-20">
+      <section id="videos" className="bg-card rounded-2xl shadow-sm border border-border p-6 scroll-mt-20">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
-            <Video className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Videos</h2>
+            <Video className="w-5 h-5 text-foreground" />
+            <h2 className="text-xl font-semibold text-foreground">Videos</h2>
           </div>
-          <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 px-3 py-1 rounded-full">
+          <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">
             {videos.length} total
           </span>
         </div>
@@ -242,13 +242,13 @@ export default function AdminContent({
       </section>
 
       {/* Users Section */}
-      <section id="users" className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 scroll-mt-20">
+      <section id="users" className="bg-card rounded-2xl shadow-sm border border-border p-6 scroll-mt-20">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
-            <Users className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Users</h2>
+            <Users className="w-5 h-5 text-foreground" />
+            <h2 className="text-xl font-semibold text-foreground">Users</h2>
           </div>
-          <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 px-3 py-1 rounded-full">
+          <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">
             {users.length} total
           </span>
         </div>

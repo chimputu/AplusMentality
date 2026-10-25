@@ -1,4 +1,5 @@
 import { requireAuth } from '@/lib/auth';
+import { getScopeContext, isResourceInScope } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -12,12 +13,16 @@ export default async function StudentTestResultsPage({ params }: PageProps) {
   const { userId } = await requireAuth(['STUDENT']);
   const { id } = await params;
 
+  // SECURITY: Resolve user's academic scope to prevent IDOR
+  const scope = await getScopeContext();
+
   // Fetch test and submission with error handling
   let testData: any = null;
   try {
     testData = await prisma.test.findUnique({
       where: { id },
       include: {
+        course: { select: { universityId: true } },
         creator: {
           select: { name: true },
         },
@@ -36,6 +41,11 @@ export default async function StudentTestResultsPage({ params }: PageProps) {
   }
 
   if (!testData || !testData.isPublished) {
+    notFound();
+  }
+
+  // SECURITY: Block if the test's course is not in the user's scope
+  if (!isResourceInScope(scope, testData.course?.universityId ?? null)) {
     notFound();
   }
 

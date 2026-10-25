@@ -281,7 +281,7 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
             className="w-full border rounded px-4 py-2"
             placeholder="https://docs.google.com/presentation/d/.../embed"
           />
-          <p className="text-xs text-gray-500 mt-1">From Google Slides: File → Publish to web → Embed → copy the URL</p>
+          <p className="text-xs text-muted-foreground mt-1">From Google Slides: File → Publish to web → Embed → copy the URL</p>
         </div>
       )}
 
@@ -332,7 +332,7 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
       </div>
 
       {/* Academic Scoping */}
-      <div className="border-t border-gray-200 pt-4">
+      <div className="border-t border-border pt-4">
         <h3 className="text-sm font-medium mb-3">Academic Scope *</h3>
 
         {/* University */}
@@ -415,7 +415,7 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
       </div>
 
       {/* Course Selection */}
-      <div className="border-t border-gray-200 pt-4">
+      <div className="border-t border-border pt-4">
         <h3 className="text-sm font-medium mb-3">Course *</h3>
 
         <div className="flex gap-4 mb-3">
@@ -461,7 +461,7 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
         ) : (
           <div className="space-y-3">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">
+              <label className="block text-xs text-muted-foreground mb-1">
                 Course Code
               </label>
               <input
@@ -474,7 +474,7 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">
+              <label className="block text-xs text-muted-foreground mb-1">
                 Course Title
               </label>
               <input
@@ -493,7 +493,7 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
       <button
         type="submit"
         disabled={loading}
-        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+        className="bg-blue-600 text-foreground px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
       >
         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
         {isEditing ? 'Update' : 'Create'}

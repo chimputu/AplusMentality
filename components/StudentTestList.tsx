@@ -25,10 +25,10 @@ interface StudentTestListProps {
 export default function StudentTestList({ tests }: StudentTestListProps) {
   if (tests.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-        <FileCheck className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">No tests available</h3>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Check back later for new tests.</p>
+      <div className="text-center py-12 bg-muted/50 rounded-xl">
+        <FileCheck className="w-16 h-16 text-foreground dark:text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-foreground">No tests available</h3>
+        <p className="text-muted-foreground text-sm mt-1">Check back later for new tests.</p>
       </div>
     );
   }
@@ -42,7 +42,7 @@ export default function StudentTestList({ tests }: StudentTestListProps) {
         return (
           <div
             key={test.id}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition"
+            className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition"
           >
             <div className="p-6">
               <div className="flex items-start justify-between">
@@ -52,7 +52,7 @@ export default function StudentTestList({ tests }: StudentTestListProps) {
                       Test
                     </span>
                     {test.maxScore && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-muted-foreground">
                         Max Score: {test.maxScore}
                       </span>
                     )}
@@ -63,11 +63,11 @@ export default function StudentTestList({ tests }: StudentTestListProps) {
                       </span>
                     )}
                   </div>
-                  <h3 className="font-semibold text-gray-800 dark:text-gray-100 mt-2">
+                  <h3 className="font-semibold text-foreground mt-2">
                     {test.title}
                   </h3>
                   {test.description && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                       {test.description}
                     </p>
                   )}
@@ -90,8 +90,8 @@ export default function StudentTestList({ tests }: StudentTestListProps) {
                 </div>
               )}
 
-              <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
                   <User className="w-3 h-3" />
                   {test.creator?.name || 'Unknown'}
                 </div>
@@ -106,7 +106,7 @@ export default function StudentTestList({ tests }: StudentTestListProps) {
                   ) : (
                     <Link
                       href={`/student/tests/${test.id}`}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm"
+                      className="bg-blue-600 text-foreground px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm"
                     >
                       Take Test
                     </Link>
@@ -115,7 +115,7 @@ export default function StudentTestList({ tests }: StudentTestListProps) {
                     href={test.formUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                    className="text-muted-foreground hover:text-muted-foreground dark:text-muted-foreground dark:hover:text-foreground"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>

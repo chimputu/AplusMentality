@@ -97,12 +97,12 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+    <div className="bg-card rounded-2xl p-6 shadow-sm border border-border flex items-center justify-between">
       <div>
-        <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{label}</p>
+        <p className="text-3xl font-bold text-foreground">{value}</p>
+        <p className="text-sm text-muted-foreground mt-1">{label}</p>
       </div>
-      <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">{icon}</div>
+      <div className="p-3 bg-muted rounded-xl">{icon}</div>
     </div>
   );
 }
@@ -195,7 +195,7 @@ export default function StudentContent({
       <BannerCarousel placement="DASHBOARD" institutionId={institutionId} />
 
       {/* Hero Banner */}
-      <div className="w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#1e293b] via-[#1a2235] to-[#0f172a] p-8 md:p-10 text-white shadow-lg">
+      <div className="w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#1e293b] via-[#1a2235] to-[#0f172a] p-8 md:p-10 text-foreground shadow-lg">
         <div className="flex items-start justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -209,42 +209,42 @@ export default function StudentContent({
             {(universityName || programmeName || year) && (
               <div className="mt-3 flex flex-wrap gap-3">
                 {universityName && (
-                  <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg">
+                  <div className="inline-flex items-center gap-2 bg-card/10 border border-white/10 px-3 py-1.5 rounded-lg">
                     <School className="w-4 h-4 text-blue-300" />
-                    <span className="text-sm text-gray-200">
+                    <span className="text-sm text-foreground">
                       {universityName}
                       {universityCode && (
-                        <span className="text-gray-400 ml-1">({universityCode})</span>
+                        <span className="text-muted-foreground ml-1">({universityCode})</span>
                       )}
                     </span>
                   </div>
                 )}
                 {programmeName && (
-                  <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg">
+                  <div className="inline-flex items-center gap-2 bg-card/10 border border-white/10 px-3 py-1.5 rounded-lg">
                     <GraduationCap className="w-4 h-4 text-green-300" />
-                    <span className="text-sm text-gray-200">{programmeName}</span>
+                    <span className="text-sm text-foreground">{programmeName}</span>
                   </div>
                 )}
                 {year && (
-                  <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg">
+                  <div className="inline-flex items-center gap-2 bg-card/10 border border-white/10 px-3 py-1.5 rounded-lg">
                     <BookOpen className="w-4 h-4 text-yellow-300" />
-                    <span className="text-sm text-gray-200">Year {year}</span>
+                    <span className="text-sm text-foreground">Year {year}</span>
                   </div>
                 )}
               </div>
             )}
-            <p className="text-gray-300 mt-3 text-sm md:text-base">
+            <p className="text-foreground mt-3 text-sm md:text-base">
               Stay updated with the latest announcements and videos from your mentors.
             </p>
-            <div className="inline-flex items-center gap-2 mt-5 bg-white/10 border border-white/10 px-4 py-2 rounded-full">
-              <Bell className="w-4 h-4 text-gray-300" />
-              <span className="text-sm text-gray-200">
+            <div className="inline-flex items-center gap-2 mt-5 bg-card/10 border border-white/10 px-4 py-2 rounded-full">
+              <Bell className="w-4 h-4 text-foreground" />
+              <span className="text-sm text-foreground">
                 {newThisWeek} new this week
               </span>
             </div>
           </div>
 
-          <div className="hidden sm:flex w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/10 border border-white/10 items-center justify-center flex-shrink-0">
+          <div className="hidden sm:flex w-16 h-16 md:w-20 md:h-20 rounded-full bg-card/10 border border-white/10 items-center justify-center flex-shrink-0">
             <span className="text-2xl md:text-3xl font-bold">{initial}</span>
           </div>
         </div>
@@ -255,17 +255,17 @@ export default function StudentContent({
         <StatCard
           value={filteredAnnouncements.length}
           label="Announcements"
-          icon={<Megaphone className="w-6 h-6 text-gray-600 dark:text-gray-300" />}
+          icon={<Megaphone className="w-6 h-6 text-muted-foreground dark:text-foreground" />}
         />
         <StatCard
           value={filteredVideos.length}
           label="Videos"
-          icon={<Video className="w-6 h-6 text-gray-600 dark:text-gray-300" />}
+          icon={<Video className="w-6 h-6 text-muted-foreground dark:text-foreground" />}
         />
         <StatCard
           value={newThisWeek}
           label="This Week"
-          icon={<Calendar className="w-6 h-6 text-gray-600 dark:text-gray-300" />}
+          icon={<Calendar className="w-6 h-6 text-muted-foreground dark:text-foreground" />}
         />
       </div>
 
@@ -275,17 +275,17 @@ export default function StudentContent({
           <Link
             key={action.title}
             href={action.href}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md hover:scale-[1.02] transition group"
+            className="bg-card rounded-2xl p-5 shadow-sm border border-border hover:shadow-md hover:scale-[1.02] transition group"
           >
             <div
               className={`w-12 h-12 ${action.bg} rounded-xl flex items-center justify-center mb-3`}
             >
               {action.icon}
             </div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+            <h3 className="font-semibold text-foreground text-sm">
               {action.title}
             </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               {action.subtitle}
             </p>
           </Link>
@@ -293,11 +293,11 @@ export default function StudentContent({
       </div>
 
       {/* Available Videos */}
-      <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 md:p-6">
+      <section className="bg-card rounded-2xl shadow-sm border border-border p-5 md:p-6">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <Video className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
+            <Video className="w-5 h-5 text-foreground" />
+            <h2 className="text-lg md:text-xl font-semibold text-foreground">
               Available Videos
             </h2>
           </div>
@@ -310,8 +310,8 @@ export default function StudentContent({
         </div>
 
         {filteredVideos.length === 0 ? (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-            <Video className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+          <div className="text-center py-12 text-muted-foreground">
+            <Video className="w-12 h-12 mx-auto mb-3 text-foreground dark:text-muted-foreground" />
             <p>
               {searchQuery
                 ? 'No videos match your search.'
@@ -327,7 +327,7 @@ export default function StudentContent({
               return (
                 <div
                   key={video.id}
-                  className="rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition"
+                  className="rounded-xl overflow-hidden border border-border bg-card shadow-sm hover:shadow-md transition"
                 >
                   <div className="relative w-full aspect-video bg-black">
                     {yt && ytId ? (
@@ -346,17 +346,17 @@ export default function StudentContent({
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 line-clamp-1">
+                    <h3 className="font-medium text-foreground line-clamp-1">
                       {video.title}
                     </h3>
                     {video.description && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">
+                      <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">
                         {video.description}
                       </p>
                     )}
-                    <div className="flex items-center gap-3 mt-3 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
                       {yt && (
-                        <span className="inline-flex items-center gap-1 bg-red-600 text-white px-2 py-1 rounded font-medium">
+                        <span className="inline-flex items-center gap-1 bg-red-600 text-foreground px-2 py-1 rounded font-medium">
                           <Film className="w-3 h-3" />
                           YouTube
                         </span>
@@ -376,11 +376,11 @@ export default function StudentContent({
       </section>
 
       {/* Latest Announcements */}
-      <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 md:p-6">
+      <section className="bg-card rounded-2xl shadow-sm border border-border p-5 md:p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Megaphone className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
+            <Megaphone className="w-5 h-5 text-foreground" />
+            <h2 className="text-lg md:text-xl font-semibold text-foreground">
               Latest Announcements
             </h2>
           </div>
@@ -393,8 +393,8 @@ export default function StudentContent({
         </div>
 
         {filteredAnnouncements.length === 0 ? (
-          <div className="text-center py-10 text-gray-500 dark:text-gray-400">
-            <Megaphone className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+          <div className="text-center py-10 text-muted-foreground">
+            <Megaphone className="w-12 h-12 mx-auto mb-3 text-foreground dark:text-muted-foreground" />
             <p>
               {searchQuery
                 ? 'No announcements match your search.'
@@ -406,14 +406,14 @@ export default function StudentContent({
             {filteredAnnouncements.slice(0, 5).map((a) => (
               <div
                 key={a.id}
-                className="border border-gray-100 dark:border-gray-700 rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group"
+                className="border border-border rounded-xl p-4 hover:bg-muted /50 transition group"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                    <h3 className="font-semibold text-foreground">
                       {a.title}
                     </h3>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <User className="w-3 h-3" />
                         {a.author.name || 'Unknown'}
@@ -423,11 +423,11 @@ export default function StudentContent({
                         {formatShortDate(a.createdAt)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 line-clamp-2">
+                    <p className="text-sm text-muted-foreground dark:text-foreground mt-2 line-clamp-2">
                       {a.content}
                     </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-blue-500 transition flex-shrink-0 mt-1" />
+                  <ChevronRight className="w-5 h-5 text-foreground dark:text-muted-foreground group-hover:text-blue-500 transition flex-shrink-0 mt-1" />
                 </div>
               </div>
             ))}

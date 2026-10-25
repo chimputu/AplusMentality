@@ -13,26 +13,26 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
   if (items.length === 0) return null;
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400 mb-4">
+    <nav aria-label="Breadcrumb" className="flex items-center space-x-1 text-sm text-muted-foreground mb-4">
       <Link
         href="/"
-        className="p-1 rounded hover:text-gray-700 dark:hover:text-gray-300 transition"
+        className="p-1 rounded hover:text-foreground dark:hover:text-foreground transition"
       >
         <Home className="w-4 h-4" />
       </Link>
 
       {items.map((item, index) => (
         <div key={index} className="flex items-center space-x-1">
-          <ChevronRight className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+          <ChevronRight className="w-3 h-3 text-muted-foreground" />
           {item.href ? (
             <Link
               href={item.href}
-              className="p-1 rounded hover:text-gray-700 dark:hover:text-gray-300 transition"
+              className="p-1 rounded hover:text-foreground dark:hover:text-foreground transition"
             >
               {item.label}
             </Link>
           ) : (
-            <span className="p-1 font-medium text-gray-700 dark:text-gray-300">
+            <span className="p-1 font-medium text-foreground">
               {item.label}
             </span>
           )}

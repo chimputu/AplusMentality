@@ -35,23 +35,23 @@ const platformLinks = [
 
 export default function AppFooter() {
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+    <footer className="bg-card border-t border-border dark:border-border">
       {/* Trust badges */}
       <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {trustBadges.map((badge) => (
             <div
               key={badge.label}
-              className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
+              className="flex items-center gap-3 p-4 rounded-xl bg-muted border border-border"
             >
               <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center text-green-600 dark:text-green-400 flex-shrink-0">
                 {badge.icon}
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                <p className="text-sm font-semibold text-foreground">
                   {badge.label}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   {badge.description}
                 </p>
               </div>
@@ -63,7 +63,7 @@ export default function AppFooter() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Platform */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
               Platform
             </h3>
             <ul className="space-y-2">
@@ -71,7 +71,7 @@ export default function AppFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                    className="text-sm text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition"
                   >
                     {link.label}
                   </Link>
@@ -82,7 +82,7 @@ export default function AppFooter() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
               Legal
             </h3>
             <ul className="space-y-2">
@@ -90,7 +90,7 @@ export default function AppFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                    className="text-sm text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition"
                   >
                     {link.label}
                   </Link>
@@ -101,19 +101,19 @@ export default function AppFooter() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
               Contact
             </h3>
             <ul className="space-y-3">
-              <li className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="w-4 h-4 flex-shrink-0" />
                 <span>support@aplusmentality.vercel.app</span>
               </li>
-              <li className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone className="w-4 h-4 flex-shrink-0" />
                 <span>+260 97 000 0000</span>
               </li>
-              <li className="flex items-start gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <span>Lusaka, Zambia</span>
               </li>
@@ -122,10 +122,10 @@ export default function AppFooter() {
 
           {/* About */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
               About
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               A+ Mentality is a learning management platform built for Zambian universities,
               providing courses, quizzes, assignments, past papers, and tutor services.
             </p>
@@ -133,8 +133,8 @@ export default function AppFooter() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
+        <div className="pt-8 border-t border-border dark:border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-1.5">
             <span>© {new Date().getFullYear()} A+ Mentality</span>
             <span className="flex items-center gap-0.5">
               Made with <Heart className="w-3.5 h-3.5 text-red-500" /> in Zambia
@@ -143,23 +143,23 @@ export default function AppFooter() {
           <div className="flex items-center gap-4">
             <Link
               href="/privacy-policy"
-              className="text-xs text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1"
+              className="text-xs text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1"
             >
               <Scale className="w-3.5 h-3.5" />
               Privacy
             </Link>
-            <span className="text-gray-300 dark:text-gray-700">•</span>
+            <span className="text-foreground dark:text-foreground">•</span>
             <Link
               href="/terms-of-service"
-              className="text-xs text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1"
+              className="text-xs text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1"
             >
               <Scale className="w-3.5 h-3.5" />
               Terms
             </Link>
-            <span className="text-gray-300 dark:text-gray-700">•</span>
+            <span className="text-foreground dark:text-foreground">•</span>
             <Link
               href="/api/health"
-              className="text-xs text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1"
+              className="text-xs text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1"
             >
               <Shield className="w-3.5 h-3.5" />
               Status

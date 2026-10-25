@@ -27,7 +27,7 @@ export function HeroVideoFacade() {
     <button
       type="button"
       onClick={() => setPlaying(true)}
-      className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer bg-gray-900"
+      className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer bg-background"
       aria-label="Play motivational video"
     >
       {/* Thumbnail */}
@@ -42,17 +42,17 @@ export function HeroVideoFacade() {
 
       {/* Play button overlay */}
       <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/30 transition-colors">
-        <div className="w-20 h-20 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+        <div className="w-20 h-20 rounded-full bg-card/90 backdrop-blur-sm flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
           <PlayCircle className="w-12 h-12 text-blue-600 ml-1" fill="currentColor" />
         </div>
       </div>
 
       {/* Title overlay */}
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-        <p className="text-white font-semibold text-sm">
+        <p className="text-foreground font-semibold text-sm">
           A+ Student Mentality
         </p>
-        <p className="text-white/70 text-xs">
+        <p className="text-foreground/70 text-xs">
           Best Study Motivation
         </p>
       </div>

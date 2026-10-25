@@ -67,16 +67,16 @@ export function ImageUploader({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+      <label className="text-sm font-medium text-foreground">{label}</label>
       {description && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">{description}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
       )}
 
       {uploaded && value ? (
-        <div className="relative border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+        <div className="relative border border-border rounded-lg overflow-hidden">
           {value.endsWith('.pdf') ? (
-            <div className="p-4 bg-gray-50 dark:bg-gray-800 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">PDF uploaded</p>
+            <div className="p-4 bg-muted text-center">
+              <p className="text-sm text-muted-foreground">PDF uploaded</p>
             </div>
           ) : (
             <div className={`relative w-full ${
@@ -99,7 +99,7 @@ export function ImageUploader({
               setUploaded(false);
               onChange('', '');
             }}
-            className="absolute top-2 right-2 bg-white dark:bg-gray-800 rounded-full p-1 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            className="absolute top-2 right-2 bg-card rounded-full p-1 shadow hover:bg-muted  transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -107,22 +107,22 @@ export function ImageUploader({
       ) : (
         <label className={`
           flex flex-col items-center justify-center 
-          border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 cursor-pointer 
+          border-2 border-dashed border-border rounded-lg p-6 cursor-pointer 
           hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition
           ${uploading ? 'opacity-50 pointer-events-none' : ''}
         `}>
           {uploading ? (
             <>
               <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Uploading...</p>
+              <p className="mt-2 text-sm text-muted-foreground">Uploading...</p>
             </>
           ) : (
             <>
-              <Upload className="w-8 h-8 text-gray-400" />
-              <p className="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Upload className="w-8 h-8 text-muted-foreground" />
+              <p className="mt-2 text-sm font-medium text-foreground">
                 Click to upload
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 Max {maxSizeMB} MB
               </p>
             </>

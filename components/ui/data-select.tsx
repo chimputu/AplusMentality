@@ -125,14 +125,14 @@ export function DataSelect<T>({
     return (
       <div className={className}>
         {label && (
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             {label}
           </label>
         )}
         <div className="relative">
           <select
             disabled
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed text-sm"
+            className="w-full border border-border rounded-lg px-3 py-2 bg-muted dark:bg-card text-muted-foreground cursor-not-allowed text-sm"
           >
             <option value="">{prerequisiteMessage}</option>
           </select>
@@ -147,7 +147,7 @@ export function DataSelect<T>({
   return (
     <div className={className}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           {label}
         </label>
       )}
@@ -156,7 +156,7 @@ export function DataSelect<T>({
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled || isLoading}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full border border-border rounded-lg px-3 py-2 bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <option value="">
             {isLoading ? 'Loading...' : placeholder}
@@ -215,7 +215,7 @@ export function DataSelect<T>({
           <button
             type="button"
             onClick={load}
-            className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-white dark:bg-gray-800 border border-red-200 dark:border-red-700 rounded-md text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+            className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-card border border-red-200 dark:border-red-700 rounded-md text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
           >
             <RefreshCw className="h-3 w-3" />
             Retry
@@ -232,7 +232,7 @@ export function DataSelect<T>({
           {emptyAction && (
             <Link
               href={emptyAction.href}
-              className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700 rounded-md text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-card border border-amber-200 dark:border-amber-700 rounded-md text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
             >
               <Plus className="h-3 w-3" />
               {emptyAction.label}

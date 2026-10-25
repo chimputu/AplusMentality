@@ -19,8 +19,8 @@ export default function LegalAccessLinks({
   const isGutenberg = source === 'gutenberg';
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-      <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+    <div className="bg-card rounded-xl border border-border p-6">
+      <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
         <BookOpen className="w-5 h-5 text-blue-500" />
         Legal Access Options
       </h2>
@@ -100,13 +100,13 @@ export default function LegalAccessLinks({
 
       {/* No legal download available */}
       {!hasDownload && (
-        <div className="flex items-start gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-700/30 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <Info className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 px-4 py-3 bg-muted/30 border border-border rounded-lg">
+          <Info className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <p className="text-sm font-medium text-foreground">
               Availability varies — view legal access options
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               This book is only available for browsing. Full-text access may
               require purchase or a library membership.
             </p>
@@ -115,7 +115,7 @@ export default function LegalAccessLinks({
       )}
 
       {/* Footer note */}
-      <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-4 leading-relaxed">
+      <p className="text-[10px] text-muted-foreground mt-4 leading-relaxed">
         All resources shown here are from legitimate public-domain or openly
         licensed sources. A+ Mentality does not host or mirror copyrighted
         material.

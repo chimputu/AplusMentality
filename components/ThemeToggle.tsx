@@ -62,7 +62,7 @@ export default function ThemeToggle() {
   if (theme === undefined) {
     return (
       <div className="relative">
-        <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" aria-label="Theme">
+        <button className="p-2 rounded-full hover:bg-muted  transition" aria-label="Theme">
           <Monitor className="w-5 h-5 text-blue-500" />
         </button>
       </div>
@@ -82,7 +82,7 @@ export default function ThemeToggle() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+        className="p-2 rounded-full hover:bg-muted  transition"
         aria-label="Theme"
       >
         {isDark ? (
@@ -90,7 +90,7 @@ export default function ThemeToggle() {
         ) : theme === 'system' ? (
           <Monitor className="w-5 h-5 text-blue-500" />
         ) : (
-          <Moon className="w-5 h-5 text-gray-600" />
+          <Moon className="w-5 h-5 text-muted-foreground" />
         )}
       </button>
 
@@ -100,7 +100,7 @@ export default function ThemeToggle() {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+          <div className="absolute right-0 mt-2 w-48 bg-card rounded-xl shadow-2xl border border-border z-50 overflow-hidden">
             <div className="p-2">
               {themes.map((t) => {
                 const Icon = t.icon;
@@ -112,7 +112,7 @@ export default function ThemeToggle() {
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition ${
                       isActive
                         ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                        : 'hover:bg-muted  text-foreground'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -127,7 +127,7 @@ export default function ThemeToggle() {
               })}
             </div>
             {isSignedIn && saving && (
-              <div className="px-3 py-1.5 text-[10px] text-gray-400 border-t border-gray-100 dark:border-gray-700">
+              <div className="px-3 py-1.5 text-[10px] text-muted-foreground border-t border-border">
                 Saving…
               </div>
             )}

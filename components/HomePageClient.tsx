@@ -69,14 +69,14 @@ function UniversitiesCarousel() {
       {/* Left arrow */}
       <button
         onClick={() => scroll('left')}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 hidden md:flex items-center justify-center"
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-card shadow-lg rounded-full p-2 hover:bg-card-hover hidden md:flex items-center justify-center"
         aria-label="Scroll left"
       >
-        <ChevronLeft className="w-5 h-5 text-gray-700" />
+        <ChevronLeft className="w-5 h-5 text-foreground" />
       </button>
 
       {/* Swipe hint for mobile */}
-      <p className="sm:hidden text-xs text-gray-500 text-center mb-3">← Swipe to see more →</p>
+      <p className="sm:hidden text-xs text-muted-foreground text-center mb-3">← Swipe to see more →</p>
 
       {/* Scrollable container */}
       <div
@@ -97,16 +97,16 @@ function UniversitiesCarousel() {
             key={idx}
             className="flex-shrink-0 snap-center w-[200px] sm:w-[240px]"
           >
-            <div className="bg-white rounded-xl border border-gray-200 p-4 text-center hover:shadow-lg hover:border-blue-300 transition-all duration-300 h-full flex flex-col items-center justify-center">
+            <div className="bg-card rounded-xl border border-border p-4 text-center hover:shadow-lg hover:border-blue-300 transition-all duration-300 h-full flex flex-col items-center justify-center">
               <InstitutionLogo
                 name={inst.name}
                 shortName={inst.shortName}
                 size="md"
               />
-              <p className="mt-3 text-sm font-semibold text-gray-800 leading-tight">
+              <p className="mt-3 text-sm font-semibold text-foreground leading-tight">
                 {inst.name}
               </p>
-              <p className="text-[10px] text-gray-500 mt-1">
+              <p className="text-[10px] text-muted-foreground mt-1">
                 Zambian Institution
               </p>
             </div>
@@ -117,10 +117,10 @@ function UniversitiesCarousel() {
       {/* Right arrow */}
       <button
         onClick={() => scroll('right')}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 hidden md:flex items-center justify-center"
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-card shadow-lg rounded-full p-2 hover:bg-card-hover hidden md:flex items-center justify-center"
         aria-label="Scroll right"
       >
-        <ChevronRight className="w-5 h-5 text-gray-700" />
+        <ChevronRight className="w-5 h-5 text-foreground" />
       </button>
     </div>
   );
@@ -181,10 +181,10 @@ export default function HomePageClient() {
   ];
 
   const exploreItems = [
-    { icon: <TrendingUp className="w-6 h-6" />, title: 'Trending Now', description: 'Discover what\'s popular among Zambian learners.', color: 'hover:bg-blue-50 hover:border-blue-300' },
-    { icon: <PlayCircle className="w-6 h-6" />, title: 'Watch Videos', description: 'Access educational videos aligned with the Zambian curriculum.', color: 'hover:bg-blue-50 hover:border-blue-300' },
+    { icon: <TrendingUp className="w-6 h-6" />, title: 'Trending Now', description: 'Discover what\'s popular among Zambian learners.', color: 'hover:bg-primary-light hover:border-blue-300' },
+    { icon: <PlayCircle className="w-6 h-6" />, title: 'Watch Videos', description: 'Access educational videos aligned with the Zambian curriculum.', color: 'hover:bg-primary-light hover:border-blue-300' },
     { icon: <Compass className="w-6 h-6" />, title: 'Course Pathways', description: 'Explore Natural Sciences and Computer Science.', color: 'hover:bg-emerald-50 hover:border-emerald-300' },
-    { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach students across Zambia.', color: 'hover:bg-blue-50 hover:border-blue-300' },
+    { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach students across Zambia.', color: 'hover:bg-primary-light hover:border-blue-300' },
     { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-emerald-50 hover:border-emerald-300' },
   ];
 
@@ -277,54 +277,54 @@ export default function HomePageClient() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className="min-h-screen bg-muted overflow-x-hidden">
       {/* ===== BANNERS — MUST BE FIRST so they appear above the navbar ===== */}
       <BannerCarousel placement="HOMEPAGE" institutionId={institutionId} />
 
       {/* ===== NAVBAR — sticky (sticks when scrolled to, sits below banner) ===== */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+      <nav className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
         <div className="w-full px-2 sm:px-4">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
               <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A+</span>
+                <span className="text-foreground font-bold text-lg">A+</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">Mentality</span>
+              <span className="text-xl font-bold text-foreground">Mentality</span>
             </Link>
 
             <div className="hidden md:flex items-center space-x-2">
-              <Link href="/sign-in" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">
+              <Link href="/sign-in" className="text-sm font-medium text-foreground hover:text-blue-600 transition">
                 Sign In
               </Link>
               <Link
                 href="/sign-up"
-                className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm"
+                className="bg-blue-600 text-foreground px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm"
               >
                 Get Started
               </Link>
-              <span className="w-px h-5 bg-gray-300 mx-1"></span>
+              <span className="w-px h-5 border-border mx-1"></span>
               <Link href="https://smartcorp-zeta.vercel.app">
-                <div className="bg-gray-100 text-gray-700 text-[10px] font-medium px-2.5 py-1 rounded-full border border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.5),0_0_30px_rgba(147,51,234,0.3)] animate-pulse">
+                <div className="bg-muted text-foreground text-[10px] font-medium px-2.5 py-1 rounded-full border border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.5),0_0_30px_rgba(147,51,234,0.3)] animate-pulse">
                   Owned by SmartCorp
                 </div>
               </Link>
             </div>
 
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition" aria-label="Toggle menu">
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 rounded-lg hover:bg-muted transition" aria-label="Toggle menu">
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
         {isMenuOpen && (
-          <div className="md:hidden bg-white border-b border-gray-200 px-2 py-4 space-y-3">
-            <Link href="/sign-in" className="block text-sm font-medium text-gray-700 hover:text-blue-600 transition" onClick={() => setIsMenuOpen(false)}>
+          <div className="md:hidden bg-card border-b border-border px-2 py-4 space-y-3">
+            <Link href="/sign-in" className="block text-sm font-medium text-foreground hover:text-blue-600 transition" onClick={() => setIsMenuOpen(false)}>
               Sign In
             </Link>
-            <Link href="/sign-up" className="block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/sign-up" className="block bg-blue-600 text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center" onClick={() => setIsMenuOpen(false)}>
               Get Started
             </Link>
             <Link href="https://smartcorp-zeta.vercel.app">
-            <div className="text-xs text-gray-500 text-center">Owned by SmartCorp</div>
+            <div className="text-xs text-muted-foreground text-center">Owned by SmartCorp</div>
             </Link>
           </div>
         )}
@@ -354,7 +354,7 @@ export default function HomePageClient() {
             {/* LEFT: Headline + CTAs */}
             <div className="text-center lg:text-left space-y-6">
               {/* Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight tracking-tight">
                 <span className="block">Your Goal.</span>
                 <span className="block text-blue-400 mt-2">
                   Our tools.
@@ -367,7 +367,7 @@ export default function HomePageClient() {
               </h1>
 
               {/* Description */}
-              <p className="text-base sm:text-lg text-white/80 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              <p className="text-base sm:text-lg text-foreground/80 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                 A+ Mentality helps students study smarter, stay organized, and track progress so you can achieve more and stress less.
               </p>
 
@@ -375,20 +375,20 @@ export default function HomePageClient() {
               <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
                 <Link
                   href="/sign-up"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-medium transition-colors shadow-lg hover:shadow-xl"
+                  className="bg-blue-600 hover:bg-blue-700 text-foreground px-6 py-3 rounded-full font-medium transition-colors shadow-lg hover:shadow-xl"
                 >
                   Get Started Free
                 </Link>
                 <Link
                   href="#explore"
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium transition-colors border border-white/20"
+                  className="bg-card/10 hover:bg-card/20 backdrop-blur-sm text-foreground px-6 py-3 rounded-full font-medium transition-colors border border-border"
                 >
                   Explore Features
                 </Link>
               </div>
 
               {/* Trust indicators */}
-              <div className="flex flex-wrap gap-x-6 gap-y-3 justify-center lg:justify-start text-sm text-white/70 pt-4">
+              <div className="flex flex-wrap gap-x-6 gap-y-3 justify-center lg:justify-start text-sm text-foreground/70 pt-4">
                 <span className="flex items-center gap-1.5">
                   <CheckCircle className="w-4 h-4 text-emerald-400" />
                   Free to start
@@ -416,8 +416,8 @@ export default function HomePageClient() {
                 <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-emerald-500/20 rounded-3xl blur-3xl" />
                 
                 {/* The Blur Box Card */}
-                <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl text-center">
-                  <h3 className="text-2xl font-bold text-white mb-2">
+                <div className="relative bg-card/10 backdrop-blur-xl border border-border rounded-2xl p-8 shadow-2xl text-center">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">
                     Built for Zambian Students
                   </h3>
                   <p className="text-blue-200 text-sm mb-6">
@@ -425,20 +425,20 @@ export default function HomePageClient() {
                   </p>
                   <div className="flex justify-center gap-6 text-sm mb-8">
                     <div>
-                      <p className="font-bold text-white text-lg">Quality</p>
+                      <p className="font-bold text-foreground text-lg">Quality</p>
                       <p className="text-blue-200 text-xs">Content</p>
                     </div>
                     <div>
-                      <p className="font-bold text-white text-lg">Expert</p>
+                      <p className="font-bold text-foreground text-lg">Expert</p>
                       <p className="text-blue-200 text-xs">Mentors</p>
                     </div>
                     <div>
-                      <p className="font-bold text-white text-lg">Learn</p>
+                      <p className="font-bold text-foreground text-lg">Learn</p>
                       <p className="text-blue-200 text-xs">Offline</p>
                     </div>
                   </div>
-                  <div className="pt-6 border-t border-white/20">
-                    <p className="text-xs text-white/70">
+                  <div className="pt-6 border-t border-border">
+                    <p className="text-xs text-foreground/70">
                       Join the A+ Mentality community today
                     </p>
                   </div>
@@ -456,7 +456,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="py-10 sm:py-12 bg-white border-b border-gray-100"
+        className="py-10 sm:py-12 bg-card border-b border-border"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
@@ -464,25 +464,25 @@ export default function HomePageClient() {
               <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <BookOpen className="w-7 h-7 text-blue-600" />
               </div>
-              <h3 className="font-bold text-gray-800 text-sm">Study Smarter</h3>
+              <h3 className="font-bold text-foreground text-sm">Study Smarter</h3>
             </motion.div>
             <motion.div variants={fadeInUp} className="text-center p-4">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <TrendingUp className="w-7 h-7 text-emerald-600" />
               </div>
-              <h3 className="font-bold text-gray-800 text-sm">Track Progress</h3>
+              <h3 className="font-bold text-foreground text-sm">Track Progress</h3>
             </motion.div>
             <motion.div variants={fadeInUp} className="text-center p-4">
               <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Target className="w-7 h-7 text-amber-600" />
               </div>
-              <h3 className="font-bold text-gray-800 text-sm">Reach Your Goals</h3>
+              <h3 className="font-bold text-foreground text-sm">Reach Your Goals</h3>
             </motion.div>
             <motion.div variants={fadeInUp} className="text-center p-4">
               <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Crown className="w-7 h-7 text-blue-600" />
               </div>
-              <h3 className="font-bold text-gray-800 text-sm">Build an A+ Mindset</h3>
+              <h3 className="font-bold text-foreground text-sm">Build an A+ Mindset</h3>
             </motion.div>
           </div>
         </div>
@@ -494,13 +494,13 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="py-10 sm:py-12 bg-white"
+        className="py-10 sm:py-12 bg-background"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
             <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Top Zambian Universities</h2>
-            <p className="mt-2 text-gray-600">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Top Zambian Universities</h2>
+            <p className="mt-2 text-muted-foreground">
               The leading public universities in Zambia
             </p>
           </motion.div>
@@ -516,9 +516,9 @@ export default function HomePageClient() {
               <motion.div
                 key={idx}
                 variants={fadeInUp}
-                className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-blue-300 hover:scale-[1.04] transition-all duration-300 flex flex-col shadow-sm"
+                className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:border-blue-300 hover:scale-[1.04] transition-all duration-300 flex flex-col shadow-sm"
               >
-                <div className="w-full h-28 sm:h-36 md:h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+                <div className="w-full h-28 sm:h-36 md:h-44 bg-muted flex items-center justify-center overflow-hidden">
                   <Image
                     src={uni.logo}
                     alt={uni.name}
@@ -527,11 +527,11 @@ export default function HomePageClient() {
                     className="object-contain w-full h-full p-2"
                   />
                 </div>
-                <div className="p-3 sm:p-4 text-center border-t border-gray-100">
-                  <h3 className="font-bold text-gray-800 text-xs sm:text-sm md:text-base group-hover:text-blue-600 transition-colors">
+                <div className="p-3 sm:p-4 text-center border-t border-border">
+                  <h3 className="font-bold text-foreground text-xs sm:text-sm md:text-base group-hover:text-blue-600 transition-colors">
                     {uni.name}
                   </h3>
-                  <p className="text-xs text-gray-500 mt-0.5">{uni.location}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{uni.location}</p>
                 </div>
               </motion.div>
             ))}
@@ -548,25 +548,25 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="py-16 bg-gray-50"
+        className="py-16 bg-muted"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-12">
             <Compass className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Must Explore</h2>
-            <p className="mt-2 text-gray-600">Discover the best of what A+ Mentality has to offer</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Must Explore</h2>
+            <p className="mt-2 text-muted-foreground">Discover the best of what A+ Mentality has to offer</p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
             {exploreItems.map((item, idx) => (
               <motion.div
                 key={idx}
                 variants={fadeInUp}
-                className={`bg-white rounded-xl p-6 text-center shadow-sm border-2 border-gray-100 transition-all duration-300 cursor-pointer ${item.color} hover:scale-[1.02] hover:shadow-lg`}
+                className={`bg-card rounded-xl p-6 text-center shadow-sm border-2 border-border transition-all duration-300 cursor-pointer ${item.color} hover:scale-[1.02] hover:shadow-lg`}
                 onClick={handleExplore}
               >
-                <div className="flex justify-center mb-3 text-gray-700">{item.icon}</div>
-                <h3 className="text-lg font-bold text-gray-800">{item.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">{item.description}</p>
+                <div className="flex justify-center mb-3 text-foreground">{item.icon}</div>
+                <h3 className="text-lg font-bold text-foreground">{item.title}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
                 <div className="mt-3 text-blue-600 font-medium text-sm">Explore →</div>
               </motion.div>
             ))}
@@ -585,8 +585,8 @@ export default function HomePageClient() {
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-12">
             <Crown className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">What We Offer</h2>
-            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">What We Offer</h2>
+            <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
               Everything you need to succeed in your academic journey. All in one place.
             </p>
           </motion.div>
@@ -654,9 +654,9 @@ export default function HomePageClient() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 </div>
 
-                <div className="relative h-full flex flex-col justify-end p-5 text-white">
+                <div className="relative h-full flex flex-col justify-end p-5 text-foreground">
                   <h3 className="text-lg font-bold">{item.title}</h3>
-                  <p className="text-sm text-white/80 mt-1">{item.description}</p>
+                  <p className="text-sm text-foreground/80 mt-1">{item.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -670,33 +670,33 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-white"
+        className="py-10 sm:py-12 bg-background"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="text-center mb-10">
             <Target className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Our Aim</h2>
-            <p className="mt-2 text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Our Aim</h2>
+            <p className="mt-2 text-muted-foreground max-w-3xl mx-auto">
               At <span className="font-semibold text-blue-600">A+ Mentality</span>, we believe that every Zambian student
               deserves access to high-quality education and mentorship. Our mission is to bridge the gap between
               traditional learning and modern technology by providing:
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition border border-gray-100">
+            <div className="bg-muted rounded-xl p-6 text-center hover:shadow-lg transition border border-border">
               <CheckCircle className="w-10 h-10 text-blue-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-800">Curriculum-Aligned Content</h3>
-              <p className="text-gray-600 text-sm mt-2">Handpicked videos, courses, and resources tailored to the Zambian curriculum and HEA standards.</p>
+              <h3 className="text-lg font-semibold text-foreground">Curriculum-Aligned Content</h3>
+              <p className="text-muted-foreground text-sm mt-2">Handpicked videos, courses, and resources tailored to the Zambian curriculum and HEA standards.</p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition border border-gray-100">
+            <div className="bg-muted rounded-xl p-6 text-center hover:shadow-lg transition border border-border">
               <CheckCircle className="w-10 h-10 text-blue-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-800">Expert Mentorship</h3>
-              <p className="text-gray-600 text-sm mt-2">Learn from experienced professionals, industry leaders, and academic scholars who guide you every step of the way.</p>
+              <h3 className="text-lg font-semibold text-foreground">Expert Mentorship</h3>
+              <p className="text-muted-foreground text-sm mt-2">Learn from experienced professionals, industry leaders, and academic scholars who guide you every step of the way.</p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition border border-gray-100">
+            <div className="bg-muted rounded-xl p-6 text-center hover:shadow-lg transition border border-border">
               <CheckCircle className="w-10 h-10 text-blue-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-800">Community Support</h3>
-              <p className="text-gray-600 text-sm mt-2">Join a vibrant community of Zambian learners, share ideas, collaborate, and grow together.</p>
+              <h3 className="text-lg font-semibold text-foreground">Community Support</h3>
+              <p className="text-muted-foreground text-sm mt-2">Join a vibrant community of Zambian learners, share ideas, collaborate, and grow together.</p>
             </div>
           </div>
         </div>
@@ -710,13 +710,13 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="py-10 sm:py-12 bg-white"
+        className="py-10 sm:py-12 bg-background"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
             <GraduationCap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Your Course Journey</h2>
-            <p className="mt-2 text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Your Course Journey</h2>
+            <p className="mt-2 text-muted-foreground max-w-3xl mx-auto">
               From Natural Sciences to Computer Science. A complete academic pathway
                aligned with Zambian university standards.
             </p>
@@ -729,7 +729,7 @@ export default function HomePageClient() {
                 <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 1 - Semester 1
                 </span>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Natural Sciences Foundation</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground mt-1">Natural Sciences Foundation</h3>
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
@@ -755,7 +755,7 @@ export default function HomePageClient() {
                 <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 1 - Semester 2
                 </span>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Natural Sciences Advanced</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground mt-1">Natural Sciences Advanced</h3>
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
@@ -781,7 +781,7 @@ export default function HomePageClient() {
                 <span className="inline-block bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 2 - Semester 1
                 </span>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Computer Science Foundation</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground mt-1">Computer Science Foundation</h3>
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
@@ -807,7 +807,7 @@ export default function HomePageClient() {
                 <span className="inline-block bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 2 - Semester 2
                 </span>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Computer Science Advanced</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground mt-1">Computer Science Advanced</h3>
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
@@ -834,23 +834,23 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-white"
+        className="py-10 sm:py-12 bg-background"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="text-center mb-8 sm:mb-10">
             <Award className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Zambian University Grading System</h2>
-            <p className="mt-2 text-sm text-gray-500">Understanding how Zambian universities grade academic performance</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Zambian University Grading System</h2>
+            <p className="mt-2 text-sm text-muted-foreground">Understanding how Zambian universities grade academic performance</p>
           </div>
 
           {/* ===== GRADING POINTS SYSTEM ===== */}
           <div className="mb-8 sm:mb-12">
-            <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Grading Points System</h3>
-            <p className="sm:hidden text-xs text-gray-500 text-center mb-2">← Swipe to see full table →</p>
-            <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+            <h3 className="text-xl font-bold text-foreground mb-4 text-center">Grading Points System</h3>
+            <p className="sm:hidden text-xs text-muted-foreground text-center mb-2">← Swipe to see full table →</p>
+            <div className="max-w-4xl mx-auto bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
               <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
                 <table className="w-full min-w-[500px]">
-                  <thead className="bg-blue-600 text-white">
+                  <thead className="bg-blue-600 text-foreground">
                     <tr>
                       <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Grade</th>
                       <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Points</th>
@@ -861,50 +861,50 @@ export default function HomePageClient() {
                   <tbody className="divide-y divide-gray-100">
                     <tr className="bg-green-50 hover:bg-green-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-green-700 text-sm">A+</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">2.5</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">86 and above</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">2.5</td>
+                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">86 and above</td>
                       <td className="px-3 sm:px-4 py-3 text-green-700 font-medium text-sm">Upper Distinction</td>
                     </tr>
                     <tr className="bg-green-50/50 hover:bg-green-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-green-700 text-sm">A</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">2.0</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">76-85</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">2.0</td>
+                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">76-85</td>
                       <td className="px-3 sm:px-4 py-3 text-green-700 font-medium text-sm">Distinction</td>
                     </tr>
-                    <tr className="bg-blue-50 hover:bg-blue-100 transition">
+                    <tr className="bg-primary-light hover:bg-blue-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-blue-700 text-sm">B+</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">1.5</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">66-75</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">1.5</td>
+                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">66-75</td>
                       <td className="px-3 sm:px-4 py-3 text-blue-700 font-medium text-sm">Merit</td>
                     </tr>
-                    <tr className="bg-blue-50/50 hover:bg-blue-100 transition">
+                    <tr className="bg-primary-light/50 hover:bg-blue-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-blue-700 text-sm">B</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">1.0</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">60-65</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">1.0</td>
+                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">60-65</td>
                       <td className="px-3 sm:px-4 py-3 text-blue-700 font-medium text-sm">Credit</td>
                     </tr>
                     <tr className="bg-yellow-50 hover:bg-yellow-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-yellow-700 text-sm">C+</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0.5</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">55-59</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0.5</td>
+                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">55-59</td>
                       <td className="px-3 sm:px-4 py-3 text-yellow-700 font-medium text-sm">Clear Pass</td>
                     </tr>
                     <tr className="bg-yellow-50/50 hover:bg-yellow-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-yellow-700 text-sm">C</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0.25</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">50-54</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0.25</td>
+                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">50-54</td>
                       <td className="px-3 sm:px-4 py-3 text-yellow-700 font-medium text-sm">Bare Pass</td>
                     </tr>
                     <tr className="bg-red-50 hover:bg-red-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-red-700 text-sm">D+</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">45-49</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0</td>
+                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">45-49</td>
                       <td className="px-3 sm:px-4 py-3 text-red-700 font-medium text-sm">Bare Fail</td>
                     </tr>
                     <tr className="bg-red-50/50 hover:bg-red-100 transition">
                       <td className="px-3 sm:px-4 py-3 font-bold text-red-700 text-sm">D</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-gray-800 text-sm">0</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-700 text-sm">44 and below</td>
+                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0</td>
+                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">44 and below</td>
                       <td className="px-3 sm:px-4 py-3 text-red-700 font-medium text-sm">Fail</td>
                     </tr>
                   </tbody>
@@ -914,10 +914,10 @@ export default function HomePageClient() {
           </div>
 
           {/* ===== DEGREE CLASSIFICATION SYSTEM ===== */}
-          <p className="sm:hidden text-xs text-gray-400 text-center mb-2">← Swipe to see full table →</p>
-          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+          <p className="sm:hidden text-xs text-muted-foreground text-center mb-2">← Swipe to see full table →</p>
+          <div className="max-w-4xl mx-auto bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 sm:px-6 py-4">
-              <h3 className="text-lg sm:text-xl font-bold text-white text-center">Degree Classification System</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-foreground text-center">Degree Classification System</h3>
               <p className="text-blue-100 text-xs sm:text-sm text-center mt-1">
                 Based on cumulative points from 20 courses at 3rd &amp; 4th Year Levels (4-Year programmes)<br />
                 or 4th &amp; 5th Year Levels (5-Year programmes)
@@ -926,9 +926,9 @@ export default function HomePageClient() {
             <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0 p-2 sm:p-4">
               <table className="w-full min-w-[400px]">
                 <thead>
-                  <tr className="border-b-2 border-gray-200">
-                    <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Cumulative Points</th>
-                    <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Degree Classification</th>
+                  <tr className="border-b-2 border-border">
+                    <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold text-foreground">Cumulative Points</th>
+                    <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold text-foreground">Degree Classification</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -940,7 +940,7 @@ export default function HomePageClient() {
                       </span>
                     </td>
                   </tr>
-                  <tr className="hover:bg-blue-50 transition">
+                  <tr className="hover:bg-primary-light transition">
                     <td className="px-3 sm:px-4 py-4 font-bold text-blue-700 text-sm">30-39.9 Points</td>
                     <td className="px-3 sm:px-4 py-4">
                       <span className="inline-block bg-blue-100 text-blue-800 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
@@ -956,10 +956,10 @@ export default function HomePageClient() {
                       </span>
                     </td>
                   </tr>
-                  <tr className="hover:bg-gray-50 transition">
-                    <td className="px-3 sm:px-4 py-4 font-bold text-gray-700 text-sm">Less than 20 Points</td>
+                  <tr className="hover:bg-card-hover transition">
+                    <td className="px-3 sm:px-4 py-4 font-bold text-foreground text-sm">Less than 20 Points</td>
                     <td className="px-3 sm:px-4 py-4">
-                      <span className="inline-block bg-gray-100 text-gray-700 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
+                      <span className="inline-block bg-muted text-foreground px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
                         Pass
                       </span>
                     </td>
@@ -970,7 +970,7 @@ export default function HomePageClient() {
           </div>
 
           {/* Source Note */}
-          <p className="text-xs text-gray-500 italic text-center mt-6 max-w-2xl mx-auto">
+          <p className="text-xs text-muted-foreground italic text-center mt-6 max-w-2xl mx-auto">
             ℹ️ Source: Zambia Higher Education Authority (HEA) and university academic regulations. If your institution uses a different scale, check with your registrar.
           </p>
         </div>
@@ -985,23 +985,23 @@ export default function HomePageClient() {
         className="py-10 sm:py-12 bg-gradient-to-r from-blue-50 to-emerald-50"
       >
         <div className="w-full px-3 sm:px-4">
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8 md:p-12 text-center max-w-4xl mx-auto">
+          <div className="bg-card rounded-2xl shadow-xl border border-border p-6 sm:p-8 md:p-12 text-center max-w-4xl mx-auto">
             <UserPlus className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Become a Tutor</h2>
-            <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Become a Tutor</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
               Share your knowledge and expertise with Zambian students.
               Join our community of professional tutors and make a difference.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-              <div className="flex items-center gap-2 bg-gray-100 rounded-full px-6 py-3">
+              <div className="flex items-center gap-2 bg-muted rounded-full px-6 py-3">
                 <Phone className="w-5 h-5 text-blue-600" />
-                <span className="font-medium text-gray-800">+260 954 953 610</span>
+                <span className="font-medium text-foreground">+260 954 953 610</span>
               </div>
               <a
                 href="https://wa.me/260772231300"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white rounded-full px-6 py-3 transition shadow-md"
+                className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-foreground rounded-full px-6 py-3 transition shadow-md"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -1010,7 +1010,7 @@ export default function HomePageClient() {
               </a>
               <Link
                 href="mailto:kafiswegchimputu@gmail.com"
-                className="bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
+                className="bg-blue-600 text-foreground px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
               >
                 <Mail className="w-5 h-5" /> Email Us
               </Link>
@@ -1025,25 +1025,25 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-blue-50"
+        className="py-10 sm:py-12 bg-primary-light"
       >
-        <div className="w-full px-3 sm:px-4 flex flex-col md:flex-row items-center justify-between bg-white rounded-2xl shadow-md border border-gray-200 p-6 sm:p-8 md:p-12 gap-6">
+        <div className="w-full px-3 sm:px-4 flex flex-col md:flex-row items-center justify-between bg-card rounded-2xl shadow-md border border-border p-6 sm:p-8 md:p-12 gap-6">
           <div className="text-center md:text-left">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Interested in advertising with us?</h2>
-            <p className="text-gray-600 mt-1">Reach Zambian students and educators.</p>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Interested in advertising with us?</h2>
+            <p className="text-muted-foreground mt-1">Reach Zambian students and educators.</p>
           </div>
           <div className="relative">
             <button
               onClick={() => setShowContactMenu(!showContactMenu)}
-              className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
+              className="bg-blue-600 text-foreground px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
             >
               Get in touch <span className="text-lg">→</span>
             </button>
             {showContactMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50">
+              <div className="absolute right-0 mt-2 w-48 bg-card rounded-xl shadow-xl border border-border overflow-hidden z-50">
                 <a
                   href="mailto:kafiswegchimputu@gmail.com?subject=Advertising%20Inquiry%20-%20A%2B%20Mentality"
-                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition border-b border-gray-100"
+                  className="block px-4 py-3 text-sm text-foreground hover:bg-primary-light hover:text-blue-600 transition border-b border-border"
                 >
                   ✉️ Email Us
                 </a>
@@ -1051,7 +1051,7 @@ export default function HomePageClient() {
                   href="https://wa.me/260772231300?text=Hi%2C%20I%27m%20interested%20in%20advertising%20with%20A%2B%20Mentality"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition"
+                  className="block px-4 py-3 text-sm text-foreground hover:bg-green-50 hover:text-green-600 transition"
                 >
                   💬 WhatsApp
                 </a>
@@ -1067,12 +1067,12 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-white overflow-hidden"
+        className="py-10 sm:py-12 bg-background overflow-hidden"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">What Our Community Says</h2>
-            <p className="mt-2 text-gray-600">Real stories from real Zambian learners</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">What Our Community Says</h2>
+            <p className="mt-2 text-muted-foreground">Real stories from real Zambian learners</p>
           </motion.div>
 
           <div className="relative overflow-hidden">
@@ -1089,22 +1089,22 @@ export default function HomePageClient() {
               {[...testimonials, ...testimonials, ...testimonials].map((t, idx) => (
                 <div
                   key={idx}
-                  className="bg-gray-50 rounded-2xl shadow-md p-5 sm:p-6 border border-gray-200 min-w-[280px] sm:min-w-[320px] max-w-[340px] flex-shrink-0"
+                  className="bg-muted rounded-2xl shadow-md p-5 sm:p-6 border border-border min-w-[280px] sm:min-w-[320px] max-w-[340px] flex-shrink-0"
                 >
                   <div className="flex items-start space-x-1 text-yellow-500 mb-3">
                     {Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
                   </div>
                   <div className="flex items-start space-x-1">
                     <Quote className="w-8 h-8 text-blue-400 flex-shrink-0 opacity-50" />
-                    <p className="text-gray-700 italic text-sm">"{t.quote}"</p>
+                    <p className="text-foreground italic text-sm">"{t.quote}"</p>
                   </div>
                   <div className="mt-4 flex items-center space-x-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
                       {t.name.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-800">{t.name}</p>
-                      <p className="text-xs text-gray-500">{t.role}</p>
+                      <p className="text-sm font-medium text-foreground">{t.name}</p>
+                      <p className="text-xs text-muted-foreground">{t.role}</p>
                     </div>
                   </div>
                 </div>
@@ -1115,13 +1115,13 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ===== WHY CHOOSE A+ MENTALITY ===== */}
-      <section className="py-16 md:py-24 bg-gray-50">
+      <section className="py-16 md:py-24 bg-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             
             {/* LEFT SIDE: Why Choose A+ Mentality */}
             <div className="space-y-8">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
                 Why Choose <span className="text-blue-600">A+ Mentality</span>?
               </h2>
               
@@ -1129,38 +1129,38 @@ export default function HomePageClient() {
                 <li className="flex gap-4">
                   <CheckCircle className="w-6 h-6 text-blue-600 shrink-0" />
                   <div>
-                    <strong className="text-gray-900">Curriculum-Aligned Content.</strong>
-                    <p className="text-gray-600 text-sm mt-1">All materials follow the Zambian syllabus and HEA standards.</p>
+                    <strong className="text-foreground">Curriculum-Aligned Content.</strong>
+                    <p className="text-muted-foreground text-sm mt-1">All materials follow the Zambian syllabus and HEA standards.</p>
                   </div>
                 </li>
                 <li className="flex gap-4">
                   <CheckCircle className="w-6 h-6 text-blue-600 shrink-0" />
                   <div>
-                    <strong className="text-gray-900">Expert Mentors.</strong>
-                    <p className="text-gray-600 text-sm mt-1">Learn from qualified professionals who guide you every step.</p>
+                    <strong className="text-foreground">Expert Mentors.</strong>
+                    <p className="text-muted-foreground text-sm mt-1">Learn from qualified professionals who guide you every step.</p>
                   </div>
                 </li>
                 <li className="flex gap-4">
                   <CheckCircle className="w-6 h-6 text-blue-600 shrink-0" />
                   <div>
-                    <strong className="text-gray-900">Community Support.</strong>
-                    <p className="text-gray-600 text-sm mt-1">Join a community of like-minded Zambian learners.</p>
+                    <strong className="text-foreground">Community Support.</strong>
+                    <p className="text-muted-foreground text-sm mt-1">Join a community of like-minded Zambian learners.</p>
                   </div>
                 </li>
                 <li className="flex gap-4">
                   <CheckCircle className="w-6 h-6 text-blue-600 shrink-0" />
                   <div>
-                    <strong className="text-gray-900">Progress Tracking.</strong>
-                    <p className="text-gray-600 text-sm mt-1">See your growth in real time and stay motivated.</p>
+                    <strong className="text-foreground">Progress Tracking.</strong>
+                    <p className="text-muted-foreground text-sm mt-1">See your growth in real time and stay motivated.</p>
                   </div>
                 </li>
               </ul>
 
               <div className="flex flex-wrap gap-4 pt-4">
-                <Link href="/sign-up" className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition-colors">
+                <Link href="/sign-up" className="bg-blue-600 text-foreground px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition-colors">
                   Join Now
                 </Link>
-                <a href="https://wa.me/260772231300" target="_blank" rel="noopener noreferrer" className="bg-green-500 text-white px-6 py-3 rounded-full font-medium hover:bg-green-600 transition-colors flex items-center gap-2">
+                <a href="https://wa.me/260772231300" target="_blank" rel="noopener noreferrer" className="bg-green-500 text-foreground px-6 py-3 rounded-full font-medium hover:bg-green-600 transition-colors flex items-center gap-2">
                   <MessageCircle className="w-5 h-5" />
                   Chat on WhatsApp
                 </a>
@@ -1192,7 +1192,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-blue-600 text-white"
+        className="py-10 sm:py-12 bg-blue-600 text-foreground"
       >
         <div className="w-full px-3 sm:px-4 text-center">
           <Heart className="w-12 h-12 mx-auto mb-4 text-blue-200" />
@@ -1202,7 +1202,7 @@ export default function HomePageClient() {
             Your future is bright, and we're here to help you shine.
           </p>
           <div className="mt-8">
-            <Link href="/sign-up" className="inline-block bg-white text-blue-600 px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-50 transition shadow-lg">
+            <Link href="/sign-up" className="inline-block bg-card text-blue-600 px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-primary-light transition shadow-lg">
               Join Our Community
             </Link>
           </div>
@@ -1215,14 +1215,14 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-gray-50"
+        className="py-10 sm:py-12 bg-muted"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
               Aligned with Zambia's University Curriculum
             </h2>
-            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
+            <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
               Supporting students across Zambia's leading academic institutions
             </p>
           </div>
@@ -1232,7 +1232,7 @@ export default function HomePageClient() {
           <div className="text-center mt-8">
             <Link
               href="/universities"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-foreground px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg"
             >
               View All Universities
               <span className="text-lg">→</span>
@@ -1242,35 +1242,35 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="bg-gray-900 text-gray-300">
+      <footer className="bg-background text-foreground">
         <div className="w-full px-3 sm:px-4 py-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
             <div>
               <Link href="/" className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">A+</span>
+                  <span className="text-foreground font-bold text-lg">A+</span>
                 </div>
-                <span className="text-xl font-bold text-white">Mentality</span>
+                <span className="text-xl font-bold text-foreground">Mentality</span>
               </Link>
-              <p className="mt-4 text-sm text-gray-300">
+              <p className="mt-4 text-sm text-foreground">
                 Empowering Zambian lifelong learners through curated content, mentorship, and community support.
               </p>
               <div className="mt-4 flex space-x-4">
-                <a href="#" className="text-gray-300 hover:text-blue-400 transition" aria-label="Share"><Share2 className="w-5 h-5" /></a>
-                <a href="#" className="text-gray-300 hover:text-blue-400 transition" aria-label="Website"><Globe className="w-5 h-5" /></a>
-                <a href="#" className="text-gray-300 hover:text-blue-400 transition" aria-label="Email"><AtSign className="w-5 h-5" /></a>
-                <a href="#" className="text-gray-300 hover:text-blue-400 transition" aria-label="Link"><LinkIcon className="w-5 h-5" /></a>
+                <a href="#" className="text-foreground hover:text-blue-400 transition" aria-label="Share"><Share2 className="w-5 h-5" /></a>
+                <a href="#" className="text-foreground hover:text-blue-400 transition" aria-label="Website"><Globe className="w-5 h-5" /></a>
+                <a href="#" className="text-foreground hover:text-blue-400 transition" aria-label="Email"><AtSign className="w-5 h-5" /></a>
+                <a href="#" className="text-foreground hover:text-blue-400 transition" aria-label="Link"><LinkIcon className="w-5 h-5" /></a>
               </div>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Quick Links</h4>
+              <h4 className="text-foreground font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
                 <li><Link href="https://smartcorp-zeta.vercel.app" className="hover:text-blue-400 transition">About Us</Link></li>
                 <li><Link href="https://smartcorp-zeta.vercel.app/contact" className="hover:text-blue-400 transition">Contact</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Contact</h4>
+              <h4 className="text-foreground font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center space-x-2">
                   <Mail className="w-4 h-4 text-blue-400" />
@@ -1302,7 +1302,7 @@ export default function HomePageClient() {
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Subscribe to Our Newsletter</h4>
+              <h4 className="text-foreground font-semibold mb-4">Subscribe to Our Newsletter</h4>
               <form onSubmit={handleSubscribe} className="space-y-3">
                 <div>
                   <label htmlFor="newsletter-email" className="sr-only">Email address</label>
@@ -1313,12 +1313,12 @@ export default function HomePageClient() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full px-4 py-2 rounded-full bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 rounded-full bg-card border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <button 
                   type="submit" 
-                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center space-x-2"
+                  className="w-full bg-blue-600 text-foreground px-4 py-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center space-x-2"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -1333,18 +1333,18 @@ export default function HomePageClient() {
               </form>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
+          <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} A+ Mentality Zambia. All rights reserved. Built for Zambian lifelong learners.
             <div className="mt-3 flex items-center justify-center gap-4">
-              <Link href="/privacy-policy" className="text-xs text-gray-400 hover:text-blue-400 transition">
+              <Link href="/privacy-policy" className="text-xs text-muted-foreground hover:text-blue-400 transition">
                 Privacy Policy
               </Link>
-              <span className="text-gray-600">•</span>
-              <Link href="/terms-of-service" className="text-xs text-gray-400 hover:text-blue-400 transition">
+              <span className="text-muted-foreground">•</span>
+              <Link href="/terms-of-service" className="text-xs text-muted-foreground hover:text-blue-400 transition">
                 Terms of Service
               </Link>
-              <span className="text-gray-600">•</span>
-              <Link href="/api/health" className="text-xs text-gray-400 hover:text-blue-400 transition">
+              <span className="text-muted-foreground">•</span>
+              <Link href="/api/health" className="text-xs text-muted-foreground hover:text-blue-400 transition">
                 System Status
               </Link>
             </div>
@@ -1369,7 +1369,7 @@ export default function HomePageClient() {
         href="https://wa.me/260772231300"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-20 z-50 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-2xl transition-all duration-300 hover:scale-110 flex items-center justify-center"
+        className="fixed bottom-6 right-20 z-50 bg-green-500 hover:bg-green-600 text-foreground rounded-full p-4 shadow-2xl transition-all duration-300 hover:scale-110 flex items-center justify-center"
         aria-label="Chat on WhatsApp"
       >
         <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">

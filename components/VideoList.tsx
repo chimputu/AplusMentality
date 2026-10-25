@@ -71,7 +71,7 @@ export default function VideoList({ videos, isAdmin = false }: VideoListProps) {
   };
 
   if (!videos || videos.length === 0) {
-    return <p className="text-gray-500 text-center py-8 text-sm md:text-base">No videos uploaded yet.</p>;
+    return <p className="text-muted-foreground text-center py-8 text-sm md:text-base">No videos uploaded yet.</p>;
   }
 
   return (
@@ -84,7 +84,7 @@ export default function VideoList({ videos, isAdmin = false }: VideoListProps) {
         return (
           <div
             key={video.id}
-            className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+            className="border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
           >
             {isYoutube && youtubeId ? (
               <div className="relative w-full aspect-video bg-black">
@@ -99,11 +99,11 @@ export default function VideoList({ videos, isAdmin = false }: VideoListProps) {
             ) : (
               <div className="relative w-full aspect-video bg-black">
                 {!video.url ? (
-                  <div className="flex items-center justify-center h-full text-white bg-red-500/20 p-2 text-center">
+                  <div className="flex items-center justify-center h-full text-foreground bg-red-500/20 p-2 text-center">
                     <p className="text-xs md:text-sm">⚠️ No video URL</p>
                   </div>
                 ) : hasFailed ? (
-                  <div className="flex items-center justify-center h-full text-white bg-red-500/20 p-2 text-center">
+                  <div className="flex items-center justify-center h-full text-foreground bg-red-500/20 p-2 text-center">
                     <p className="text-xs md:text-sm">❌ Video unavailable</p>
                   </div>
                 ) : (
@@ -133,11 +133,11 @@ export default function VideoList({ videos, isAdmin = false }: VideoListProps) {
                 )}
               </div>
               {video.description && (
-                <p className="text-gray-600 text-xs md:text-sm mt-1">{video.description}</p>
+                <p className="text-muted-foreground text-xs md:text-sm mt-1">{video.description}</p>
               )}
-              <div className="mt-2 text-xs text-gray-500 flex flex-wrap items-center gap-1">
+              <div className="mt-2 text-xs text-muted-foreground flex flex-wrap items-center gap-1">
                 {isYoutube && (
-                  <span className="bg-red-500 text-white px-1.5 py-0.5 rounded text-[10px] md:text-xs">
+                  <span className="bg-red-500 text-foreground px-1.5 py-0.5 rounded text-[10px] md:text-xs">
                     YouTube
                   </span>
                 )}

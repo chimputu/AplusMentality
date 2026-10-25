@@ -104,7 +104,7 @@ export default function CreateLessonForm({
     <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Lesson Title *
         </label>
         <input
@@ -113,13 +113,13 @@ export default function CreateLessonForm({
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         />
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Description
         </label>
         <textarea
@@ -127,13 +127,13 @@ export default function CreateLessonForm({
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           rows={3}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
         />
       </div>
 
       {/* Order */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Lesson Order
         </label>
         <input
@@ -142,27 +142,27 @@ export default function CreateLessonForm({
           placeholder="0"
           value={formData.order}
           onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Lessons are displayed in ascending order (0, 1, 2, ...)
         </p>
       </div>
 
       {/* Content Dropdowns */}
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Content</h3>
+      <div className="border-t border-border pt-4">
+        <h3 className="text-sm font-medium text-foreground mb-3">Content</h3>
 
         {/* Video Dropdown */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             <Video className="w-4 h-4 inline mr-1" />
             Video
           </label>
           <select
             value={formData.videoId}
             onChange={(e) => setFormData({ ...formData, videoId: e.target.value })}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             disabled={loadingContent}
           >
             <option value="">None</option>
@@ -172,19 +172,19 @@ export default function CreateLessonForm({
               </option>
             ))}
           </select>
-          {loadingContent && <p className="text-xs text-gray-400 mt-1">Loading videos…</p>}
+          {loadingContent && <p className="text-xs text-muted-foreground mt-1">Loading videos…</p>}
         </div>
 
         {/* Slides Dropdown */}
         <div className="mt-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             <Presentation className="w-4 h-4 inline mr-1" />
             Lecture Slides
           </label>
           <select
             value={formData.slidesId}
             onChange={(e) => setFormData({ ...formData, slidesId: e.target.value })}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             disabled={loadingContent}
           >
             <option value="">None</option>
@@ -198,14 +198,14 @@ export default function CreateLessonForm({
 
         {/* Quiz Dropdown */}
         <div className="mt-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             <FileQuestion className="w-4 h-4 inline mr-1" />
             Quiz
           </label>
           <select
             value={formData.quizId}
             onChange={(e) => setFormData({ ...formData, quizId: e.target.value })}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             disabled={loadingContent}
           >
             <option value="">None</option>
@@ -221,7 +221,7 @@ export default function CreateLessonForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2 font-medium"
+        className="w-full bg-blue-600 text-foreground px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2 font-medium"
       >
         {loading ? (
           <>
