@@ -1,74 +1,107 @@
-'use client';
+import { requireAuth } from '@/lib/auth';
+import { getScopeContext, buildCourseScopeWhere } from '@/lib/auth/scope';
+import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
+import { BookOpen, Video, PlayCircle, ArrowRight } from 'lucide-react';
 
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import StudentVideoList from '@/components/StudentVideoList';
+export default async function StudentVideosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ university?: string }>;
+}) {
+  await requireAuth(['STUDENT']);
+  const scope = await getScopeContext();
+  const params = await searchParams;
+  const universityId = params.university || null;
 
-interface Video {
-  id: string;
-  title: string;
-  description: string | null;
-  url: string;
-  thumbnail: string | null;
-  source: string | null;
-  youtubeId: string | null;
-  createdAt: string;
-  uploader: { name: string | null } | null;
-  course: {
-    id: string;
-    code: string;
-    title: string;
-    university: { code: string; name: string } | null;
-  } | null;
-}
+  // Fetch distinct courses that have at least one video, scoped to the student's university/year/period
+  let coursesData: any[] = [];
+  try {
+    const scopeWhere = buildCourseScopeWhere(scope);
+    coursesData = await prisma.course.findMany({
+      where: {
+        ...scopeWhere,
+        ...(universityId ? { universityId } : {}),
+        videos: { some: {} }, // only courses with at least one video
+      },
+      select: {
+        id: true,
+        code: true,
+        title: true,
+        description: true,
+        _count: { select: { videos: true } },
+      },
+      orderBy: { title: 'asc' },
+    });
+  } catch (err) {
+    console.error('[StudentVideos] Failed to fetch courses:', err);
+  }
 
-export default function StudentVideosPage() {
-  const searchParams = useSearchParams();
-  const universityFilter = searchParams.get('university') || '';
-  const [videos, setVideos] = useState<Video[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (universityFilter) params.set('university', universityFilter);
-    fetch(`/api/videos${params.toString() ? '?' + params.toString() : ''}`)
-      .then(async (res) => {
-        if (!res.ok) {
-          console.error('Failed to fetch videos:', res.status);
-          return [];
-        }
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          return data;
-        }
-        console.error('Unexpected videos API response:', data);
-        return [];
-      })
-      .then((data: Video[]) => {
-        setVideos(data);
-      })
-      .catch(() => setVideos([]))
-      .finally(() => setLoading(false));
-  }, [universityFilter]);
+  const courses = Array.isArray(coursesData) ? coursesData : [];
 
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Videos</h1>
         <p className="text-gray-600 dark:text-gray-400 text-sm">
-          {universityFilter
-            ? 'Watching videos filtered by selected university'
-            : 'Watch all available videos'}
+          Browse videos organized by course
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        {loading ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading videos...</div>
-        ) : (
-          <StudentVideoList videos={videos} />
-        )}
-      </div>
+      {courses.length === 0 ? (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
+          <Video className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+            No videos available
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+            Check back later for new video content.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {courses.map((course) => (
+            <Link
+              key={course.id}
+              href={`/student/videos/${course.id}`}
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition group"
+            >
+              <div className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <span className="text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
+                      {course.code}
+                    </span>
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-100 mt-3 line-clamp-2">
+                      {course.title}
+                    </h3>
+                  </div>
+                  <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0 ml-3">
+                    <PlayCircle className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+
+                {course.description && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">
+                    {course.description}
+                  </p>
+                )}
+
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  <span className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                    <Video className="w-4 h-4" />
+                    {course._count.videos} {course._count.videos === 1 ? 'video' : 'videos'}
+                  </span>
+                  <span className="text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:text-blue-800 dark:group-hover:text-blue-300 transition flex items-center gap-1">
+                    View videos
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,8 +1,6 @@
-import { requireAuth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { createQuestion } from '@/lib/actions/questions';
 import { QuestionForm } from '@/app/(dashboard)/admin/questions/components/question-form';
-import { toast } from 'sonner';
 
 export default async function NewQuestionPage() {
   // Auth handled by layout (ADMIN + SUPER_ADMIN)

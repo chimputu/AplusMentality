@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -57,6 +58,41 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  
+  // Refs for tracking trigger button positions
+  const triggerRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number } | null>(null);
+
+  // Calculate dropdown position when menu opens
+  useEffect(() => {
+    if (openMenu && triggerRefs.current[openMenu]) {
+      const rect = triggerRefs.current[openMenu]!.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+      });
+    }
+  }, [openMenu]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openMenu) {
+        const target = event.target as Node;
+        const trigger = triggerRefs.current[openMenu];
+        
+        // Only close if clicking outside the trigger button
+        if (trigger && !trigger.contains(target)) {
+          setOpenMenu(null);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
 
   const handleToggleVerified = (id: string) => {
     startTransition(async () => {
@@ -204,67 +240,18 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
                   <td className="px-4 py-3 text-right">
                     <div className="relative inline-block">
                       <button
-                        onClick={() => setOpenMenu(openMenu === inst.id ? null : inst.id)}
+                        ref={(el) => {
+                          triggerRefs.current[inst.id] = el;
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenu(openMenu === inst.id ? null : inst.id);
+                        }}
                         disabled={isPending}
                         className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-50"
                       >
                         <MoreHorizontal className="w-4 h-4 text-gray-500" />
                       </button>
-
-                      {openMenu === inst.id && (
-                        <div className="absolute right-0 top-8 z-20 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 text-sm">
-                          <Link
-                            href={`/admin/institutions/${inst.id}`}
-                            onClick={() => setOpenMenu(null)}
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300"
-                          >
-                            <Eye className="w-4 h-4" />
-                            View
-                          </Link>
-                          <Link
-                            href={`/admin/institutions/${inst.id}/edit`}
-                            onClick={() => setOpenMenu(null)}
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300"
-                          >
-                            <Pencil className="w-4 h-4" />
-                            Edit
-                          </Link>
-                          <button
-                            onClick={() => {
-                              handleToggleVerified(inst.id);
-                              setOpenMenu(null);
-                            }}
-                            disabled={isPending}
-                            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300 disabled:opacity-50"
-                          >
-                            {inst.isVerified ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
-                            {inst.isVerified ? 'Unverify' : 'Verify'}
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleToggleActive(inst.id);
-                              setOpenMenu(null);
-                            }}
-                            disabled={isPending}
-                            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300 disabled:opacity-50"
-                          >
-                            {inst.isActive ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
-                            {inst.isActive ? 'Deactivate' : 'Activate'}
-                          </button>
-                          <hr className="my-1 border-gray-200 dark:border-gray-700" />
-                          <button
-                            onClick={() => {
-                              handleDelete(inst.id);
-                              setOpenMenu(null);
-                            }}
-                            disabled={isPending}
-                            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-red-600 dark:text-red-400 disabled:opacity-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            Delete
-                          </button>
-                        </div>
-                      )}
                     </div>
                   </td>
                 </tr>
@@ -273,6 +260,78 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
           </tbody>
         </table>
       </div>
+
+      {/* Dropdown Menu Portal - rendered outside overflow container */}
+      {openMenu && dropdownPosition && (() => {
+        const inst = institutions.find(i => i.id === openMenu);
+        if (!inst) return null;
+        
+        return createPortal(
+          <div
+            className="fixed z-50 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 text-sm"
+            style={{
+              top: dropdownPosition.top,
+              left: dropdownPosition.left,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Link
+              href={`/admin/institutions/${inst.id}`}
+              onClick={() => setOpenMenu(null)}
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300"
+            >
+              <Eye className="w-4 h-4" />
+              View
+            </Link>
+            <Link
+              href={`/admin/institutions/${inst.id}/edit`}
+              onClick={() => setOpenMenu(null)}
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300"
+            >
+              <Pencil className="w-4 h-4" />
+              Edit
+            </Link>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleToggleVerified(inst.id);
+                setOpenMenu(null);
+              }}
+              disabled={isPending}
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300 disabled:opacity-50"
+            >
+              {inst.isVerified ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+              {inst.isVerified ? 'Unverify' : 'Verify'}
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleToggleActive(inst.id);
+                setOpenMenu(null);
+              }}
+              disabled={isPending}
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300 disabled:opacity-50"
+            >
+              {inst.isActive ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+              {inst.isActive ? 'Deactivate' : 'Activate'}
+            </button>
+            <hr className="my-1 border-gray-200 dark:border-gray-700" />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(inst.id);
+                setOpenMenu(null);
+              }}
+              disabled={isPending}
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-red-600 dark:text-red-400 disabled:opacity-50"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </button>
+          </div>,
+          document.body
+        );
+      })()}
 
       {/* Delete Confirmation Dialog */}
       {deleteId && (
