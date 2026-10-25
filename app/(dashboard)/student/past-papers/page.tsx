@@ -48,10 +48,12 @@ const CATEGORY_COLORS: Record<string, string> = {
   final_exam: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
 };
 
+const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
 function getFileIcon(type: string | null) {
-  if (type === 'pdf') return <FileText className="w-5 h-5 text-red-500" />;
-  if (type === 'image') return <ImageIcon className="w-5 h-5 text-blue-500" />;
-  if (type === 'docx') return <FileIcon className="w-5 h-5 text-indigo-500" />;
+  const t = type?.toLowerCase() || '';
+  if (t === 'pdf') return <FileText className="w-5 h-5 text-red-500" />;
+  if (t === 'image' || IMAGE_EXTS.includes(t)) return <ImageIcon className="w-5 h-5 text-blue-500" />;
+  if (t === 'docx' || t === 'doc') return <FileIcon className="w-5 h-5 text-indigo-500" />;
   return <FileText className="w-5 h-5 text-gray-500" />;
 }
 
@@ -113,7 +115,8 @@ export default function StudentPastPapersPage() {
 
   // ✅ Open preview modal
   const handlePreview = (paper: PastPaper) => {
-    if (paper.fileType === 'docx') {
+    const t = paper.fileType?.toLowerCase() || '';
+    if (t === 'docx' || t === 'doc') {
       // DOCX can't be previewed inline — open in new tab
       window.open(getInlineUrl(paper.fileUrl), '_blank');
       return;

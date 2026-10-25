@@ -104,6 +104,16 @@ export async function PUT(
     // Create the actual content row based on contentType
     const title = upload.originalName.replace(/\.[^/.]+$/, ''); // Remove extension
 
+    // Normalize file type to a category name for consistent storage
+    function normalizeFileType(ext: string, mimeType: string): string {
+      if (mimeType === 'application/pdf' || ext === 'pdf') return 'pdf';
+      if (mimeType.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext.toLowerCase())) return 'image';
+      if (mimeType.includes('wordprocessingml') || ext === 'docx' || ext === 'doc') return 'docx';
+      return ext || 'raw';
+    }
+
+    const normalizedType = normalizeFileType(upload.fileType, upload.mimeType);
+
     switch (contentType) {
       case 'lecture_slide':
       case 'tutorial':
@@ -111,7 +121,7 @@ export async function PUT(
           data: {
             title,
             fileUrl: upload.url,
-            contentType: upload.fileType,
+            contentType: normalizedType,
             order: order ? parseInt(String(order)) : 0,
             courseId,
             createdBy: auth.userId,
@@ -134,7 +144,7 @@ export async function PUT(
           data: {
             title,
             fileUrl: upload.url,
-            fileType: upload.fileType,
+            fileType: normalizedType,
             fileSize: upload.fileSize,
             createdBy: auth.userId,
           },

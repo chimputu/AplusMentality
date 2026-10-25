@@ -1,5 +1,6 @@
 // app/(dashboard)/student/lecture-slides/[id]/page.tsx
 import { requireAuth } from '@/lib/auth';
+import { getScopeContext, isResourceInScope } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -24,15 +25,18 @@ function getGoogleDocsViewerUrl(fileUrl: string): string {
 export default async function StudentLectureSlideDetailPage({
   params,
 }: PageProps) {
-  await requireAuth(['STUDENT', 'ADMIN']);
+  const authResult = await requireAuth(['STUDENT', 'ADMIN']);
   const { id } = await params;
+
+  // SECURITY: Resolve user's academic scope to prevent IDOR
+  const scope = await getScopeContext();
 
   let slide: any = null;
   try {
     slide = await prisma.lectureSlide.findUnique({
       where: { id },
       include: {
-        course: true,
+        course: { select: { id: true, title: true, code: true, universityId: true } },
         creator: true,
       },
     });
@@ -41,6 +45,12 @@ export default async function StudentLectureSlideDetailPage({
   }
 
   if (!slide) {
+    notFound();
+  }
+
+  // SECURITY: Block access if the slide's course is not in the user's scope
+  // Admins can access any slide; students can only access slides from their university
+  if (!isResourceInScope(scope, slide.course?.universityId ?? null)) {
     notFound();
   }
 

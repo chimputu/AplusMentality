@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, getAuthUser } from '@/lib/auth';
+import { getScopeContext, buildCourseScopeWhere } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -102,8 +103,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ data: courses, count: courses.length });
     }
 
+    // SECURITY: Scope the query to the user's university, year, and semester
+    // so students only see their own courses, not all published courses
+    const scope = await getScopeContext();
+    const scopeWhere = buildCourseScopeWhere(scope);
+
     const courses = await prisma.course.findMany({
-      where,
+      where: { ...where, ...scopeWhere },
       include: {
         university: {
           select: {
