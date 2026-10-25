@@ -28,6 +28,30 @@ Verify each stage by toggling between light and dark mode and checking that all 
 ### Test Changes
 No automated test changes — validation is visual/manual by toggling themes across all major pages.
 
+# Turbopack Build Fix
+
+### Problem
+`lib/auth/scope.ts` has `'use server'` at the top of the file. In Turbopack (Next.js 16), this directive causes all `export function` declarations to be treated as Server Functions, which must be `async`. The 4 synchronous utility functions (`buildCourseScopeWhere`, `buildCourseResourceScopeWhere`, `isResourceInScope`, `assertWriteAllowed`) fail the build because they are not async.
+
+### Fix
+Remove `'use server'` from `lib/auth/scope.ts`. The `getScopeContext` function still works on the server because it's imported from Server Components and Route Handlers (server contexts). The utility functions are pure synchronous helpers — they never need `'use server'` since they're never called from client components.
+
+# Delivery Steps (Build Fix)
+
+### ✓ Step 1: Remove `'use server'` from `lib/auth/scope.ts`
+Remove the directive so Turbopack no longer treats the 4 utility functions as Server Functions.
+
+- Edit `lib/auth/scope.ts`: Delete the `'use server';` line at the top
+- Verify `getScopeContext` still works (it's imported from server contexts only)
+- Verify all 16 import sites still work (page.tsx files and API routes)
+
+### * Step 2: Verify build and push
+Confirm the build passes locally and deploy.
+
+- Run `npm run build` to verify Turbopack no longer errors on the 4 functions
+- Commit and push to `main`
+- Verify Vercel deployment succeeds
+
 # Delivery Steps
 
 ### ✓ Step 1: Extend CSS variable exposure in globals.css

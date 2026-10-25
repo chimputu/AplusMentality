@@ -5,17 +5,15 @@ export default function SignInPage() {
     <div className="flex justify-center items-center min-h-[80vh]">
       <SignIn
         appearance={{
-          baseTheme: undefined,
           variables: {
             colorPrimary: 'var(--primary)',
             colorBackground: 'var(--card)',
-            colorText: 'var(--foreground)',
-            colorTextSecondary: 'var(--muted-foreground)',
-            colorInputBackground: 'var(--input)',
-            colorInputText: 'var(--foreground)',
-            colorInputBorder: 'var(--border)',
-            colorInputBorderFocus: 'var(--primary)',
-            colorShade: 'var(--muted)',
+            colorForeground: 'var(--foreground)',
+            colorMutedForeground: 'var(--muted-foreground)',
+            colorInput: 'var(--input)',
+            colorInputForeground: 'var(--foreground)',
+            colorBorder: 'var(--border)',
+            colorMuted: 'var(--muted)',
           },
           elements: {
             formButtonPrimary:
