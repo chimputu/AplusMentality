@@ -14,7 +14,6 @@ import {
   GraduationCap, Target, Users as UsersIcon, CheckCircle,
   FileText, Book, ClipboardList, MessageCircle, Briefcase, Crown,
   Compass, TrendingUp, PlayCircle, Megaphone, UserPlus,
-  ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import BannerCarousel from '@/components/banner-carousel';
 import { CourseCard } from '@/components/course-card';
@@ -56,49 +55,23 @@ const partnerInstitutions = [
 ];
 
 function UniversitiesCarousel() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scroll = useCallback((direction: 'left' | 'right') => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const scrollAmount = direction === 'left' ? -320 : 320;
-    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  }, []);
+  // Duplicate the array for seamless infinite loop
+  const doubled = [...partnerInstitutions, ...partnerInstitutions];
 
   return (
-    <div className="relative">
-      {/* Left arrow */}
-      <button
-        onClick={() => scroll('left')}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-card shadow-lg rounded-full p-2 hover:bg-card-hover hidden md:flex items-center justify-center"
-        aria-label="Scroll left"
-      >
-        <ChevronLeft className="w-5 h-5 text-foreground" />
-      </button>
+    <div className="relative overflow-hidden">
+      {/* Fade masks on the edges for a smooth blend */}
+      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
-      {/* Swipe hint for mobile */}
-      <p className="sm:hidden text-xs text-muted-foreground text-center mb-3">← Swipe to see more →</p>
-
-      {/* Scrollable container */}
-      <div
-        ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory px-2 pb-4"
-        style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-        }}
-      >
-        {/* Hide scrollbar for webkit */}
-        <style>{`
-          .scrollbar-hide::-webkit-scrollbar { display: none; }
-        `}</style>
-
-        {partnerInstitutions.map((inst, idx) => (
+      {/* Infinite marquee track */}
+      <div className="flex gap-4 animate-marquee">
+        {doubled.map((inst, idx) => (
           <div
             key={idx}
-            className="flex-shrink-0 snap-center w-[200px] sm:w-[240px]"
+            className="flex-shrink-0 w-[200px] sm:w-[240px]"
           >
-            <div className="bg-card rounded-xl border border-border p-4 text-center hover:shadow-lg hover:border-blue-300 transition-all duration-300 h-full flex flex-col items-center justify-center">
+            <div className="bg-white rounded-xl border border-border p-4 text-center hover:shadow-lg hover:border-blue-300 transition-all duration-300 h-full flex flex-col items-center justify-center shadow-sm">
               <InstitutionLogo
                 name={inst.name}
                 shortName={inst.shortName}
@@ -114,15 +87,6 @@ function UniversitiesCarousel() {
           </div>
         ))}
       </div>
-
-      {/* Right arrow */}
-      <button
-        onClick={() => scroll('right')}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-card shadow-lg rounded-full p-2 hover:bg-card-hover hidden md:flex items-center justify-center"
-        aria-label="Scroll right"
-      >
-        <ChevronRight className="w-5 h-5 text-foreground" />
-      </button>
     </div>
   );
 }
@@ -350,20 +314,20 @@ export default function HomePageClient() {
             {/* LEFT: Headline + CTAs */}
             <div className="text-center lg:text-left space-y-6">
               {/* Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight tracking-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
                 <span className="block">Your Goal.</span>
-                <span className="block text-blue-400 mt-2">
+                <span className="block text-blue-500 mt-2">
                   Our tools.
                 </span>
                 <span className="block mt-2">
                   Your{' '}
-                  <span className="text-blue-400">A+</span>{' '}
+                  <span className="text-blue-500">A+</span>{' '}
                   result.
                 </span>
               </h1>
 
               {/* Description */}
-              <p className="text-base sm:text-lg text-foreground/80 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              <p className="text-base sm:text-lg text-gray-200 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                 A+ Mentality helps students study smarter, stay organized, and track progress so you can achieve more and stress less.
               </p>
 
@@ -371,34 +335,34 @@ export default function HomePageClient() {
               <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
                 <Link
                   href="/sign-up"
-                  className="bg-blue-600 hover:bg-blue-700 text-foreground px-6 py-3 rounded-full font-medium transition-colors shadow-lg hover:shadow-xl"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full font-medium transition-colors shadow-lg hover:shadow-xl"
                 >
                   Get Started Free
                 </Link>
                 <Link
                   href="#explore"
-                  className="bg-card/10 hover:bg-card/20 backdrop-blur-sm text-foreground px-6 py-3 rounded-full font-medium transition-colors border border-border"
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium transition-colors border border-white/40"
                 >
                   Explore Features
                 </Link>
               </div>
 
               {/* Trust indicators */}
-              <div className="flex flex-wrap gap-x-6 gap-y-3 justify-center lg:justify-start text-sm text-foreground/70 pt-4">
+              <div className="flex flex-wrap gap-x-6 gap-y-3 justify-center lg:justify-start text-sm text-gray-300 pt-4">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle className="w-4 h-4 text-gray-200" />
                   Free to start
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle className="w-4 h-4 text-gray-200" />
                   Learn offline
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle className="w-4 h-4 text-gray-200" />
                   Mentors available
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle className="w-4 h-4 text-gray-200" />
                   Built for Zambians
                 </span>
               </div>
@@ -412,29 +376,29 @@ export default function HomePageClient() {
                 <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-emerald-500/20 rounded-3xl blur-3xl" />
                 
                 {/* The Blur Box Card */}
-                <div className="relative bg-card/10 backdrop-blur-xl border border-border rounded-2xl p-8 shadow-2xl text-center">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-2xl text-center">
+                  <h3 className="text-2xl font-bold text-white mb-2">
                     Built for Zambian Students
                   </h3>
-                  <p className="text-blue-200 text-sm mb-6">
+                  <p className="text-gray-200 text-sm mb-6">
                     By Zambians, for Zambians
                   </p>
                   <div className="flex justify-center gap-6 text-sm mb-8">
                     <div>
-                      <p className="font-bold text-foreground text-lg">Quality</p>
-                      <p className="text-blue-200 text-xs">Content</p>
+                      <p className="font-bold text-white text-lg">Quality</p>
+                      <p className="text-gray-300 text-xs">Content</p>
                     </div>
                     <div>
-                      <p className="font-bold text-foreground text-lg">Expert</p>
-                      <p className="text-blue-200 text-xs">Mentors</p>
+                      <p className="font-bold text-white text-lg">Expert</p>
+                      <p className="text-gray-300 text-xs">Mentors</p>
                     </div>
                     <div>
-                      <p className="font-bold text-foreground text-lg">Learn</p>
-                      <p className="text-blue-200 text-xs">Offline</p>
+                      <p className="font-bold text-white text-lg">Learn</p>
+                      <p className="text-gray-300 text-xs">Offline</p>
                     </div>
                   </div>
-                  <div className="pt-6 border-t border-border">
-                    <p className="text-xs text-foreground/70">
+                  <div className="pt-6 border-t border-white/20">
+                    <p className="text-xs text-gray-300">
                       Join the A+ Mentality community today
                     </p>
                   </div>
@@ -1199,45 +1163,45 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="bg-background text-foreground">
+      <footer className="bg-neutral-950 text-white">
         <div className="w-full px-3 sm:px-4 py-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
             <div>
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
-                  <span className="text-foreground font-bold text-lg">A+</span>
+                <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">A+</span>
                 </div>
-                <span className="text-xl font-bold text-foreground">Mentality</span>
+                <span className="text-xl font-bold text-white">Mentality</span>
               </Link>
-              <p className="mt-4 text-sm text-foreground">
+              <p className="mt-4 text-sm text-gray-400">
                 Empowering Zambian lifelong learners through curated content, mentorship, and community support.
               </p>
               <div className="mt-4 flex space-x-4">
-                <a href="#" className="text-foreground hover:text-blue-400 transition" aria-label="Share"><Share2 className="w-5 h-5" /></a>
-                <a href="#" className="text-foreground hover:text-blue-400 transition" aria-label="Website"><Globe className="w-5 h-5" /></a>
-                <a href="#" className="text-foreground hover:text-blue-400 transition" aria-label="Email"><AtSign className="w-5 h-5" /></a>
-                <a href="#" className="text-foreground hover:text-blue-400 transition" aria-label="Link"><LinkIcon className="w-5 h-5" /></a>
+                <a href="#" className="text-gray-400 hover:text-blue-500 transition" aria-label="Share"><Share2 className="w-5 h-5" /></a>
+                <a href="#" className="text-gray-400 hover:text-blue-500 transition" aria-label="Website"><Globe className="w-5 h-5" /></a>
+                <a href="#" className="text-gray-400 hover:text-blue-500 transition" aria-label="Email"><AtSign className="w-5 h-5" /></a>
+                <a href="#" className="text-gray-400 hover:text-blue-500 transition" aria-label="Link"><LinkIcon className="w-5 h-5" /></a>
               </div>
             </div>
             <div>
-              <h4 className="text-foreground font-semibold mb-4">Quick Links</h4>
+              <h4 className="text-white font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="https://smartcorp-zeta.vercel.app" className="hover:text-blue-400 transition">About Us</Link></li>
-                <li><Link href="https://smartcorp-zeta.vercel.app/contact" className="hover:text-blue-400 transition">Contact</Link></li>
+                <li><Link href="https://smartcorp-zeta.vercel.app" className="text-gray-400 hover:text-white transition">About Us</Link></li>
+                <li><Link href="https://smartcorp-zeta.vercel.app/contact" className="text-gray-400 hover:text-white transition">Contact</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-foreground font-semibold mb-4">Contact</h4>
+              <h4 className="text-white font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center space-x-2">
-                  <Mail className="w-4 h-4 text-blue-400" />
-                  <a href="mailto:kafiswegchimputu@gmail.com" className="hover:text-blue-400 transition">
+                  <Mail className="w-4 h-4 text-blue-500" />
+                  <a href="mailto:kafiswegchimputu@gmail.com" className="text-gray-400 hover:text-white transition">
                     kafiswegchimputu@gmail.com
                   </a>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <Phone className="w-4 h-4 text-blue-400" />
-                  <span>+260 954 953 610</span>
+                  <Phone className="w-4 h-4 text-blue-500" />
+                  <span className="text-gray-400">+260 954 953 610</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <a
@@ -1253,13 +1217,13 @@ export default function HomePageClient() {
                   </a>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <MapPin className="w-4 h-4 text-blue-400" />
-                  <span>Lusaka, Zambia</span>
+                  <MapPin className="w-4 h-4 text-blue-500" />
+                  <span className="text-gray-400">Lusaka, Zambia</span>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="text-foreground font-semibold mb-4">Subscribe to Our Newsletter</h4>
+              <h4 className="text-white font-semibold mb-4">Subscribe to Our Newsletter</h4>
               <form onSubmit={handleSubscribe} className="space-y-3">
                 <div>
                   <label htmlFor="newsletter-email" className="sr-only">Email address</label>
@@ -1270,12 +1234,12 @@ export default function HomePageClient() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full px-4 py-2 rounded-full bg-card border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 rounded-full bg-neutral-900 border border-neutral-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <button 
                   type="submit" 
-                  className="w-full bg-blue-600 text-foreground px-4 py-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center space-x-2"
+                  className="w-full bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition flex items-center justify-center space-x-2"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -1290,18 +1254,18 @@ export default function HomePageClient() {
               </form>
             </div>
           </div>
-          <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
+          <div className="border-t border-neutral-800 mt-8 pt-8 text-center text-sm text-gray-400">
             &copy; {new Date().getFullYear()} A+ Mentality Zambia. All rights reserved. Built for Zambian lifelong learners.
             <div className="mt-3 flex items-center justify-center gap-4">
-              <Link href="/privacy-policy" className="text-xs text-muted-foreground hover:text-blue-400 transition">
+              <Link href="/privacy-policy" className="text-xs text-gray-400 hover:text-white transition">
                 Privacy Policy
               </Link>
-              <span className="text-muted-foreground">•</span>
-              <Link href="/terms-of-service" className="text-xs text-muted-foreground hover:text-blue-400 transition">
+              <span className="text-gray-500">•</span>
+              <Link href="/terms-of-service" className="text-xs text-gray-400 hover:text-white transition">
                 Terms of Service
               </Link>
-              <span className="text-muted-foreground">•</span>
-              <Link href="/api/health" className="text-xs text-muted-foreground hover:text-blue-400 transition">
+              <span className="text-gray-500">•</span>
+              <Link href="/api/health" className="text-xs text-gray-400 hover:text-white transition">
                 System Status
               </Link>
             </div>
@@ -1318,6 +1282,16 @@ export default function HomePageClient() {
         @keyframes testimonialScroll {
           0% { transform: translateX(0); }
           100% { transform: translateX(-33.333%); }
+        }
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          animation: marquee 30s linear infinite;
+        }
+        .animate-marquee:hover {
+          animation-play-state: paused;
         }
       `}</style>
 
