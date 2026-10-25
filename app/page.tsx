@@ -90,7 +90,9 @@ export default async function HomePage() {
     const role = user?.role || 'STUDENT';
     if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
       redirect('/admin');
-    } else if (role === 'TUTOR' || role === 'LECTURER') {
+    } else if (role === 'LECTURER') {
+      redirect('/lecturer');
+    } else if (role === 'TUTOR') {
       redirect('/tutor');
     } else {
       redirect('/student');

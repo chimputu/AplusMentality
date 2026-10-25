@@ -1,198 +1,270 @@
 ---
 sessionId: session-261025-171810-1pct
+
 ---
+
+### ✓ Step 1: Create lecturer layout, dashboard page, and navigation
+
+### ✓ Step 2: Create lecturer content management pages
+
+### ✓ Step 3: Create lecturer grades and enrollments pages
 
 # Requirements
 
 ### Overview & Goals
 
-Transform the student Videos page from a flat, client-side accordion of all videos into a **Course Directory** pattern (like Netflix categories):
-1. The landing page (`/student/videos`) shows a grid of **Course cards** (each card = one course that has videos).
-2. Clicking a course navigates to `/student/videos/[courseId]`, which shows **all videos for that course**.
-
-This improves discoverability: students see their courses first, then drill into the videos they actually care about.
+Create a **dedicated Lecturer Dashboard** at `/lecturer` with lecturer-specific navigation, content, and features. The LECTURER role currently exists in the database but shares the Tutor dashboard — it has no identity of its own. The new dashboard will focus on **teaching** rather than **tutoring**: content management, assessments, announcements, student grades, and course enrollment views.
 
 ### Scope
 
 **In Scope:**
-- Rewrite `/student/videos/page.tsx` as a server component that fetches and displays scoped course cards.
-- Create `/student/videos/[courseId]/page.tsx` as a server component that fetches and displays videos for a specific course.
-- Server-side auth (`requireAuth`) and data scoping (`getScopeContext` + `buildCourseScopeWhere`) on both pages.
-- IDOR protection on the `[courseId]` page: 404 if the course doesn't belong to the student's university.
-- Reuse the existing `StudentVideoList` component for rendering videos.
+- Create a new `/lecturer` route group with layout and dashboard page.
+- Create `LecturerContent` component (analogous to `TutorContent`) showing lecturer-specific stats and quick actions.
+- Add Lecturer-specific navigation items in `DashboardLayout`.
+- Wire up role-based redirect so LECTURER users go to `/lecturer` after login.
+- Lecturer pages for: Courses (their courses), Videos, Lecture Slides, Past Papers, Assignments, Quizzes, Tests, Announcements, Student Grades, and Course Enrollments.
+- All pages use `requireAuth(['LECTURER'])` and filter content by `createdBy === lecturer.clerkId`.
 
 **Out of Scope:**
-- Changes to the video upload API (`/api/videos/route.ts`).
-- Changes to the `StudentVideoList` component itself.
-- Pagination (assume courses/videos fit on one page for now).
-- Search or filtering within the video list.
+- Tutoring-specific features (requests, specialties, offerings, reviews) — these remain exclusive to the TUTOR role.
+- A separate Lecturer database model — the existing `User` model with `role: 'LECTURER'` is sufficient.
+- Changes to the Tutor dashboard — it remains unchanged.
 
 ### User Stories
 
-- As a student, I want to see a grid of my courses on the Videos page so I can quickly find the subjects I care about.
-- As a student, I want to click a course and see only its videos so I'm not overwhelmed by unrelated content.
-- As a student, I should never see videos from courses that don't belong to my university (data isolation).
+- As a lecturer, I want to land on a dashboard that shows my courses, recent activity, and quick actions — not tutoring features.
+- As a lecturer, I want to manage the content I created (courses, videos, slides, papers, assessments).
+- As a lecturer, I want to see student grades for my assessments.
+- As a lecturer, I want to see which students are enrolled in my courses.
+- As a lecturer, I want to post announcements to my students.
 
 ### Functional Requirements
 
-1. **Course Directory Page** (`/student/videos/page.tsx`):
-   - Fetches distinct courses that have at least one video, scoped to the student's `universityId`, `year`, and `period`.
-   - Displays each course as a card showing: Course Code, Course Title, Video Count.
-   - Clicking a card navigates to `/student/videos/[courseId]`.
-   - Shows an empty state if no courses have videos.
+1. **Lecturer Dashboard Home** (`/lecturer/page.tsx`):
+   - Welcome header with lecturer's name and institution.
+   - Stats cards: number of courses, total enrollments, total assessments, recent submissions.
+   - Quick action links to create content.
+   - Recent activity feed (recent submissions, enrollments).
 
-2. **Course Video Page** (`/student/videos/[courseId]/page.tsx`):
-   - Fetches all videos where `courseId === params.courseId` AND the course belongs to the student's university.
-   - Displays videos using the existing `StudentVideoList` component.
-   - Includes a "Back to Videos" link.
-   - Returns 404 if the course doesn't exist, isn't published, or doesn't belong to the student's university.
+2. **Lecturer Navigation** (in `DashboardLayout`):
+   - Overview → Dashboard
+   - Content → Courses, Videos, Lecture Slides, Past Papers
+   - Assessments → Quizzes, Tests, Assignments
+   - Students → Grades, Enrollments
+   - Communication → Announcements
+   - Account → Settings
 
-3. **Data Isolation:**
-   - Both pages use `requireAuth(['STUDENT'])` for auth.
-   - Both pages use `getScopeContext()` to resolve the student's academic scope.
-   - The `[courseId]` page uses `isResourceInScope()` to verify the course belongs to the student's university before rendering.
+3. **Content Management Pages** (reuse tutor page patterns):
+   - Each page fetches resources where `createdBy === lecturer.clerkId`.
+   - Same CRUD operations as tutor pages but scoped to the lecturer's own content.
+
+4. **Student Grades Page** (`/lecturer/grades/page.tsx`):
+   - Lists all assessments created by the lecturer.
+   - Shows student attempts with scores, percentages, and pass/fail status.
+
+5. **Course Enrollments Page** (`/lecturer/enrollments/page.tsx`):
+   - Lists all courses created by the lecturer.
+   - Shows enrolled students with names, emails, and enrollment dates.
 
 # Technical Design
 
 ### Current Implementation
 
-**`app/(dashboard)/student/videos/page.tsx`** (190 lines):
-- Client component (`'use client'`).
-- Fetches videos via `fetch('/api/videos')` in a `useEffect`.
-- Groups videos by course client-side using `reduce()`.
-- Renders an accordion UI (expandable course headers).
-- **No server-side auth** — relies on the API route's `getAuthUser()` check.
-- **No data scoping** — fetches all videos for any university filter passed via search params.
+**Existing role dashboards:**
+- `/admin` — Admin dashboard with `AdminContent` component, manages all content.
+- `/tutor` — Tutor dashboard with `TutorContent` component, manages tutoring + content.
+- `/student` — Student dashboard, consumes content.
 
-**`app/api/videos/route.ts`** (GET handler):
-- Supports `courseId`, `institutionId`, and `university` query params.
-- Uses `getAuthUser()` for auth (less strict than `requireAuth`).
-- Returns videos with included `course` and `uploader` data.
+**Lecturer role today:**
+- `LECTURER` is defined in the `Role` enum in `prisma/schema.prisma`.
+- LECTURER users are redirected to `/tutor` after login (`app/page.tsx`).
+- LECTURER can access all tutor pages (`requireAuth(['TUTOR', 'LECTURER'])`).
+- LECTURER sees the same `tutorNavItems` in `DashboardLayout`.
+- No lecturer-specific pages, components, or navigation exist.
 
-**`components/StudentVideoList.tsx`** (150 lines):
-- Client component that renders a grid of video cards.
-- Accepts `videos: Video[]` prop.
-- Handles YouTube embeds and direct video playback.
-- **Will be reused unchanged** on the new `[courseId]` page.
+**Key patterns to follow:**
+- `app/(dashboard)/tutor/layout.tsx` — Layout wrapper with `requireAuth`, `DashboardLayout`, and `AIAssistantWrapper`.
+- `app/(dashboard)/tutor/page.tsx` — Server component that fetches data and renders `TutorContent`.
+- `components/TutorContent.tsx` — Client component with stats, quick actions, and recent activity.
+- Tutor content pages (e.g., `tutor/courses/page.tsx`) — Server components with `requireAuth` + `getScopeContext` + `buildCourseResourceScopeWhere`.
 
-**Auth/Scoping Pattern** (from `student/courses/page.tsx` and `student/courses/[courseId]/page.tsx`):
-- `requireAuth(['STUDENT'])` — ensures the user is authenticated and a student.
-- `getScopeContext()` — resolves the user's `universityId`, `year`, `period`.
-- `buildCourseScopeWhere(scope)` — builds a Prisma `where` clause filtering by university/year/period.
-- `isResourceInScope(scope, resourceUniversityId)` — IDOR check: returns `true` if the resource belongs to the user's university.
+**Data relationships for Lecturer scoping:**
+- `Course.createdBy` → `User.clerkId` — lecturer's courses
+- `Video.uploadedBy` → `User.clerkId` — lecturer's videos
+- `LectureSlide.createdBy` → `User.clerkId` — lecturer's slides
+- `PastPaper.createdBy` → `User.clerkId` — lecturer's papers
+- `Quiz.createdBy` → `User.clerkId` — lecturer's quizzes
+- `Test.createdBy` → `User.clerkId` — lecturer's tests
+- `Assignment.createdBy` → `User.clerkId` — lecturer's assignments
+- `Assessment.createdBy` → `User.clerkId` — lecturer's assessments
+- `Announcement.createdBy` → `User.clerkId` — lecturer's announcements
+- `Enrollment.courseId` → `Course` → `createdBy` — enrollments in lecturer's courses
+- `AssessmentAttempt.assessmentId` → `Assessment` → `createdBy` — attempts on lecturer's assessments
 
 ### Key Decisions
 
-1. **Convert to Server Components:** Both pages will be async server components (no `'use client'`), following the pattern established by `student/courses/page.tsx` and `student/courses/[courseId]/page.tsx`. This eliminates the client-side fetch, improves SEO, and enables server-side auth.
+1. **New route group `app/(dashboard)/lecturer/`** — A separate route group (not a subpath of `/tutor`) gives lecturers their own URL space and layout. This matches the existing pattern where `/admin`, `/tutor`, and `/student` are parallel route groups.
 
-2. **Direct Prisma queries instead of API route:** Instead of calling `/api/videos` from the client, the server pages will query Prisma directly. This is consistent with how `student/courses/page.tsx` works and avoids an extra network round-trip.
+2. **`LecturerContent` component** — Mirrors `TutorContent` but shows teaching-focused stats (courses, enrollments, assessments, submissions) instead of tutoring stats (requests, specialties, offerings).
 
-3. **Reuse `StudentVideoList`:** The existing video grid component will be reused on the `[courseId]` page. No changes needed to it.
+3. **Content scoping by `createdBy`** — Unlike the Tutor dashboard (which uses `getScopeContext()` + `buildCourseResourceScopeWhere` to scope by university/programme/year), the Lecturer dashboard scopes content by the lecturer's own `clerkId` via the `createdBy` field. This is simpler and more accurate — a lecturer sees only what they created.
 
-4. **Distinct courses query:** The landing page will use a Prisma query that fetches courses (not videos) and includes a `_count` of videos, rather than fetching all videos and grouping client-side. This is more efficient.
+4. **Reuse existing page patterns** — Content management pages (videos, slides, etc.) will follow the exact same structure as their tutor counterparts, only changing the `requireAuth` role and the `where` clause from scope-based to `createdBy`-based.
+
+5. **New pages: Grades and Enrollments** — These are unique to the lecturer role. They query `AssessmentAttempt` and `Enrollment` models, joining through the lecturer's assessments/courses.
 
 ### Proposed Changes
 
-#### 1. Rewrite `/student/videos/page.tsx` — Course Directory
+#### 1. Create `/lecturer` route group
 
-**New implementation:**
-- Convert to an async server component.
-- Call `requireAuth(['STUDENT'])` and `getScopeContext()`.
-- Query Prisma for distinct courses that have videos, scoped to the user's university/year/period:
-  ```ts
-  const courses = await prisma.course.findMany({
-    where: {
-      ...buildCourseScopeWhere(scope),
-      isPublished: true,
-      videos: { some: {} }, // only courses with at least one video
-    },
-    select: {
-      id: true,
-      code: true,
-      title: true,
-      _count: { select: { videos: true } },
-    },
-    orderBy: { title: 'asc' },
-  });
-  ```
-- Render a grid of course cards (Link components to `/student/videos/[courseId]`).
-- Each card shows: course code (badge), course title, video count.
-- Empty state if no courses have videos.
+**New file: `app/(dashboard)/lecturer/layout.tsx`**
+- `requireAuth(['LECTURER'])` for auth.
+- Wrap children in `DashboardLayout` with `role={role}`.
+- Include `AIAssistantWrapper`.
 
-#### 2. Create `/student/videos/[courseId]/page.tsx` — Course Video List
+**New file: `app/(dashboard)/lecturer/page.tsx`**
+- Server component.
+- Fetch lecturer's user data from `prisma.user`.
+- Compute stats: courses count, total enrollments, assessments count, recent submissions.
+- Render `LecturerContent` component.
 
-**New file:**
-- Async server component.
-- Call `requireAuth(['STUDENT'])` and `getScopeContext()`.
-- Fetch the course by ID with error handling.
-- **IDOR check:** `if (!isResourceInScope(scope, course.universityId ?? null)) notFound();`
-- Fetch videos for the course:
-  ```ts
-  const videos = await prisma.video.findMany({
-    where: { courseId },
-    orderBy: { order: 'asc' },
-    include: {
-      uploader: { select: { name: true } },
-    },
-  });
-  ```
-- Render a "Back to Videos" link + `StudentVideoList` with the videos.
-- Convert `DateTime` fields to ISO strings (matching the existing pattern).
+#### 2. Create `LecturerContent` component
+
+**New file: `components/LecturerContent.tsx`**
+- Client component (like `TutorContent`).
+- Welcome header with lecturer's name and institution.
+- Stats grid: Courses, Enrollments, Assessments, Submissions.
+- Quick action cards linking to content management pages.
+- Recent activity section.
+
+#### 3. Add Lecturer navigation items
+
+**Modify: `components/DashboardLayout.tsx`**
+- Add `lecturerNavItems` array with sections: Overview, Content, Assessments, Students, Communication, Account.
+- Update nav item selection logic: `else if (role === 'LECTURER') { navItems = lecturerNavItems; }`.
+
+#### 4. Update role-based redirects
+
+**Modify: `app/page.tsx`**
+- Add `role === 'LECTURER'` → redirect to `/lecturer` (separate from TUTOR).
+
+**Modify: `app/(dashboard)/student/page.tsx`**
+- Add `dbUser?.role === 'LECTURER'` → redirect to `/lecturer`.
+
+#### 5. Create Lecturer content pages
+
+Each page follows the pattern:
+```ts
+export default async function LecturerXxxPage() {
+  const { userId } = await requireAuth(['LECTURER']);
+  // Fetch resources where createdBy === userId
+  // Render with existing components or new lecturer-specific UI
+}
+```
+
+**New files:**
+- `app/(dashboard)/lecturer/courses/page.tsx` — Lecturer's courses (createdBy filter)
+- `app/(dashboard)/lecturer/videos/page.tsx` — Lecturer's videos
+- `app/(dashboard)/lecturer/lecture-slides/page.tsx` — Lecturer's slides
+- `app/(dashboard)/lecturer/past-papers/page.tsx` — Lecturer's papers
+- `app/(dashboard)/lecturer/assignments/page.tsx` — Lecturer's assignments
+- `app/(dashboard)/lecturer/quizzes/page.tsx` — Lecturer's quizzes
+- `app/(dashboard)/lecturer/tests/page.tsx` — Lecturer's tests
+- `app/(dashboard)/lecturer/announcements/page.tsx` — Lecturer's announcements
+- `app/(dashboard)/lecturer/grades/page.tsx` — Student grades for lecturer's assessments
+- `app/(dashboard)/lecturer/enrollments/page.tsx` — Enrollments in lecturer's courses
+
+#### 6. Update API routes for LECTURER role
+
+The content API routes already support `LECTURER` (added in the previous LECTURER role update). No changes needed.
 
 ### Architecture Diagram
 
 ``` mermaid
 graph LR
-  A[Student navigates to /student/videos] --> B[Course Directory Page]
-  B --> C{requireAuth + getScopeContext}
-  C --> D[Prisma: findMany courses
-    where videos.some + scope]
-  D --> E[Grid of Course Cards]
-  E --> F[Student clicks a course]
-  F --> G[Course Video Page
-    /student/videos/[courseId]]
-  G --> H{requireAuth + getScopeContext
-    + isResourceInScope IDOR check}
-  H --> I[Prisma: findMany videos
-    where courseId]
-  I --> J[StudentVideoList component]
+  A[Lecturer logs in] --> B{app/page.tsx}
+  B -->|role=LECTURER| C[Redirect to /lecturer]
+  C --> D[Lecturer Layout
+    requireAuth LECTURER]
+  D --> E[LecturerContent
+    Stats + Quick Actions]
+  D --> F[Content Pages
+    Courses Videos Slides Papers]
+  D --> G[Assessment Pages
+    Quizzes Tests Assignments]
+  D --> H[Student Pages
+    Grades Enrollments]
+  D --> I[Announcements]
+  F --> J[Filter by createdBy]
+  G --> J
+  H --> K[Join through lecturer's
+    courses/assessments]
+  I --> J
 ```
 
 ### File Structure
 
 | File | Action | Description |
 |------|--------|-------------|
-| `app/(dashboard)/student/videos/page.tsx` | **Modify** | Rewrite as server component — course directory grid |
-| `app/(dashboard)/student/videos/[courseId]/page.tsx` | **Create** | New server component — video list for a course |
+| `app/(dashboard)/lecturer/layout.tsx` | **Create** | Layout wrapper with auth and DashboardLayout |
+| `app/(dashboard)/lecturer/page.tsx` | **Create** | Dashboard home — fetches stats, renders LecturerContent |
+| `components/LecturerContent.tsx` | **Create** | Client component with stats, quick actions, activity |
+| `app/(dashboard)/lecturer/courses/page.tsx` | **Create** | Lecturer's courses |
+| `app/(dashboard)/lecturer/videos/page.tsx` | **Create** | Lecturer's videos |
+| `app/(dashboard)/lecturer/lecture-slides/page.tsx` | **Create** | Lecturer's lecture slides |
+| `app/(dashboard)/lecturer/past-papers/page.tsx` | **Create** | Lecturer's past papers |
+| `app/(dashboard)/lecturer/assignments/page.tsx` | **Create** | Lecturer's assignments |
+| `app/(dashboard)/lecturer/quizzes/page.tsx` | **Create** | Lecturer's quizzes |
+| `app/(dashboard)/lecturer/tests/page.tsx` | **Create** | Lecturer's tests |
+| `app/(dashboard)/lecturer/announcements/page.tsx` | **Create** | Lecturer's announcements |
+| `app/(dashboard)/lecturer/grades/page.tsx` | **Create** | Student grades for lecturer's assessments |
+| `app/(dashboard)/lecturer/enrollments/page.tsx` | **Create** | Enrollments in lecturer's courses |
+| `components/DashboardLayout.tsx` | **Modify** | Add lecturerNavItems, update role routing |
+| `app/page.tsx` | **Modify** | Redirect LECTURER to `/lecturer` |
+| `app/(dashboard)/student/page.tsx` | **Modify** | Redirect LECTURER away from student page |
 
 ### Data Models / Contracts
 
-**Course Directory Query:**
+**Lecturer Stats Query:**
 ```ts
-const courses = await prisma.course.findMany({
-  where: {
-    ...buildCourseScopeWhere(scope),
-    isPublished: true,
-    videos: { some: {} },
+const stats = await Promise.all([
+  // Courses created by lecturer
+  prisma.course.count({ where: { createdBy: clerkId } }),
+  // Total enrollments in lecturer's courses
+  prisma.enrollment.count({
+    where: { course: { createdBy: clerkId } },
+  }),
+  // Assessments created by lecturer
+  prisma.assessment.count({ where: { createdBy: clerkId } }),
+  // Recent submissions
+  prisma.assessmentAttempt.count({
+    where: { assessment: { createdBy: clerkId } },
+  }),
+]);
+```
+
+**Grades Query:**
+```ts
+const attempts = await prisma.assessmentAttempt.findMany({
+  where: { assessment: { createdBy: clerkId } },
+  include: {
+    user: { select: { name: true, email: true } },
+    assessment: { select: { title: true, maxGrade: true } },
   },
-  select: {
-    id: true,
-    code: true,
-    title: true,
-    _count: { select: { videos: true } },
-  },
-  orderBy: { title: 'asc' },
+  orderBy: { submittedAt: 'desc' },
+  take: 50,
 });
 ```
 
-**Course Video Query:**
+**Enrollments Query:**
 ```ts
-const videos = await prisma.video.findMany({
-  where: { courseId },
-  orderBy: { order: 'asc' },
+const enrollments = await prisma.enrollment.findMany({
+  where: { course: { createdBy: clerkId } },
   include: {
-    uploader: { select: { name: true } },
+    user: { select: { name: true, email: true } },
+    course: { select: { title: true, code: true } },
   },
+  orderBy: { enrolledAt: 'desc' },
 });
 ```
 
@@ -200,48 +272,25 @@ const videos = await prisma.video.findMany({
 
 ### Key Scenarios
 
-1. **Course Directory loads:** Navigate to `/student/videos`. The page shows a grid of course cards, each with code, title, and video count.
-2. **Course card navigation:** Click a course card. Navigate to `/student/videos/[courseId]`.
-3. **Video list loads:** The course video page shows all videos for that course in a grid.
-4. **Back button works:** Click "Back to Videos". Navigate back to `/student/videos`.
-5. **Empty state:** If no courses have videos, the directory shows an empty state message.
-6. **No videos for course:** If a course has no videos (edge case), the video page shows an empty state.
+1. **Lecturer login redirect:** A user with `role: 'LECTURER'` logs in and is redirected to `/lecturer` (not `/tutor`).
+2. **Dashboard loads:** The lecturer dashboard shows stats for courses, enrollments, assessments, and submissions.
+3. **Navigation works:** Clicking nav items routes to the correct lecturer pages.
+4. **Content pages show only lecturer's content:** Videos, courses, etc. are filtered by `createdBy`.
+5. **Grades page shows attempts:** Student attempts on the lecturer's assessments are displayed with scores.
+6. **Enrollments page shows students:** Students enrolled in the lecturer's courses are listed.
+7. **Tutor cannot access lecturer pages:** A TUTOR role user gets 403/redirect when accessing `/lecturer`.
+8. **Lecturer cannot access tutor pages:** A LECTURER role user gets 403/redirect when accessing `/tutor`.
 
 ### Edge Cases
 
-- **IDOR protection:** A student tries to access `/student/videos/<foreign-course-id>` for a course from another university. The page returns 404.
-- **Non-existent course:** Accessing `/student/videos/<invalid-id>` returns 404.
-- **Unpublished course:** Accessing a course with `isPublished: false` returns 404.
-- **Student without university profile:** The student layout already redirects to `/onboarding` if the profile is incomplete.
+- **Lecturer with no courses:** Dashboard shows zero stats and empty states.
+- **Lecturer with no submissions:** Grades page shows "No submissions yet".
+- **Lecturer with no enrollments:** Enrollments page shows "No enrollments yet".
+- **Lecturer accessing student page:** Redirected to `/lecturer`.
 
 ### Validation Approach
 
-- Verify the Prisma queries are correctly scoped by checking the generated SQL includes `universityId`, `year`, and `period` filters.
-- Verify the IDOR check by manually testing with a course ID from a different university.
-- Verify the `StudentVideoList` component receives the correct data shape (matching its interface).
-
-# Delivery Steps
-
-### ✓ Step 1: Rewrite the Course Directory landing page
-Convert `/student/videos/page.tsx` from a client component to a server component that displays a grid of course cards.
-
-- Remove `'use client'` directive and all client-side state/fetching.
-- Add `requireAuth(['STUDENT'])` and `getScopeContext()` calls.
-- Query Prisma for courses that have videos, scoped to the student's university/year/period using `buildCourseScopeWhere()`.
-- Render a responsive grid of course cards (Link components to `/student/videos/[courseId]`).
-- Each card shows: course code badge, course title, and video count.
-- Add an empty state when no courses have videos.
-- Follow the styling patterns from `student/courses/page.tsx` (card design, spacing, dark mode support).
-
-### ✓ Step 2: Create the Course Video detail page
-Create `/student/videos/[courseId]/page.tsx` as a new server component that displays all videos for a specific course.
-
-- Create the new file at `app/(dashboard)/student/videos/[courseId]/page.tsx`.
-- Add `requireAuth(['STUDENT'])` and `getScopeContext()` calls.
-- Fetch the course by ID, then verify ownership via `isResourceInScope(scope, course.universityId)`.
-- Call `notFound()` if the course doesn't exist, isn't published, or fails the IDOR check.
-- Fetch videos for the course (ordered by `order` field), including uploader info.
-- Convert `DateTime` fields to ISO strings (matching the existing pattern in `student/courses/[courseId]/page.tsx`).
-- Render a "Back to Videos" link (ArrowLeft icon + Link to `/student/videos`).
-- Pass the videos array to the existing `StudentVideoList` component.
-- Add an empty state when the course has no videos.
+- Verify `requireAuth(['LECTURER'])` blocks non-lecturer roles.
+- Verify `createdBy` filtering returns only the lecturer's own content.
+- Verify the grades and enrollments queries correctly join through the lecturer's assessments/courses.
+- Verify navigation items match the lecturer's role and don't include tutoring features.
