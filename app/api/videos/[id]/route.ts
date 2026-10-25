@@ -1,21 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET - Get a single video
+// GET - Get a single video (with IDOR protection)
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }  // ✅ Changed to Promise
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAuth();
-    const { id } = await params;  // ✅ Added await
+    const authUser = await getAuthUser();
+    if (!authUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const { id } = await params;
 
     const video = await prisma.video.findUnique({
       where: { id },
       include: {
         uploader: {
           select: { name: true, email: true },
+        },
+        course: {
+          select: {
+            id: true,
+            title: true,
+            universityId: true,
+          },
         },
         lessons: {
           select: {
@@ -43,6 +53,17 @@ export async function GET(
         { error: 'Video not found' },
         { status: 404 }
       );
+    }
+
+    // IDOR protection: if video belongs to a course, verify the user's university matches
+    const userUnivId = authUser.user?.universityId;
+    if (video.course?.universityId && userUnivId) {
+      if (video.course.universityId !== userUnivId) {
+        return NextResponse.json(
+          { error: 'Access denied' },
+          { status: 403 }
+        );
+      }
     }
 
     return NextResponse.json(video);

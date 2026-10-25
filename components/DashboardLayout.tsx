@@ -533,8 +533,8 @@ export default function DashboardLayout({
             <Menu className="w-5 h-5 text-muted-foreground" />
           </button>
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-500 dark:bg-muted rounded-xl flex items-center justify-center">
-              <span className="text-foreground font-bold text-sm">A+</span>
+            <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center">
+              <span className="text-white font-bold text-sm">A+</span>
             </div>
             <span className="text-xl font-bold text-foreground hidden sm:block">
               Mentality
