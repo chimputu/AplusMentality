@@ -48,7 +48,13 @@ export default async function StudentPage({
     redirect('/unauthorized');
   }
   if (!dbUser || dbUser.role !== 'STUDENT') {
-    redirect('/admin');
+    if (dbUser?.role === 'TUTOR') {
+      redirect('/tutor');
+    } else if (dbUser?.role === 'ADMIN' || dbUser?.role === 'SUPER_ADMIN') {
+      redirect('/admin');
+    } else {
+      redirect('/unauthorized');
+    }
   }
 
   // 4. Parse search query
