@@ -886,7 +886,7 @@ export default function DashboardLayout({
               variables: {
                 colorPrimary: 'var(--primary)',
                 colorBackground: 'var(--card)',
-                colorText: 'var(--foreground)',
+                colorForeground: 'var(--foreground)',
               },
             }}
           />
@@ -1124,7 +1124,7 @@ export default function DashboardLayout({
                   variables: {
                     colorPrimary: 'var(--primary)',
                     colorBackground: 'var(--card)',
-                    colorText: 'var(--foreground)',
+                    colorForeground: 'var(--foreground)',
                   },
                 }}
               />
