@@ -21,6 +21,7 @@ import BannerCarousel from '@/components/banner-carousel';
 import { CourseCard } from '@/components/course-card';
 import { InstitutionLogo } from '@/components/institution-logo';
 import { HomeAIAssistantWrapper } from '@/components/ai/home-ai-assistant-wrapper';
+import WorldMapDemo from '@/components/world-map-demo';
 
 const fadeInUp: any = {
   hidden: { opacity: 0, y: 30 },
@@ -540,6 +541,9 @@ export default function HomePageClient() {
          
         </div>
       </motion.section>
+
+      {/* ===== WORLD MAP — CONNECTING ZAMBIA GLOBALLY ===== */}
+      <WorldMapDemo />
 
       {/* ===== MUST EXPLORE ===== */}
       <motion.section
