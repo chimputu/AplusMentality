@@ -43,24 +43,27 @@ export default function TutorContent({
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white">
-        <div className="flex items-center justify-between">
+      <div className="relative overflow-hidden bg-gradient-to-r from-blue-950 via-slate-900 to-black rounded-2xl p-6">
+        {/* Decorative glow effect */}
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl" />
+        <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Welcome back, {displayName}!</h1>
-            <p className="text-blue-100 mt-1">
+            <p className="text-blue-400 text-sm font-medium uppercase tracking-wider">Welcome back</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mt-1">{displayName}!</h1>
+            <p className="text-slate-300 mt-2">
               {institutionName ? `Teaching at ${institutionName}` : 'Manage your tutoring sessions'}
             </p>
           </div>
           <div className="flex items-center gap-2">
             {stats.isVerified && (
-              <span className="inline-flex items-center gap-1 bg-green-500/20 text-green-200 px-3 py-1 rounded-full text-sm">
-                <CheckCircle className="w-4 h-4" />
+              <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-full text-sm font-medium hover:bg-white/15 transition-colors">
+                <CheckCircle className="w-4 h-4 text-green-400" />
                 Verified
               </span>
             )}
             {stats.isActive && (
-              <span className="inline-flex items-center gap-1 bg-blue-500/20 text-blue-200 px-3 py-1 rounded-full text-sm">
-                <Clock className="w-4 h-4" />
+              <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-full text-sm font-medium hover:bg-white/15 transition-colors">
+                <Clock className="w-4 h-4 text-blue-400" />
                 Active
               </span>
             )}

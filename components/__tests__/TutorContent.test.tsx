@@ -96,7 +96,8 @@ describe('TutorContent component', () => {
 
   it('renders welcome message with display name', () => {
     render(<TutorContent {...baseProps} />);
-    expect(screen.getByText(/Welcome back, John Doe!/)).toBeInTheDocument();
+    expect(screen.getByText('Welcome back')).toBeInTheDocument();
+    expect(screen.getByText('John Doe!')).toBeInTheDocument();
   });
 
   it('renders institution name in welcome section', () => {
@@ -302,7 +303,8 @@ describe('TutorContent component', () => {
         institutionName={null}
       />
     );
-    expect(screen.getByText(/Welcome back, Tutor!/)).toBeInTheDocument();
+    expect(screen.getByText('Welcome back')).toBeInTheDocument();
+    expect(screen.getByText('Tutor!')).toBeInTheDocument();
     expect(screen.getByText('No tutoring requests yet')).toBeInTheDocument();
   });
 

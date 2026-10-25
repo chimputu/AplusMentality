@@ -108,7 +108,7 @@ export default function StudentVideoList({ videos }: StudentVideoListProps) {
               <div className="absolute top-2 right-2">
                 <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
                   isYoutube
-                    ? 'bg-red-500 text-foreground'
+                    ? 'bg-red-500 text-white'
                     : 'bg-blue-500 text-white'
                 }`}>
                   {isYoutube ? (

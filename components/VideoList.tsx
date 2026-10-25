@@ -137,7 +137,7 @@ export default function VideoList({ videos, isAdmin = false }: VideoListProps) {
               )}
               <div className="mt-2 text-xs text-muted-foreground flex flex-wrap items-center gap-1">
                 {isYoutube && (
-                  <span className="bg-red-500 text-foreground px-1.5 py-0.5 rounded text-[10px] md:text-xs">
+                  <span className="bg-red-500 text-white px-1.5 py-0.5 rounded text-[10px] md:text-xs">
                     YouTube
                   </span>
                 )}
