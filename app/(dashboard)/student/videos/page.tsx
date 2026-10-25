@@ -2,17 +2,34 @@ import { requireAuth } from '@/lib/auth';
 import { getScopeContext, buildCourseScopeWhere } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { BookOpen, Video, PlayCircle, ArrowRight } from 'lucide-react';
+import { Search, Video, PlayCircle, ArrowRight } from 'lucide-react';
+
+// Client-side search form that navigates with URL query params
+function SearchForm({ initialQuery }: { initialQuery: string }) {
+  return (
+    <form action="/student/videos" method="get" className="relative">
+      <input
+        type="search"
+        name="search"
+        defaultValue={initialQuery}
+        placeholder="Search courses... (e.g. Python, Math, Physics)"
+        className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      />
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+    </form>
+  );
+}
 
 export default async function StudentVideosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ university?: string }>;
+  searchParams: Promise<{ university?: string; search?: string }>;
 }) {
   await requireAuth(['STUDENT']);
   const scope = await getScopeContext();
   const params = await searchParams;
   const universityId = params.university || null;
+  const searchQuery = params.search || '';
 
   // Fetch distinct courses that have at least one video, scoped to the student's university/year/period
   let coursesData: any[] = [];
@@ -22,6 +39,15 @@ export default async function StudentVideosPage({
       where: {
         ...scopeWhere,
         ...(universityId ? { universityId } : {}),
+        ...(searchQuery
+          ? {
+              OR: [
+                { title: { contains: searchQuery, mode: 'insensitive' } },
+                { code: { contains: searchQuery, mode: 'insensitive' } },
+                { description: { contains: searchQuery, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
         videos: { some: {} }, // only courses with at least one video
       },
       select: {
@@ -46,6 +72,11 @@ export default async function StudentVideosPage({
         <p className="text-gray-600 dark:text-gray-400 text-sm">
           Browse videos organized by course
         </p>
+      </div>
+
+      {/* Search Bar */}
+      <div className="mb-6">
+        <SearchForm initialQuery={searchQuery} />
       </div>
 
       {courses.length === 0 ? (
