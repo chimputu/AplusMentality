@@ -52,6 +52,7 @@ const nextConfig = {
   },
   // ✅ Allow external images (required for Unsplash & Google thumbnails)
   images: {
+    qualities: [75, 85],
     remotePatterns: [
       {
         protocol: 'https',

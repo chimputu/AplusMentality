@@ -10,7 +10,6 @@ import { motion } from 'framer-motion';
 import {
   Menu, X, Mail, Phone, MapPin, Send,
   Share2, Globe, AtSign, Link as LinkIcon,
-  Quote, Star,
   Users, BookOpen, Award, Heart,
   GraduationCap, Target, Users as UsersIcon, CheckCircle,
   FileText, Book, ClipboardList, MessageCircle, Briefcase, Crown,
@@ -22,6 +21,7 @@ import { CourseCard } from '@/components/course-card';
 import { InstitutionLogo } from '@/components/institution-logo';
 import { HomeAIAssistantWrapper } from '@/components/ai/home-ai-assistant-wrapper';
 import WorldMapDemo from '@/components/world-map-demo';
+import AnimatedTestimonialsDemo from '@/components/animated-testimonials-demo';
 
 const fadeInUp: any = {
   hidden: { opacity: 0, y: 30 },
@@ -175,11 +175,6 @@ export default function HomePageClient() {
   // ZAMBIA 2026 DATA — Based on HEA Gazette & University Websites
   // ============================================================
 
-  const testimonials = [
-    { id: 1, name: 'Sarah Mwansa', role: 'Medical Student, UNZA', quote: 'A+ Mentality has completely transformed how I learn. The curated videos and past papers keep me ahead of my peers.', rating: 5 },
-    { id: 2, name: 'David Banda', role: 'Engineering Graduate, CBU', quote: 'The mentorship platform is a game-changer. I finally feel supported in my academic journey.', rating: 5 },
-    { id: 3, name: 'Grace Phiri', role: 'Student, Lusaka', quote: 'The resources are amazing. The pathways make it easy to focus on what I need for university entrance.', rating: 5 },
-  ];
 
   const exploreItems = [
     { icon: <TrendingUp className="w-6 h-6" />, title: 'Trending Now', description: 'Discover what\'s popular among Zambian learners.', color: 'hover:bg-primary-light hover:border-blue-300' },
@@ -584,7 +579,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="w-full py-12 bg-gradient-to-br from-blue-50 to-blue-100/50"
+        className="w-full py-12 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-muted dark:to-background"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-12">
@@ -714,7 +709,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="py-10 sm:py-12 bg-background"
+        className="py-10 sm:py-12 bg-muted"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-10">
@@ -986,7 +981,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-gradient-to-r from-blue-50 to-emerald-50"
+        className="py-10 sm:py-12 bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-muted dark:to-background"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="bg-card rounded-2xl shadow-xl border border-border p-6 sm:p-8 md:p-12 text-center max-w-4xl mx-auto">
@@ -1066,57 +1061,15 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0 }}
-        variants={fadeInUp}
-        className="py-10 sm:py-12 bg-background overflow-hidden"
-      >
+      <section className="py-20 bg-background">
         <div className="w-full px-3 sm:px-4">
-          <motion.div variants={fadeInUp} className="text-center mb-10">
+          <div className="text-center mb-10">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground">What Our Community Says</h2>
             <p className="mt-2 text-muted-foreground">Real stories from real Zambian learners</p>
-          </motion.div>
-
-          <div className="relative overflow-hidden">
-            <div className="absolute left-0 top-0 h-full w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10" />
-            <div className="absolute right-0 top-0 h-full w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10" />
-
-            <div
-              className="flex gap-6 sm:gap-8"
-              style={{
-                animation: 'testimonialScroll 45s linear infinite',
-                width: 'max-content',
-              }}
-            >
-              {[...testimonials, ...testimonials, ...testimonials].map((t, idx) => (
-                <div
-                  key={idx}
-                  className="bg-muted rounded-2xl shadow-md p-5 sm:p-6 border border-border min-w-[280px] sm:min-w-[320px] max-w-[340px] flex-shrink-0"
-                >
-                  <div className="flex items-start space-x-1 text-yellow-500 mb-3">
-                    {Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
-                  </div>
-                  <div className="flex items-start space-x-1">
-                    <Quote className="w-8 h-8 text-blue-400 flex-shrink-0 opacity-50" />
-                    <p className="text-foreground italic text-sm">"{t.quote}"</p>
-                  </div>
-                  <div className="mt-4 flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
-                      {t.name.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{t.name}</p>
-                      <p className="text-xs text-muted-foreground">{t.role}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
+          <AnimatedTestimonialsDemo />
         </div>
-      </motion.section>
+      </section>
 
       {/* ===== WHY CHOOSE A+ MENTALITY ===== */}
       <section className="py-16 md:py-24 bg-muted">
