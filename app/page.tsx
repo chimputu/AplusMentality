@@ -88,7 +88,13 @@ export default async function HomePage() {
     }
 
     const role = user?.role || 'STUDENT';
-    redirect((role === 'ADMIN' || role === 'SUPER_ADMIN') ? '/admin' : '/student');
+    if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+      redirect('/admin');
+    } else if (role === 'TUTOR') {
+      redirect('/tutor');
+    } else {
+      redirect('/student');
+    }
   }
 
   return (
