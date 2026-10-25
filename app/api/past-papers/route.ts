@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
-        const auth = await getAuthUser(['ADMIN']);
+        const auth = await getAuthUser(['TUTOR', 'ADMIN']);
         if (!auth) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
