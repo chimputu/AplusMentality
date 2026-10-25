@@ -309,7 +309,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
             onClick={() => setSource('upload')}
             className={`flex-1 px-4 py-2 rounded-lg transition flex items-center justify-center gap-2 ${
               source === 'upload'
-                ? 'bg-blue-600 text-foreground shadow-md'
+                ? 'bg-blue-600 text-white shadow-md'
                 : 'bg-muted text-muted-foreground hover:bg-muted'
             }`}
           >
@@ -321,7 +321,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
             onClick={() => setSource('youtube')}
             className={`flex-1 px-4 py-2 rounded-lg transition flex items-center justify-center gap-2 ${
               source === 'youtube'
-                ? 'bg-red-600 text-foreground shadow-md'
+                ? 'bg-red-600 text-white shadow-md'
                 : 'bg-muted text-muted-foreground hover:bg-muted'
             }`}
           >
@@ -584,8 +584,8 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
           loading
             ? 'bg-muted cursor-not-allowed text-foreground'
             : source === 'youtube'
-            ? 'bg-red-600 hover:bg-red-700 text-foreground'
-            : 'bg-blue-600 hover:bg-blue-700 text-foreground'
+            ? 'bg-red-600 hover:bg-red-700 text-white'
+            : 'bg-blue-600 hover:bg-blue-700 text-white'
         }`}
       >
         {loading ? (

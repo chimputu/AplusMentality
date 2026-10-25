@@ -84,7 +84,7 @@ export default function QuizSubmitButton({ quizId, formUrl, isGoogleForm }: Quiz
             href={formUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-blue-600 text-foreground px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+            className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
           >
             Open Quiz in New Tab <ExternalLink className="w-4 h-4" />
           </a>

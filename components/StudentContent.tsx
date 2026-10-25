@@ -356,7 +356,7 @@ export default function StudentContent({
                     )}
                     <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
                       {yt && (
-                        <span className="inline-flex items-center gap-1 bg-red-600 text-foreground px-2 py-1 rounded font-medium">
+                        <span className="inline-flex items-center gap-1 bg-red-600 text-white px-2 py-1 rounded font-medium">
                           <Film className="w-3 h-3" />
                           YouTube
                         </span>

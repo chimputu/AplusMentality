@@ -49,10 +49,10 @@ export function HeroVideoFacade() {
 
       {/* Title overlay */}
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-        <p className="text-foreground font-semibold text-sm">
+        <p className="text-white font-semibold text-sm">
           A+ Student Mentality
         </p>
-        <p className="text-foreground/70 text-xs">
+        <p className="text-white/70 text-xs">
           Best Study Motivation
         </p>
       </div>

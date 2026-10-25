@@ -189,7 +189,7 @@ export default function TutorImageUploader({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading || deleting}
-          className="px-3 py-1.5 text-sm bg-blue-600 text-foreground rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? 'Uploading...' : 'Upload Photo'}
         </button>
@@ -199,7 +199,7 @@ export default function TutorImageUploader({
             type="button"
             onClick={handleRemove}
             disabled={uploading || deleting}
-            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-red-600 text-foreground rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Trash2 className="w-3.5 h-3.5" />
             {deleting ? 'Removing...' : 'Remove'}

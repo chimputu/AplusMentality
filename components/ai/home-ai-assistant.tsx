@@ -209,7 +209,7 @@ export function HomeAIAssistant() {
       {/* Floating button — blue-500 message icon */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-500 text-foreground shadow-lg flex items-center justify-center hover:bg-blue-600 transition active:scale-95"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-500 text-white shadow-lg flex items-center justify-center hover:bg-blue-600 transition active:scale-95"
         aria-label="Open AI assistant"
         title="A+ AI Assistant"
       >
@@ -231,7 +231,7 @@ export function HomeAIAssistant() {
 
           <div className="fixed z-50 flex flex-col bottom-0 right-0 left-0 h-[70dvh] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-card shadow-2xl border border-border">
             {/* Header — blue-500 */}
-            <div className="p-4 border-b border-border bg-blue-500 text-foreground rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
+            <div className="p-4 border-b border-border bg-blue-500 text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="font-semibold flex items-center gap-2">
                   <MessageCircle className="w-4 h-4" />
@@ -271,7 +271,7 @@ export function HomeAIAssistant() {
                   <div
                     className={`max-w-[85%] md:max-w-[80%] rounded-lg px-3 py-2 text-sm break-words ${
                       m.role === 'user'
-                        ? 'bg-blue-500 text-foreground'
+                        ? 'bg-blue-500 text-white'
                         : m.isError
                           ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
                           : 'bg-muted text-foreground'
@@ -357,7 +357,7 @@ export function HomeAIAssistant() {
               <button
                 onClick={() => handleSend()}
                 disabled={loading || !input.trim()}
-                className="bg-blue-500 text-foreground px-3 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 active:scale-95 shadow-sm"
+                className="bg-blue-500 text-white px-3 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 active:scale-95 shadow-sm"
                 aria-label="Send message"
               >
                 <Send className="w-4 h-4" />

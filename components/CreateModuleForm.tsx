@@ -110,7 +110,7 @@ export default function CreateModuleForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 text-foreground px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2 font-medium"
+        className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2 font-medium"
       >
         {loading ? (
           <>

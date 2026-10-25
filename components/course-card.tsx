@@ -62,7 +62,7 @@ export function CourseCard({
 
         {/* Category badge */}
         {category && (
-          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/60 text-foreground backdrop-blur-sm">
+          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/60 text-white backdrop-blur-sm">
             {category}
           </div>
         )}

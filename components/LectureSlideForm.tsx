@@ -493,7 +493,7 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
       <button
         type="submit"
         disabled={loading}
-        className="bg-blue-600 text-foreground px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
       >
         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
         {isEditing ? 'Update' : 'Create'}

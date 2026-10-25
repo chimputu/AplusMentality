@@ -487,7 +487,7 @@ export function AIAssistant({
               <div className="flex gap-2">
                 <a
                   href={`mailto:${CONTACT.email}`}
-                  className="flex-1 text-center px-3 py-2 text-sm bg-blue-600 text-foreground rounded-lg hover:bg-blue-700 transition"
+                  className="flex-1 text-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                 >
                   Email
                 </a>
@@ -581,7 +581,7 @@ export function AIAssistant({
                   <div
                     className={`max-w-[85%] md:max-w-[80%] rounded-lg px-3 py-2 text-sm break-words ${
                       m.role === 'user'
-                        ? 'bg-blue-600 text-foreground'
+                        ? 'bg-blue-600 text-white'
                         : m.isError
                           ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
                           : 'bg-muted text-foreground'
@@ -667,7 +667,7 @@ export function AIAssistant({
               <button
                 onClick={() => handleSend()}
                 disabled={loading || !input.trim()}
-                className="bg-blue-600 text-foreground px-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 active:scale-95"
+                className="bg-blue-600 text-white px-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 active:scale-95"
                 aria-label="Send message"
               >
                 <Send className="w-4 h-4" />

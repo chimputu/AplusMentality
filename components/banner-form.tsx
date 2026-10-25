@@ -233,7 +233,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                     onClick={() => handleChange('variant', v)}
                     className={`px-3 py-1.5 text-xs font-medium rounded-full border transition ${
                       formData.variant === v
-                        ? 'bg-blue-600 text-foreground border-blue-600'
+                        ? 'bg-blue-600 text-white border-blue-600'
                         : 'border-border text-muted-foreground hover:border-foreground'
                     }`}
                   >
@@ -256,7 +256,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                     onClick={() => handleChange('placement', p)}
                     className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition ${
                       formData.placement === p
-                        ? 'bg-blue-600 text-foreground border-blue-600'
+                        ? 'bg-blue-600 text-white border-blue-600'
                         : 'border-border text-muted-foreground hover:border-foreground'
                     }`}
                   >
@@ -426,7 +426,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-foreground rounded-lg text-sm font-medium transition"
+                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg text-sm font-medium transition"
               >
                 {loading ? 'Saving...' : bannerId ? 'Update Banner' : 'Create Banner'}
               </button>

@@ -316,7 +316,7 @@ export function AIAssistantPage({
             <div
               className={`max-w-[85%] rounded-lg px-4 py-3 text-sm break-words ${
                 m.role === 'user'
-                  ? 'bg-blue-600 text-foreground'
+                  ? 'bg-blue-600 text-white'
                   : m.isError
                     ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
                     : 'bg-muted text-foreground'
@@ -395,7 +395,7 @@ export function AIAssistantPage({
         <button
           onClick={() => handleSend()}
           disabled={loading || !input.trim()}
-          className="bg-blue-600 text-foreground px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 active:scale-95"
+          className="bg-blue-600 text-white px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 active:scale-95"
           aria-label="Send message"
         >
           <Send className="w-5 h-5" />

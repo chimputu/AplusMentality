@@ -208,7 +208,7 @@ export default function UserManagement({ users }: UserManagementProps) {
             onClick={() => setFilterRole('ALL')}
             className={`px-4 py-2 rounded-lg transition ${
               filterRole === 'ALL'
-                ? 'bg-blue-600 text-foreground'
+                ? 'bg-blue-600 text-white'
                 : 'bg-muted text-muted-foreground dark:text-foreground hover:bg-muted '
             }`}
           >
@@ -229,7 +229,7 @@ export default function UserManagement({ users }: UserManagementProps) {
             onClick={() => setFilterRole('STUDENT')}
             className={`px-4 py-2 rounded-lg transition ${
               filterRole === 'STUDENT'
-                ? 'bg-blue-600 text-foreground'
+                ? 'bg-blue-600 text-white'
                 : 'bg-muted text-muted-foreground dark:text-foreground hover:bg-muted '
             }`}
           >
