@@ -1,22 +1,13 @@
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { buildCourseScopeWhere } from '@/lib/auth/scope';
+import { getScopeContext, buildCourseScopeWhere } from '@/lib/auth/scope';
 import Link from 'next/link';
 import { BookOpen, Users, PlayCircle } from 'lucide-react';
 
 export default async function TutorCoursesPage() {
-  const { user } = await requireAuth(['TUTOR']);
+  await requireAuth(['TUTOR']);
 
-  const scope = {
-    userId: user.id,
-    role: user.role,
-    universityId: user.universityId,
-    institutionId: user.institutionId,
-    year: user.year,
-    period: user.period,
-    mode: (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? 'ADMIN' : 'OWN',
-    readOnly: false,
-  };
+  const scope = await getScopeContext();
   const where = buildCourseScopeWhere(scope);
 
   // Fetch courses scoped to tutor's university
