@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await requireAuth(['TUTOR', 'ADMIN']);
+    const { userId } = await requireAuth(['TUTOR', 'LECTURER', 'ADMIN']);
     const formData = await req.formData();
 
     const title = formData.get('title') as string;
@@ -401,7 +401,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    await requireAuth(['TUTOR', 'ADMIN']);
+    await requireAuth(['TUTOR', 'LECTURER', 'ADMIN']);
 
     const body = await req.json();
 
@@ -509,7 +509,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    await requireAuth(['TUTOR', 'ADMIN']);
+    await requireAuth(['TUTOR', 'LECTURER', 'ADMIN']);
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');

@@ -4,7 +4,7 @@ import { getScopeContext, buildCourseResourceScopeWhere } from '@/lib/auth/scope
 import { FileText, Calendar, Users, Clock } from 'lucide-react';
 
 export default async function TutorTestsPage() {
-  await requireAuth(['TUTOR']);
+  await requireAuth(['TUTOR', 'LECTURER']);
 
   const scope = await getScopeContext();
   const where = buildCourseResourceScopeWhere(scope);

@@ -139,15 +139,20 @@ export async function getAttemptsNeedingGrading(assessmentId: string) {
 async function recomputeAttemptScore(attemptId: string) {
   const answers = await prisma.answer.findMany({
     where: { attemptId },
+    include: {
+      question: { select: { points: true } },
+    },
   });
 
   const score = answers.reduce((sum, a) => sum + (a.pointsEarned || 0), 0);
-  const totalPoints = answers.reduce((sum, a) => sum + (a.pointsEarned || 0), 0);
+  // totalPoints should be the sum of each question's max points, not earned points
+  const totalPoints = answers.reduce((sum, a) => sum + (a.question.points || 0), 0);
 
   await prisma.assessmentAttempt.update({
     where: { id: attemptId },
     data: {
       score,
+      totalPoints,
       percentage: totalPoints > 0 ? Math.round((score / totalPoints) * 100) : null,
     },
   });

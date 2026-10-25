@@ -48,7 +48,7 @@ export default async function StudentPage({
     redirect('/unauthorized');
   }
   if (!dbUser || dbUser.role !== 'STUDENT') {
-    if (dbUser?.role === 'TUTOR') {
+    if (dbUser?.role === 'TUTOR' || dbUser?.role === 'LECTURER') {
       redirect('/tutor');
     } else if (dbUser?.role === 'ADMIN' || dbUser?.role === 'SUPER_ADMIN') {
       redirect('/admin');

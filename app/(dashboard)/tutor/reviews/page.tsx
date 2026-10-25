@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { Star, Users, MessageSquare, TrendingUp } from 'lucide-react';
 
 export default async function TutorReviewsPage() {
-  const { userId } = await requireAuth(['TUTOR']);
+  const { userId } = await requireAuth(['TUTOR', 'LECTURER']);
 
   // Fetch tutor profile
   let tutorProfile: any = null;

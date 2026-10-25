@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { BookOpen, Plus, Trash2, AlertCircle } from 'lucide-react';
 
 export default async function TutorSpecialtiesPage() {
-  const { userId } = await requireAuth(['TUTOR']);
+  const { userId } = await requireAuth(['TUTOR', 'LECTURER']);
 
   // Fetch tutor profile with specialties
   let tutorProfile: any = null;
