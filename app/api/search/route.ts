@@ -1,6 +1,7 @@
 // app/api/search/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
+import { getScopeContext, buildCourseScopeWhere, buildCourseResourceScopeWhere } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(req: NextRequest) {
@@ -20,6 +21,11 @@ export async function GET(req: NextRequest) {
     const isAdmin = auth.role === 'ADMIN';
     const prefix = isAdmin ? '/admin' : '/student';
 
+    // SECURITY: Resolve user's academic scope to filter search results
+    const scope = await getScopeContext();
+    const courseScope = buildCourseScopeWhere(scope);
+    const resourceScope = buildCourseResourceScopeWhere(scope);
+
     // Run all searches in parallel
     const [
       announcements,
@@ -31,7 +37,7 @@ export async function GET(req: NextRequest) {
       tests,
       assignments,
     ] = await Promise.all([
-      // Announcements
+      // Announcements (global, not scoped)
       prisma.announcement.findMany({
         where: {
           OR: [
@@ -43,9 +49,10 @@ export async function GET(req: NextRequest) {
         select: { id: true, title: true, content: true },
       }),
 
-      // Videos
+      // Videos — scoped to user's university courses
       prisma.video.findMany({
         where: {
+          ...resourceScope,
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
             { description: { contains: query, mode: 'insensitive' } },
@@ -55,9 +62,10 @@ export async function GET(req: NextRequest) {
         select: { id: true, title: true, description: true },
       }),
 
-      // Past Papers
+      // Past Papers — scoped to user's university courses
       prisma.pastPaper.findMany({
         where: {
+          ...resourceScope,
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
             { description: { contains: query, mode: 'insensitive' } },
@@ -74,10 +82,10 @@ export async function GET(req: NextRequest) {
         },
       }),
 
-      // Courses (only published for students)
+      // Courses — scoped to user's university, year, semester
       prisma.course.findMany({
         where: {
-          ...(isAdmin ? {} : { isPublished: true }),
+          ...(isAdmin ? {} : courseScope),
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
             { code: { contains: query, mode: 'insensitive' } },
@@ -88,9 +96,10 @@ export async function GET(req: NextRequest) {
         select: { id: true, title: true, code: true, description: true },
       }),
 
-      // Lecture Slides
+      // Lecture Slides — scoped to user's university courses
       prisma.lectureSlide.findMany({
         where: {
+          ...resourceScope,
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
             { description: { contains: query, mode: 'insensitive' } },
@@ -101,10 +110,11 @@ export async function GET(req: NextRequest) {
         select: { id: true, title: true, description: true },
       }),
 
-      // Quizzes
+      // Quizzes — scoped to user's university courses
       prisma.quiz.findMany({
         where: {
           ...(isAdmin ? {} : { isPublished: true }),
+          ...resourceScope,
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
             { description: { contains: query, mode: 'insensitive' } },
@@ -114,10 +124,11 @@ export async function GET(req: NextRequest) {
         select: { id: true, title: true, description: true },
       }),
 
-      // Tests
+      // Tests — scoped to user's university courses
       prisma.test.findMany({
         where: {
           ...(isAdmin ? {} : { isPublished: true }),
+          ...resourceScope,
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
             { description: { contains: query, mode: 'insensitive' } },
@@ -127,10 +138,11 @@ export async function GET(req: NextRequest) {
         select: { id: true, title: true, description: true },
       }),
 
-      // Assignments
+      // Assignments — scoped to user's university courses
       prisma.assignment.findMany({
         where: {
           ...(isAdmin ? {} : { isPublished: true }),
+          ...resourceScope,
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
             { description: { contains: query, mode: 'insensitive' } },

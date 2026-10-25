@@ -69,9 +69,21 @@ export default function FileViewer({
 
   if (!isOpen) return null;
 
-  const isImage = fileType === 'image';
-  const isPdf = fileType === 'pdf' || fileUrl.toLowerCase().endsWith('.pdf');
-  const isDocx = fileType === 'docx';
+  const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+  const ext = fileUrl.split('.').pop()?.toLowerCase().replace(/\?.*$/, '') || '';
+  const isImage =
+    fileType === 'image' ||
+    IMAGE_EXTS.includes(fileType?.toLowerCase() || '') ||
+    IMAGE_EXTS.includes(ext);
+  const isPdf =
+    fileType === 'pdf' ||
+    fileType?.toLowerCase() === 'application/pdf' ||
+    fileUrl.toLowerCase().endsWith('.pdf');
+  const isDocx =
+    fileType === 'docx' ||
+    fileType?.toLowerCase() === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    ext === 'docx' ||
+    ext === 'doc';
 
   return (
     <div

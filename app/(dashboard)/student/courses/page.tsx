@@ -1,4 +1,5 @@
 import { requireAuth } from '@/lib/auth';
+import { getScopeContext, buildCourseScopeWhere } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { BookOpen, GraduationCap, Users, PlayCircle, Building2 } from 'lucide-react';
@@ -9,6 +10,7 @@ export default async function StudentCoursesPage({
   searchParams: Promise<{ university?: string }>;
 }) {
   const { userId } = await requireAuth(['STUDENT']);
+  const scope = await getScopeContext();
   const params = await searchParams;
   const universityId = params.university || null;
 
@@ -64,11 +66,13 @@ export default async function StudentCoursesPage({
     : enrollments;
 
   // Get available courses with error handling
+  // SECURITY: Scope the query to the user's university, year, and semester
   let availableCoursesData: any[] = [];
   try {
+    const scopeWhere = buildCourseScopeWhere(scope);
     availableCoursesData = await prisma.course.findMany({
       where: {
-        isPublished: true,
+        ...scopeWhere,
         ...(universityId ? { universityId } : {}),
         NOT: {
           enrollments: {

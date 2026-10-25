@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
+import { getScopeContext, buildCourseResourceScopeWhere } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,10 @@ export async function GET(req: NextRequest) {
         const limit = Math.min(parseInt(searchParams.get('limit') || '100'), 200);
         const skip = (page - 1) * limit;
 
+        // SECURITY: Resolve user's academic scope to filter slides
+        const scope = await getScopeContext();
+        const resourceScope = buildCourseResourceScopeWhere(scope);
+
         const where: any = {};
 
         if (courseId) where.courseId = courseId;
@@ -42,6 +47,11 @@ export async function GET(req: NextRequest) {
             where.course = {
                 universityId,
             };
+        }
+
+        // Apply scope filtering for non-admin users
+        if (scope.role !== 'ADMIN' && scope.role !== 'SUPER_ADMIN') {
+            Object.assign(where, resourceScope);
         }
 
         // Only fetch fields the student UI actually needs — avoid deep joins

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
+import { getScopeContext, isResourceInScope, assertWriteAllowed } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 // POST - Submit a quiz
@@ -13,9 +14,15 @@ export async function POST(
     const body = await req.json();
     const { score, total, responseId } = body;
 
-    // Check if quiz exists
+    // SECURITY: Resolve user's academic scope
+    const scope = await getScopeContext();
+
+    // Check if quiz exists and fetch the course's university
     const quiz = await prisma.quiz.findUnique({
       where: { id },
+      include: {
+        course: { select: { universityId: true } },
+      },
     });
 
     if (!quiz) {
@@ -24,6 +31,17 @@ export async function POST(
         { status: 404 }
       );
     }
+
+    // SECURITY: Block if the quiz's course is not in the user's scope
+    if (!isResourceInScope(scope, quiz.course?.universityId ?? null)) {
+      return NextResponse.json(
+        { error: 'You can only submit quizzes for your own university.' },
+        { status: 403 }
+      );
+    }
+
+    // SECURITY: Block writes in read-only (exploration) mode
+    assertWriteAllowed(scope);
 
     // Check if already submitted
     const existingSubmission = await prisma.quizSubmission.findFirst({

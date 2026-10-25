@@ -1,5 +1,6 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { buildCourseResourceScopeWhere } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 import StudentContent from '@/components/StudentContent';
 
@@ -55,6 +56,18 @@ export default async function StudentPage({
   const searchQuery = params?.search || '';
 
   // 5. Fetch data in parallel (prisma client has built-in retry)
+  // SECURITY: Scope videos to the user's university
+  const resourceScope = buildCourseResourceScopeWhere({
+    userId: dbUser.id || '',
+    role: 'STUDENT',
+    universityId: dbUser.universityId,
+    institutionId: dbUser.institutionId,
+    year: dbUser.year,
+    period: dbUser.period,
+    mode: 'OWN',
+    readOnly: false,
+  });
+
   let announcementsData: any[] = [];
   let videosData: any[] = [];
   try {
@@ -64,6 +77,7 @@ export default async function StudentPage({
         include: { author: { select: { name: true } } },
       }),
       prisma.video.findMany({
+        where: resourceScope,
         orderBy: { createdAt: 'desc' },
         include: { uploader: { select: { name: true } } },
       }),
