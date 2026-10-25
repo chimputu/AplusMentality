@@ -9,7 +9,7 @@ interface TutorLayoutProps {
 }
 
 export default async function TutorLayout({ children }: TutorLayoutProps) {
-  const { role, user } = await requireAuth(['TUTOR']);
+  const { role, user } = await requireAuth(['TUTOR', 'LECTURER']);
   const u = user!;
 
   // Handle missing institution gracefully

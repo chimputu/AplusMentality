@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { Megaphone, Calendar, User } from 'lucide-react';
 
 export default async function TutorAnnouncementsPage() {
-  await requireAuth(['TUTOR']);
+  await requireAuth(['TUTOR', 'LECTURER']);
 
   let announcementsData: any[] = [];
   try {

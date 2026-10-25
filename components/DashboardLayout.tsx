@@ -469,7 +469,7 @@ export default function DashboardLayout({
   let navItems: NavItem[];
   if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
     navItems = adminNavItems;
-  } else if (role === 'TUTOR') {
+  } else if (role === 'TUTOR' || role === 'LECTURER') {
     navItems = tutorNavItems;
   } else {
     navItems = studentNavItems;

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { BookOpen, Users, PlayCircle } from 'lucide-react';
 
 export default async function TutorCoursesPage() {
-  await requireAuth(['TUTOR']);
+  await requireAuth(['TUTOR', 'LECTURER']);
 
   const scope = await getScopeContext();
   const where = buildCourseScopeWhere(scope);

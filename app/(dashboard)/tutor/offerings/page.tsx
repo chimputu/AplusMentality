@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { GraduationCap, BookOpen, Clock, Users } from 'lucide-react';
 
 export default async function TutorOfferingsPage() {
-  const { userId } = await requireAuth(['TUTOR']);
+  const { userId } = await requireAuth(['TUTOR', 'LECTURER']);
 
   // Fetch tutor profile and application with offerings
   let tutorProfile: any = null;

@@ -8,7 +8,7 @@ export default async function TutorRequestsPage({
 }: {
   searchParams: Promise<{ status?: string; search?: string }>;
 }) {
-  const { userId } = await requireAuth(['TUTOR']);
+  const { userId } = await requireAuth(['TUTOR', 'LECTURER']);
 
   // Fetch tutor profile
   let tutorProfile: any = null;
