@@ -185,7 +185,7 @@ export default function NotificationBell({ role }: NotificationBellProps) {
               absolute -top-0.5 -right-0.5 
               min-w-[18px] h-[18px] px-1 
               flex items-center justify-center 
-              bg-red-500 text-foreground text-[10px] font-bold 
+              bg-red-500 text-white text-[10px] font-bold
               rounded-full border-2 border-white dark:border-border
               ${count > 99 ? 'text-[9px]' : ''}
             `}

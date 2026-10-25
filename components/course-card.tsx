@@ -56,7 +56,7 @@ export function CourseCard({
         )}
 
         {/* Course code badge */}
-        <div className={`absolute top-2 left-2 ${badgeBg} text-foreground text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm`}>
+        <div className={`absolute top-2 left-2 ${badgeBg} text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm`}>
           {code}
         </div>
 
@@ -81,7 +81,7 @@ export function CourseCard({
         {/* CTA */}
         <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-border">
           <span className="text-xs text-muted-foreground">Free</span>
-          <span className={`${buttonBg} text-foreground text-xs font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap`}>
+          <span className={`${buttonBg} text-white text-xs font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap`}>
             Explore
           </span>
         </div>
