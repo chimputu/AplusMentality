@@ -247,7 +247,7 @@ export default function HomePageClient() {
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
               <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
-                <span className="text-foreground font-bold text-lg">A+</span>
+                <span className="text-white font-bold text-lg">A+</span>
               </div>
               <span className="text-xl font-bold text-foreground">Mentality</span>
             </Link>
@@ -258,7 +258,7 @@ export default function HomePageClient() {
               </Link>
               <Link
                 href="/sign-up"
-                className="bg-blue-600 text-foreground px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm"
+                className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm"
               >
                 Get Started
               </Link>
@@ -280,7 +280,7 @@ export default function HomePageClient() {
             <Link href="/sign-in" className="block text-sm font-medium text-foreground hover:text-blue-600 transition" onClick={() => setIsMenuOpen(false)}>
               Sign In
             </Link>
-            <Link href="/sign-up" className="block bg-blue-600 text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/sign-up" className="block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center" onClick={() => setIsMenuOpen(false)}>
               Get Started
             </Link>
             <Link href="https://smartcorp-zeta.vercel.app">
@@ -813,7 +813,7 @@ export default function HomePageClient() {
             <div className="max-w-4xl mx-auto bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
               <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
                 <table className="w-full min-w-[500px]">
-                  <thead className="bg-blue-600 text-foreground">
+                  <thead className="bg-blue-600 text-white">
                     <tr>
                       <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Grade</th>
                       <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Points</th>
@@ -973,7 +973,7 @@ export default function HomePageClient() {
               </a>
               <Link
                 href="mailto:kafiswegchimputu@gmail.com"
-                className="bg-blue-600 text-foreground px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
+                className="bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
               >
                 <Mail className="w-5 h-5" /> Email Us
               </Link>
@@ -998,7 +998,7 @@ export default function HomePageClient() {
           <div className="relative">
             <button
               onClick={() => setShowContactMenu(!showContactMenu)}
-              className="bg-blue-600 text-foreground px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
+              className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
             >
               Get in touch <span className="text-lg">→</span>
             </button>
@@ -1078,7 +1078,7 @@ export default function HomePageClient() {
               </ul>
 
               <div className="flex flex-wrap gap-4 pt-4">
-                <Link href="/sign-up" className="bg-blue-600 text-foreground px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition-colors">
+                <Link href="/sign-up" className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition-colors">
                   Join Now
                 </Link>
                 <a href="https://wa.me/260772231300" target="_blank" rel="noopener noreferrer" className="bg-green-500 text-foreground px-6 py-3 rounded-full font-medium hover:bg-green-600 transition-colors flex items-center gap-2">
@@ -1113,7 +1113,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-blue-600 text-foreground"
+        className="py-10 sm:py-12 bg-blue-600 text-white"
       >
         <div className="w-full px-3 sm:px-4 text-center">
           <Heart className="w-12 h-12 mx-auto mb-4 text-blue-200" />
@@ -1153,7 +1153,7 @@ export default function HomePageClient() {
           <div className="text-center mt-8">
             <Link
               href="/universities"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-foreground px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg"
             >
               View All Universities
               <span className="text-lg">→</span>

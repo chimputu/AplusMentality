@@ -101,7 +101,7 @@ export default function FileViewer({
             <a
               href={downloadUrl}
               download
-              className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-foreground transition"
+              className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition"
               aria-label="Download"
               title="Download"
             >
@@ -165,7 +165,7 @@ export default function FileViewer({
                     href={fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-foreground px-3 py-2 rounded-lg text-xs font-medium transition"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     Open
@@ -203,7 +203,7 @@ export default function FileViewer({
                 href={fileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-foreground px-5 py-3 rounded-lg font-medium transition"
+                className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-medium transition"
               >
                 <ExternalLink className="w-4 h-4" />
                 Open

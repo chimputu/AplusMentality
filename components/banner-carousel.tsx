@@ -40,7 +40,7 @@ const variantStyles: Record<string, { bg: string; border: string; text: string; 
     bg: 'bg-blue-50 dark:bg-blue-900/30',
     border: 'border-l-blue-500',
     text: 'text-blue-800 dark:text-blue-200',
-    cta: 'bg-blue-600 hover:bg-blue-700 text-foreground',
+    cta: 'bg-blue-600 hover:bg-blue-700 text-white',
   },
   SUCCESS: {
     bg: 'bg-green-50 dark:bg-green-900/30',
@@ -58,7 +58,7 @@ const variantStyles: Record<string, { bg: string; border: string; text: string; 
     bg: 'bg-red-50 dark:bg-red-900/30',
     border: 'border-l-red-500',
     text: 'text-red-800 dark:text-red-200',
-    cta: 'bg-red-600 hover:bg-red-700 text-foreground',
+    cta: 'bg-red-600 hover:bg-red-700 text-white',
   },
   PROMO: {
     bg: 'bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30',

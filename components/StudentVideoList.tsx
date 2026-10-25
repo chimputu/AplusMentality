@@ -109,7 +109,7 @@ export default function StudentVideoList({ videos }: StudentVideoListProps) {
                 <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
                   isYoutube
                     ? 'bg-red-500 text-foreground'
-                    : 'bg-blue-500 text-foreground'
+                    : 'bg-blue-500 text-white'
                 }`}>
                   {isYoutube ? (
                     <Film className="w-3 h-3" />

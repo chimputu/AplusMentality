@@ -90,7 +90,7 @@ export default function ModuleList({ modules, courseId, isAdmin = true }: Module
         {isAdmin && (
           <Link
             href={`/admin/courses/${courseId}/modules/create`}
-            className="inline-block mt-4 bg-blue-600 text-foreground px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
           >
             Add Module
           </Link>

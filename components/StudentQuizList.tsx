@@ -100,7 +100,7 @@ export default function StudentQuizList({ quizzes }: StudentQuizListProps) {
                   ) : (
                     <Link
                       href={`/student/quizzes/${quiz.id}`}
-                      className="bg-blue-600 text-foreground px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm"
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm"
                     >
                       Take Quiz
                     </Link>
