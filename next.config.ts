@@ -35,7 +35,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
               "media-src 'self' https://res.cloudinary.com https://www.youtube.com https://youtube.com",
-              "connect-src 'self' https://*.clerk.accounts.dev https://cdn.protect.clerk.com https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io https://vercel.com https://*.vercel.app https://docs.google.com",
+              "connect-src 'self' https://*.clerk.accounts.dev https://cdn.protect.clerk.com https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io https://vercel.com https://*.vercel.app https://docs.google.com https://api.emailjs.com",
               "frame-src 'self' https://*.clerk.accounts.dev https://www.youtube.com https://youtube.com https://docs.google.com",
               "worker-src 'self' blob:",
               "frame-ancestors 'self'",
