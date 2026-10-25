@@ -184,11 +184,16 @@ export async function POST(req: Request) {
           status: 'active',
         },
       });
-      console.log(`✅ Membership created: ${user.email} → ${organization.slug}`);
+      // Sync user's active org fields
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { clerkOrgId: organization.id, clerkOrgRole: role },
+      });
+      console.log(`✅ Membership created: ${user.email} → ${organization.slug} (${role})`);
     }
   }
 
-  // 10. Handle organizationMembership.updated — update role
+  // 10. Handle organizationMembership.updated — update role in membership and user
   if (type === 'organizationMembership.updated') {
     const { organization, public_user_data, role } = data;
     const clerkUserId = public_user_data.user_id;
@@ -203,6 +208,13 @@ export async function POST(req: Request) {
       },
       data: { role },
     });
+    // Sync user's active org role — this is critical for role elevation flows
+    // (e.g., admin approves tutor app → Clerk role changes → webhook updates user)
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { clerkOrgRole: role },
+    });
+    console.log(`✅ Membership updated: ${user.email} → ${role} in ${organization.slug}`);
   }
 
   // 11. Handle organizationMembership.deleted — revoke membership

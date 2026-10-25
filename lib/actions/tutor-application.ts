@@ -17,7 +17,7 @@ import {
   createApprovedEmail,
   createRejectedEmail,
 } from '@/lib/email';
-import { addUserToClerkOrg } from '@/lib/clerk-org';
+import { updateUserClerkOrgRole } from '@/lib/clerk-org';
 
 // ============================================
 // Internal Helpers
@@ -577,12 +577,12 @@ export async function approveTutorApplication(rawInput: unknown) {
   );
   await sendTutorApplicationEmail(approvedEmail).catch(console.error);
 
-  // Add user to Clerk organization if institution has one
+  // Update user's Clerk organization role to tutor if institution has one
   if (fullApplication.institution?.clerkOrgId && fullApplication.user.clerkId) {
-    await addUserToClerkOrg(
+    await updateUserClerkOrgRole(
       fullApplication.user.clerkId,
       fullApplication.institution.clerkOrgId,
-      'org:member'
+      'org:tutor'
     ).catch(console.error);
   }
 

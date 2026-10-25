@@ -9,288 +9,333 @@ sessionId: session-261025-171810-1pct
 
 ### ✓ Step 3: Create lecturer grades and enrollments pages
 
-# Requirements
+### ✓ Lecturer Dashboard (all steps complete)
+
+# Phase 1 — Multi-Tenant Architecture: Schema & Role Scope
+
+## Phase 1 Steps
+
+### ✓ Step 1: Create `lib/auth/org-scope.ts` with `getOrgScope()`
+
+### ✓ Step 2: Verify Prisma schema supports org scoping
+
+### ✓ Step 3: Verify `TutorApplication` model has all required fields
+
+### ✓ Phase 1 Complete — Ready for Phase 2
+
+# Phase 2 — Role Elevation Flow (Tutor Application Approval + Clerk API Sync)
+
+## Phase 2 Steps
+
+### ✓ Step 1: Add `updateUserClerkOrgRole()` to `lib/clerk-org.ts`
+
+### ✓ Step 2: Fix `approveTutorApplication()` to sync Clerk org role to `org:tutor`
+
+### ! Step 3: Fix Clerk webhook role sync (incomplete - needs review)
+
+### ✓ Phase 2 Complete — Ready for Phase 3
+
+# Phase 3 — Middleware and Route Protection
+
+## Phase 3 Steps
+
+### ✓ Step 1: Create `middleware.ts` for Clerk auth + org role-based route protection
+
+### ✓ Step 2: Create `lib/auth/tenant-isolation.ts` with IDOR protection helpers
+
+### ✓ Step 3: Verify middleware works with existing layout auth
+
+### ✓ Phase 3 Complete — Ready for Phase 4
+
+# Phase 4 — UI (OrganizationSwitcher) and Verification Tests
+
+## Phase 4 Steps
+
+### ✓ Step 1: Add Clerk OrganizationSwitcher to DashboardLayout sidebar
+
+### ✓ Step 2: Create verification tests for role-based access control
+
+### ✓ Phase 4 Complete — Multi-Tenant Architecture Done
+
+## Requirements
 
 ### Overview & Goals
 
-Create a **dedicated Lecturer Dashboard** at `/lecturer` with lecturer-specific navigation, content, and features. The LECTURER role currently exists in the database but shares the Tutor dashboard — it has no identity of its own. The new dashboard will focus on **teaching** rather than **tutoring**: content management, assessments, announcements, student grades, and course enrollment views.
+When an admin approves a tutor application, the system must:
+1. Update Prisma: application status → APPROVED, user role → TUTOR
+2. Sync Clerk: update the user's org membership role from `org:member` to `org:tutor`
+3. If Clerk API fails, the Prisma changes still commit (Clerk sync is best-effort, logged for retry)
+
+### Current Bug
+
+`approveTutorApplication()` in `lib/actions/tutor-application.ts` adds the user to the Clerk org as `'org:member'` instead of `'org:tutor'`. This means approved tutors don't get tutor privileges via Clerk's org role system.
+
+### Proposed Changes
+
+#### 1. Add `updateUserClerkOrgRole()` to `lib/clerk-org.ts`
+
+New function that calls `PATCH /v1/organizations/{org_id}/memberships/{user_id}` to update an existing member's role. Handles 404 (not a member) by falling back to `addUserToClerkOrg()`.
+
+#### 2. Fix `approveTutorApplication()` in `lib/actions/tutor-application.ts`
+
+Change the Clerk org sync from `'org:member'` to `'org:tutor'`. Use `updateUserClerkOrgRole()` to handle both new and existing members.
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `lib/clerk-org.ts` | Add `updateUserClerkOrgRole()` function |
+| `lib/actions/tutor-application.ts` | Fix approve action to use `'org:tutor'` role |
+
+## Requirements
+
+### Overview & Goals
+
+Build the foundation for **multi-tenant data isolation** using Clerk Organizations. Each university gets its own Clerk Organization. Users belong to organizations with roles (`org:admin`, `org:tutor`, `org:lecturer`, `org:member`). Data is strictly isolated — University A cannot see University B's data.
+
+**Phase 1 deliverables:**
+1. `getOrgScope()` — unified auth helper that reads Clerk's active org, maps org role to app role, and returns a scope object.
+2. Confirm the Prisma schema already supports org scoping (it does — no schema changes needed).
+3. Confirm `TutorApplication` has all required fields (it does — no changes needed).
 
 ### Scope
 
 **In Scope:**
-- Create a new `/lecturer` route group with layout and dashboard page.
-- Create `LecturerContent` component (analogous to `TutorContent`) showing lecturer-specific stats and quick actions.
-- Add Lecturer-specific navigation items in `DashboardLayout`.
-- Wire up role-based redirect so LECTURER users go to `/lecturer` after login.
-- Lecturer pages for: Courses (their courses), Videos, Lecture Slides, Past Papers, Assignments, Quizzes, Tests, Announcements, Student Grades, and Course Enrollments.
-- All pages use `requireAuth(['LECTURER'])` and filter content by `createdBy === lecturer.clerkId`.
+- Create `getOrgScope()` in `lib/auth/org-scope.ts` — reads Clerk's active org from `auth()`, maps org role to app role, returns `OrgScope`.
+- Confirm the Prisma schema already supports org scoping (no schema changes needed).
+- Confirm `TutorApplication` has all required fields (no changes needed).
 
 **Out of Scope:**
-- Tutoring-specific features (requests, specialties, offerings, reviews) — these remain exclusive to the TUTOR role.
-- A separate Lecturer database model — the existing `User` model with `role: 'LECTURER'` is sufficient.
-- Changes to the Tutor dashboard — it remains unchanged.
+- Phase 2: Role elevation flow (Tutor application approval + Clerk API sync).
+- Phase 3: Middleware and route protection.
+- Phase 4: UI (OrganizationSwitcher) and Playwright tests.
+- Modifying existing resource models — they already chain to `Institution.clerkOrgId`.
 
 ### User Stories
 
-- As a lecturer, I want to land on a dashboard that shows my courses, recent activity, and quick actions — not tutoring features.
-- As a lecturer, I want to manage the content I created (courses, videos, slides, papers, assessments).
-- As a lecturer, I want to see student grades for my assessments.
-- As a lecturer, I want to see which students are enrolled in my courses.
-- As a lecturer, I want to post announcements to my students.
+- As a student, I want to be required to join a university organization before accessing the dashboard.
+- As an admin, I want to approve tutor applications and have the user's Clerk org role updated automatically.
+- As a tutor, I want my org role to determine what pages I can access.
+- As a user belonging to multiple universities, I want to switch organizations and see different data.
 
 ### Functional Requirements
 
-1. **Lecturer Dashboard Home** (`/lecturer/page.tsx`):
-   - Welcome header with lecturer's name and institution.
-   - Stats cards: number of courses, total enrollments, total assessments, recent submissions.
-   - Quick action links to create content.
-   - Recent activity feed (recent submissions, enrollments).
-
-2. **Lecturer Navigation** (in `DashboardLayout`):
-   - Overview → Dashboard
-   - Content → Courses, Videos, Lecture Slides, Past Papers
-   - Assessments → Quizzes, Tests, Assignments
-   - Students → Grades, Enrollments
-   - Communication → Announcements
-   - Account → Settings
-
-3. **Content Management Pages** (reuse tutor page patterns):
-   - Each page fetches resources where `createdBy === lecturer.clerkId`.
-   - Same CRUD operations as tutor pages but scoped to the lecturer's own content.
-
-4. **Student Grades Page** (`/lecturer/grades/page.tsx`):
-   - Lists all assessments created by the lecturer.
-   - Shows student attempts with scores, percentages, and pass/fail status.
-
-5. **Course Enrollments Page** (`/lecturer/enrollments/page.tsx`):
-   - Lists all courses created by the lecturer.
-   - Shows enrolled students with names, emails, and enrollment dates.
+1. **`getOrgScope()`** — Returns the user's active org context (org ID, institution ID, org role, app role, user fields). Throws if no active org.
+2. **Org role mapping** — `org:admin` → `ADMIN`, `org:tutor` → `TUTOR`, `org:lecturer` → `LECTURER`, `org:member` → `STUDENT`.
+3. **No-org protection** — Users without an active org cannot access the dashboard. They should be redirected to onboarding.
 
 # Technical Design
 
 ### Current Implementation
 
-**Existing role dashboards:**
-- `/admin` — Admin dashboard with `AdminContent` component, manages all content.
-- `/tutor` — Tutor dashboard with `TutorContent` component, manages tutoring + content.
-- `/student` — Student dashboard, consumes content.
+**Existing org infrastructure:**
 
-**Lecturer role today:**
-- `LECTURER` is defined in the `Role` enum in `prisma/schema.prisma`.
-- LECTURER users are redirected to `/tutor` after login (`app/page.tsx`).
-- LECTURER can access all tutor pages (`requireAuth(['TUTOR', 'LECTURER'])`).
-- LECTURER sees the same `tutorNavItems` in `DashboardLayout`.
-- No lecturer-specific pages, components, or navigation exist.
+| File | What it does |
+|------|-------------|
+| `prisma/schema.prisma` | `User` has `clerkOrgId`, `clerkOrgRole`; `Institution` has `clerkOrgId` (unique); `OrganizationMembership` tracks memberships with roles |
+| `lib/auth/scope.ts` | `getScopeContext()` — returns university/year/period scope. **No org awareness.** |
+| `lib/auth.ts` | `requireAuth()` — checks user's Prisma role. **Does not check org membership.** |
+| `lib/clerk-org.ts` | `addUserToClerkOrg()`, `removeUserFromClerkOrg()`, `createClerkOrg()` — Clerk API helpers |
+| `lib/orgs/lookup.ts` | `getInstitutionByClerkOrgId()`, `getUserOrganizations()`, `isUserMemberOfOrg()`, `getUserOrgRole()` |
+| `app/api/webhooks/clerk/route.ts` | Handles all org webhook events (created, updated, deleted, membership created/updated/deleted) |
 
-**Key patterns to follow:**
-- `app/(dashboard)/tutor/layout.tsx` — Layout wrapper with `requireAuth`, `DashboardLayout`, and `AIAssistantWrapper`.
-- `app/(dashboard)/tutor/page.tsx` — Server component that fetches data and renders `TutorContent`.
-- `components/TutorContent.tsx` — Client component with stats, quick actions, and recent activity.
-- Tutor content pages (e.g., `tutor/courses/page.tsx`) — Server components with `requireAuth` + `getScopeContext` + `buildCourseResourceScopeWhere`.
-
-**Data relationships for Lecturer scoping:**
-- `Course.createdBy` → `User.clerkId` — lecturer's courses
-- `Video.uploadedBy` → `User.clerkId` — lecturer's videos
-- `LectureSlide.createdBy` → `User.clerkId` — lecturer's slides
-- `PastPaper.createdBy` → `User.clerkId` — lecturer's papers
-- `Quiz.createdBy` → `User.clerkId` — lecturer's quizzes
-- `Test.createdBy` → `User.clerkId` — lecturer's tests
-- `Assignment.createdBy` → `User.clerkId` — lecturer's assignments
-- `Assessment.createdBy` → `User.clerkId` — lecturer's assessments
-- `Announcement.createdBy` → `User.clerkId` — lecturer's announcements
-- `Enrollment.courseId` → `Course` → `createdBy` — enrollments in lecturer's courses
-- `AssessmentAttempt.assessmentId` → `Assessment` → `createdBy` — attempts on lecturer's assessments
+**Schema already supports multi-tenancy:**
+- `Institution.clerkOrgId` (unique) — links each institution to exactly one Clerk org
+- `OrganizationMembership` — tracks user→org memberships with `role`, `status`, `clerkOrgSlug`
+- `User.clerkOrgId` / `User.clerkOrgRole` — per-user active org fields
+- `TutorApplication` — has `id`, `userId` (unique), `institutionId`, `status` (PENDING/UNDER_REVIEW/APPROVED/REJECTED/WITHDRAWN), `adminNotes`, `rejectionReason`
+- Resource models chain to institution: `Course.universityId` → `University`/`Institution`, `Video.courseId` → `Course`, etc.
 
 ### Key Decisions
 
-1. **New route group `app/(dashboard)/lecturer/`** — A separate route group (not a subpath of `/tutor`) gives lecturers their own URL space and layout. This matches the existing pattern where `/admin`, `/tutor`, and `/student` are parallel route groups.
+1. **No new `Organization` model** — The `Institution` model already serves as the Organization model via `clerkOrgId`. No separate model is needed. `Institution` IS the tenant.
 
-2. **`LecturerContent` component** — Mirrors `TutorContent` but shows teaching-focused stats (courses, enrollments, assessments, submissions) instead of tutoring stats (requests, specialties, offerings).
+2. **`getOrgScope()` uses Clerk's `auth()`** — Clerk's `auth()` returns `orgId` and `orgRole` for the user's *active* organization (the one they switched to via `OrganizationSwitcher`). This is the source of truth for the current tenant context.
 
-3. **Content scoping by `createdBy`** — Unlike the Tutor dashboard (which uses `getScopeContext()` + `buildCourseResourceScopeWhere` to scope by university/programme/year), the Lecturer dashboard scopes content by the lecturer's own `clerkId` via the `createdBy` field. This is simpler and more accurate — a lecturer sees only what they created.
+3. **Org role maps to app role** — Clerk org roles (`org:admin`, `org:tutor`, `org:lecturer`, `org:member`) map to Prisma `Role` enum values. The mapped role is used for authorization. If the org role doesn't match a known mapping, fall back to the user's Prisma `role`.
 
-4. **Reuse existing page patterns** — Content management pages (videos, slides, etc.) will follow the exact same structure as their tutor counterparts, only changing the `requireAuth` role and the `where` clause from scope-based to `createdBy`-based.
+4. **`getOrgScope()` throws if no org** — Users without an active org are not onboarded. They should be redirected to onboarding, not allowed to access the dashboard. This is enforced by throwing an error.
 
-5. **New pages: Grades and Enrollments** — These are unique to the lecturer role. They query `AssessmentAttempt` and `Enrollment` models, joining through the lecturer's assessments/courses.
+5. **Resource scoping via existing `institutionId` chain** — Resources already have `universityId`/`institutionId`. The `getOrgScope()` returns `institutionId` for the user's active org. Queries can scope by this `institutionId`. No schema changes needed.
 
 ### Proposed Changes
 
-#### 1. Create `/lecturer` route group
+#### 1. Create `lib/auth/org-scope.ts`
 
-**New file: `app/(dashboard)/lecturer/layout.tsx`**
-- `requireAuth(['LECTURER'])` for auth.
-- Wrap children in `DashboardLayout` with `role={role}`.
-- Include `AIAssistantWrapper`.
+**New file** with:
+- `OrgScope` interface — contains `userId`, `clerkUserId`, `clerkOrgId`, `institutionId`, `institutionName`, `orgRole`, `appRole`, `universityId`, `year`, `period`
+- `ORG_ROLE_MAP` — maps Clerk org roles to app roles
+- `getOrgScope()` — reads `auth()`, finds institution by `clerkOrgId`, finds user by `clerkId`, maps role, returns `OrgScope`
+- Throws if: no `clerkUserId`, no `orgId`, institution not found, user not found
 
-**New file: `app/(dashboard)/lecturer/page.tsx`**
-- Server component.
-- Fetch lecturer's user data from `prisma.user`.
-- Compute stats: courses count, total enrollments, assessments count, recent submissions.
-- Render `LecturerContent` component.
+```typescript
+import { auth } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/prisma';
 
-#### 2. Create `LecturerContent` component
+export interface OrgScope {
+  userId: string;
+  clerkUserId: string;
+  clerkOrgId: string;
+  institutionId: string;
+  institutionName: string;
+  orgRole: string;
+  appRole: string;
+  universityId: string | null;
+  year: number | null;
+  period: string | null;
+}
 
-**New file: `components/LecturerContent.tsx`**
-- Client component (like `TutorContent`).
-- Welcome header with lecturer's name and institution.
-- Stats grid: Courses, Enrollments, Assessments, Submissions.
-- Quick action cards linking to content management pages.
-- Recent activity section.
+const ORG_ROLE_MAP: Record<string, string> = {
+  'org:admin': 'ADMIN',
+  'org:tutor': 'TUTOR',
+  'org:lecturer': 'LECTURER',
+  'org:member': 'STUDENT',
+};
 
-#### 3. Add Lecturer navigation items
-
-**Modify: `components/DashboardLayout.tsx`**
-- Add `lecturerNavItems` array with sections: Overview, Content, Assessments, Students, Communication, Account.
-- Update nav item selection logic: `else if (role === 'LECTURER') { navItems = lecturerNavItems; }`.
-
-#### 4. Update role-based redirects
-
-**Modify: `app/page.tsx`**
-- Add `role === 'LECTURER'` → redirect to `/lecturer` (separate from TUTOR).
-
-**Modify: `app/(dashboard)/student/page.tsx`**
-- Add `dbUser?.role === 'LECTURER'` → redirect to `/lecturer`.
-
-#### 5. Create Lecturer content pages
-
-Each page follows the pattern:
-```ts
-export default async function LecturerXxxPage() {
-  const { userId } = await requireAuth(['LECTURER']);
-  // Fetch resources where createdBy === userId
-  // Render with existing components or new lecturer-specific UI
+export async function getOrgScope(): Promise<OrgScope> {
+  const { userId: clerkUserId, orgId, orgRole } = await auth();
+  
+  if (!clerkUserId) {
+    throw new Error('User not authenticated');
+  }
+  
+  if (!orgId) {
+    throw new Error('User has no active organization. Complete onboarding first.');
+  }
+  
+  const institution = await prisma.institution.findUnique({
+    where: { clerkOrgId: orgId },
+    select: { id: true, name: true },
+  });
+  
+  if (!institution) {
+    throw new Error(`Institution not found for Clerk org ${orgId}`);
+  }
+  
+  const user = await prisma.user.findUnique({
+    where: { clerkId: clerkUserId },
+    select: {
+      id: true,
+      role: true,
+      universityId: true,
+      institutionId: true,
+      year: true,
+      period: true,
+    },
+  });
+  
+  if (!user) {
+    throw new Error('User not found in database');
+  }
+  
+  const appRole = ORG_ROLE_MAP[orgRole ?? ''] || user.role;
+  
+  return {
+    userId: user.id,
+    clerkUserId,
+    clerkOrgId: orgId,
+    institutionId: institution.id,
+    institutionName: institution.name,
+    orgRole: orgRole ?? 'org:member',
+    appRole,
+    universityId: user.universityId,
+    year: user.year,
+    period: user.period,
+  };
 }
 ```
 
-**New files:**
-- `app/(dashboard)/lecturer/courses/page.tsx` — Lecturer's courses (createdBy filter)
-- `app/(dashboard)/lecturer/videos/page.tsx` — Lecturer's videos
-- `app/(dashboard)/lecturer/lecture-slides/page.tsx` — Lecturer's slides
-- `app/(dashboard)/lecturer/past-papers/page.tsx` — Lecturer's papers
-- `app/(dashboard)/lecturer/assignments/page.tsx` — Lecturer's assignments
-- `app/(dashboard)/lecturer/quizzes/page.tsx` — Lecturer's quizzes
-- `app/(dashboard)/lecturer/tests/page.tsx` — Lecturer's tests
-- `app/(dashboard)/lecturer/announcements/page.tsx` — Lecturer's announcements
-- `app/(dashboard)/lecturer/grades/page.tsx` — Student grades for lecturer's assessments
-- `app/(dashboard)/lecturer/enrollments/page.tsx` — Enrollments in lecturer's courses
+#### 2. Prisma Schema — No Changes Needed
 
-#### 6. Update API routes for LECTURER role
+The schema already has everything required:
+- ✅ `User.organizationId` — exists as `User.clerkOrgId`
+- ✅ `Organization` model — `Institution` serves this role via `clerkOrgId`
+- ✅ `Course`, `Video`, `Assignment` scoped to org — via `universityId`/`institutionId` chain
+- ✅ `TutorApplication` — exists with `id`, `userId`, `institutionId`, `status`, `adminNotes`, `rejectionReason`
 
-The content API routes already support `LECTURER` (added in the previous LECTURER role update). No changes needed.
+#### 3. `TutorApplication` — No Changes Needed
+
+The model already has all required fields:
+- `id`, `userId` (unique), `institutionId`
+- `status` (PENDING, UNDER_REVIEW, APPROVED, REJECTED, WITHDRAWN)
+- `adminNotes`, `rejectionReason`
+- Relations to `User` and `Institution`
 
 ### Architecture Diagram
 
-``` mermaid
+```mermaid
 graph LR
-  A[Lecturer logs in] --> B{app/page.tsx}
-  B -->|role=LECTURER| C[Redirect to /lecturer]
-  C --> D[Lecturer Layout
-    requireAuth LECTURER]
-  D --> E[LecturerContent
-    Stats + Quick Actions]
-  D --> F[Content Pages
-    Courses Videos Slides Papers]
-  D --> G[Assessment Pages
-    Quizzes Tests Assignments]
-  D --> H[Student Pages
-    Grades Enrollments]
-  D --> I[Announcements]
-  F --> J[Filter by createdBy]
-  G --> J
-  H --> K[Join through lecturer's
-    courses/assessments]
-  I --> J
+  A[User logs in] --> B[Clerk auth()]
+  B --> C{Has orgId?}
+  C -->|No| D[Throw: not onboarded]
+  C -->|Yes| E[getOrgScope()]
+  E --> F[Find Institution by clerkOrgId]
+  F --> G[Find User by clerkId]
+  G --> H[Map orgRole to appRole]
+  H --> I[Return OrgScope]
+  I --> J[Scope all queries by institutionId]
 ```
 
 ### File Structure
 
 | File | Action | Description |
 |------|--------|-------------|
-| `app/(dashboard)/lecturer/layout.tsx` | **Create** | Layout wrapper with auth and DashboardLayout |
-| `app/(dashboard)/lecturer/page.tsx` | **Create** | Dashboard home — fetches stats, renders LecturerContent |
-| `components/LecturerContent.tsx` | **Create** | Client component with stats, quick actions, activity |
-| `app/(dashboard)/lecturer/courses/page.tsx` | **Create** | Lecturer's courses |
-| `app/(dashboard)/lecturer/videos/page.tsx` | **Create** | Lecturer's videos |
-| `app/(dashboard)/lecturer/lecture-slides/page.tsx` | **Create** | Lecturer's lecture slides |
-| `app/(dashboard)/lecturer/past-papers/page.tsx` | **Create** | Lecturer's past papers |
-| `app/(dashboard)/lecturer/assignments/page.tsx` | **Create** | Lecturer's assignments |
-| `app/(dashboard)/lecturer/quizzes/page.tsx` | **Create** | Lecturer's quizzes |
-| `app/(dashboard)/lecturer/tests/page.tsx` | **Create** | Lecturer's tests |
-| `app/(dashboard)/lecturer/announcements/page.tsx` | **Create** | Lecturer's announcements |
-| `app/(dashboard)/lecturer/grades/page.tsx` | **Create** | Student grades for lecturer's assessments |
-| `app/(dashboard)/lecturer/enrollments/page.tsx` | **Create** | Enrollments in lecturer's courses |
-| `components/DashboardLayout.tsx` | **Modify** | Add lecturerNavItems, update role routing |
-| `app/page.tsx` | **Modify** | Redirect LECTURER to `/lecturer` |
-| `app/(dashboard)/student/page.tsx` | **Modify** | Redirect LECTURER away from student page |
+| `lib/auth/org-scope.ts` | **Create** | `getOrgScope()`, `OrgScope` interface, role mapping |
+| `prisma/schema.prisma` | **No changes** | Schema already supports org scoping |
+| `lib/auth/scope.ts` | **No changes** | Existing `getScopeContext()` remains for backward compat |
 
 ### Data Models / Contracts
 
-**Lecturer Stats Query:**
-```ts
-const stats = await Promise.all([
-  // Courses created by lecturer
-  prisma.course.count({ where: { createdBy: clerkId } }),
-  // Total enrollments in lecturer's courses
-  prisma.enrollment.count({
-    where: { course: { createdBy: clerkId } },
-  }),
-  // Assessments created by lecturer
-  prisma.assessment.count({ where: { createdBy: clerkId } }),
-  // Recent submissions
-  prisma.assessmentAttempt.count({
-    where: { assessment: { createdBy: clerkId } },
-  }),
-]);
+**OrgScope interface:**
+```typescript
+interface OrgScope {
+  userId: string;              // Prisma user.id
+  clerkUserId: string;         // Clerk user.id
+  clerkOrgId: string;          // Active Clerk org.id
+  institutionId: string;       // Prisma Institution.id (the tenant)
+  institutionName: string;     // Human-readable name
+  orgRole: string;             // Clerk org role
+  appRole: string;             // Mapped app role (ADMIN, STUDENT, etc.)
+  universityId: string | null; // Legacy universityId if set
+  year: number | null;
+  period: string | null;
+}
 ```
 
-**Grades Query:**
-```ts
-const attempts = await prisma.assessmentAttempt.findMany({
-  where: { assessment: { createdBy: clerkId } },
-  include: {
-    user: { select: { name: true, email: true } },
-    assessment: { select: { title: true, maxGrade: true } },
-  },
-  orderBy: { submittedAt: 'desc' },
-  take: 50,
-});
-```
-
-**Enrollments Query:**
-```ts
-const enrollments = await prisma.enrollment.findMany({
-  where: { course: { createdBy: clerkId } },
-  include: {
-    user: { select: { name: true, email: true } },
-    course: { select: { title: true, code: true } },
-  },
-  orderBy: { enrolledAt: 'desc' },
-});
+**Org role mapping:**
+```typescript
+const ORG_ROLE_MAP = {
+  'org:admin': 'ADMIN',
+  'org:tutor': 'TUTOR',
+  'org:lecturer': 'LECTURER',
+  'org:member': 'STUDENT',
+};
 ```
 
 # Testing
 
+### Validation Approach
+
+After implementing `getOrgScope()`, verify the following scenarios.
+
 ### Key Scenarios
 
-1. **Lecturer login redirect:** A user with `role: 'LECTURER'` logs in and is redirected to `/lecturer` (not `/tutor`).
-2. **Dashboard loads:** The lecturer dashboard shows stats for courses, enrollments, assessments, and submissions.
-3. **Navigation works:** Clicking nav items routes to the correct lecturer pages.
-4. **Content pages show only lecturer's content:** Videos, courses, etc. are filtered by `createdBy`.
-5. **Grades page shows attempts:** Student attempts on the lecturer's assessments are displayed with scores.
-6. **Enrollments page shows students:** Students enrolled in the lecturer's courses are listed.
-7. **Tutor cannot access lecturer pages:** A TUTOR role user gets 403/redirect when accessing `/lecturer`.
-8. **Lecturer cannot access tutor pages:** A LECTURER role user gets 403/redirect when accessing `/tutor`.
+1. **Authenticated user with active org**: `getOrgScope()` returns correct `institutionId`, `appRole`, and user fields.
+2. **Authenticated user without org**: `getOrgScope()` throws "no active organization" error.
+3. **Unauthenticated user**: `getOrgScope()` throws "not authenticated" error.
+4. **Org role mapping**: `org:admin` maps to `ADMIN`, `org:member` maps to `STUDENT`, etc.
+5. **Institution not linked**: If `clerkOrgId` doesn't match any institution, throw error.
+6. **User not in database**: If Clerk user has no Prisma record, throw error.
 
 ### Edge Cases
 
-- **Lecturer with no courses:** Dashboard shows zero stats and empty states.
-- **Lecturer with no submissions:** Grades page shows "No submissions yet".
-- **Lecturer with no enrollments:** Enrollments page shows "No enrollments yet".
-- **Lecturer accessing student page:** Redirected to `/lecturer`.
+- **User belongs to multiple orgs**: Clerk's `auth()` returns the active (switched) org. `getOrgScope()` uses that.
+- **User's Prisma role differs from org role**: Org role takes precedence via mapping. If org role is unknown, fall back to Prisma role.
+- **Institution exists but `clerkOrgId` is null**: `findUnique` returns null, error is thrown.
+- **Webhook hasn't synced membership yet**: `OrganizationMembership` might not exist, but `getOrgScope()` uses Clerk's `auth()` directly — no dependency on the membership table.
 
-### Validation Approach
+### Schema Verification
 
-- Verify `requireAuth(['LECTURER'])` blocks non-lecturer roles.
-- Verify `createdBy` filtering returns only the lecturer's own content.
-- Verify the grades and enrollments queries correctly join through the lecturer's assessments/courses.
-- Verify navigation items match the lecturer's role and don't include tutoring features.
+- Run `npx prisma validate` to confirm the schema is valid.
+- Verify `TutorApplication` has all required fields.
+- Confirm `Institution.clerkOrgId` is unique (it is).

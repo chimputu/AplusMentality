@@ -5,7 +5,11 @@
  * Add a user to a Clerk organization by its ID.
  * Calls the Clerk API to create an organization membership.
  */
-export async function addUserToClerkOrg(userClerkId: string, orgId: string, role: 'org:member' | 'org:admin' = 'org:member') {
+export async function addUserToClerkOrg(
+  userClerkId: string,
+  orgId: string,
+  role: 'org:member' | 'org:admin' | 'org:tutor' | 'org:lecturer' = 'org:member',
+) {
   const clerkSecretKey = process.env.CLERK_SECRET_KEY;
   if (!clerkSecretKey) {
     console.warn('[Clerk Org] CLERK_SECRET_KEY not set, skipping org membership creation');
@@ -69,6 +73,60 @@ export async function removeUserFromClerkOrg(userClerkId: string, orgId: string)
     return { success: true };
   } catch (error) {
     console.error('[Clerk Org] Error removing user from org:', error);
+    return { success: false, error: String(error) };
+  }
+}
+
+/**
+ * Update an existing Clerk organization membership's role.
+ * Uses PATCH /v1/organizations/{org_id}/memberships/{user_id} to change the role.
+ * If the user is not yet a member (404), falls back to adding them with the specified role.
+ */
+export async function updateUserClerkOrgRole(
+  userClerkId: string,
+  orgId: string,
+  role: 'org:member' | 'org:admin' | 'org:tutor' | 'org:lecturer',
+) {
+  const clerkSecretKey = process.env.CLERK_SECRET_KEY;
+  if (!clerkSecretKey) {
+    console.warn('[Clerk Org] CLERK_SECRET_KEY not set, skipping org role update');
+    return { success: false, error: 'CLERK_SECRET_KEY not configured' };
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.clerk.com/v1/organizations/${orgId}/memberships/${userClerkId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${clerkSecretKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role }),
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      // 404 means user is not a member — fall back to adding them
+      if (response.status === 404) {
+        console.log(
+          `[Clerk Org] User ${userClerkId} is not a member of org ${orgId}, adding them`,
+        );
+        return addUserToClerkOrg(userClerkId, orgId, role);
+      }
+      console.error(
+        `[Clerk Org] Failed to update user role: ${response.status} ${errorText}`,
+      );
+      return { success: false, error: errorText };
+    }
+
+    console.log(
+      `[Clerk Org] Successfully updated user ${userClerkId} role to ${role} in org ${orgId}`,
+    );
+    return { success: true };
+  } catch (error) {
+    console.error('[Clerk Org] Error updating user role:', error);
     return { success: false, error: String(error) };
   }
 }

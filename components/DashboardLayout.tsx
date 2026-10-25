@@ -1,7 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { UserButton, useUser } from '@clerk/nextjs';
+import { UserButton, useUser, OrganizationSwitcher } from '@clerk/nextjs';
 import * as Sentry from '@sentry/nextjs';
 import {
   LayoutDashboard,
@@ -37,7 +37,6 @@ import {
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
 import ThemeToggle from './ThemeToggle';
-import { UniversitySwitcher } from './UniversitySwitcher';
 import type { Role } from '@/generated/prisma/client';
 
 interface DashboardLayoutProps {
@@ -1124,8 +1123,23 @@ export default function DashboardLayout({
             </div>
           </div>
 
-          {/* University Switcher - Students only */}
-          {role === 'STUDENT' && !isCollapsed && <UniversitySwitcher />}
+          {/* Organization Switcher - All roles, only visible when user has multiple orgs */}
+          {!isCollapsed && (
+            <div className="px-3 py-3 border-b border-border">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                Organization
+              </div>
+              <OrganizationSwitcher
+                hidePersonal={true}
+                appearance={{
+                  elements: {
+                    OrganizationSwitcherTrigger: 'w-full',
+                    OrganizationSwitcherOrganizationIcon: 'w-6 h-6',
+                  },
+                }}
+              />
+            </div>
+          )}
 
           {/* Navigation */}
           <nav className="flex-1 px-2 py-4 overflow-y-auto">
