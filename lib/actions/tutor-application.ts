@@ -65,7 +65,7 @@ export async function submitTutorApplication(rawInput: unknown) {
         message: validationErr.message,
       });
       const firstError = validationErr.errors?.[0]?.message ?? validationErr.message ?? 'Invalid application data';
-      throw new Error(firstError);
+      return { success: false, error: firstError };
     }
     console.log('[submitTutorApplication] Validation passed');
 
@@ -80,7 +80,7 @@ export async function submitTutorApplication(rawInput: unknown) {
     console.log('[submitTutorApplication] Existing application check:', existing ? `found (${existing.status})` : 'none');
 
     if (existing && existing.status !== 'REJECTED' && existing.status !== 'WITHDRAWN') {
-      throw new Error('You already have a pending or approved application');
+      return { success: false, error: 'You already have a pending or approved application' };
     }
 
     let application;
@@ -232,14 +232,17 @@ export async function submitTutorApplication(rawInput: unknown) {
 
     console.log('[submitTutorApplication] Application saved:', application.id);
 
-    // Send email notification to admins
+    // Send email notification to admins (non-blocking)
     const admins = await withRetry(
       async () => prisma.user.findMany({
         where: { role: 'ADMIN' },
         select: { email: true },
       }),
       { attempts: 3, delayMs: 500 }
-    );
+    ).catch((e: any) => {
+      console.error('[submitTutorApplication] Failed to fetch admins:', e?.message);
+      return [] as Array<{ email: string }>;
+    });
     console.log('[submitTutorApplication] Found admins to notify:', admins.length);
     for (const admin of admins) {
       const email = createSubmittedEmail(admin.email, input.fullName, input.email);
@@ -261,24 +264,32 @@ export async function submitTutorApplication(rawInput: unknown) {
       stack: err?.stack?.split('\n').slice(0, 5).join('\n'),
     });
 
-    // Handle database errors with user-friendly messages
+    // Handle database errors with user-friendly messages — always RETURN, never throw
     if (err.code === 'P2021' || err.code === 'P2025') {
-      throw new Error('Application system is currently being set up. Please try again later.');
+      return { success: false, error: 'Application system is currently being set up. Please try again later.' };
     }
     if (err.code === 'P1001' || err.code === 'P1002' || err.code === 'P1008') {
-      throw new Error('Database connection issue. Please try again in a moment.');
+      return { success: false, error: 'Database connection issue. Please try again in a moment.' };
     }
     // Handle constraint violations (e.g. field too long, not null violation)
     if (err.code === 'P2002') {
       console.error('[submitTutorApplication] Unique constraint violation:', err?.meta);
-      throw new Error('A unique constraint was violated. Please check your data and try again.');
+      return { success: false, error: 'A unique constraint was violated. Please check your data and try again.' };
     }
     if (err.code === 'P2000') {
       console.error('[submitTutorApplication] Constraint violation:', err?.meta);
-      throw new Error('Data constraint violation. Please check your input and try again.');
+      return { success: false, error: 'Data constraint violation. Please check your input and try again.' };
     }
-    // Re-throw other errors (validation, business logic) as-is
-    throw err;
+    // Handle any other Prisma errors
+    if (err.code?.startsWith('P')) {
+      return { success: false, error: 'A database error occurred. Please try again later.' };
+    }
+
+    // For any other error, return the message if available
+    return {
+      success: false,
+      error: err?.message ?? 'An unexpected error occurred. Please try again.',
+    };
   }
 }
 

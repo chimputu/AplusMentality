@@ -153,7 +153,11 @@ export default function TutorApplicationWizard() {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      await submitTutorApplication(formData);
+      const result = await submitTutorApplication(formData);
+      if (!result.success) {
+        setSubmitError(result.error || 'Failed to submit application');
+        return;
+      }
       setSubmitSuccess(true);
       setTimeout(() => router.push('/apply-as-tutor/status'), 1500);
     } catch (err: any) {
