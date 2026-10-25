@@ -388,7 +388,7 @@ export function AIAssistant({
       {/* Floating button */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg flex items-center justify-center hover:opacity-90 transition active:scale-95"
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-foreground shadow-lg flex items-center justify-center hover:opacity-90 transition active:scale-95"
         aria-label="Open AI assistant"
       >
         {open ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
@@ -402,14 +402,14 @@ export function AIAssistant({
             onClick={() => setShowSupport(false)}
           >
             <div
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-sm w-full border border-gray-200 dark:border-gray-700"
+              className="bg-card rounded-xl shadow-2xl p-6 max-w-sm w-full border border-border"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100">Need more help?</h3>
+                <h3 className="font-semibold text-foreground">Need more help?</h3>
                 <button
                   onClick={() => setShowSupport(false)}
-                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                  className="p-1 rounded-full hover:bg-muted  transition"
                   aria-label="Close"
                 >
                   <X className="w-4 h-4" />
@@ -419,23 +419,23 @@ export function AIAssistant({
               <div className="space-y-3 mb-4">
                 <a
                   href={`mailto:${CONTACT.email}`}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted  transition"
                 >
                   <Mail className="w-5 h-5 text-blue-600" />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Email</div>
-                    <div className="text-xs text-gray-500 truncate">{CONTACT.email}</div>
+                    <div className="text-sm font-medium text-foreground">Email</div>
+                    <div className="text-xs text-muted-foreground truncate">{CONTACT.email}</div>
                   </div>
                 </a>
 
                 <a
                   href={`tel:${CONTACT.phone}`}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted  transition"
                 >
                   <Phone className="w-5 h-5 text-green-600" />
                   <div className="flex-1">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Call</div>
-                    <div className="text-xs text-gray-500">{CONTACT.phoneDisplay}</div>
+                    <div className="text-sm font-medium text-foreground">Call</div>
+                    <div className="text-xs text-muted-foreground">{CONTACT.phoneDisplay}</div>
                   </div>
                 </a>
 
@@ -443,21 +443,21 @@ export function AIAssistant({
                   href={CONTACT.whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted  transition"
                 >
                   <MessageSquare className="w-5 h-5 text-green-600" />
                   <div className="flex-1">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">WhatsApp</div>
-                    <div className="text-xs text-gray-500">{CONTACT.phoneDisplay}</div>
+                    <div className="text-sm font-medium text-foreground">WhatsApp</div>
+                    <div className="text-xs text-muted-foreground">{CONTACT.phoneDisplay}</div>
                   </div>
                 </a>
               </div>
 
               {isLoggedIn && user && (
                 <>
-                  <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <div className="text-xs font-medium text-gray-500 mb-2">Your details (for faster support):</div>
-                    <div className="text-xs text-gray-700 dark:text-gray-300 space-y-1">
+                  <div className="mb-4 p-3 bg-muted dark:bg-background rounded-lg">
+                    <div className="text-xs font-medium text-muted-foreground mb-2">Your details (for faster support):</div>
+                    <div className="text-xs text-foreground space-y-1">
                       <div>• Name: {user.firstName ?? 'N/A'} {user.lastName ?? ''}</div>
                       <div>• Email: {user.emailAddresses[0]?.emailAddress ?? 'N/A'}</div>
                       <div>• Institution: {institution ?? 'N/A'}</div>
@@ -487,13 +487,13 @@ export function AIAssistant({
               <div className="flex gap-2">
                 <a
                   href={`mailto:${CONTACT.email}`}
-                  className="flex-1 text-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  className="flex-1 text-center px-3 py-2 text-sm bg-blue-600 text-foreground rounded-lg hover:bg-blue-700 transition"
                 >
                   Email
                 </a>
                 <a
                   href={`tel:${CONTACT.phone}`}
-                  className="flex-1 text-center px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  className="flex-1 text-center px-3 py-2 text-sm border border-border text-foreground rounded-lg hover:bg-muted  transition"
                 >
                   Call
                 </a>
@@ -501,7 +501,7 @@ export function AIAssistant({
                   href={CONTACT.whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 text-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                  className="flex-1 text-center px-3 py-2 text-sm bg-green-600 text-foreground rounded-lg hover:bg-green-700 transition"
                 >
                   WhatsApp
                 </a>
@@ -529,9 +529,9 @@ export function AIAssistant({
             onClick={() => setOpen(false)}
           />
 
-          <div className="fixed z-50 flex flex-col bottom-0 right-0 left-0 h-[70dvh] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700">
+          <div className="fixed z-50 flex flex-col bottom-0 right-0 left-0 h-[70dvh] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-card shadow-2xl border border-border">
             {/* Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
+            <div className="p-4 border-b border-border bg-gradient-to-r from-blue-600 to-purple-600 text-foreground rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="font-semibold flex items-center gap-2">
                   <Sparkles className="w-4 h-4" />
@@ -546,7 +546,7 @@ export function AIAssistant({
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setShowSupport(true)}
-                  className="p-1 rounded-full hover:bg-white/20 transition"
+                  className="p-1 rounded-full hover:bg-card/20 transition"
                   aria-label="Contact support"
                   title="Need more help?"
                 >
@@ -555,7 +555,7 @@ export function AIAssistant({
                 <button
                   onClick={handleReset}
                   disabled={loading}
-                  className="p-1 rounded-full hover:bg-white/20 transition disabled:opacity-50"
+                  className="p-1 rounded-full hover:bg-card/20 transition disabled:opacity-50"
                   aria-label={isLoggedIn ? 'New conversation' : 'Start over'}
                   title={isLoggedIn ? 'New conversation' : 'Start over'}
                 >
@@ -563,7 +563,7 @@ export function AIAssistant({
                 </button>
                 <button
                   onClick={() => setOpen(false)}
-                  className="p-1 rounded-full hover:bg-white/20 transition"
+                  className="p-1 rounded-full hover:bg-card/20 transition"
                   aria-label="Close chat"
                 >
                   <X className="w-5 h-5" />
@@ -581,10 +581,10 @@ export function AIAssistant({
                   <div
                     className={`max-w-[85%] md:max-w-[80%] rounded-lg px-3 py-2 text-sm break-words ${
                       m.role === 'user'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-blue-600 text-foreground'
                         : m.isError
                           ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                          : 'bg-muted text-foreground'
                     }`}
                   >
                     {m.role === 'assistant' ? (
@@ -618,7 +618,7 @@ export function AIAssistant({
                       key={s}
                       onClick={() => handleSend(s)}
                       disabled={loading}
-                      className="text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50"
+                      className="text-xs px-3 py-1.5 rounded-full border border-border dark:border-border text-muted-foreground dark:text-foreground hover:bg-muted  transition disabled:opacity-50"
                     >
                       {s}
                     </button>
@@ -628,9 +628,9 @@ export function AIAssistant({
 
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
-                    <span className="text-xs text-gray-400">Thinking...</span>
+                  <div className="bg-muted rounded-lg px-3 py-2 flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Thinking...</span>
                   </div>
                 </div>
               )}
@@ -654,7 +654,7 @@ export function AIAssistant({
             </div>
 
             {/* Input area */}
-            <div className="p-3 border-t border-gray-200 dark:border-gray-700 flex gap-2 flex-shrink-0 pb-safe">
+            <div className="p-3 border-t border-border flex gap-2 flex-shrink-0 pb-safe">
               <input
                 ref={inputRef}
                 value={input}
@@ -662,12 +662,12 @@ export function AIAssistant({
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 placeholder={placeholder}
                 disabled={loading}
-                className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               />
               <button
                 onClick={() => handleSend()}
                 disabled={loading || !input.trim()}
-                className="bg-blue-600 text-white px-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 active:scale-95"
+                className="bg-blue-600 text-foreground px-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 active:scale-95"
                 aria-label="Send message"
               >
                 <Send className="w-4 h-4" />

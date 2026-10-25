@@ -283,7 +283,7 @@ export function AIAssistantPage({
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-4xl mx-auto w-full">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-xl flex items-center justify-between flex-shrink-0">
+      <div className="p-4 border-b border-border bg-gradient-to-r from-blue-600 to-purple-600 text-foreground rounded-t-xl flex items-center justify-between flex-shrink-0">
         <div>
           <h2 className="font-semibold flex items-center gap-2 text-lg">
             <Sparkles className="w-5 h-5" />
@@ -298,7 +298,7 @@ export function AIAssistantPage({
         <button
           onClick={handleReset}
           disabled={loading}
-          className="p-2 rounded-full hover:bg-white/20 transition disabled:opacity-50"
+          className="p-2 rounded-full hover:bg-card/20 transition disabled:opacity-50"
           aria-label={isLoggedIn ? 'New conversation' : 'Start over'}
           title={isLoggedIn ? 'New conversation' : 'Start over'}
         >
@@ -316,10 +316,10 @@ export function AIAssistantPage({
             <div
               className={`max-w-[85%] rounded-lg px-4 py-3 text-sm break-words ${
                 m.role === 'user'
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-blue-600 text-foreground'
                   : m.isError
                     ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                    : 'bg-muted text-foreground'
               }`}
             >
               {m.role === 'assistant' ? (
@@ -353,7 +353,7 @@ export function AIAssistantPage({
                 key={s}
                 onClick={() => handleSend(s)}
                 disabled={loading}
-                className="text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50"
+                className="text-xs px-3 py-1.5 rounded-full border border-border dark:border-border text-muted-foreground dark:text-foreground hover:bg-muted  transition disabled:opacity-50"
               >
                 {s}
               </button>
@@ -363,9 +363,9 @@ export function AIAssistantPage({
 
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3 flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
-              <span className="text-xs text-gray-400">Thinking...</span>
+            <div className="bg-muted rounded-lg px-4 py-3 flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">Thinking...</span>
             </div>
           </div>
         )}
@@ -382,7 +382,7 @@ export function AIAssistantPage({
       </div>
 
       {/* Input area */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex gap-2 flex-shrink-0">
+      <div className="p-4 border-t border-border flex gap-2 flex-shrink-0">
         <input
           ref={inputRef}
           value={input}
@@ -390,12 +390,12 @@ export function AIAssistantPage({
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder={placeholder}
           disabled={loading}
-          className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+          className="flex-1 border border-border rounded-lg px-4 py-3 text-sm bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
         />
         <button
           onClick={() => handleSend()}
           disabled={loading || !input.trim()}
-          className="bg-blue-600 text-white px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 active:scale-95"
+          className="bg-blue-600 text-foreground px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 active:scale-95"
           aria-label="Send message"
         >
           <Send className="w-5 h-5" />

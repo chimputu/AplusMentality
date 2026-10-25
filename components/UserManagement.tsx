@@ -141,10 +141,10 @@ export default function UserManagement({ users }: UserManagementProps) {
 
   if (safeUsers.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-        <Users className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">No users found</h3>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Users will appear here once they sign up.</p>
+      <div className="text-center py-12 bg-muted/50 rounded-xl">
+        <Users className="w-16 h-16 text-foreground dark:text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-foreground">No users found</h3>
+        <p className="text-muted-foreground text-sm mt-1">Users will appear here once they sign up.</p>
       </div>
     );
   }
@@ -153,37 +153,37 @@ export default function UserManagement({ users }: UserManagementProps) {
     <div className="space-y-4">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Users</p>
-              <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{stats.total}</p>
+              <p className="text-sm text-muted-foreground">Total Users</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
             </div>
             <Users className="w-8 h-8 text-blue-500" />
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Admins</p>
+              <p className="text-sm text-muted-foreground">Admins</p>
               <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.admins}</p>
             </div>
             <ShieldCheck className="w-8 h-8 text-purple-500" />
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Students</p>
+              <p className="text-sm text-muted-foreground">Students</p>
               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.students}</p>
             </div>
             <GraduationCap className="w-8 h-8 text-blue-500" />
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Enrollments</p>
+              <p className="text-sm text-muted-foreground">Total Enrollments</p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">{totalEnrollments}</p>
             </div>
             <BookOpen className="w-8 h-8 text-green-500" />
@@ -194,13 +194,13 @@ export default function UserManagement({ users }: UserManagementProps) {
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <input
             type="text"
             placeholder="Search by username, name, or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-card text-foreground"
           />
         </div>
         <div className="flex gap-2">
@@ -208,8 +208,8 @@ export default function UserManagement({ users }: UserManagementProps) {
             onClick={() => setFilterRole('ALL')}
             className={`px-4 py-2 rounded-lg transition ${
               filterRole === 'ALL'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-blue-600 text-foreground'
+                : 'bg-muted text-muted-foreground dark:text-foreground hover:bg-muted '
             }`}
           >
             All
@@ -218,8 +218,8 @@ export default function UserManagement({ users }: UserManagementProps) {
             onClick={() => setFilterRole('ADMIN')}
             className={`px-4 py-2 rounded-lg transition ${
               filterRole === 'ADMIN'
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-purple-600 text-foreground'
+                : 'bg-muted text-muted-foreground dark:text-foreground hover:bg-muted '
             }`}
           >
             <ShieldCheck className="w-4 h-4 inline mr-1" />
@@ -229,8 +229,8 @@ export default function UserManagement({ users }: UserManagementProps) {
             onClick={() => setFilterRole('STUDENT')}
             className={`px-4 py-2 rounded-lg transition ${
               filterRole === 'STUDENT'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-blue-600 text-foreground'
+                : 'bg-muted text-muted-foreground dark:text-foreground hover:bg-muted '
             }`}
           >
             <GraduationCap className="w-4 h-4 inline mr-1" />
@@ -240,17 +240,17 @@ export default function UserManagement({ users }: UserManagementProps) {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+            <thead className="bg-muted/50 border-b border-border">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Role</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Activity</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Joined</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">User</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Role</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Activity</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Joined</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -259,7 +259,7 @@ export default function UserManagement({ users }: UserManagementProps) {
                 const secondaryName = getSecondaryName(user);
 
                 return (
-                  <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                  <tr key={user.id} className="hover:bg-muted /50 transition">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {user.imageUrl ? (
@@ -270,15 +270,15 @@ export default function UserManagement({ users }: UserManagementProps) {
                             className="w-9 h-9 rounded-full object-cover flex-shrink-0"
                           />
                         ) : (
-                          <div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-medium text-gray-500 dark:text-gray-300">
+                          <div className="w-9 h-9 bg-muted  rounded-full flex items-center justify-center flex-shrink-0 text-sm font-medium text-muted-foreground dark:text-foreground">
                             {displayName.charAt(0).toUpperCase()}
                           </div>
                         )}
                         <div className="min-w-0">
-                          <p className="font-medium text-gray-800 dark:text-gray-100 truncate">
+                          <p className="font-medium text-foreground truncate">
                             {user.username ? (
                               <span className="inline-flex items-center gap-1">
-                                <AtSign className="w-3 h-3 text-gray-400" />
+                                <AtSign className="w-3 h-3 text-muted-foreground" />
                                 {user.username}
                               </span>
                             ) : (
@@ -286,11 +286,11 @@ export default function UserManagement({ users }: UserManagementProps) {
                             )}
                           </p>
                           {secondaryName && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            <p className="text-xs text-muted-foreground truncate">
                               {secondaryName}
                             </p>
                           )}
-                          <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                          <p className="text-xs text-muted-foreground truncate">
                             {user.clerkId.substring(0, 12)}…
                           </p>
                         </div>
@@ -298,8 +298,8 @@ export default function UserManagement({ users }: UserManagementProps) {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                        <span className="text-gray-600 dark:text-gray-300 truncate">{user.email}</span>
+                        <Mail className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <span className="text-muted-foreground dark:text-foreground truncate">{user.email}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -317,7 +317,7 @@ export default function UserManagement({ users }: UserManagementProps) {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <BookOpen className="w-3 h-3" />
                           {user._count?.enrollments || 0}
@@ -333,7 +333,7 @@ export default function UserManagement({ users }: UserManagementProps) {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs">
+                      <div className="flex items-center gap-2 text-muted-foreground text-xs">
                         <Calendar className="w-4 h-4" />
                         {formatDate(user.createdAt)}
                       </div>

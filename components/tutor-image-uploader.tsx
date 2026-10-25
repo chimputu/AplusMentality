@@ -131,7 +131,7 @@ export default function TutorImageUploader({
     <div className="flex flex-col items-center gap-4">
       <div className="relative group">
         {/* Avatar display */}
-        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-border bg-muted dark:bg-card">
           {activeUrl ? (
             <Image
               src={activeUrl}
@@ -142,7 +142,7 @@ export default function TutorImageUploader({
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600">
-              <Camera className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+              <Camera className="w-12 h-12 text-muted-foreground" />
             </div>
           )}
         </div>
@@ -155,16 +155,16 @@ export default function TutorImageUploader({
           className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
         >
           {uploading ? (
-            <Loader2 className="w-8 h-8 text-white animate-spin" />
+            <Loader2 className="w-8 h-8 text-foreground animate-spin" />
           ) : (
-            <Camera className="w-8 h-8 text-white" />
+            <Camera className="w-8 h-8 text-foreground" />
           )}
         </button>
 
         {/* Progress bar */}
         {uploading && progress > 0 && (
           <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24">
-            <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-muted  rounded-full overflow-hidden">
               <div
                 className="h-full bg-blue-500 rounded-full transition-all duration-200"
                 style={{ width: `${progress}%` }}
@@ -189,7 +189,7 @@ export default function TutorImageUploader({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading || deleting}
-          className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 py-1.5 text-sm bg-blue-600 text-foreground rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? 'Uploading...' : 'Upload Photo'}
         </button>
@@ -199,7 +199,7 @@ export default function TutorImageUploader({
             type="button"
             onClick={handleRemove}
             disabled={uploading || deleting}
-            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-red-600 text-foreground rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Trash2 className="w-3.5 h-3.5" />
             {deleting ? 'Removing...' : 'Remove'}
@@ -211,7 +211,7 @@ export default function TutorImageUploader({
             type="button"
             onClick={() => setPreviewUrl(null)}
             disabled={uploading}
-            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition disabled:opacity-50"
+            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-muted  text-foreground rounded-lg hover:bg-muted  transition disabled:opacity-50"
           >
             <X className="w-3.5 h-3.5" />
             Cancel
@@ -219,7 +219,7 @@ export default function TutorImageUploader({
         )}
       </div>
 
-      <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
+      <p className="text-xs text-muted-foreground text-center">
         JPG, PNG, or WebP. Max 5 MB.
       </p>
     </div>

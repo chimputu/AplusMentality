@@ -3,7 +3,39 @@ import { SignIn } from '@clerk/nextjs';
 export default function SignInPage() {
   return (
     <div className="flex justify-center items-center min-h-[80vh]">
-      <SignIn />
+      <SignIn
+        appearance={{
+          baseTheme: undefined,
+          variables: {
+            colorPrimary: 'var(--primary)',
+            colorBackground: 'var(--card)',
+            colorText: 'var(--foreground)',
+            colorTextSecondary: 'var(--muted-foreground)',
+            colorInputBackground: 'var(--input)',
+            colorInputText: 'var(--foreground)',
+            colorInputBorder: 'var(--border)',
+            colorInputBorderFocus: 'var(--primary)',
+            colorShade: 'var(--muted)',
+          },
+          elements: {
+            formButtonPrimary:
+              'bg-primary hover:bg-primary-hover text-white font-medium py-2 px-4 rounded-lg transition-colors',
+            card: 'bg-card border border-border shadow-lg',
+            headerTitle: 'text-foreground',
+            headerSubtitle: 'text-muted-foreground',
+            formFieldLabel: 'text-foreground',
+            formFieldInput: 'bg-input text-foreground border-border focus:border-primary',
+            formFieldInputShowPasswordButton: 'text-muted-foreground hover:text-foreground',
+            formResendCodeLink: 'text-primary hover:text-primary-hover',
+            formLink: 'text-primary hover:text-primary-hover',
+            dividerLine: 'border-border',
+            dividerText: 'text-muted-foreground',
+            socialButtonsBlockButton: 'bg-card border-border text-foreground hover:bg-muted',
+            footerActionText: 'text-muted-foreground',
+            footerActionLink: 'text-primary hover:text-primary-hover',
+          },
+        }}
+      />
     </div>
   );
 }

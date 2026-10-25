@@ -271,7 +271,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
 
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Video Title *
         </label>
         <input
@@ -280,13 +280,13 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         />
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Description
         </label>
         <textarea
@@ -294,13 +294,13 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+          className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
         />
       </div>
 
       {/* Source Selection */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-foreground mb-2">
           Video Source *
         </label>
         <div className="flex gap-4">
@@ -309,8 +309,8 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
             onClick={() => setSource('upload')}
             className={`flex-1 px-4 py-2 rounded-lg transition flex items-center justify-center gap-2 ${
               source === 'upload'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-blue-600 text-foreground shadow-md'
+                : 'bg-muted text-muted-foreground hover:bg-muted'
             }`}
           >
             <Upload className="w-4 h-4" />
@@ -321,8 +321,8 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
             onClick={() => setSource('youtube')}
             className={`flex-1 px-4 py-2 rounded-lg transition flex items-center justify-center gap-2 ${
               source === 'youtube'
-                ? 'bg-red-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-red-600 text-foreground shadow-md'
+                : 'bg-muted text-muted-foreground hover:bg-muted'
             }`}
           >
             <Film className="w-4 h-4" />
@@ -333,7 +333,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
 
       {/* File Upload */}
       {source === 'upload' && (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
+        <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-blue-500 transition">
           <input
             type="file"
             accept="video/*"
@@ -341,18 +341,18 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
             required
             className="w-full cursor-pointer"
           />
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             Max 50MB • MP4, WebM, OGG, MOV
           </p>
           {file && (
-            <div className="bg-gray-50 rounded-lg p-3 mt-3 text-left">
-              <p className="text-sm text-gray-700">
+            <div className="bg-muted rounded-lg p-3 mt-3 text-left">
+              <p className="text-sm text-foreground">
                 <span className="font-medium">Selected:</span> {file.name}
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Type: {file.type || 'Unknown'}
               </p>
             </div>
@@ -362,8 +362,8 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
 
       {/* YouTube URL */}
       {source === 'youtube' && (
-        <div className="bg-gray-50 rounded-lg p-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="bg-muted rounded-lg p-4">
+          <label className="block text-sm font-medium text-foreground mb-2">
             YouTube URL *
           </label>
           <input
@@ -372,16 +372,16 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
             value={youtubeUrl}
             onChange={(e) => setYoutubeUrl(e.target.value)}
             required
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+            className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
           />
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-muted-foreground mt-2">
             Supports: youtube.com/watch?v=... • youtu.be/... • youtube.com/shorts/...
           </p>
           
           {/* YouTube Preview */}
           {youtubeId && (
             <div className="mt-4">
-              <p className="text-sm text-gray-600 font-medium mb-2">Preview:</p>
+              <p className="text-sm text-muted-foreground font-medium mb-2">Preview:</p>
               <div className="w-full max-w-md aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
                 <iframe
                   src={`https://www.youtube.com/embed/${youtubeId}`}
@@ -396,12 +396,12 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
       )}
 
       {/* Academic Scoping */}
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Academic Scope *</h3>
+      <div className="border-t border-border pt-4">
+        <h3 className="text-sm font-medium text-foreground mb-3">Academic Scope *</h3>
 
         {/* University */}
         <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             University *
           </label>
           <select
@@ -413,7 +413,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
               setPeriod('');
             }}
             required
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           >
             <option value="">Select university</option>
             {universities.map((uni) => (
@@ -426,7 +426,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
 
         {/* Programme */}
         <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Programme *
           </label>
           <select
@@ -434,7 +434,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
             onChange={(e) => setProgrammeId(e.target.value)}
             required
             disabled={!universityId}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
           >
             <option value="">Select programme</option>
             {programmes.map((prog) => (
@@ -447,14 +447,14 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
 
         {/* Year */}
         <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Year *
           </label>
           <select
             value={year}
             onChange={(e) => setYear(parseInt(e.target.value))}
             required
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           >
             {[1, 2, 3, 4, 5, 6, 7].map((y) => (
               <option key={y} value={y}>
@@ -466,7 +466,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
 
         {/* Period */}
         <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Period *
           </label>
           <select
@@ -474,7 +474,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
             onChange={(e) => setPeriod(e.target.value)}
             required
             disabled={!universityId}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
           >
             <option value="">Select period</option>
             {getPeriodOptions().map((opt) => (
@@ -487,8 +487,8 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
       </div>
 
       {/* Course Selection */}
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Course *</h3>
+      <div className="border-t border-border pt-4">
+        <h3 className="text-sm font-medium text-foreground mb-3">Course *</h3>
 
         <div className="flex gap-4 mb-3">
           <label className="flex items-center gap-2 cursor-pointer">
@@ -521,7 +521,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
             onChange={(e) => setCourseId(e.target.value)}
             required
             disabled={!programmeId}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
           >
             <option value="">Select course</option>
             {courses.map((c) => (
@@ -533,7 +533,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
         ) : (
           <div className="space-y-3">
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+              <label className="block text-xs text-muted-foreground mb-1">
                 Course Code
               </label>
               <input
@@ -542,11 +542,11 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
                 onChange={(e) => setNewCourseCode(e.target.value)}
                 required
                 placeholder="e.g. CS 101"
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+              <label className="block text-xs text-muted-foreground mb-1">
                 Course Title
               </label>
               <input
@@ -555,7 +555,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
                 onChange={(e) => setNewCourseTitle(e.target.value)}
                 required
                 placeholder="e.g. Intro to Programming"
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
               />
             </div>
           </div>
@@ -563,7 +563,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
 
         {/* Order */}
         <div className="mt-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Order / Number
           </label>
           <input
@@ -571,7 +571,7 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
             value={order}
             onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
             min={0}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           />
         </div>
       </div>
@@ -582,10 +582,10 @@ export default function VideoUploadForm({ universities: initialUniversities }: V
         disabled={loading}
         className={`w-full px-6 py-3 rounded-lg font-medium transition flex items-center justify-center gap-2 ${
           loading
-            ? 'bg-gray-400 cursor-not-allowed text-white'
+            ? 'bg-muted cursor-not-allowed text-foreground'
             : source === 'youtube'
-            ? 'bg-red-600 hover:bg-red-700 text-white'
-            : 'bg-blue-600 hover:bg-blue-700 text-white'
+            ? 'bg-red-600 hover:bg-red-700 text-foreground'
+            : 'bg-blue-600 hover:bg-blue-700 text-foreground'
         }`}
       >
         {loading ? (

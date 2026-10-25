@@ -35,7 +35,7 @@ export function CourseCard({
 
   return (
     <div
-      className="group flex flex-col bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-300 h-full cursor-pointer"
+      className="group flex flex-col bg-card rounded-xl overflow-hidden border border-border shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-300 h-full cursor-pointer"
       onClick={onEnroll}
     >
       {/* Image area — 16:9 */}
@@ -56,13 +56,13 @@ export function CourseCard({
         )}
 
         {/* Course code badge */}
-        <div className={`absolute top-2 left-2 ${badgeBg} text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm`}>
+        <div className={`absolute top-2 left-2 ${badgeBg} text-foreground text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm`}>
           {code}
         </div>
 
         {/* Category badge */}
         {category && (
-          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/60 text-white backdrop-blur-sm">
+          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/60 text-foreground backdrop-blur-sm">
             {category}
           </div>
         )}
@@ -70,18 +70,18 @@ export function CourseCard({
 
       {/* Content */}
       <div className="p-3 sm:p-4 flex flex-col flex-1">
-        <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-tight line-clamp-2">
+        <h3 className="text-sm sm:text-base font-bold text-foreground leading-tight line-clamp-2">
           {title}
         </h3>
 
-        <p className="text-xs sm:text-sm text-gray-600 mt-1 flex-1 line-clamp-2">
+        <p className="text-xs sm:text-sm text-muted-foreground mt-1 flex-1 line-clamp-2">
           {description}
         </p>
 
         {/* CTA */}
-        <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-gray-100">
-          <span className="text-xs text-gray-400">Free</span>
-          <span className={`${buttonBg} text-white text-xs font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap`}>
+        <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-border">
+          <span className="text-xs text-muted-foreground">Free</span>
+          <span className={`${buttonBg} text-foreground text-xs font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap`}>
             Explore
           </span>
         </div>

@@ -13,12 +13,12 @@ interface BookGridProps {
 
 function SkeletonCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse">
-      <div className="aspect-[3/4] bg-gray-200 dark:bg-gray-700" />
+    <div className="bg-card rounded-xl border border-border overflow-hidden animate-pulse">
+      <div className="aspect-[3/4] bg-muted " />
       <div className="p-3 space-y-2">
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded mt-3" />
+        <div className="h-4 bg-muted  rounded w-3/4" />
+        <div className="h-3 bg-muted  rounded w-1/2" />
+        <div className="h-8 bg-muted  rounded mt-3" />
       </div>
     </div>
   );
@@ -42,12 +42,12 @@ export default function BookGrid({
 
   if (books.length === 0) {
     return (
-      <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-        <BookOpen className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-        <h3 className="font-semibold text-gray-800 dark:text-gray-100">
+      <div className="text-center py-16 bg-card rounded-xl border border-border">
+        <BookOpen className="w-16 h-16 text-foreground dark:text-muted-foreground mx-auto mb-4" />
+        <h3 className="font-semibold text-foreground">
           No books found
         </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Try a different search term.
         </p>
       </div>

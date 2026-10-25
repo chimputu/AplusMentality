@@ -1,5 +1,6 @@
 // app/(dashboard)/student/lessons/[id]/page.tsx
 import { requireAuth } from '@/lib/auth';
+import { getScopeContext, isResourceInScope } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -26,6 +27,9 @@ export default async function StudentLessonPage({ params }: PageProps) {
   const { userId } = await requireAuth(['STUDENT']);
   const { id } = await params;
 
+  // SECURITY: Resolve user's academic scope to prevent IDOR
+  const scope = await getScopeContext();
+
   let lesson: any = null;
   try {
     lesson = await prisma.lesson.findUnique({
@@ -37,6 +41,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
         module: {
           include: {
             course: {
+              select: { id: true, universityId: true },
               include: {
                 enrollments: {
                   where: { userId },
@@ -57,6 +62,12 @@ export default async function StudentLessonPage({ params }: PageProps) {
   }
 
   const course = lesson.module.course;
+
+  // SECURITY: Block if the course is not in the user's scope
+  if (!isResourceInScope(scope, course.universityId ?? null)) {
+    notFound();
+  }
+
   const enrollment = course.enrollments[0];
 
   if (!enrollment) {

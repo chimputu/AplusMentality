@@ -35,7 +35,7 @@ export default function ResponsiveTable<R extends object>({
 }: ResponsiveTableProps<R>) {
   if (rows.length === 0) {
     return (
-      <div className="text-center py-8 text-sm text-gray-400 dark:text-gray-500">
+      <div className="text-center py-8 text-sm text-muted-foreground">
         {emptyMessage}
       </div>
     );
@@ -47,17 +47,17 @@ export default function ResponsiveTable<R extends object>({
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-100 dark:border-gray-700">
+            <tr className="border-b border-border">
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+                  className="text-left px-4 py-2 text-xs font-medium text-muted-foreground uppercase"
                 >
                   {col.header}
                 </th>
               ))}
               {actions && (
-                <th className="text-right px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th className="text-right px-4 py-2 text-xs font-medium text-muted-foreground uppercase">
                   Actions
                 </th>
               )}
@@ -65,7 +65,7 @@ export default function ResponsiveTable<R extends object>({
           </thead>
           <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
             {rows.map((row) => (
-              <tr key={rowKey(row)} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+              <tr key={rowKey(row)} className="hover:bg-muted /50">
                 {columns.map((col) => (
                   <td key={col.key} className="px-4 py-2 text-sm">
                     {col.render(row)}
@@ -85,21 +85,21 @@ export default function ResponsiveTable<R extends object>({
         {rows.map((row) => (
           <div
             key={rowKey(row)}
-            className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+            className="bg-card rounded-lg border border-border p-4"
           >
             <div className="space-y-2">
               {columns.map((col) => (
                 <div key={col.key}>
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <div className="text-xs font-medium text-muted-foreground uppercase">
                     {col.header}
                   </div>
-                  <div className="text-sm text-gray-900 dark:text-gray-100 mt-0.5">
+                  <div className="text-sm text-foreground mt-0.5">
                     {col.render(row)}
                   </div>
                 </div>
               ))}
               {actions && (
-                <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
+                <div className="pt-2 border-t border-border">
                   {actions(row)}
                 </div>
               )}

@@ -68,10 +68,10 @@ export default function AssignmentSubmitButton({ assignmentId, formUrl, isGoogle
   return (
     <div className="space-y-4">
       {!isGoogleForm && (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+        <div className="border-2 border-dashed border-border rounded-lg p-4 text-center">
           <label className="cursor-pointer block">
-            <Upload className="w-8 h-8 mx-auto text-gray-400" />
-            <span className="text-sm text-gray-600">Click to upload your answer (PDF or image)</span>
+            <Upload className="w-8 h-8 mx-auto text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Click to upload your answer (PDF or image)</span>
             <input type="file" accept=".pdf,image/*" onChange={handleFileChange} className="hidden" />
           </label>
           {file && <p className="text-sm text-green-600 mt-2">Selected: {file.name}</p>}
@@ -84,7 +84,7 @@ export default function AssignmentSubmitButton({ assignmentId, formUrl, isGoogle
             href={formUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+            className="inline-flex items-center gap-2 bg-blue-600 text-foreground px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
           >
             Open Assignment in New Tab <ExternalLink className="w-4 h-4" />
           </a>
@@ -92,7 +92,7 @@ export default function AssignmentSubmitButton({ assignmentId, formUrl, isGoogle
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50"
+          className="inline-flex items-center gap-2 bg-green-600 text-foreground px-6 py-3 rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50"
         >
           {loading ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</>

@@ -1,4 +1,5 @@
 import { requireAuth } from '@/lib/auth';
+import { getScopeContext, isResourceInScope } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -11,6 +12,9 @@ interface PageProps {
 export default async function StudentCourseDetailPage({ params }: PageProps) {
   const { userId } = await requireAuth(['STUDENT']);
   const { courseId } = await params;
+
+  // SECURITY: Resolve user's academic scope to prevent IDOR
+  const scope = await getScopeContext();
 
   // Check if student is enrolled with error handling
   let enrollmentData: any = null;
@@ -73,6 +77,11 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
   }
 
   if (!courseData || !courseData.isPublished) {
+    notFound();
+  }
+
+  // SECURITY: Block if the course is not in the user's scope
+  if (!isResourceInScope(scope, courseData.universityId ?? null)) {
     notFound();
   }
 

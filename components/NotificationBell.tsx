@@ -173,10 +173,10 @@ export default function NotificationBell({ role }: NotificationBellProps) {
       {/* Bell Button with Count Badge */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+        className="relative p-2 rounded-full hover:bg-muted  transition"
         aria-label="Notifications"
       >
-        <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        <Bell className="w-5 h-5 text-muted-foreground" />
 
         {/* ⭐ Facebook-style count badge */}
         {count > 0 && (
@@ -185,8 +185,8 @@ export default function NotificationBell({ role }: NotificationBellProps) {
               absolute -top-0.5 -right-0.5 
               min-w-[18px] h-[18px] px-1 
               flex items-center justify-center 
-              bg-red-500 text-white text-[10px] font-bold 
-              rounded-full border-2 border-white dark:border-gray-800
+              bg-red-500 text-foreground text-[10px] font-bold 
+              rounded-full border-2 border-white dark:border-border
               ${count > 99 ? 'text-[9px]' : ''}
             `}
           >
@@ -197,12 +197,12 @@ export default function NotificationBell({ role }: NotificationBellProps) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl z-50 max-h-[80vh] overflow-hidden flex flex-col">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-card border border-border rounded-xl shadow-2xl z-50 max-h-[80vh] overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
+          <div className="px-4 py-3 border-b border-border flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+              <Bell className="w-4 h-4 text-muted-foreground" />
+              <h3 className="font-semibold text-sm text-foreground">
                 Notifications
               </h3>
               {count > 0 && (
@@ -230,16 +230,16 @@ export default function NotificationBell({ role }: NotificationBellProps) {
           {/* Items list */}
           <div className="overflow-y-auto flex-1">
             {loading ? (
-              <div className="p-6 text-center text-gray-500 text-sm">
+              <div className="p-6 text-center text-muted-foreground text-sm">
                 Loading…
               </div>
             ) : items.length === 0 ? (
               <div className="p-8 text-center">
                 <div className="text-4xl mb-2">🔔</div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   No notifications yet
                 </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   You&apos;re all caught up!
                 </p>
               </div>
@@ -253,8 +253,8 @@ export default function NotificationBell({ role }: NotificationBellProps) {
                       key={item.id}
                       onClick={() => handleItemClick(item)}
                       className={`
-                        w-full text-left p-3 border-b border-gray-50 dark:border-gray-700/50 
-                        hover:bg-gray-50 dark:hover:bg-gray-700/50 transition last:border-b-0
+                        w-full text-left p-3 border-b border-border 
+                        hover:bg-muted /50 transition last:border-b-0
                         ${!item.seen ? 'bg-blue-50/50 dark:bg-blue-950/20' : ''}
                       `}
                     >
@@ -266,10 +266,10 @@ export default function NotificationBell({ role }: NotificationBellProps) {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-[10px] uppercase font-semibold tracking-wider text-gray-400">
+                            <span className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
                               {cfg.label}
                             </span>
-                            <span className="text-[10px] text-gray-400">
+                            <span className="text-[10px] text-muted-foreground">
                               {timeAgo(item.createdAt)}
                             </span>
                             {!item.seen && (
@@ -279,18 +279,18 @@ export default function NotificationBell({ role }: NotificationBellProps) {
                           <p
                             className={`text-sm truncate ${
                               !item.seen
-                                ? 'font-semibold text-gray-900 dark:text-gray-100'
-                                : 'font-medium text-gray-700 dark:text-gray-300'
+                                ? 'font-semibold text-foreground'
+                                : 'font-medium text-foreground'
                             }`}
                           >
                             {item.title}
                           </p>
                           {item.description && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-0.5">
+                            <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
                               {item.description}
                             </p>
                           )}
-                          <p className="text-[10px] text-gray-400 mt-1">
+                          <p className="text-[10px] text-muted-foreground mt-1">
                             by {item.author}
                           </p>
                         </div>
@@ -304,11 +304,11 @@ export default function NotificationBell({ role }: NotificationBellProps) {
 
           {/* Footer */}
           {items.length > 0 && (
-            <div className="p-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-center flex-shrink-0">
+            <div className="p-2 border-t border-border bg-muted dark:bg-background/50 text-center flex-shrink-0">
               <Link
                 href={role === 'ADMIN' ? '/admin' : '/student'}
                 onClick={() => setIsOpen(false)}
-                className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                className="text-xs text-muted-foreground hover:text-foreground dark:hover:text-foreground"
               >
                 View all in dashboard
               </Link>

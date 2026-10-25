@@ -24,7 +24,7 @@ export default function PageHeader({ title, description, action, backLink }: Pag
       {backLink && (
         <Link
           href={backLink.href}
-          className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-4 transition text-sm"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground dark:hover:text-foreground mb-4 transition text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           {backLink.label}
@@ -34,11 +34,11 @@ export default function PageHeader({ title, description, action, backLink }: Pag
       {/* Header with consistent styling */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-foreground">
             {title}
           </h1>
           {description && (
-            <p className="text-gray-600 dark:text-gray-400 text-sm mt-0.5">
+            <p className="text-muted-foreground text-sm mt-0.5">
               {description}
             </p>
           )}
@@ -46,7 +46,7 @@ export default function PageHeader({ title, description, action, backLink }: Pag
         {action && (
           <Link
             href={action.href}
-            className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition text-sm font-medium whitespace-nowrap"
+            className="inline-flex items-center gap-2 bg-blue-600 text-foreground px-4 py-2.5 rounded-lg hover:bg-blue-700 transition text-sm font-medium whitespace-nowrap"
           >
             {action.icon || <Plus className="w-4 h-4" />}
             {action.label}

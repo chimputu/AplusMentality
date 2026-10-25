@@ -68,16 +68,16 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
 
   if (courses.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-        <BookOpen className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">No courses yet</h3>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+      <div className="text-center py-12 bg-muted/50 rounded-xl">
+        <BookOpen className="w-16 h-16 text-foreground dark:text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-foreground">No courses yet</h3>
+        <p className="text-muted-foreground text-sm mt-1">
           {isAdmin ? 'Create your first course to get started!' : 'No courses available yet.'}
         </p>
         {isAdmin && (
           <Link
             href="/admin/courses/create"
-            className="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="inline-block mt-4 bg-blue-600 text-foreground px-6 py-2 rounded-lg hover:bg-blue-700 transition"
           >
             Create Course
           </Link>
@@ -98,15 +98,15 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
           <div
             key={course.id}
             onClick={() => handleViewCourse(course.id)} // ✅ Click on whole card to view course
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition-all duration-200 group cursor-pointer hover:border-blue-300 dark:hover:border-blue-600"
+            className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-all duration-200 group cursor-pointer hover:border-blue-300 dark:hover:border-blue-600"
           >
             <div className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <span className="text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
+                  <span className="text-xs font-mono bg-muted text-muted-foreground px-2 py-1 rounded">
                     {course.code}
                   </span>
-                  <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-lg mt-2 line-clamp-1">
+                  <h3 className="font-semibold text-foreground text-lg mt-2 line-clamp-1">
                     {course.title}
                   </h3>
                 </div>
@@ -114,7 +114,7 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
                   <div className="flex gap-1 ml-2" onClick={(e) => e.stopPropagation()}>
                     <button
                       onClick={(e) => handleEdit(course.id, e)}
-                      className="p-1.5 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 transition rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="p-1.5 text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground transition rounded-lg hover:bg-muted "
                       title="Edit Course"
                     >
                       <Edit className="w-4 h-4" />
@@ -133,7 +133,7 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
 
               {/* Description */}
               {course.description && (
-                <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 line-clamp-2">
+                <p className="text-sm text-muted-foreground dark:text-foreground mt-2 line-clamp-2">
                   {course.description}
                 </p>
               )}
@@ -158,14 +158,14 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
                 <span className={`text-xs px-2.5 py-1 rounded-full ${
                   course.isPublished
                     ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                    : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                    : 'bg-muted text-muted-foreground'
                 }`}>
                   {course.isPublished ? 'Published' : 'Draft'}
                 </span>
               </div>
 
               {/* Stats */}
-              <div className="flex items-center gap-4 mt-4 text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <BookOpen className="w-3.5 h-3.5" />
                   {course._count?.modules || course.modules?.length || 0} modules
@@ -183,8 +183,8 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
               </div>
 
               {/* Footer */}
-              <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Calendar className="w-3.5 h-3.5" />
                   {new Date(course.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -204,7 +204,7 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
                     </Link>
                   )}
                   {isAdmin && (
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                    <span className="text-xs text-muted-foreground">
                       by {course.creator?.name || 'Unknown'}
                     </span>
                   )}

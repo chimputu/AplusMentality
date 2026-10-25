@@ -44,7 +44,7 @@ export default function CreateAnnouncementForm() {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         required
-        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
       <textarea
         placeholder="Announcement Content"
@@ -52,12 +52,12 @@ export default function CreateAnnouncementForm() {
         onChange={(e) => setContent(e.target.value)}
         required
         rows={4}
-        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
       <button
         type="submit"
         disabled={loading}
-        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
+        className="bg-blue-600 text-foreground px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
       >
         {loading ? 'Posting...' : 'Post Announcement'}
       </button>

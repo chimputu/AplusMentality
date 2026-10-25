@@ -45,8 +45,8 @@ export default function AnnouncementList({ announcements, isAdmin = false }: Ann
 
   if (!announcements || announcements.length === 0) {
     return (
-      <div className="text-center py-8 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-        <p className="text-gray-500 dark:text-gray-400 text-sm">No announcements yet.</p>
+      <div className="text-center py-8 bg-muted/50 rounded-xl">
+        <p className="text-muted-foreground text-sm">No announcements yet.</p>
       </div>
     );
   }
@@ -56,14 +56,14 @@ export default function AnnouncementList({ announcements, isAdmin = false }: Ann
       {announcements.map((announcement) => (
         <div
           key={announcement.id}
-          className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition dark:bg-gray-800"
+          className="border border-border rounded-lg p-4 hover:shadow-sm transition dark:bg-card"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-lg">
+              <h3 className="font-semibold text-foreground text-lg">
                 {announcement.title}
               </h3>
-              <div className="flex items-center gap-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <User className="w-3 h-3" />
                   {announcement.author.name || 'Unknown'}
@@ -79,7 +79,7 @@ export default function AnnouncementList({ announcements, isAdmin = false }: Ann
                   })}
                 </span>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm whitespace-pre-wrap">
+              <p className="text-muted-foreground dark:text-foreground mt-2 text-sm whitespace-pre-wrap">
                 {announcement.content}
               </p>
             </div>

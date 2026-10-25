@@ -40,31 +40,31 @@ const variantStyles: Record<string, { bg: string; border: string; text: string; 
     bg: 'bg-blue-50 dark:bg-blue-900/30',
     border: 'border-l-blue-500',
     text: 'text-blue-800 dark:text-blue-200',
-    cta: 'bg-blue-600 hover:bg-blue-700 text-white',
+    cta: 'bg-blue-600 hover:bg-blue-700 text-foreground',
   },
   SUCCESS: {
     bg: 'bg-green-50 dark:bg-green-900/30',
     border: 'border-l-green-500',
     text: 'text-green-800 dark:text-green-200',
-    cta: 'bg-green-600 hover:bg-green-700 text-white',
+    cta: 'bg-green-600 hover:bg-green-700 text-foreground',
   },
   WARNING: {
     bg: 'bg-amber-50 dark:bg-amber-900/30',
     border: 'border-l-amber-500',
     text: 'text-amber-800 dark:text-amber-200',
-    cta: 'bg-amber-600 hover:bg-amber-700 text-white',
+    cta: 'bg-amber-600 hover:bg-amber-700 text-foreground',
   },
   DANGER: {
     bg: 'bg-red-50 dark:bg-red-900/30',
     border: 'border-l-red-500',
     text: 'text-red-800 dark:text-red-200',
-    cta: 'bg-red-600 hover:bg-red-700 text-white',
+    cta: 'bg-red-600 hover:bg-red-700 text-foreground',
   },
   PROMO: {
     bg: 'bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30',
     border: 'border-l-purple-500',
     text: 'text-purple-800 dark:text-purple-200',
-    cta: 'bg-purple-600 hover:bg-purple-700 text-white',
+    cta: 'bg-purple-600 hover:bg-purple-700 text-foreground',
   },
 };
 
@@ -169,10 +169,10 @@ function BannerCarouselInner({
         {visibleBanners.length > 1 && (
           <button
             onClick={goToPrev}
-            className="flex-shrink-0 p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition"
+            className="flex-shrink-0 p-1 rounded-full hover:bg-black/10 dark:hover:bg-card/10 transition"
             aria-label="Previous banner"
           >
-            <ChevronLeft className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
           </button>
         )}
 
@@ -182,7 +182,7 @@ function BannerCarouselInner({
             <div className="flex items-center gap-2">
               <h3 className={`font-semibold text-sm ${style.text}`}>{current.title}</h3>
               {visibleBanners.length > 1 && (
-                <span className="text-xs text-gray-400 dark:text-gray-500">
+                <span className="text-xs text-muted-foreground">
                   {currentIndex + 1}/{visibleBanners.length}
                 </span>
               )}
@@ -216,18 +216,18 @@ function BannerCarouselInner({
           {visibleBanners.length > 1 && (
             <button
               onClick={goToNext}
-              className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition"
+              className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-card/10 transition"
               aria-label="Next banner"
             >
-              <ChevronRight className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </button>
           )}
           <button
             onClick={() => dismissBanner(current.id)}
-            className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition"
+            className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-card/10 transition"
             aria-label="Dismiss banner"
           >
-            <X className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
       </div>
@@ -242,7 +242,7 @@ function BannerCarouselInner({
               className={`w-1.5 h-1.5 rounded-full transition ${
                 i === currentIndex
                   ? 'bg-blue-500 dark:bg-blue-400'
-                  : 'bg-gray-300 dark:bg-gray-600'
+                  : 'bg-muted '
               }`}
               aria-label={`Go to banner ${i + 1}`}
             />

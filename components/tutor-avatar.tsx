@@ -52,7 +52,7 @@ export default function TutorAvatar({ tutor, size = 'md' }: TutorAvatarProps) {
   if (tutor.avatarUrl) {
     return (
       <div
-        className="rounded-full overflow-hidden flex-shrink-0 border-2 border-gray-200 dark:border-gray-600"
+        className="rounded-full overflow-hidden flex-shrink-0 border-2 border-border dark:border-border"
         style={{ width, height }}
       >
         <Image
@@ -68,7 +68,7 @@ export default function TutorAvatar({ tutor, size = 'md' }: TutorAvatarProps) {
 
   return (
     <div
-      className={`rounded-full bg-gradient-to-br ${bgColor} flex items-center justify-center text-white font-semibold flex-shrink-0 ${fontSize}`}
+      className={`rounded-full bg-gradient-to-br ${bgColor} flex items-center justify-center text-foreground font-semibold flex-shrink-0 ${fontSize}`}
       style={{ width, height }}
     >
       {initials}

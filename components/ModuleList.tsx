@@ -81,16 +81,16 @@ export default function ModuleList({ modules, courseId, isAdmin = true }: Module
 
   if (modules.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-        <BookOpen className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">No modules yet</h3>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+      <div className="text-center py-12 bg-muted/50 rounded-xl border border-border">
+        <BookOpen className="w-16 h-16 text-foreground dark:text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-foreground">No modules yet</h3>
+        <p className="text-muted-foreground text-sm mt-1">
           {isAdmin ? 'Add your first module to this course.' : 'No modules available for this course.'}
         </p>
         {isAdmin && (
           <Link
             href={`/admin/courses/${courseId}/modules/create`}
-            className="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="inline-block mt-4 bg-blue-600 text-foreground px-6 py-2 rounded-lg hover:bg-blue-700 transition"
           >
             Add Module
           </Link>
@@ -108,15 +108,15 @@ export default function ModuleList({ modules, courseId, isAdmin = true }: Module
         return (
           <div
             key={module.id}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition"
+            className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition"
           >
             {/* Module Header */}
             <div 
-              className="p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition flex items-center justify-between"
+              className="p-4 cursor-pointer hover:bg-muted /50 transition flex items-center justify-between"
               onClick={() => toggleModule(module.id)}
             >
               <div className="flex items-center gap-3 flex-1">
-                <button className="text-gray-400 dark:text-gray-500" aria-label={isExpanded ? `Collapse ${module.title}` : `Expand ${module.title}`}>
+                <button className="text-muted-foreground" aria-label={isExpanded ? `Collapse ${module.title}` : `Expand ${module.title}`}>
                   {isExpanded ? (
                     <ChevronDown className="w-5 h-5" />
                   ) : (
@@ -124,14 +124,14 @@ export default function ModuleList({ modules, courseId, isAdmin = true }: Module
                   )}
                 </button>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-400 dark:text-gray-500">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Module {module.order + 1}
                   </span>
-                  <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
+                  <span className="text-xs px-2 py-0.5 bg-muted text-muted-foreground rounded">
                     {totalLessons} {totalLessons === 1 ? 'lesson' : 'lessons'}
                   </span>
                 </div>
-                <h3 className="font-semibold text-gray-800 dark:text-gray-100">
+                <h3 className="font-semibold text-foreground">
                   {module.title}
                 </h3>
               </div>
@@ -158,16 +158,16 @@ export default function ModuleList({ modules, courseId, isAdmin = true }: Module
 
             {/* Module Description */}
             {module.description && (
-              <div className="px-4 pb-2 text-sm text-gray-500 dark:text-gray-400">
+              <div className="px-4 pb-2 text-sm text-muted-foreground">
                 {module.description}
               </div>
             )}
 
             {/* Lessons List */}
             {isExpanded && (
-              <div className="border-t border-gray-100 dark:border-gray-700">
+              <div className="border-t border-border">
                 {module.lessons.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-gray-400 dark:text-gray-500">
+                  <div className="p-4 text-center text-sm text-muted-foreground">
                     No lessons yet
                     {isAdmin && (
                       <Link
@@ -183,13 +183,13 @@ export default function ModuleList({ modules, courseId, isAdmin = true }: Module
                     {module.lessons.map((lesson) => (
                       <div
                         key={lesson.id}
-                        className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group"
+                        className="flex items-center justify-between p-3 hover:bg-muted /50 transition group"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className="text-sm text-gray-400 dark:text-gray-500 flex-shrink-0">
+                          <span className="text-sm text-muted-foreground flex-shrink-0">
                             {lesson.order + 1}.
                           </span>
-                          <span className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                          <span className="text-sm font-medium text-foreground truncate">
                             {lesson.title}
                           </span>
                           <div className="flex items-center gap-1 flex-shrink-0">
@@ -228,7 +228,7 @@ export default function ModuleList({ modules, courseId, isAdmin = true }: Module
 
                 {/* Add Lesson Button */}
                 {isAdmin && (
-                  <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+                  <div className="p-3 border-t border-border">
                     <Link
                       href={`/admin/courses/${courseId}/modules/${module.id}/lessons/create`}
                       className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition"

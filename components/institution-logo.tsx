@@ -57,7 +57,7 @@ export function InstitutionLogo({
 
   return (
     <div
-      className={`rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-100 bg-white shadow-sm ${sizes.box} ${className}`}
+      className={`rounded-full flex items-center justify-center overflow-hidden border-2 border-border bg-card shadow-sm ${sizes.box} ${className}`}
     >
       {showImage ? (
         <Image
@@ -70,7 +70,7 @@ export function InstitutionLogo({
         />
       ) : (
         <div
-          className={`w-full h-full flex items-center justify-center text-white font-bold ${getColorFromName(name)} ${sizes.text}`}
+          className={`w-full h-full flex items-center justify-center text-foreground font-bold ${getColorFromName(name)} ${sizes.text}`}
           title={name}
         >
           {shortName ?? getInitials(name)}

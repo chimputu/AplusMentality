@@ -170,17 +170,17 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-foreground">
           {bannerId ? 'Edit Banner' : 'New Banner'}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <p className="text-muted-foreground text-sm">
           {bannerId ? 'Update the banner details' : 'Create a new announcement banner'}
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Form */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
@@ -190,7 +190,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
 
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Title *
               </label>
               <input
@@ -199,14 +199,14 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                 minLength={3}
                 value={formData.title}
                 onChange={(e) => handleChange('title', e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-border rounded-lg px-3 py-2 bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Midterm exams this week"
               />
             </div>
 
             {/* Message */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Message *
               </label>
               <textarea
@@ -215,14 +215,14 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                 rows={3}
                 value={formData.message}
                 onChange={(e) => handleChange('message', e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full border border-border rounded-lg px-3 py-2 bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="Exams will be held from Monday to Friday..."
               />
             </div>
 
             {/* Variant */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Variant
               </label>
               <div className="flex gap-2 flex-wrap">
@@ -233,8 +233,8 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                     onClick={() => handleChange('variant', v)}
                     className={`px-3 py-1.5 text-xs font-medium rounded-full border transition ${
                       formData.variant === v
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-400'
+                        ? 'bg-blue-600 text-foreground border-blue-600'
+                        : 'border-border text-muted-foreground hover:border-foreground'
                     }`}
                   >
                     {v}
@@ -245,7 +245,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
 
             {/* Placement */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Placement
               </label>
               <div className="flex gap-2">
@@ -256,8 +256,8 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                     onClick={() => handleChange('placement', p)}
                     className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition ${
                       formData.placement === p
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-400'
+                        ? 'bg-blue-600 text-foreground border-blue-600'
+                        : 'border-border text-muted-foreground hover:border-foreground'
                     }`}
                   >
                     {p === 'HOMEPAGE' ? 'Homepage' : p === 'DASHBOARD' ? 'Dashboard' : 'Both'}
@@ -267,7 +267,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
             </div>
 
             {/* Target Audience - Scope */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <div className="border-t border-border pt-4">
               <ScopeSelector
                 scope={formData.scope}
                 institutionIds={formData.institutionIds}
@@ -284,26 +284,26 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
             {/* CTA */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   CTA Label
                 </label>
                 <input
                   type="text"
                   value={formData.ctaLabel}
                   onChange={(e) => handleChange('ctaLabel', e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full border border-border rounded-lg px-3 py-2 bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   placeholder="Learn more"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   CTA URL
                 </label>
                 <input
                   type="text"
                   value={formData.ctaUrl}
                   onChange={(e) => handleChange('ctaUrl', e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full border border-border rounded-lg px-3 py-2 bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   placeholder="/exams or https://..."
                 />
               </div>
@@ -311,18 +311,18 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
 
             {/* Image */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Banner Image (optional)
               </label>
               {imagePreview && !uploadingImage ? (
-                <div className="relative border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                <div className="relative border border-border rounded-lg overflow-hidden">
                   <img
                     src={imagePreview}
                     alt="Banner preview"
                     className="w-full h-32 object-cover"
                   />
                   {formData.imageUrl && (
-                    <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 font-medium">
+                    <div className="absolute top-2 left-2 bg-green-500 text-foreground text-xs px-2 py-1 rounded-full flex items-center gap-1 font-medium">
                       <Check className="w-3 h-3" /> Uploaded
                     </div>
                   )}
@@ -332,25 +332,25 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                       handleChange('imageUrl', '');
                       setImagePreview('');
                     }}
-                    className="absolute top-2 right-2 bg-white dark:bg-gray-800 rounded-full p-1 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                    className="absolute top-2 right-2 bg-card rounded-full p-1 shadow hover:bg-muted  transition"
                   >
-                    <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <X className="w-4 h-4 text-muted-foreground" />
                   </button>
                 </div>
               ) : (
-                <label className={`flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-center hover:border-gray-400 transition cursor-pointer ${
+                <label className={`flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg px-4 py-3 text-center hover:border-foreground transition cursor-pointer ${
                   uploadingImage ? 'opacity-50 pointer-events-none' : ''
                 }`}>
                   {uploadingImage ? (
                     <div className="flex flex-col items-center gap-2">
                       <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
-                      <span className="text-sm text-gray-500">Uploading...</span>
+                      <span className="text-sm text-muted-foreground">Uploading...</span>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-1">
-                      <Upload className="w-6 h-6 text-gray-400" />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Click to upload image</span>
-                      <span className="text-xs text-gray-400">JPG, PNG, WebP · Max 5 MB</span>
+                      <Upload className="w-6 h-6 text-muted-foreground" />
+                      <span className="text-sm font-medium text-muted-foreground">Click to upload image</span>
+                      <span className="text-xs text-muted-foreground">JPG, PNG, WebP · Max 5 MB</span>
                     </div>
                   )}
                   <input
@@ -366,7 +366,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
             {/* Dates */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Starts At
                 </label>
                 <input
@@ -374,32 +374,32 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                   required
                   value={formData.startsAt}
                   onChange={(e) => handleChange('startsAt', e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full border border-border rounded-lg px-3 py-2 bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Ends At (optional)
                 </label>
                 <input
                   type="datetime-local"
                   value={formData.endsAt}
                   onChange={(e) => handleChange('endsAt', e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full border border-border rounded-lg px-3 py-2 bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 />
               </div>
             </div>
 
             {/* Priority */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Priority (higher = shown first)
               </label>
               <input
                 type="number"
                 value={formData.priority}
                 onChange={(e) => handleChange('priority', parseInt(e.target.value) || 0)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
 
@@ -409,16 +409,16 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                 type="button"
                 onClick={() => handleChange('isActive', !formData.isActive)}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
-                  formData.isActive ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                  formData.isActive ? 'bg-green-600' : 'bg-muted '
                 }`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                  className={`inline-block h-4 w-4 transform rounded-full bg-background transition ${
                     formData.isActive ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
               </button>
-              <span className="text-sm text-gray-700 dark:text-gray-300">Active</span>
+              <span className="text-sm text-foreground">Active</span>
             </div>
 
             {/* Submit */}
@@ -426,14 +426,14 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg text-sm font-medium transition"
+                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-foreground rounded-lg text-sm font-medium transition"
               >
                 {loading ? 'Saving...' : bannerId ? 'Update Banner' : 'Create Banner'}
               </button>
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                className="px-4 py-2 border border-border text-foreground rounded-lg text-sm font-medium hover:bg-muted  transition"
               >
                 Cancel
               </button>
