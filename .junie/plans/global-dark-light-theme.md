@@ -2,6 +2,71 @@
 sessionId: session-261025-115642-13xy
 ---
 
+# Homepage Design Consistency Audit
+
+### Overview
+Audit and refactor the entire homepage (`app/page.tsx` → `HomePageClient.tsx`) and its imported components to ensure 100% consistent design language across all sections: typography contrast, alternating section backgrounds, proper card styling, and global max-width containers.
+
+### Current State
+- **HomePageClient.tsx** (1388 lines): Already uses semantic utilities extensively (`bg-card`, `text-foreground`, `bg-muted`, `text-muted-foreground`, `border-border`). Most sections are well-themed.
+- **world-map-demo.tsx**: Already uses semantic utilities (`bg-background`, `text-foreground`, `text-primary`, `text-muted-foreground`). No changes needed.
+- **animated-testimonials.tsx**: Has hardcoded colors (`text-black`, `text-gray-500`, `bg-gray-100`) that don't respect dark mode properly.
+- **CSS Variables**: All 14 variables are exposed in `globals.css` `@theme inline` block. Utilities like `bg-card`, `text-foreground`, `bg-muted`, `text-muted-foreground`, `border-border` work everywhere.
+
+### Issues Found
+
+1. **Testimonials section gradient masks** (HomePageClient.tsx lines 1083-1084): Uses `from-white` hardcoded gradients for fade effects. In dark mode, the white gradient is visible and doesn't blend with dark backgrounds.
+2. **animated-testimonials.tsx**: Uses `text-black dark:text-white`, `text-gray-500 dark:text-neutral-500`, `bg-gray-100 dark:bg-neutral-800` — should use semantic utilities instead.
+3. **"What We Offer" section** (line 587): Uses `bg-gradient-to-br from-blue-50 to-blue-100/50` — hardcoded light-mode gradient. Needs a dark mode counterpart.
+4. **"Sign Up as a Tutor" section** (line 989): Uses `bg-gradient-to-r from-blue-50 to-emerald-50` — hardcoded light-mode gradient.
+5. **"Advertise" section** (line 1032): Uses `bg-primary-light` which is fine (maps to CSS variable), but the inner card is correct.
+6. **Section background rhythm**: Some adjacent sections have the same background (`bg-background` next to `bg-background`), reducing visual rhythm.
+
+### Proposed Changes
+
+#### 1. Fix Testimonials Gradient Masks
+Replace hardcoded `from-white` gradients with theme-aware gradients using CSS variables.
+
+- Line 1083: `from-white` → `from-background`
+- Line 1084: `from-white` → `from-background`
+
+#### 2. Refactor animated-testimonials.tsx
+Replace all hardcoded colors with semantic utilities.
+
+- `text-black dark:text-white` → `text-foreground`
+- `text-gray-500 dark:text-neutral-500` → `text-muted-foreground`
+- `text-gray-500 dark:text-neutral-300` → `text-muted-foreground`
+- `bg-gray-100 dark:bg-neutral-800` → `bg-muted`
+- `text-black` in button icons → `text-foreground`
+
+#### 3. Fix Hardcoded Gradient Backgrounds
+Add dark mode counterparts to gradient sections.
+
+- "What We Offer" (line 587): `bg-gradient-to-br from-blue-50 to-blue-100/50` → `bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-muted dark:to-background`
+- "Sign Up as a Tutor" (line 989): `bg-gradient-to-r from-blue-50 to-emerald-50` → `bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-muted dark:to-background`
+
+#### 4. Improve Section Background Rhythm
+Ensure alternating backgrounds for visual flow:
+- Hero (image) → Four Pillars (`bg-card`) → Universities (`bg-background`) → World Map (`bg-background`) → Explore (`bg-muted`) → What We Offer (gradient) → Our Aim (`bg-background`) → Courses (`bg-background`) → Grading (`bg-background`) → Tutor CTA (gradient) → Advertise (`bg-primary-light`) → Testimonials (`bg-background`) → Why Choose (`bg-muted`) → Encouragement (`bg-blue-600`) → Partners (`bg-muted`) → Footer (`bg-background`)
+
+Some adjacent `bg-background` sections should alternate to `bg-muted` for better rhythm.
+
+### Scope
+**In Scope:**
+- Fix gradient masks in testimonials section
+- Refactor animated-testimonials.tsx colors
+- Add dark mode to gradient backgrounds
+- Improve section background alternating rhythm
+
+**Out of Scope:**
+- WorldMap component (already themed correctly)
+- Hero section (image-based, already correct)
+- Navbar (already themed)
+- Course cards (already themed)
+- Footer (already themed)
+- Video containers (`bg-black` is contextual, not a background color)
+- Overlay backdrops (`bg-black/60` is intentional for contrast)
+
 # Testing
 
 ### Validation Approach
@@ -51,6 +116,24 @@ Confirm the build passes locally and deploy.
 - Run `npm run build` to verify Turbopack no longer errors on the 4 functions
 - Commit and push to `main`
 - Verify Vercel deployment succeeds
+
+# Delivery Steps (Homepage Design Consistency)
+
+### ✓ Step 1: Fix animated-testimonials.tsx and homepage gradient issues
+Replace hardcoded colors in animated-testimonials.tsx and fix gradient masks/backgrounds in HomePageClient.tsx.
+
+- `components/ui/animated-testimonials.tsx`: Replace `text-black dark:text-white` → `text-foreground`, `text-gray-500 dark:text-neutral-500` → `text-muted-foreground`, `text-gray-500 dark:text-neutral-300` → `text-muted-foreground`, `bg-gray-100 dark:bg-neutral-800` → `bg-muted`, button icon `text-black` → `text-foreground`
+- `components/HomePageClient.tsx` line 1083-1084: Replace `from-white` → `from-background` in testimonial scroll gradient masks
+- `components/HomePageClient.tsx` line 587: Add `dark:from-muted dark:to-background` to "What We Offer" gradient
+- `components/HomePageClient.tsx` line 989: Add `dark:from-muted dark:to-background` to "Sign Up as a Tutor" gradient
+
+### * Step 2: Improve section background rhythm and push
+Alternate adjacent sections with identical backgrounds and deploy.
+
+- `components/HomePageClient.tsx`: Change Courses section (line 717) from `bg-background` to `bg-muted` to alternate with "Our Aim" section above
+- `components/HomePageClient.tsx`: Change Grading section (line 841) from `bg-background` to `bg-background` (keep, alternates with muted Courses)
+- Run `npm run build` to verify no errors
+- Commit and push to `main`
 
 # Delivery Steps
 
