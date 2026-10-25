@@ -372,6 +372,82 @@ export default function DashboardLayout({
     },
   ];
 
+  // Lecturer Navigation Items
+  const lecturerNavItems: NavItem[] = [
+    { 
+      href: '/lecturer', 
+      label: 'Dashboard', 
+      icon: LayoutDashboard,
+      section: 'Overview'
+    },
+    { 
+      href: '/lecturer/courses', 
+      label: 'Courses', 
+      icon: BookOpen,
+      section: 'Content'
+    },
+    { 
+      href: '/lecturer/videos', 
+      label: 'Videos', 
+      icon: Video,
+      section: 'Content'
+    },
+    { 
+      href: '/lecturer/lecture-slides', 
+      label: 'Lecture Slides', 
+      icon: Presentation,
+      section: 'Content'
+    },
+    { 
+      href: '/lecturer/past-papers', 
+      label: 'Past Papers', 
+      icon: FileText,
+      section: 'Content'
+    },
+    { 
+      href: '/lecturer/quizzes', 
+      label: 'Quizzes', 
+      icon: FileQuestion,
+      section: 'Assessments'
+    },
+    { 
+      href: '/lecturer/tests', 
+      label: 'Tests', 
+      icon: FileText,
+      section: 'Assessments'
+    },
+    { 
+      href: '/lecturer/assignments', 
+      label: 'Assignments', 
+      icon: ClipboardList,
+      section: 'Assessments'
+    },
+    { 
+      href: '/lecturer/grades', 
+      label: 'Student Grades', 
+      icon: FileCheck,
+      section: 'Students'
+    },
+    { 
+      href: '/lecturer/enrollments', 
+      label: 'Enrollments', 
+      icon: Users,
+      section: 'Students'
+    },
+    { 
+      href: '/lecturer/announcements', 
+      label: 'Announcements', 
+      icon: Megaphone,
+      section: 'Communication'
+    },
+    { 
+      href: '/lecturer/settings', 
+      label: 'Settings', 
+      icon: Settings,
+      section: 'Account'
+    },
+  ];
+
   // Tutor Navigation Items
   const tutorNavItems: NavItem[] = [
     { 
@@ -469,7 +545,9 @@ export default function DashboardLayout({
   let navItems: NavItem[];
   if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
     navItems = adminNavItems;
-  } else if (role === 'TUTOR' || role === 'LECTURER') {
+  } else if (role === 'LECTURER') {
+    navItems = lecturerNavItems;
+  } else if (role === 'TUTOR') {
     navItems = tutorNavItems;
   } else {
     navItems = studentNavItems;
