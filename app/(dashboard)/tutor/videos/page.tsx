@@ -1,22 +1,12 @@
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { buildCourseResourceScopeWhere } from '@/lib/auth/scope';
+import { getScopeContext, buildCourseResourceScopeWhere } from '@/lib/auth/scope';
 import { Video, Calendar, Users, Clock } from 'lucide-react';
 
 export default async function TutorVideosPage() {
-  const { user } = await requireAuth(['TUTOR']);
+  await requireAuth(['TUTOR']);
 
-  // Build scope from the authenticated tutor to filter by their university
-  const scope = {
-    userId: user.id,
-    role: user.role,
-    universityId: user.universityId,
-    institutionId: user.institutionId,
-    year: user.year,
-    period: user.period,
-    mode: (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? 'ADMIN' : 'OWN',
-    readOnly: false,
-  };
+  const scope = await getScopeContext();
   const where = buildCourseResourceScopeWhere(scope);
 
   let videosData: any[] = [];
