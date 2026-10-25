@@ -283,7 +283,7 @@ export function AIAssistantPage({
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-4xl mx-auto w-full">
       {/* Header */}
-      <div className="p-4 border-b border-border bg-gradient-to-r from-blue-600 to-purple-600 text-foreground rounded-t-xl flex items-center justify-between flex-shrink-0">
+      <div className="p-4 border-b border-border bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-xl flex items-center justify-between flex-shrink-0">
         <div>
           <h2 className="font-semibold flex items-center gap-2 text-lg">
             <Sparkles className="w-5 h-5" />

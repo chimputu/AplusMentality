@@ -71,7 +71,7 @@ function SearchContent({
     <div className="max-w-6xl mx-auto">
       {/* Welcome Section */}
       {!searchQuery && (
-        <div className="mb-8 bg-gradient-to-r from-gray-900 to-gray-700 rounded-2xl p-8 text-foreground shadow-xl">
+        <div className="mb-8 bg-gradient-to-r from-gray-900 to-gray-700 rounded-2xl p-8 text-white shadow-xl">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center space-x-3 mb-2">
@@ -80,13 +80,13 @@ function SearchContent({
               <h1 className="text-3xl font-bold mb-2">
                 Hello, {userName}! 👋
               </h1>
-              <p className="text-foreground text-sm max-w-lg">
+              <p className="text-slate-300 text-sm max-w-lg">
                 Stay updated with the latest announcements and videos from your mentors.
                 {totalAnnouncements > 0 && ` You have ${totalAnnouncements} new announcements to read.`}
               </p>
               <div className="flex items-center space-x-4 mt-4">
                 <div className="flex items-center space-x-2 bg-card/10 rounded-full px-4 py-1.5">
-                  <span className="text-sm text-foreground">
+                  <span className="text-sm text-white">
                     {thisWeekAnnouncements} new this week
                   </span>
                 </div>
@@ -94,7 +94,7 @@ function SearchContent({
             </div>
             <div className="hidden md:block">
               <div className="w-16 h-16 bg-card/10 rounded-full flex items-center justify-center">
-                <span className="text-3xl font-bold text-foreground">
+                <span className="text-3xl font-bold text-white">
                   {userName.charAt(0).toUpperCase()}
                 </span>
               </div>

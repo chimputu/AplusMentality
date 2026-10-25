@@ -195,7 +195,7 @@ export default function StudentContent({
       <BannerCarousel placement="DASHBOARD" institutionId={institutionId} />
 
       {/* Hero Banner */}
-      <div className="w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#1e293b] via-[#1a2235] to-[#0f172a] p-8 md:p-10 text-foreground shadow-lg">
+      <div className="w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#1e293b] via-[#1a2235] to-[#0f172a] p-8 md:p-10 text-white shadow-lg">
         <div className="flex items-start justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -211,7 +211,7 @@ export default function StudentContent({
                 {universityName && (
                   <div className="inline-flex items-center gap-2 bg-card/10 border border-white/10 px-3 py-1.5 rounded-lg">
                     <School className="w-4 h-4 text-blue-300" />
-                    <span className="text-sm text-foreground">
+                    <span className="text-sm text-white">
                       {universityName}
                       {universityCode && (
                         <span className="text-muted-foreground ml-1">({universityCode})</span>
@@ -222,30 +222,30 @@ export default function StudentContent({
                 {programmeName && (
                   <div className="inline-flex items-center gap-2 bg-card/10 border border-white/10 px-3 py-1.5 rounded-lg">
                     <GraduationCap className="w-4 h-4 text-green-300" />
-                    <span className="text-sm text-foreground">{programmeName}</span>
+                    <span className="text-sm text-white">{programmeName}</span>
                   </div>
                 )}
                 {year && (
                   <div className="inline-flex items-center gap-2 bg-card/10 border border-white/10 px-3 py-1.5 rounded-lg">
                     <BookOpen className="w-4 h-4 text-yellow-300" />
-                    <span className="text-sm text-foreground">Year {year}</span>
+                    <span className="text-sm text-white">Year {year}</span>
                   </div>
                 )}
               </div>
             )}
-            <p className="text-foreground mt-3 text-sm md:text-base">
+            <p className="text-slate-300 mt-3 text-sm md:text-base">
               Stay updated with the latest announcements and videos from your mentors.
             </p>
             <div className="inline-flex items-center gap-2 mt-5 bg-card/10 border border-white/10 px-4 py-2 rounded-full">
-              <Bell className="w-4 h-4 text-foreground" />
-              <span className="text-sm text-foreground">
+              <Bell className="w-4 h-4 text-blue-400" />
+              <span className="text-sm text-white">
                 {newThisWeek} new this week
               </span>
             </div>
           </div>
 
           <div className="hidden sm:flex w-16 h-16 md:w-20 md:h-20 rounded-full bg-card/10 border border-white/10 items-center justify-center flex-shrink-0">
-            <span className="text-2xl md:text-3xl font-bold">{initial}</span>
+            <span className="text-2xl md:text-3xl font-bold text-white">{initial}</span>
           </div>
         </div>
       </div>
