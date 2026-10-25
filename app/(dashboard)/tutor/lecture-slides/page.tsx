@@ -1,13 +1,27 @@
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { buildCourseResourceScopeWhere } from '@/lib/auth/scope';
 import { Presentation, Calendar, Users, FileText } from 'lucide-react';
 
 export default async function TutorLectureSlidesPage() {
-  await requireAuth(['TUTOR']);
+  const { user } = await requireAuth(['TUTOR']);
+
+  const scope = {
+    userId: user.id,
+    role: user.role,
+    universityId: user.universityId,
+    institutionId: user.institutionId,
+    year: user.year,
+    period: user.period,
+    mode: (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? 'ADMIN' : 'OWN',
+    readOnly: false,
+  };
+  const where = buildCourseResourceScopeWhere(scope);
 
   let slidesData: any[] = [];
   try {
     slidesData = await prisma.lectureSlide.findMany({
+      where,
       include: {
         course: {
           select: { code: true, title: true },

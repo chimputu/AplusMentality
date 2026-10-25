@@ -1,14 +1,27 @@
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { buildCourseResourceScopeWhere } from '@/lib/auth/scope';
 import { ClipboardList, Calendar, Users, FileText } from 'lucide-react';
 
 export default async function TutorAssignmentsPage() {
-  await requireAuth(['TUTOR']);
+  const { user } = await requireAuth(['TUTOR']);
+
+  const scope = {
+    userId: user.id,
+    role: user.role,
+    universityId: user.universityId,
+    institutionId: user.institutionId,
+    year: user.year,
+    period: user.period,
+    mode: (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? 'ADMIN' : 'OWN',
+    readOnly: false,
+  };
+  const where = buildCourseResourceScopeWhere(scope);
 
   let assignmentsData: any[] = [];
   try {
     assignmentsData = await prisma.assignment.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...where },
       include: {
         course: {
           select: { code: true, title: true },
