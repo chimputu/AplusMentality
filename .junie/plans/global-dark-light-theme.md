@@ -61,7 +61,7 @@ Replace hardcoded colors in all remaining components with semantic utilities.
 - `components/HeroVideoFacade.tsx`
 - Verify all components respect dark mode after refactoring
 
-### * Step 4: Integrate Clerk theme and finalize
+### ✓ Step 4: Integrate Clerk theme and finalize
 Add Clerk `appearance` prop to auth components and push to git.
 
 - `app/sign-in/[[...sign-in]]/page.tsx`: Add `appearance` prop to `<SignIn />` with CSS variable-based theming
