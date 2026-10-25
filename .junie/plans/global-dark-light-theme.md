@@ -45,7 +45,7 @@ Remove the directive so Turbopack no longer treats the 4 utility functions as Se
 - Verify `getScopeContext` still works (it's imported from server contexts only)
 - Verify all 16 import sites still work (page.tsx files and API routes)
 
-### * Step 2: Verify build and push
+### ✓ Step 2: Verify build and push
 Confirm the build passes locally and deploy.
 
 - Run `npm run build` to verify Turbopack no longer errors on the 4 functions
