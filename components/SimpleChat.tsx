@@ -214,7 +214,7 @@ export default function SimpleChat() {
           style={{ animation: 'chatSlideUp 0.25s ease-out' }}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-foreground px-4 py-3 flex items-center justify-between flex-shrink-0">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white px-4 py-3 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-card/20 rounded-full flex items-center justify-center relative">
                 <Bot className="w-5 h-5" />

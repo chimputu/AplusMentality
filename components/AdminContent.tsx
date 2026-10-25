@@ -101,29 +101,29 @@ export default function AdminContent({
       <BannerCarousel placement="DASHBOARD" institutionId={institutionId} />
 
       {/* Welcome Section */}
-      <div id="dashboard" className="bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-8 text-foreground shadow-lg scroll-mt-20">
+      <div id="dashboard" className="bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-8 text-white shadow-lg scroll-mt-20">
         <div className="flex items-center space-x-3 mb-2">
           <h1 className="text-2xl font-bold">Welcome back, {displayName}! </h1>
         </div>
-        <p className="text-foreground text-sm">
+        <p className="text-slate-300 text-sm">
           Manage announcements, upload videos, and keep your students engaged.
         </p>
         <div className="flex gap-4 mt-4 flex-wrap">
           <div className="bg-card/10 rounded-lg px-4 py-2">
-            <span className="text-sm text-foreground">Announcements</span>
-            <p className="text-xl font-bold text-foreground">{announcements.length}</p>
+            <span className="text-sm text-white">Announcements</span>
+            <p className="text-xl font-bold text-white">{announcements.length}</p>
           </div>
           <div className="bg-card/10 rounded-lg px-4 py-2">
-            <span className="text-sm text-foreground">Videos</span>
-            <p className="text-xl font-bold text-foreground">{videos.length}</p>
+            <span className="text-sm text-white">Videos</span>
+            <p className="text-xl font-bold text-white">{videos.length}</p>
           </div>
           <div className="bg-card/10 rounded-lg px-4 py-2">
-            <span className="text-sm text-foreground">Users</span>
-            <p className="text-xl font-bold text-foreground">{users.length}</p>
+            <span className="text-sm text-white">Users</span>
+            <p className="text-xl font-bold text-white">{users.length}</p>
           </div>
           <div className="bg-card/10 rounded-lg px-4 py-2">
-            <span className="text-sm text-foreground">Courses</span>
-            <p className="text-xl font-bold text-foreground">{courses.length}</p>
+            <span className="text-sm text-white">Courses</span>
+            <p className="text-xl font-bold text-white">{courses.length}</p>
           </div>
         </div>
       </div>

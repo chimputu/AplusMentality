@@ -388,7 +388,7 @@ export function AIAssistant({
       {/* Floating button */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-foreground shadow-lg flex items-center justify-center hover:opacity-90 transition active:scale-95"
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg flex items-center justify-center hover:opacity-90 transition active:scale-95"
         aria-label="Open AI assistant"
       >
         {open ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
@@ -531,7 +531,7 @@ export function AIAssistant({
 
           <div className="fixed z-50 flex flex-col bottom-0 right-0 left-0 h-[70dvh] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-card shadow-2xl border border-border">
             {/* Header */}
-            <div className="p-4 border-b border-border bg-gradient-to-r from-blue-600 to-purple-600 text-foreground rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
+            <div className="p-4 border-b border-border bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="font-semibold flex items-center gap-2">
                   <Sparkles className="w-4 h-4" />
