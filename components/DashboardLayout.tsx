@@ -567,7 +567,7 @@ export default function DashboardLayout({
     return acc;
   }, {} as Record<string, typeof navItems>);
 
-  const userName = user?.fullName || user?.firstName || 'Student';
+  const userName = user?.fullName || user?.firstName || 'User';
 
   const handleClearSearch = () => {
     setLocalSearch('');
@@ -956,7 +956,7 @@ export default function DashboardLayout({
           <ThemeToggle />
           <NotificationBell role={role} />
           <span className="text-sm text-muted-foreground hidden sm:block">
-            {role === 'ADMIN' ? 'Admin' : 'Student'}
+            {role === 'ADMIN' ? 'Admin' : role === 'TUTOR' ? 'Tutor' : role === 'LECTURER' ? 'Lecturer' : 'Student'}
           </span>
           <UserButton
             appearance={{
