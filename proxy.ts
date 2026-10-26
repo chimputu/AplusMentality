@@ -11,6 +11,10 @@ const ORG_ROLE_MAP: Record<string, string> = {
 
 // Routes that don't require authentication
 const publicRoutePatterns = [
+  '/',
+  '/about',
+  '/features',
+  '/pricing',
   '/sign-in',
   '/sign-up',
   '/api/webhooks',
@@ -32,7 +36,11 @@ const routeRoleRequirements: Record<string, string[]> = {
 };
 
 function isPublicRoute(pathname: string): boolean {
-  return publicRoutePatterns.some((pattern) => pathname.startsWith(pattern));
+  return publicRoutePatterns.some((pattern) => {
+    // Exact match for '/' to avoid matching all routes
+    if (pattern === '/') return pathname === '/';
+    return pathname.startsWith(pattern);
+  });
 }
 
 function getRouteRoleRequirement(pathname: string): string[] | null {
