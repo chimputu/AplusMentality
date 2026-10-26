@@ -174,11 +174,11 @@ export default function StudentLectureSlidesPage() {
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
           <FileText className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-            {slides.length === 0 ? 'No lecture slides available yet' : 'No slides match your filters'}
+            {slides.length === 0 ? 'No lecture slides for your current period' : 'No slides match your filters'}
           </h3>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             {slides.length === 0
-              ? 'Tutors have not uploaded any slides yet. Check back later.'
+              ? 'No slides have been uploaded for your year and semester yet. Check back later.'
               : 'Try adjusting your search or filter criteria.'}
           </p>
         </div>

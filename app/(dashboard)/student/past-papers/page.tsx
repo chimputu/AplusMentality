@@ -203,7 +203,9 @@ export default function StudentPastPapersPage() {
           <p className="text-gray-500 dark:text-gray-400">
             {search || categoryFilter || yearFilter
               ? 'No past papers match your filters.'
-              : 'No past papers available yet.'}
+              : papers.length === 0
+              ? 'No past papers for your current period. Check back later.'
+              : 'No past papers match your filters.'}
           </p>
         </div>
       ) : (

@@ -1,7 +1,7 @@
 // app/api/past-papers/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
-import { getScopeContext, isResourceInScope } from '@/lib/auth/scope';
+import { getScopeContext, isResourceInFullScope } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 // GET — fetch one past paper
@@ -21,15 +21,15 @@ export async function GET(
       where: { id },
       include: {
         creator: { select: { name: true, email: true } },
-        course: { select: { universityId: true } },
+        course: { select: { universityId: true, year: true, period: true } },
       },
     });
 
     if (!paper) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
-    // IDOR protection: only allow access if the paper's course is in the user's university scope
-    if (!isResourceInScope(scope, paper.course?.universityId ?? null)) {
+    // IDOR protection: check university, year, AND period match the user's scope
+    if (!isResourceInFullScope(scope, paper.course)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
     return NextResponse.json(paper);
