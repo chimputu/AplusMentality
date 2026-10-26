@@ -4,7 +4,7 @@ export default function SignUpPage() {
   return (
     <div className="flex justify-center items-center min-h-[80vh]">
       <SignUp
-        redirectUrl="/"
+        fallbackRedirectUrl="/"
         appearance={{
           variables: {
             colorPrimary: 'var(--primary)',
