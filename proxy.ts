@@ -24,6 +24,7 @@ const publicRoutePatterns = [
   '/api/health',
   '/api/debug',
   '/api/fix-user',
+  '/api/user/role',
   '/favicon.ico',
   '/manifest.json',
   '/sitemap.xml',
@@ -75,9 +76,30 @@ export const proxy = clerkMiddleware(async (auth, request) => {
     return authObj.redirectToSignIn();
   }
 
-  // Get the user's org role and map to app role
+  // Get the user's Clerk org role and map to app role
   const orgRole = authObj.orgRole ?? null;
-  const appRole = orgRole ? (ORG_ROLE_MAP[orgRole] || 'STUDENT') : 'STUDENT';
+  let appRole = orgRole ? (ORG_ROLE_MAP[orgRole] || 'STUDENT') : 'STUDENT';
+
+  // Fallback: if Clerk org role is STUDENT, check the database role via API
+  // This handles cases where the DB role was changed but Clerk org role wasn't synced
+  if (appRole === 'STUDENT' && authObj.userId) {
+    try {
+      const baseUrl = request.nextUrl.origin;
+      const dbRoleRes = await fetch(`${baseUrl}/api/user/role`, {
+        headers: { Authorization: request.headers.get('Authorization') || '' },
+        cache: 'no-store',
+      });
+      if (dbRoleRes.ok) {
+        const dbRoleData = await dbRoleRes.json();
+        if (dbRoleData?.role && dbRoleData.role !== 'STUDENT') {
+          appRole = dbRoleData.role;
+          console.log(`[Proxy] DB role fallback: user=${authObj.userId}, orgRole=${orgRole}, dbRole=${dbRoleData.role}`);
+        }
+      }
+    } catch (err) {
+      console.error('[Proxy] DB role lookup failed:', err);
+    }
+  }
 
   // Check role-based route protection
   const requiredRoles = getRouteRoleRequirement(pathname);
