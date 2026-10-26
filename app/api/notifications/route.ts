@@ -10,8 +10,8 @@ export async function GET() {
       return NextResponse.json({ count: 0, items: [] }, { status: 200 });
     }
 
-    // Fetch recent items from all content types + tutor applications + seen records
-    const [announcements, tests, quizzes, assignments, tutorApplications, seenRecords] =
+    // Fetch recent items from all content types + tutor applications + direct notifications + seen records
+    const [announcements, tests, quizzes, assignments, tutorApplications, notifications, seenRecords] =
       await Promise.all([
         prisma.announcement.findMany({
           orderBy: { createdAt: 'desc' },
@@ -76,6 +76,13 @@ export async function GET() {
             adminNotes: true,
             updatedAt: true,
           },
+        }),
+
+        // Direct notifications (e.g., institution change requests)
+        prisma.notification.findMany({
+          where: { userId: auth.userId },
+          orderBy: { createdAt: 'desc' },
+          take: 10,
         }),
 
         // Get all IDs this user has already seen
@@ -165,6 +172,17 @@ export async function GET() {
           author: 'A+ Mentality',
         };
       }),
+
+      // Direct notifications (institution change, etc.)
+      ...notifications.map((n) => ({
+        id: `direct_${n.id}`,
+        rawId: n.id,
+        type: n.type.toLowerCase().replace(/[^a-z_]/g, ' '),
+        title: n.title,
+        description: n.description.slice(0, 120),
+        createdAt: n.createdAt.toISOString(),
+        author: 'A+ Mentality',
+      })),
     ]
       .sort(
         (a, b) =>

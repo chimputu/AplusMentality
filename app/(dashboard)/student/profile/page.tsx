@@ -90,6 +90,14 @@ export default function StudentProfilePage() {
     fetchProfile();
     fetchInstitutions();
     fetchChangeRequests();
+    
+    // Poll for profile changes every 30 seconds to detect admin approvals
+    const interval = setInterval(() => {
+      fetchProfile();
+      fetchChangeRequests();
+    }, 30_000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -145,7 +153,18 @@ export default function StudentProfilePage() {
       const res = await fetch('/api/institution-change-request');
       if (res.ok) {
         const data = await res.json();
-        setChangeRequests(data.requests || []);
+        const newRequests = (data.requests || []) as ChangeRequest[];
+        
+        // Check if any previously pending request was just approved
+        const hadPending = changeRequests.some((r) => r.status === 'PENDING');
+        const nowApproved = newRequests.some((r) => r.status === 'APPROVED') && hadPending;
+        
+        setChangeRequests(newRequests);
+        
+        // If a request was just approved, refresh the profile immediately
+        if (nowApproved) {
+          await fetchProfile();
+        }
       }
     } catch (err) {
       console.error('Failed to fetch change requests:', err);

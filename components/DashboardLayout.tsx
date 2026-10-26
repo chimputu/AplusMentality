@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { UserButton, useUser, OrganizationSwitcher } from '@clerk/nextjs';
 import * as Sentry from '@sentry/nextjs';
 import {
+  Activity,
   LayoutDashboard,
   Megaphone,
   Video,
@@ -264,6 +265,12 @@ export default function DashboardLayout({
       icon: Building2,
       section: 'Management',
       roles: ['SUPER_ADMIN'],
+    },
+    { 
+      href: '/admin/system-health', 
+      label: 'System Health', 
+      icon: Activity,
+      section: 'System'
     },
     { 
       href: '/admin/settings', 

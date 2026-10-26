@@ -199,28 +199,38 @@ Final polish: add rate limiting on key API endpoints and improve mobile responsi
 
 ## Known Limitations
 
-### 1. Admin approval UI for institution change requests (Missing)
-- Students can submit institution change requests via `/student/profile`, but there is **no admin page** to review, approve, or reject these requests.
-- The `InstitutionChangeRequest` model exists in the database and the API endpoint (`/api/institution-change-request`) works, but admins must manually update the database to approve/reject requests.
-- **Follow-up**: Create an admin page (e.g., `/admin/change-requests`) to list pending requests and act on them.
+### ✓ 1. Admin approval UI for institution change requests — FIXED
+- Admin page `/admin/change-requests` is fully implemented with search, status filters, and approve/reject actions.
+- API endpoint `/api/institution-change-request/admin` supports GET (list) and PATCH (approve/reject) operations.
+- On approval, the student's institution, programme, year, and period are automatically updated.
+- **Files**: `app/(dashboard)/admin/change-requests/page.tsx`, `app/api/institution-change-request/admin/route.ts`
 
-### 2. Vercel environment variables may still have production keys
-- `.env.example` contains test keys (`pk_test_` / `sk_test_`), but the **Vercel Dashboard** environment variables may still have production keys (`pk_live_` / `sk_live_`).
-- If auth errors occur, update Vercel → Settings → Environment Variables to match the test keys in `.env.example`, then redeploy without build cache.
-- **Manual steps**: Vercel Dashboard → Your Project → Settings → Environment Variables → update `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` → Redeploy.
+### ✓ 2. Vercel environment variables may still have production keys — MITIGATED
+- Added environment variable validation to the health check API (`/api/health`) that detects missing Clerk, Database, and Site URL env vars.
+- Admins can now view env var status on the System Health page (`/admin/system-health`) with clear OK/Missing indicators.
+- **Files changed**: `app/api/health/route.ts`, `app/(dashboard)/admin/system-health/page.tsx`
+- **Manual steps still needed**: If env vars show as Missing, update Vercel Dashboard → Settings → Environment Variables → Redeploy.
 
-### 3. Database table for `InstitutionChangeRequest` may not exist
-- The Prisma schema includes the `InstitutionChangeRequest` model, but the table may not exist in the production database if `prisma db push` or `prisma migrate` was not run after the schema change.
-- **Fix**: Run `npx prisma db push` on Vercel as a post-deploy hook, or run it manually via Vercel's console.
+### ✓ 3. Database table for `InstitutionChangeRequest` may not exist — MITIGATED
+- Health check API now queries `information_schema.tables` to verify all required tables exist: `InstitutionChangeRequest`, `Notification`, `NotificationSeen`, `OrganizationMembership`, `TutorApplication`, `User`, `Institution`.
+- Missing tables are reported as warnings on the System Health page with instructions to run `npx prisma db push`.
+- **Files changed**: `app/api/health/route.ts`, `app/(dashboard)/admin/system-health/page.tsx`
+- **Manual steps still needed**: If tables show as Missing, run `npx prisma db push` via Vercel console or post-deploy hook.
 
-### 4. Student profile page does not refresh after admin approval
-- When an admin approves a change request (via database), the student's profile page still shows the old institution until they refresh or re-login.
-- **Follow-up**: Add real-time updates or a manual refresh button, or redirect the student to re-fetch their profile after approval.
+### ✓ 4. Student profile page does not refresh after admin approval — FIXED
+- Added automatic polling every 30 seconds in the student profile page to detect admin approvals.
+- When a previously pending request becomes approved, the profile data is immediately refreshed.
+- **Files changed**: `app/(dashboard)/student/profile/page.tsx`
 
-### 5. No notification system for change request status
-- Students submit a change request but receive no email or in-app notification when the status changes from Pending → Approved/Rejected.
-- **Follow-up**: Implement email notifications via Resend or in-app notifications when the admin reviews the request.
+### ✓ 5. No notification system for change request status — FIXED
+- Notifications API now includes direct notifications from the `Notification` table (used by the admin change request approval flow).
+- NotificationBell component now handles `institution_change` and `tutor_application` types with proper icons, colors, and navigation.
+- Notification polling reduced from 60s to 30s for faster delivery.
+- **Files changed**: `app/api/notifications/route.ts`, `components/NotificationBell.tsx`
 
-### 6. Clerk test keys limit production features
-- Using test keys (`pk_test_`) means some Clerk features may be limited or behave differently in production (e.g., session limits, rate limits).
-- **When ready for production**: Switch back to `pk_live_` / `sk_live_` keys and ensure the Clerk Dashboard domain is properly configured.
+### ✓ 6. Clerk test keys limit production features — MITIGATED
+- Health check API now detects whether Clerk is using test keys (`pk_test_`) or production keys (`pk_live_`).
+- The System Health page displays the Clerk key mode with a clear warning banner when test keys are detected, explaining the limitations.
+- Admins no longer need to guess — the System Health page shows the key mode at a glance.
+- **Files changed**: `app/api/health/route.ts`, `app/(dashboard)/admin/system-health/page.tsx`
+- **Manual steps still needed**: When ready for production, switch to `pk_live_` / `sk_live_` keys in Vercel Dashboard.
