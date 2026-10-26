@@ -1,11 +1,13 @@
 // lib/clerk-org.ts — Utilities for managing Clerk organization memberships
 // Used to add approved tutors to their institution's Clerk organization
 
+export type ClerkOrgRole = 'org:admin' | 'org:tutor' | 'org:lecturer' | 'org:member';
+
 /**
  * Maps Prisma Role enum values to Clerk organization roles.
  * Used when syncing from DB → Clerk.
  */
-export const APP_ROLE_TO_CLERK: Record<string, string> = {
+export const APP_ROLE_TO_CLERK: Record<string, ClerkOrgRole> = {
   ADMIN: 'org:admin',
   SUPER_ADMIN: 'org:admin',
   TUTOR: 'org:tutor',
@@ -17,7 +19,9 @@ export const APP_ROLE_TO_CLERK: Record<string, string> = {
  * Maps Clerk organization roles to Prisma Role enum values.
  * Used when syncing from Clerk → DB (webhooks).
  */
-export const CLERK_TO_APP_ROLE: Record<string, string> = {
+export type AppRole = 'ADMIN' | 'TUTOR' | 'LECTURER' | 'STUDENT' | 'SUPER_ADMIN';
+
+export const CLERK_TO_APP_ROLE: Record<string, AppRole> = {
   'org:admin': 'ADMIN',
   'org:tutor': 'TUTOR',
   'org:lecturer': 'LECTURER',
@@ -31,7 +35,7 @@ export const CLERK_TO_APP_ROLE: Record<string, string> = {
 export async function addUserToClerkOrg(
   userClerkId: string,
   orgId: string,
-  role: 'org:member' | 'org:admin' | 'org:tutor' | 'org:lecturer' = 'org:member',
+  role: ClerkOrgRole = 'org:member',
 ) {
   const clerkSecretKey = process.env.CLERK_SECRET_KEY;
   if (!clerkSecretKey) {
@@ -108,7 +112,7 @@ export async function removeUserFromClerkOrg(userClerkId: string, orgId: string)
 export async function updateUserClerkOrgRole(
   userClerkId: string,
   orgId: string,
-  role: 'org:member' | 'org:admin' | 'org:tutor' | 'org:lecturer',
+  role: ClerkOrgRole,
 ) {
   const clerkSecretKey = process.env.CLERK_SECRET_KEY;
   if (!clerkSecretKey) {

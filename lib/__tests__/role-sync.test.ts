@@ -400,7 +400,7 @@ describe('updateUserRole server action sync', () => {
   });
 
   it('skips Clerk sync when user has no institution org', async () => {
-    const mockUser = {
+    const mockUser: any = {
       id: 'user_1',
       clerkId: 'clerk_user_1',
       clerkOrgId: null,
@@ -420,7 +420,7 @@ describe('updateUserRole server action sync', () => {
   });
 
   it('syncs to both institution org and active org when they differ', async () => {
-    const mockUser = {
+    const mockUser: any = {
       id: 'user_1',
       clerkId: 'clerk_user_1',
       clerkOrgId: 'org_active',
@@ -523,7 +523,7 @@ describe('approveTutorApplication sync logic', () => {
     //   await updateUserClerkOrgRole(...)
     // }
 
-    const mockInstitution = {
+    const mockInstitution: any = {
       id: 'inst_1',
       name: 'Test University',
       clerkOrgId: null, // No Clerk org
@@ -539,7 +539,7 @@ describe('approveTutorApplication sync logic', () => {
   });
 
   it('calls Clerk sync when institution has clerkOrgId', async () => {
-    const mockInstitution = {
+    const mockInstitution: any = {
       id: 'inst_1',
       name: 'Test University',
       clerkOrgId: 'org_456',

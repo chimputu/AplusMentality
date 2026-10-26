@@ -2,7 +2,7 @@ import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { WebhookEvent } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { CLERK_TO_APP_ROLE } from '@/lib/clerk-org';
+import { CLERK_TO_APP_ROLE, AppRole } from '@/lib/clerk-org';
 
 export async function POST(req: Request) {
   // 1. Pull svix headers
@@ -186,7 +186,7 @@ export async function POST(req: Request) {
         },
       });
       // Sync user's active org fields AND the main role enum from Clerk → DB
-      const appRole = CLERK_TO_APP_ROLE[role ?? ''] || user.role;
+      const appRole: AppRole = CLERK_TO_APP_ROLE[role ?? ''] || user.role;
       await prisma.user.update({
         where: { id: user.id },
         data: { clerkOrgId: organization.id, clerkOrgRole: role, role: appRole },
@@ -212,7 +212,7 @@ export async function POST(req: Request) {
     });
     // Sync BOTH clerkOrgRole AND the main role enum from Clerk → DB
     // This ensures changing a role in Clerk dashboard automatically updates the DB
-    const appRole = CLERK_TO_APP_ROLE[role ?? ''] || user.role;
+    const appRole: AppRole = CLERK_TO_APP_ROLE[role ?? ''] || user.role;
     await prisma.user.update({
       where: { id: user.id },
       data: { clerkOrgRole: role, role: appRole },
