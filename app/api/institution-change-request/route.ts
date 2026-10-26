@@ -81,7 +81,6 @@ export async function GET() {
       include: {
         currentInstitution: { select: { name: true, shortName: true } },
         newInstitution: { select: { name: true, shortName: true } },
-        currentProgramme: { select: { name: true } },
         newProgramme: { select: { name: true } },
       },
       orderBy: { createdAt: 'desc' },

@@ -13,11 +13,16 @@ import {
   Trash2,
   AlertTriangle,
   Loader2,
+  UserPlus,
+  Copy,
+  Check,
+  Mail,
 } from 'lucide-react';
 import {
   deleteInstitution,
   toggleInstitutionActive,
   toggleInstitutionVerified,
+  inviteAdmin,
 } from '@/lib/actions/institution-crud';
 import { toast } from 'sonner';
 
@@ -44,6 +49,7 @@ interface InstitutionRow {
   numPeriods: number;
   isActive: boolean;
   isVerified: boolean;
+  clerkOrgId: string | null;
   _count: {
     levels: number;
     periods: number;
@@ -58,6 +64,13 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  
+  // Invite modal state
+  const [inviteModalId, setInviteModalId] = useState<string | null>(null);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteResult, setInviteResult] = useState<{ url: string; emailSent: boolean } | null>(null);
+  const [invitePending, setInvitePending] = useState(false);
+  const [inviteCopied, setInviteCopied] = useState(false);
   
   // Refs for tracking trigger button positions
   const triggerRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
@@ -133,6 +146,50 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
       } catch (err: any) {
         toast.error(err.message || 'Failed to delete institution');
       }
+    });
+  };
+
+  const openInviteModal = (id: string) => {
+    const inst = institutions.find(i => i.id === id);
+    setInviteModalId(id);
+    setInviteEmail('');
+    setInviteResult(null);
+    setInviteCopied(false);
+  };
+
+  const closeInviteModal = () => {
+    setInviteModalId(null);
+    setInviteEmail('');
+    setInviteResult(null);
+    setInviteCopied(false);
+  };
+
+  const handleInviteSubmit = async (emailOnly: boolean) => {
+    if (!inviteModalId) return;
+    const email = emailOnly ? inviteEmail.trim() : undefined;
+    if (emailOnly && !email) {
+      toast.error('Please enter an email address');
+      return;
+    }
+    setInvitePending(true);
+    try {
+      const result = await inviteAdmin(inviteModalId, email);
+      setInviteResult({ url: result.invitationUrl, emailSent: result.emailSent });
+      if (result.emailSent) {
+        toast.success('Invitation email sent!');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send invitation');
+    } finally {
+      setInvitePending(false);
+    }
+  };
+
+  const copyLinkToClipboard = (url: string) => {
+    navigator.clipboard.writeText(url).then(() => {
+      setInviteCopied(true);
+      toast.success('Link copied to clipboard!');
+      setTimeout(() => setInviteCopied(false), 2000);
     });
   };
 
@@ -319,6 +376,19 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                openInviteModal(inst.id);
+                setOpenMenu(null);
+              }}
+              disabled={isPending}
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300 disabled:opacity-50"
+            >
+              <UserPlus className="w-4 h-4" />
+              Invite Admin
+            </button>
+            <hr className="my-1 border-gray-200 dark:border-gray-700" />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
                 handleDelete(inst.id);
                 setOpenMenu(null);
               }}
@@ -328,6 +398,128 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
               <Trash2 className="w-4 h-4" />
               Delete
             </button>
+          </div>,
+          document.body
+        );
+      })()}
+
+      {/* Invite Admin Modal */}
+      {inviteModalId && (() => {
+        const inst = institutions.find(i => i.id === inviteModalId);
+        if (!inst) return null;
+
+        return createPortal(
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full mx-4 p-6 border border-gray-200 dark:border-gray-700">
+              {!inviteResult ? (
+                <>
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                      <UserPlus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                        Invite Admin for {inst.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Enter an email to send an invitation, or leave blank to generate a copyable link.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label htmlFor="invite-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Email Address <span className="text-gray-400 font-normal">(optional)</span>
+                    </label>
+                    <input
+                      id="invite-email"
+                      type="email"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      placeholder="admin@example.com"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && inviteEmail.trim()) {
+                          handleInviteSubmit(true);
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={closeInviteModal}
+                      disabled={invitePending}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => handleInviteSubmit(false)}
+                      disabled={invitePending}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition disabled:opacity-50 inline-flex items-center gap-2"
+                    >
+                      {invitePending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                      Generate Link
+                    </button>
+                    <button
+                      onClick={() => handleInviteSubmit(true)}
+                      disabled={invitePending || !inviteEmail.trim()}
+                      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 inline-flex items-center gap-2"
+                    >
+                      {invitePending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Mail className="w-4 h-4" />
+                      )}
+                      Send Invitation
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                      <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                        {inviteResult.emailSent ? 'Invitation Sent!' : 'Link Generated!'}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        {inviteResult.emailSent
+                          ? `An invitation email has been sent. You can also copy the link below.`
+                          : 'Copy the link and share it with the admin.'}
+                      </p>
+                      <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <code className="flex-1 text-xs text-gray-600 dark:text-gray-400 break-all">{inviteResult.url}</code>
+                        <button
+                          onClick={() => copyLinkToClipboard(inviteResult.url)}
+                          className="flex-shrink-0 p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                          title="Copy link"
+                        >
+                          {inviteCopied ? (
+                            <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
+                          ) : (
+                            <Copy className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={closeInviteModal}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>,
           document.body
         );

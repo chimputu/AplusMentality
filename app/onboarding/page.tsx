@@ -4,7 +4,11 @@ import { withRetry } from '@/lib/retry';
 import { redirect } from 'next/navigation';
 import OnboardingForm from './_components/onboarding-form';
 
-export default async function OnboardingPage() {
+interface OnboardingPageProps {
+  searchParams: Promise<{ slug?: string; type?: string }>;
+}
+
+export default async function OnboardingPage({ searchParams }: OnboardingPageProps) {
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
@@ -28,16 +32,20 @@ export default async function OnboardingPage() {
     redirect((role === 'ADMIN' || role === 'SUPER_ADMIN') ? '/admin' : '/student');
   }
 
-  // Fetch data with error handling
-  let institutions: any[] = [];
-  let universities: any[] = [];
+  // Read join link params from search params
+  const params = await searchParams;
+  const joinSlug = params.slug;
+  const joinType = params.type;
 
-  try {
-    [institutions, universities] = await withRetry(
-      () => Promise.all([
-        prisma.institution.findMany({
-          where: { isActive: true },
-          orderBy: { name: 'asc' },
+  // If a join link is provided, fetch the locked institution/university
+  let lockedInstitution: any = null;
+  let lockedType: 'institution' | 'university' | null = null;
+
+  if (joinSlug && joinType) {
+    try {
+      if (joinType === 'institution') {
+        lockedInstitution = await prisma.institution.findUnique({
+          where: { slug: joinSlug },
           include: {
             programmes: {
               orderBy: { name: 'asc' },
@@ -48,9 +56,11 @@ export default async function OnboardingPage() {
             },
             levels: { orderBy: { order: 'asc' } },
           },
-        }),
-        prisma.university.findMany({
-          orderBy: { name: 'asc' },
+        });
+        if (lockedInstitution) lockedType = 'institution';
+      } else if (joinType === 'university') {
+        lockedInstitution = await prisma.university.findUnique({
+          where: { joinSlug: joinSlug },
           include: {
             programmes: {
               orderBy: { name: 'asc' },
@@ -60,12 +70,54 @@ export default async function OnboardingPage() {
               },
             },
           },
-        }),
-      ]),
-      { attempts: 3, delayMs: 500 }
-    );
-  } catch (err: any) {
-    console.error('[Onboarding] Failed to fetch data:', err.message);
+        });
+        if (lockedInstitution) lockedType = 'university';
+      }
+    } catch (err: any) {
+      console.error('[Onboarding] Failed to fetch join link data:', err.message);
+    }
+  }
+
+  // If no join link, fetch all institutions and universities for the dropdown
+  let institutions: any[] = [];
+  let universities: any[] = [];
+
+  if (!lockedInstitution) {
+    try {
+      [institutions, universities] = await withRetry(
+        () => Promise.all([
+          prisma.institution.findMany({
+            where: { isActive: true },
+            orderBy: { name: 'asc' },
+            include: {
+              programmes: {
+                orderBy: { name: 'asc' },
+                include: {
+                  faculty: true,
+                  branches: { orderBy: { name: 'asc' } },
+                },
+              },
+              levels: { orderBy: { order: 'asc' } },
+            },
+          }),
+          prisma.university.findMany({
+            orderBy: { name: 'asc' },
+            include: {
+              programmes: {
+                orderBy: { name: 'asc' },
+                include: {
+                  faculty: true,
+                  branches: { orderBy: { name: 'asc' } },
+                },
+              },
+            },
+          }),
+        ]),
+        { attempts: 3, delayMs: 500 }
+      );
+    } catch (err: any) {
+      console.error('[Onboarding] Failed to fetch data:', err.message);
+    }
   }
 
   return (
@@ -80,10 +132,20 @@ export default async function OnboardingPage() {
           </p>
         </div>
 
+        {lockedInstitution && lockedType && (
+          <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+            <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
+              🎓 Joining <strong>{lockedInstitution.name}</strong> via official link
+            </p>
+          </div>
+        )}
+
         <OnboardingForm
           user={user}
           institutions={institutions}
           universities={universities}
+          lockedInstitution={lockedInstitution || undefined}
+          lockedType={lockedType || undefined}
         />
       </div>
     </div>

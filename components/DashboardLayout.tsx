@@ -38,6 +38,7 @@ import {
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
 import ThemeToggle from './ThemeToggle';
+import MobileTabBar from './mobile-tab-bar';
 import type { Role } from '@/generated/prisma/client';
 
 interface DashboardLayoutProps {
@@ -1251,11 +1252,14 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content */}
-      <div className={`pt-16 transition-all duration-300 ${isCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <div className={`pt-16 pb-20 md:pb-0 transition-all duration-300 ${isCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
         <main className="p-4 lg:p-8">
           {children}
         </main>
       </div>
+
+      {/* Mobile Bottom Tab Bar */}
+      <MobileTabBar />
 
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (

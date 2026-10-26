@@ -40,7 +40,6 @@ export async function GET(req: Request) {
         },
         currentInstitution: { select: { id: true, name: true, shortName: true } },
         newInstitution: { select: { id: true, name: true, shortName: true } },
-        currentProgramme: { select: { id: true, name: true } },
         newProgramme: { select: { id: true, name: true } },
       },
       orderBy: { createdAt: 'desc' },

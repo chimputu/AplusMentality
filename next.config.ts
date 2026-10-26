@@ -15,6 +15,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '50mb',
     },
+    optimizePackageImports: ['framer-motion'],
   },
   // ✅ Silence the Turbopack warning
   turbopack: {},

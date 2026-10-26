@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { InstitutionType, LevelType, PeriodType } from '../../generated/prisma/client';
+import { createClerkOrg } from '@/lib/clerk-org';
 
 // ============================================
 // Internal Helpers
@@ -299,4 +300,105 @@ export async function getInstitution(id: string) {
   });
 
   return institution;
+}
+
+export async function updateInstitutionSlug(institutionId: string, slug: string) {
+  await requireAdmin();
+
+  const slugSchema = z.string().min(3).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be lowercase alphanumeric with hyphens');
+  const parsed = slugSchema.parse(slug);
+
+  // Check uniqueness
+  const existing = await prisma.institution.findFirst({
+    where: { slug: parsed, id: { not: institutionId } },
+  });
+  if (existing) throw new Error('Slug is already taken by another institution');
+
+  await prisma.institution.update({
+    where: { id: institutionId },
+    data: { slug: parsed },
+  });
+
+  revalidatePath('/admin/settings');
+  return { success: true };
+}
+
+export async function updateUniversityJoinSlug(universityId: string, joinSlug: string) {
+  await requireAdmin();
+
+  const slugSchema = z.string().min(3).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be lowercase alphanumeric with hyphens');
+  const parsed = slugSchema.parse(joinSlug);
+
+  // Check uniqueness against both Institution.slug and University.joinSlug
+  const existingInst = await prisma.institution.findUnique({ where: { slug: parsed } });
+  if (existingInst) throw new Error('Slug is already taken by another institution');
+
+  const existingUni = await prisma.university.findFirst({
+    where: { joinSlug: parsed, id: { not: universityId } },
+  });
+  if (existingUni) throw new Error('Slug is already taken by another university');
+
+  await prisma.university.update({
+    where: { id: universityId },
+    data: { joinSlug: parsed },
+  });
+
+  revalidatePath('/admin/settings');
+  return { success: true };
+}
+
+export async function inviteAdmin(institutionId: string, emailAddress?: string) {
+  await requireAdmin();
+
+  const institution = await prisma.institution.findUnique({ where: { id: institutionId } });
+  if (!institution) throw new Error('Institution not found');
+
+  // Auto-create Clerk org if missing
+  let orgId = institution.clerkOrgId;
+  if (!orgId) {
+    const result = await createClerkOrg(institution.name, institution.slug);
+    if (!result.success) throw new Error(`Failed to create organization: ${result.error}`);
+    if (result.orgId) {
+      orgId = result.orgId;
+      await prisma.institution.update({
+        where: { id: institutionId },
+        data: { clerkOrgId: orgId, clerkOrgSlug: institution.slug },
+      });
+    }
+  }
+
+  if (!orgId) throw new Error('No Clerk organization available for this institution');
+
+  const redirectUrl = 'https://aplusmentality.vercel.app/admin';
+
+  // If email is provided, use Clerk invitation API (sends email)
+  if (emailAddress) {
+    const response = await fetch(`https://api.clerk.com/v1/organizations/${orgId}/invitations`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email_address: emailAddress,
+        role: 'org:admin',
+        redirect_url: redirectUrl,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to send invitation: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return { success: true, invitationUrl: data.url, emailSent: true };
+  }
+
+  // No email — generate a sign-up link with org slug pre-filled
+  return {
+    success: true,
+    invitationUrl: `https://aplusmentality.vercel.app/sign-up?org_slug=${institution.slug}`,
+    emailSent: false,
+  };
 }
