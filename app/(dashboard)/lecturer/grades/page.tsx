@@ -12,7 +12,7 @@ export default async function LecturerGradesPage() {
       where: { assessment: { createdBy: userId } },
       include: {
         user: { select: { name: true, email: true } },
-        assessment: { select: { title: true, maxGrade: true, passMark: true } },
+        assessment: { select: { title: true, maxGrade: true, passingScore: true } },
       },
       orderBy: { submittedAt: 'desc' },
       take: 50,
@@ -96,8 +96,8 @@ export default async function LecturerGradesPage() {
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                       {assessmentAttempts.map((attempt: any) => {
-                        const passMark = attempt.assessment?.passMark ?? 50;
-                        const passed = attempt.percentage !== null ? attempt.percentage >= passMark : null;
+                        const passingScore = attempt.assessment?.passingScore ?? 50;
+                        const passed = attempt.percentage !== null ? attempt.percentage >= passingScore : null;
 
                         return (
                           <tr key={attempt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">

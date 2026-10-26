@@ -9,10 +9,10 @@ export default async function LecturerAnnouncementsPage() {
   let announcementsData: any[] = [];
   try {
     announcementsData = await prisma.announcement.findMany({
-      where: { createdBy: userId },
+      where: { authorId: userId },
       include: {
-        course: {
-          select: { code: true, title: true },
+        author: {
+          select: { name: true },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -66,16 +66,6 @@ export default async function LecturerAnnouncementsPage() {
                   <Megaphone className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    {announcement.course && (
-                      <span className="text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
-                        {announcement.course.code}
-                      </span>
-                    )}
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {announcement.course?.title}
-                    </span>
-                  </div>
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                     {announcement.title}
                   </h3>
