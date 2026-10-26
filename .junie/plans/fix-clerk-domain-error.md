@@ -135,6 +135,68 @@ Wrap the Clerk `OrganizationSwitcher` in `components/DashboardLayout.tsx` with a
 ### ✓ Step 6: Lock institution after onboarding in PATCH /api/users/me
 Add server-side validation in `app/api/users/me/route.ts` to reject attempts by onboarded STUDENT users to change their `institutionId`, `universityId`, `programmeId`, or `branchId`. Also block students from changing their own role.
 
+### ✓ Step 7: Add custom error pages (404, 500, unauthorized)
+Create app-level error pages so visitors never see the default Next.js error screen.
+- Create `app/not-found.tsx` — a styled 404 page with a link back to the home page.
+- Create `app/global-error.tsx` — a styled 500 error page with a retry button.
+- Create `app/(dashboard)/unauthorized/page.tsx` — an access-denied page for blocked routes.
+
+### ✓ Step 8: Create admin change request approval page
+Build `/admin/change-requests` page so admins can review, approve, and reject student institution change requests.
+- Create `app/(dashboard)/admin/change-requests/page.tsx` — fetches all InstitutionChangeRequests with user and institution details.
+- Create `app/api/institution-change-request/admin/route.ts` — GET lists all requests (admin-only), PATCH approves/rejects a single request and updates the student's institution on approval.
+- On approval: update the student's `institutionId`, `programmeId`, `year`, and `period` fields in the User record.
+- Add 'Change Requests' nav item to `components/DashboardLayout.tsx` admin nav (after 'Users').
+
+### ✓ Step 9: Enhance admin user management with search and filters
+Improve the existing `/admin/users` page and `UserManagement` component with full search, role/institution filters, and inline editing.
+- Update `app/(dashboard)/admin/users/page.tsx` to include institution data in the user query.
+- Enhance `components/UserManagement.tsx`: add institution filter dropdown, real-time search by name/email, and an edit modal for updating user institution/role directly.
+- Add server-side search support in `app/api/users/route.ts` (GET with query params for search, role filter, institution filter).
+
+### ✓ Step 10: Complete lecturer course and quiz management
+Give lecturers the ability to create and manage their own courses and quizzes from the lecturer dashboard.
+- Create `app/(dashboard)/lecturer/courses/new/page.tsx` — a course creation form (title, code, description, institution, programme).
+- Create `app/api/lecturer/courses/route.ts` — POST endpoint for lecturer course creation (auth: LECTURER role only).
+- Create `app/(dashboard)/lecturer/quizzes/new/page.tsx` — a quiz creation form with question builder.
+- Create `app/api/lecturer/quizzes/route.ts` — POST endpoint for lecturer quiz creation.
+- Update lecturer course page 'New Course' button to link to `/lecturer/courses/new` instead of `/admin/courses/new`.
+
+### ✓ Step 11: Add notification triggers for key events
+Wire up the existing notification system so students receive in-app notifications when events occur.
+- Create `lib/notifications.ts` — a utility function `createNotification(userId, type, title, description)` that inserts into the Notification model.
+- Add notification trigger in `app/api/institution-change-request/admin/route.ts` — when a request is approved/rejected, create a notification for the student.
+- Add notification trigger in `app/api/announcements/route.ts` — when a new announcement is created, notify all students.
+- Add notification trigger in `app/api/assignments/route.ts` — when an assignment is published, notify enrolled students.
+- Update the `NotificationBell` component to poll for new notifications every 30 seconds.
+
+### ✓ Step 12: Add search functionality for students
+Create a search page so students can find courses, past papers, lecture slides, and videos.
+- Create `app/search/page.tsx` — a public search page that accepts `?q=` query param.
+- Create `app/api/search/route.ts` — searches across courses, past papers, lecture slides, videos, and announcements.
+- Add 'Search' nav item to the student sidebar in `components/DashboardLayout.tsx`.
+- Make the search page public in `proxy.ts` by adding `/search` to `publicRoutePatterns`.
+
+### ✓ Step 13: Add loading skeletons and empty states
+Improve UX by adding loading states and empty states across key pages.
+- Create `components/ui/LoadingSkeleton.tsx` — reusable skeleton components (card, table row, list item).
+- Add empty states to: student courses page, student past papers, student videos, lecturer dashboard, and admin change requests page.
+- Add loading skeletons to pages that fetch data on the client side (use React Suspense or conditional rendering).
+
+### ✓ Step 14: Add analytics dashboard for admins
+Create an analytics page for admins to view platform statistics.
+- Create `app/(dashboard)/admin/analytics/page.tsx` — displays charts and stats for users, enrollments, assessments, and activity.
+- Create `app/api/analytics/route.ts` — aggregates data: total users by role, active institutions, course enrollment counts, recent activity feed.
+- Use simple bar/line charts with inline SVG or a lightweight chart library.
+- Add 'Analytics' nav item to the admin sidebar in `components/DashboardLayout.tsx`.
+
+### ✓ Step 15: Add rate limiting and mobile responsiveness polish
+Final polish: add rate limiting on key API endpoints and improve mobile responsiveness.
+- Create `lib/rate-limit.ts` — a simple in-memory rate limiter (requests per minute per user ID).
+- Apply rate limiting to: `/api/institution-change-request`, `/api/users/me`, and sign-in/sign-up endpoints.
+- Audit and fix mobile responsiveness in: `DashboardLayout` sidebar (ensure it collapses properly), student profile page, and admin change requests page.
+- Add ARIA labels to interactive elements in the notification bell and sidebar navigation.
+
 ## Known Limitations
 
 ### 1. Admin approval UI for institution change requests (Missing)

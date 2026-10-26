@@ -1,40 +1,40 @@
 'use client';
 
-// Global error boundary — handles errors in the root layout itself
-// Must include <html> and <body> tags as it replaces the root layout
-import { useEffect } from 'react';
-import * as Sentry from '@sentry/nextjs';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 
-export default function GlobalError({
-  error,
-  unstable_retry,
-}: {
-  error: Error & { digest?: string };
-  unstable_retry: () => void;
-}) {
-  useEffect(() => {
-    Sentry.captureException(error);
-  }, [error]);
-
+export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <html>
       <body>
-        <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-6 text-center bg-gray-50">
-          <AlertTriangle className="h-16 w-16 text-amber-500" />
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900">Application error</h1>
-            <p className="text-gray-600 max-w-md">
-              A critical error occurred. It has been reported and we're looking into it.
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 p-4">
+          <div className="text-center max-w-md">
+            <div className="flex justify-center mb-6">
+              <div className="w-24 h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-12 h-12 text-red-600 dark:text-red-400" />
+              </div>
+            </div>
+            <h1 className="text-6xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              500
+            </h1>
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+              Something Went Wrong
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 mb-8 text-lg">
+              An unexpected error occurred. Please try refreshing the page.
             </p>
+            {error.digest && (
+              <p className="text-xs text-gray-400 dark:text-gray-500 mb-6 font-mono break-all">
+                Error: {error.digest}
+              </p>
+            )}
+            <button
+              onClick={() => reset()}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg shadow-blue-600/20"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Try Again
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => unstable_retry()}
-            className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition font-medium"
-          >
-            <RefreshCw className="h-4 w-4" /> Try again
-          </button>
         </div>
       </body>
     </html>
