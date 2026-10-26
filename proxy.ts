@@ -18,6 +18,8 @@ const publicRoutePatterns = [
   '/search',
   '/sign-in',
   '/sign-up',
+  '/join',
+  '/onboarding',
   '/api/webhooks',
   '/api/health',
   '/api/debug',

@@ -38,6 +38,12 @@ interface User {
   name: string | null;
   imageUrl: string | null;
   role: Role;
+  institutionId: string | null;
+  programmeId: string | null;
+  year: number | null;
+  period: string | null;
+  onboarded: boolean;
+  institution?: { id: string; name: string; shortName: string } | null;
   createdAt: string;
   enrollments?: any[];
   courses?: any[];
