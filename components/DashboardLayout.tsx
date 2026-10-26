@@ -246,6 +246,18 @@ export default function DashboardLayout({
       section: 'Management'
     },
     { 
+      href: '/admin/change-requests', 
+      label: 'Change Requests', 
+      icon: ClipboardList,
+      section: 'Management'
+    },
+    { 
+      href: '/admin/analytics', 
+      label: 'Analytics', 
+      icon: Compass,
+      section: 'Management'
+    },
+    { 
       href: '/admin/organizations', 
       label: 'Organizations', 
       icon: Building2,

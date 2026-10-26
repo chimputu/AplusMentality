@@ -5,10 +5,18 @@ import UserManagement from '@/components/UserManagement';
 export default async function AdminUsersPage() {
   // Auth handled by layout (ADMIN + SUPER_ADMIN)
   let usersData: any[] = [];
+  let institutionsData: any[] = [];
   try {
     usersData = await prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
+        institution: {
+          select: {
+            id: true,
+            name: true,
+            shortName: true,
+          },
+        },
         enrollments: {
           include: {
             course: {
@@ -36,6 +44,11 @@ export default async function AdminUsersPage() {
         },
       },
     });
+    institutionsData = await prisma.institution.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true, shortName: true },
+      orderBy: { name: 'asc' },
+    });
   } catch (err) {
     console.error('[AdminUsers] Failed to fetch users:', err);
   }
@@ -57,10 +70,10 @@ export default async function AdminUsersPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">User Management</h1>
         <p className="text-gray-600 dark:text-gray-400 text-sm">
-          Manage users, assign roles, and promote students to admins
+          Manage users, assign roles, update institutions, and promote students to admins
         </p>
       </div>
-      <UserManagement users={users} />
+      <UserManagement users={users} institutions={institutionsData} />
     </div>
   );
 }

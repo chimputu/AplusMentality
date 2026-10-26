@@ -15,6 +15,7 @@ const publicRoutePatterns = [
   '/about',
   '/features',
   '/pricing',
+  '/search',
   '/sign-in',
   '/sign-up',
   '/api/webhooks',
