@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
-import { getScopeContext, isResourceInScope } from '@/lib/auth/scope';
+import { getScopeContext, isResourceInFullScope } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(
@@ -15,12 +15,12 @@ export async function GET(
       where: { id },
       include: {
         creator: { select: { name: true, email: true } },
-        course: { select: { id: true, title: true, code: true, universityId: true } },
+        course: { select: { id: true, title: true, code: true, universityId: true, year: true, period: true } },
       },
     });
     if (!slide) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    // IDOR protection: only allow access if the slide's course is in the user's university scope
-    if (!isResourceInScope(scope, slide.course?.universityId ?? null)) {
+    // IDOR protection: check university, year, AND period match the user's scope
+    if (!isResourceInFullScope(scope, slide.course)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
     return NextResponse.json(slide);

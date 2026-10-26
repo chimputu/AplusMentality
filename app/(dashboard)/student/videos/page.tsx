@@ -83,10 +83,12 @@ export default async function StudentVideosPage({
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <Video className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-            No videos available
+            {searchQuery ? 'No videos match your search' : 'No videos for your current period'}
           </h3>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            Check back later for new video content.
+            {searchQuery
+              ? 'Try a different search term.'
+              : 'No videos have been uploaded for your year and semester yet. Check back later.'}
           </p>
         </div>
       ) : (

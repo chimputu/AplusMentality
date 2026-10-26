@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, getAuthUser } from '@/lib/auth';
+import { isResourceInFullScopeFromUser } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 // GET - Get a single video (with IDOR protection)
@@ -25,6 +26,8 @@ export async function GET(
             id: true,
             title: true,
             universityId: true,
+            year: true,
+            period: true,
           },
         },
         lessons: {
@@ -55,15 +58,12 @@ export async function GET(
       );
     }
 
-    // IDOR protection: if video belongs to a course, verify the user's university matches
-    const userUnivId = authUser.user?.universityId;
-    if (video.course?.universityId && userUnivId) {
-      if (video.course.universityId !== userUnivId) {
-        return NextResponse.json(
-          { error: 'Access denied' },
-          { status: 403 }
-        );
-      }
+    // IDOR protection: check university, year, AND period match the user's scope
+    if (!isResourceInFullScopeFromUser(authUser.user, video.course)) {
+      return NextResponse.json(
+        { error: 'Access denied' },
+        { status: 403 }
+      );
     }
 
     return NextResponse.json(video);

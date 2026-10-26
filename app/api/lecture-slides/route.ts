@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
-import { getScopeContext, buildCourseResourceScopeWhere } from '@/lib/auth/scope';
+import { getScopeContext, buildCourseResourceScopeWhere, isResourceInFullScopeFromUser } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -143,11 +143,19 @@ export async function POST(req: NextRequest) {
 
         const course = await prisma.course.findUnique({
             where: { id: courseId },
-            select: { id: true },
+            select: { id: true, universityId: true, year: true, period: true },
         });
 
         if (!course) {
             return NextResponse.json({ error: 'Course not found' }, { status: 404 });
+        }
+
+        // SECURITY: Verify the tutor's scope matches the target course
+        if (!isResourceInFullScopeFromUser(auth.user, course)) {
+            return NextResponse.json(
+                { error: 'You are not authorized to upload to this course' },
+                { status: 403 }
+            );
         }
 
         const slide = await prisma.lectureSlide.create({

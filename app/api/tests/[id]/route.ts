@@ -1,6 +1,7 @@
 // app/api/tests/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
+import { isResourceInFullScopeFromUser } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 // GET - Fetch a single test
@@ -22,6 +23,13 @@ export async function GET(
         creator: {
           select: { name: true, email: true },
         },
+        course: {
+          select: {
+            universityId: true,
+            year: true,
+            period: true,
+          },
+        },
         submissions: {
           include: {
             user: {
@@ -34,6 +42,11 @@ export async function GET(
 
     if (!test) {
       return NextResponse.json({ error: 'Test not found' }, { status: 404 });
+    }
+
+    // IDOR protection: check university, year, AND period match the user's scope
+    if (!isResourceInFullScopeFromUser(auth.user, test.course)) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     return NextResponse.json(test);

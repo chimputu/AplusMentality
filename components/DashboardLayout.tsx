@@ -33,6 +33,7 @@ import {
   Building2,
   Compass,
   Star,
+  User,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
@@ -265,6 +266,12 @@ export default function DashboardLayout({
       href: '/student', 
       label: 'Dashboard', 
       icon: LayoutDashboard,
+      section: 'Overview'
+    },
+    { 
+      href: '/student/profile', 
+      label: 'My Profile', 
+      icon: User,
       section: 'Overview'
     },
     { 

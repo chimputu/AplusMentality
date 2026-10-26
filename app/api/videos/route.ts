@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, getAuthUser } from '@/lib/auth';
+import { buildCourseResourceScopeWhereFromUser, isResourceInFullScopeFromUser } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 import cloudinary from '@/lib/cloudinary';
 
@@ -48,14 +49,22 @@ export async function GET(req: NextRequest) {
 
     if (institutionId) {
       where.course = {
+        ...where.course,
         programme: {
           institutionId,
         },
       };
     } else if (universityId) {
       where.course = {
+        ...where.course,
         universityId,
       };
+    }
+
+    // SECURITY: Filter by user's academic scope (university, year, period)
+    const scopeWhere = buildCourseResourceScopeWhereFromUser(auth.user);
+    if (scopeWhere.course) {
+      where.course = { ...where.course, ...scopeWhere.course };
     }
 
     const videos = await prisma.video.findMany({
@@ -115,7 +124,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await requireAuth(['TUTOR', 'LECTURER', 'ADMIN']);
+    const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN']);
+    if (!auth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const userId = auth.userId;
     const formData = await req.formData();
 
     const title = formData.get('title') as string;
@@ -201,6 +214,9 @@ export async function POST(req: NextRequest) {
         },
         select: {
           id: true,
+          universityId: true,
+          year: true,
+          period: true,
         },
       });
 
@@ -208,6 +224,14 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(
             { error: 'Selected course does not belong to the selected programme' },
             { status: 400 }
+        );
+      }
+
+      // SECURITY: Verify the tutor's scope matches the target course
+      if (!isResourceInFullScopeFromUser(auth.user, existingCourse)) {
+        return NextResponse.json(
+            { error: 'You are not authorized to upload to this course' },
+            { status: 403 }
         );
       }
 

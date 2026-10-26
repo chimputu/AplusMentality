@@ -119,8 +119,8 @@ export function buildCourseScopeWhere(scope: ScopeContext) {
  * Build a Prisma `where` clause for any resource that belongs to a Course
  * (LectureSlide, Quiz, Test, Assignment, PastPaper, Video).
  *
- * Filters by the course's universityId so students only see resources
- * from their own university's courses.
+ * Filters by the course's universityId, year, and period so students only see
+ * resources from their own university's courses for their current academic period.
  */
 export function buildCourseResourceScopeWhere(scope: ScopeContext) {
   if (scope.mode === 'ADMIN') {
@@ -131,7 +131,67 @@ export function buildCourseResourceScopeWhere(scope: ScopeContext) {
 
   if (scope.universityId) {
     where.course = {
+      ...where.course,
       universityId: scope.universityId,
+    };
+  }
+
+  if (scope.year !== null && scope.year !== undefined) {
+    where.course = {
+      ...where.course,
+      year: scope.year,
+    };
+  }
+
+  if (scope.period !== null && scope.period !== undefined) {
+    where.course = {
+      ...where.course,
+      period: scope.period,
+    };
+  }
+
+  return where;
+}
+
+/**
+ * Build a Prisma `where` clause for course resources using a raw user object
+ * (from `getAuthUser()` or `requireAuth()`). This avoids an extra DB call since
+ * the user object already contains universityId, year, and period.
+ *
+ * Admins and Super Admins get an empty where clause (no filtering).
+ */
+export function buildCourseResourceScopeWhereFromUser(
+  user: { role?: string; universityId?: string | null; year?: number | null; period?: string | null } | null
+) {
+  if (!user) {
+    return {};
+  }
+
+  const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
+  if (isAdmin) {
+    return {};
+  }
+
+  const where: Record<string, any> = {};
+
+  if (user.universityId) {
+    where.course = {
+      ...where.course,
+      universityId: user.universityId,
+    };
+  }
+
+  if (user.year !== null && user.year !== undefined) {
+    where.course = {
+      ...where.course,
+      year: user.year,
+    };
+  }
+
+  if (user.period !== null && user.period !== undefined) {
+    where.course = {
+      ...where.course,
+      period: user.period,
     };
   }
 
@@ -159,6 +219,43 @@ export function isResourceInScope(
   }
 
   return resourceUniversityId === scope.universityId;
+}
+
+/**
+ * Full-scope IDOR check: verify that a course matches the user's university,
+ * year, AND period. Use this for detail pages where the course object is
+ * already loaded from the database.
+ *
+ * Returns true for admins, false if any scope field mismatches.
+ */
+export function isResourceInFullScope(
+  scope: ScopeContext,
+  course: { universityId?: string | null; year?: number | null; period?: string | null } | null
+): boolean {
+  if (scope.mode === 'ADMIN') return true;
+  if (!course) return false;
+  if (scope.universityId && course.universityId !== scope.universityId) return false;
+  if (scope.year !== null && scope.year !== undefined && course.year !== scope.year) return false;
+  if (scope.period !== null && scope.period !== undefined && course.period !== scope.period) return false;
+  return true;
+}
+
+/**
+ * Full-scope IDOR check using a raw user object (from `getAuthUser()`).
+ * Verifies that a course matches the user's university, year, AND period.
+ */
+export function isResourceInFullScopeFromUser(
+  user: { role?: string; universityId?: string | null; year?: number | null; period?: string | null } | null,
+  course: { universityId?: string | null; year?: number | null; period?: string | null } | null
+): boolean {
+  if (!user) return false;
+  const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
+  if (isAdmin) return true;
+  if (!course) return false;
+  if (user.universityId && course.universityId !== user.universityId) return false;
+  if (user.year !== null && user.year !== undefined && course.year !== user.year) return false;
+  if (user.period !== null && user.period !== undefined && course.period !== user.period) return false;
+  return true;
 }
 
 /**
