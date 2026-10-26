@@ -1123,8 +1123,8 @@ export default function DashboardLayout({
             </div>
           </div>
 
-          {/* Organization Switcher - All roles, only visible when user has multiple orgs */}
-          {!isCollapsed && (
+          {/* Organization Switcher - Only visible to ADMIN and SUPER_ADMIN roles */}
+          {(role === 'ADMIN' || role === 'SUPER_ADMIN') && !isCollapsed && (
             <div className="px-3 py-3 border-b border-border">
               <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                 Organization
