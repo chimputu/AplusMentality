@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { Role } from '../../generated/prisma/client';
 import { clerkClient } from '@clerk/nextjs/server';
+import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
 
 // ============================================
 // Internal Helpers
@@ -147,7 +148,26 @@ export async function updateUserRole(id: string, rawInput: unknown) {
   const user = await prisma.user.update({
     where: { id },
     data: { role: input.role },
+    include: {
+      institution: { select: { clerkOrgId: true } },
+    },
   });
+
+  // Sync role change to Clerk org membership so Clerk and DB stay in sync
+  const clerkOrgRole = APP_ROLE_TO_CLERK[input.role];
+  if (clerkOrgRole && user.clerkId) {
+    // Try to sync via the user's institution org
+    if (user.institution?.clerkOrgId) {
+      await updateUserClerkOrgRole(user.clerkId, user.institution.clerkOrgId, clerkOrgRole)
+        .catch((err) => console.error('[ServerAction] Failed to sync role to Clerk:', err));
+    }
+    // Also check active clerkOrgId on the user
+    const activeOrgId = user.clerkOrgId;
+    if (activeOrgId && activeOrgId !== user.institution?.clerkOrgId) {
+      await updateUserClerkOrgRole(user.clerkId, activeOrgId, clerkOrgRole)
+        .catch((err) => console.error('[ServerAction] Failed to sync role to Clerk (active org):', err));
+    }
+  }
 
   revalidatePath('/admin/users');
   return { success: true, role: user.role };

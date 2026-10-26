@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
 
 // POST - Promote/Demote a single user
 export async function POST(req: NextRequest) {
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
     // Check if target user exists
     const targetUser = await prisma.user.findUnique({
       where: { clerkId: targetUserId },
+      include: { institution: { select: { clerkOrgId: true } } },
     });
 
     if (!targetUser) {
@@ -47,11 +49,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Update user role
+    // Update user role in DB
     const updatedUser = await prisma.user.update({
       where: { clerkId: targetUserId },
       data: { role: newRole },
     });
+
+    // Sync role change to Clerk org membership so Clerk and DB stay in sync
+    const clerkOrgRole = APP_ROLE_TO_CLERK[newRole];
+    if (clerkOrgRole && targetUser.clerkId) {
+      if (targetUser.institution?.clerkOrgId) {
+        await updateUserClerkOrgRole(targetUser.clerkId, targetUser.institution.clerkOrgId, clerkOrgRole)
+          .catch((err) => console.error('[Promote] Failed to sync role to Clerk:', err));
+      }
+      const activeOrgId = targetUser.clerkOrgId;
+      if (activeOrgId && activeOrgId !== targetUser.institution?.clerkOrgId) {
+        await updateUserClerkOrgRole(targetUser.clerkId, activeOrgId, clerkOrgRole)
+          .catch((err) => console.error('[Promote] Failed to sync role to Clerk (active org):', err));
+      }
+    }
 
     const action = newRole === 'ADMIN' ? 'promoted to Admin' : 'demoted to Student';
 

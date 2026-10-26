@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
 
 // POST - Bulk promote/demote users
 export async function POST(req: NextRequest) {
@@ -24,13 +25,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Update all users
-    const updatePromises = userIds.map((userId) =>
-      prisma.user.update({
+    const clerkOrgRole = APP_ROLE_TO_CLERK[newRole];
+
+    // Update all users in DB, then sync each to Clerk
+    const updatePromises = userIds.map(async (userId) => {
+      const user = await prisma.user.update({
         where: { clerkId: userId },
         data: { role: newRole },
-      })
-    );
+        include: { institution: { select: { clerkOrgId: true } } },
+      });
+
+      // Sync to Clerk org membership
+      if (clerkOrgRole && user.clerkId) {
+        if (user.institution?.clerkOrgId) {
+          await updateUserClerkOrgRole(user.clerkId, user.institution.clerkOrgId, clerkOrgRole)
+            .catch((err) => console.error('[BulkPromote] Failed to sync role to Clerk:', err));
+        }
+        const activeOrgId = user.clerkOrgId;
+        if (activeOrgId && activeOrgId !== user.institution?.clerkOrgId) {
+          await updateUserClerkOrgRole(user.clerkId, activeOrgId, clerkOrgRole)
+            .catch((err) => console.error('[BulkPromote] Failed to sync role to Clerk (active org):', err));
+        }
+      }
+
+      return user;
+    });
 
     const updatedUsers = await Promise.all(updatePromises);
 
