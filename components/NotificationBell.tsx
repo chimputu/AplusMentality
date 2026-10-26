@@ -12,13 +12,14 @@ import {
   ClipboardList,
   Check,
   Loader2,
+  School,
 } from 'lucide-react';
 import type { Role } from '@/generated/prisma/client';
 
 interface Notification {
   id: string;
   rawId: string;
-  type: 'announcement' | 'test' | 'quiz' | 'assignment';
+  type: string;
   title: string;
   description: string;
   createdAt: string;
@@ -55,6 +56,16 @@ const TYPE_CONFIG: Record<
     icon: ClipboardList,
     color: 'bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400',
     label: 'Assignment',
+  },
+  institution_change: {
+    icon: School,
+    color: 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
+    label: 'Institution Change',
+  },
+  tutor_application: {
+    icon: School,
+    color: 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
+    label: 'Tutor Application',
   },
 };
 
@@ -97,7 +108,7 @@ export default function NotificationBell({ role }: NotificationBellProps) {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 60_000);
+    const interval = setInterval(fetchNotifications, 30_000);
     return () => clearInterval(interval);
   }, []);
 
@@ -155,6 +166,10 @@ export default function NotificationBell({ role }: NotificationBellProps) {
         return `${prefix}/quizzes`;
       case 'assignment':
         return `${prefix}/assignments`;
+      case 'institution_change':
+        return '/student/profile';
+      case 'tutor_application':
+        return '/student/profile';
       default:
         return prefix;
     }
