@@ -1,7 +1,28 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
+/**
+ * Debug endpoint for banner configuration.
+ * RESTRICTED: Only ADMIN and SUPER_ADMIN can access this endpoint.
+ * TODO: Remove this endpoint before production deployment.
+ */
 export async function GET() {
+  // SECURITY: Require authentication and admin role
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { clerkId: userId },
+    select: { role: true },
+  });
+
+  if (!user || !['ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
+    return NextResponse.json({ error: 'Forbidden. Admin access required.' }, { status: 403 });
+  }
+
   try {
     const all = await prisma.banner.findMany({
       orderBy: { createdAt: 'desc' },
