@@ -46,12 +46,13 @@ const mobileSafe: any = {
 };
 
 const partnerInstitutions = [
-  { name: 'University of Zambia', shortName: 'UNZA' },
-  { name: 'Copperbelt University', shortName: 'CBU' },
-  { name: 'Mulungushi University', shortName: 'MU' },
-  { name: 'Kwame Nkrumah University', shortName: 'NKU' },
-  { name: 'Chalimbana University', shortName: 'CU' },
-  { name: 'Cavendish University Zambia', shortName: 'CUZ' },
+  { name: 'University of Zambia', shortName: 'UNZA', logoUrl: '/universities/University_of_Zambia.png' },
+  { name: 'Copperbelt University', shortName: 'CBU', logoUrl: '/universities/Copperbelt_university.jpeg' },
+  { name: 'Mulungushi University', shortName: 'MU', logoUrl: '/universities/mulungushi_university.jpeg' },
+  { name: 'Kwame Nkrumah University', shortName: 'NKU', logoUrl: '/universities/Kwame_Nkhruma_University.jpeg' },
+  { name: 'Chalimbana University', shortName: 'CU', logoUrl: '/universities/Chalimbana_University.jpeg' },
+  { name: 'Cavendish University Zambia', shortName: 'CUZ', logoUrl: '/universities/Cavendish_University.png' },
+  { name: 'Mukuba University', shortName: 'MUK', logoUrl: '/universities/Mukuba_University.png' },
 ];
 
 function UniversitiesCarousel() {
@@ -75,6 +76,7 @@ function UniversitiesCarousel() {
               <InstitutionLogo
                 name={inst.name}
                 shortName={inst.shortName}
+                logoUrl={inst.logoUrl}
                 size="md"
               />
               <p className="mt-3 text-sm font-semibold text-foreground leading-tight">

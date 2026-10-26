@@ -27,7 +27,14 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const { userId } = await auth();
+  let userId: string | null = null;
+  try {
+    const authResult = await auth();
+    userId = authResult.userId;
+  } catch (err) {
+    console.error('[HomePage] Clerk auth failed:', err);
+    // userId remains null — render guest homepage
+  }
 
   // Redirect logged-in users to their dashboard
   if (userId) {
@@ -42,7 +49,13 @@ export default async function HomePage() {
     }
 
     if (!user) {
-      const { sessionClaims } = await auth();
+      let sessionClaims: any = null;
+      try {
+        const authResult2 = await auth();
+        sessionClaims = authResult2.sessionClaims;
+      } catch (err) {
+        console.error('[HomePage] Clerk session claims failed:', err);
+      }
       const claims = sessionClaims as any;
       const email = claims?.email || claims?.user?.email || claims?.emailAddress;
       if (email) {
