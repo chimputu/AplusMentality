@@ -16,6 +16,27 @@ export async function PATCH(req: Request) {
 
     const body = await req.json();
 
+    // Block students from changing institution after onboarding
+    if (user.onboarded && user.role === 'STUDENT') {
+      const blockedFields = ['institutionId', 'universityId', 'programmeId', 'branchId'];
+      for (const field of blockedFields) {
+        if (body[field] !== undefined) {
+          return NextResponse.json(
+            { error: `Cannot change ${field} after onboarding. Contact an admin to update your institution.` },
+            { status: 403 }
+          );
+        }
+      }
+    }
+
+    // Only super admins can change user roles
+    if (body.role !== undefined && user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json(
+        { error: 'Only super admins can change user roles.' },
+        { status: 403 }
+      );
+    }
+
     // Build update data
     const data: any = {};
     if (body.firstName !== undefined) data.firstName = body.firstName;
