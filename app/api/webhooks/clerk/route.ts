@@ -2,6 +2,7 @@ import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { WebhookEvent } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { CLERK_TO_APP_ROLE } from '@/lib/clerk-org';
 
 export async function POST(req: Request) {
   // 1. Pull svix headers
@@ -184,16 +185,17 @@ export async function POST(req: Request) {
           status: 'active',
         },
       });
-      // Sync user's active org fields
+      // Sync user's active org fields AND the main role enum from Clerk → DB
+      const appRole = CLERK_TO_APP_ROLE[role ?? ''] || user.role;
       await prisma.user.update({
         where: { id: user.id },
-        data: { clerkOrgId: organization.id, clerkOrgRole: role },
+        data: { clerkOrgId: organization.id, clerkOrgRole: role, role: appRole },
       });
-      console.log(`✅ Membership created: ${user.email} → ${organization.slug} (${role})`);
+      console.log(`✅ Membership created: ${user.email} → ${organization.slug} (${role}, app role: ${appRole})`);
     }
   }
 
-  // 10. Handle organizationMembership.updated — update role in membership and user
+  // 10. Handle organizationMembership.updated — update role in membership, user clerkOrgRole, AND user role enum
   if (type === 'organizationMembership.updated') {
     const { organization, public_user_data, role } = data;
     const clerkUserId = public_user_data.user_id;
@@ -208,13 +210,14 @@ export async function POST(req: Request) {
       },
       data: { role },
     });
-    // Sync user's active org role — this is critical for role elevation flows
-    // (e.g., admin approves tutor app → Clerk role changes → webhook updates user)
+    // Sync BOTH clerkOrgRole AND the main role enum from Clerk → DB
+    // This ensures changing a role in Clerk dashboard automatically updates the DB
+    const appRole = CLERK_TO_APP_ROLE[role ?? ''] || user.role;
     await prisma.user.update({
       where: { id: user.id },
-      data: { clerkOrgRole: role },
+      data: { clerkOrgRole: role, role: appRole },
     });
-    console.log(`✅ Membership updated: ${user.email} → ${role} in ${organization.slug}`);
+    console.log(`✅ Membership updated: ${user.email} → ${role} (app role: ${appRole}) in ${organization.slug}`);
   }
 
   // 11. Handle organizationMembership.deleted — revoke membership

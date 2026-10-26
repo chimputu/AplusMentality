@@ -2,6 +2,29 @@
 // Used to add approved tutors to their institution's Clerk organization
 
 /**
+ * Maps Prisma Role enum values to Clerk organization roles.
+ * Used when syncing from DB → Clerk.
+ */
+export const APP_ROLE_TO_CLERK: Record<string, string> = {
+  ADMIN: 'org:admin',
+  SUPER_ADMIN: 'org:admin',
+  TUTOR: 'org:tutor',
+  LECTURER: 'org:lecturer',
+  STUDENT: 'org:member',
+};
+
+/**
+ * Maps Clerk organization roles to Prisma Role enum values.
+ * Used when syncing from Clerk → DB (webhooks).
+ */
+export const CLERK_TO_APP_ROLE: Record<string, string> = {
+  'org:admin': 'ADMIN',
+  'org:tutor': 'TUTOR',
+  'org:lecturer': 'LECTURER',
+  'org:member': 'STUDENT',
+};
+
+/**
  * Add a user to a Clerk organization by its ID.
  * Calls the Clerk API to create an organization membership.
  */

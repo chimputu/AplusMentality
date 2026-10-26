@@ -512,6 +512,7 @@ export async function approveTutorApplication(rawInput: unknown) {
       where: { id: application.userId },
       data: {
         role: 'TUTOR',
+        clerkOrgRole: 'org:tutor',
         isVerifiedTutor: true,
         imageUrl: application.profilePhotoUrl ?? undefined,
       },
