@@ -84,8 +84,9 @@ export const proxy = clerkMiddleware(async (auth, request) => {
   let hasInstitution = false;
   try {
     const baseUrl = request.nextUrl.origin;
+    const cookieHeader = request.headers.get('cookie') || '';
     const dbRoleRes = await fetch(`${baseUrl}/api/user/role`, {
-      headers: { Authorization: request.headers.get('Authorization') || '' },
+      headers: { cookie: cookieHeader },
       cache: 'no-store',
     });
     if (dbRoleRes.ok) {
