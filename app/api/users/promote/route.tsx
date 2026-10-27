@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { Role } from '@/generated/prisma/client';
 import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
 
 // POST - Promote/Demote a single user
@@ -20,9 +21,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!newRole || !['ADMIN', 'STUDENT'].includes(newRole)) {
+    const validRoles = Object.values(Role);
+    if (!newRole || !validRoles.includes(newRole)) {
       return NextResponse.json(
-        { error: 'Valid role (ADMIN or STUDENT) is required' },
+        { error: `Valid role is required. Allowed: ${validRoles.join(', ')}` },
         { status: 400 }
       );
     }
@@ -69,7 +71,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const action = newRole === 'ADMIN' ? 'promoted to Admin' : 'demoted to Student';
+    const action = `role changed to ${newRole}`;
 
     console.log('✅ User updated:', updatedUser);
 

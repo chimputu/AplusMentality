@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { Role } from '@/generated/prisma/client';
 import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
 
 // POST - Bulk promote/demote users
@@ -18,9 +19,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!newRole || !['ADMIN', 'STUDENT'].includes(newRole)) {
+    const validRoles = Object.values(Role);
+    if (!newRole || !validRoles.includes(newRole)) {
       return NextResponse.json(
-        { error: 'Valid role (ADMIN or STUDENT) is required' },
+        { error: `Valid role is required. Allowed: ${validRoles.join(', ')}` },
         { status: 400 }
       );
     }
@@ -53,11 +55,9 @@ export async function POST(req: NextRequest) {
 
     const updatedUsers = await Promise.all(updatePromises);
 
-    const action = newRole === 'ADMIN' ? 'promoted to Admin' : 'demoted to Student';
-
     return NextResponse.json({
       success: true,
-      message: `${updatedUsers.length} users have been ${action}`,
+      message: `${updatedUsers.length} users role changed to ${newRole}`,
       users: updatedUsers.map((u) => ({
         id: u.id,
         clerkId: u.clerkId,
