@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { addUserToClerkOrg, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
 
 export async function PATCH(req: Request) {
   try {
@@ -54,6 +55,38 @@ export async function PATCH(req: Request) {
       where: { clerkId: userId },
       data,
     });
+
+    // If onboarding just completed, add the user to their institution's Clerk organization
+    if (body.onboarded === true && (body.institutionId || body.universityId)) {
+      let clerkOrgId: string | null = null;
+
+      if (body.institutionId) {
+        const inst = await prisma.institution.findUnique({
+          where: { id: body.institutionId },
+          select: { clerkOrgId: true },
+        });
+        clerkOrgId = inst?.clerkOrgId ?? null;
+      } else if (body.universityId) {
+        // Universities don't have Clerk orgs directly — skip Clerk sync
+        console.warn(
+          `[Onboarding] User ${userId} selected a University (legacy model) without Clerk org support. Manual org assignment needed.`
+        );
+      }
+
+      if (clerkOrgId) {
+        const appRole = updated.role || 'STUDENT';
+        const clerkRole = APP_ROLE_TO_CLERK[appRole] || 'org:member';
+
+        // Fire-and-forget: if Clerk API fails, onboarding still succeeds
+        addUserToClerkOrg(userId, clerkOrgId, clerkRole).catch((err) => {
+          console.error('[Onboarding] Failed to add user to Clerk org:', err);
+        });
+
+        console.log(
+          `[Onboarding] User ${userId} added to Clerk org ${clerkOrgId} as ${clerkRole}`
+        );
+      }
+    }
 
     return NextResponse.json({ success: true, user: updated });
   } catch (error: any) {
