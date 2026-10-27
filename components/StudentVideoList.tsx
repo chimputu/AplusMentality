@@ -1,9 +1,8 @@
 'use client';
 import { useState } from 'react';
-import { Video, Film, Calendar, User, AlertCircle } from 'lucide-react';
-// Removed Youtube import - using Film instead
+import { Video as VideoIcon, Film, Calendar, User, AlertCircle } from 'lucide-react';
 
-interface Video {
+interface VideoItem {
   id: string;
   title: string;
   description: string | null;
@@ -15,7 +14,7 @@ interface Video {
 }
 
 interface StudentVideoListProps {
-  videos: Video[];
+  videos: VideoItem[];
 }
 
 function extractYouTubeId(url: string): string | null {
@@ -42,7 +41,7 @@ function getVideoType(url: string): string {
 export default function StudentVideoList({ videos }: StudentVideoListProps) {
   const [failedVideos, setFailedVideos] = useState<Set<string>>(new Set());
 
-  const isYouTube = (video: Video) => {
+  const isYouTube = (video: VideoItem) => {
     if (video.source === 'youtube') return true;
     if (video.youtubeId) return true;
     return video.url?.includes('youtube.com') || video.url?.includes('youtu.be');
@@ -55,7 +54,7 @@ export default function StudentVideoList({ videos }: StudentVideoListProps) {
   if (videos.length === 0) {
     return (
       <div className="text-center py-12 bg-muted/50 rounded-xl">
-        <Video className="w-16 h-16 text-foreground dark:text-muted-foreground mx-auto mb-4" />
+        <VideoIcon className="w-16 h-16 text-foreground dark:text-muted-foreground mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-foreground">No videos available</h3>
         <p className="text-muted-foreground text-sm mt-1">Check back later for new videos.</p>
       </div>
