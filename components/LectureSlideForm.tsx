@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { InstitutionSelect } from '@/components/ui/selects/institution-select';
 import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
+import { LevelSelect } from '@/components/ui/selects/level-select';
+import { PeriodSelect } from '@/components/ui/selects/period-select';
 import { CourseSelect } from '@/components/ui/selects/course-select';
 
 interface SlideFormProps {
@@ -17,8 +19,10 @@ export default function LectureSlideForm({ initialData, isEditing = false }: Sli
   const [file, setFile] = useState<File | null>(null);
 
   // Academic scoping
-  const [universityId, setUniversityId] = useState('');
+  const [institutionId, setInstitutionId] = useState('');
   const [programmeId, setProgrammeId] = useState('');
+  const [levelId, setLevelId] = useState('');
+  const [periodId, setPeriodId] = useState('');
   const [year, setYear] = useState(1);
   const [period, setPeriod] = useState('');
   const [courseMode, setCourseMode] = useState<'existing' | 'new'>('new');
@@ -36,47 +40,32 @@ export default function LectureSlideForm({ initialData, isEditing = false }: Sli
     category: initialData?.category || '',
   });
 
-  // Load academic system for period options
-  const [academicSystem, setAcademicSystem] = useState<'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY' | null>(null);
+  // Derive numeric year/period from selected level/period for backward compat
   useEffect(() => {
-    if (!universityId) {
-      setAcademicSystem(null);
-      setPeriod('');
-      return;
+    if (levelId) {
+      fetch(`/api/admin/levels?institutionId=${institutionId}`)
+        .then((r) => r.json())
+        .then((json) => {
+          const data = json.data || [];
+          const level = data.find((l: any) => l.id === levelId);
+          if (level) setYear(level.order);
+        })
+        .catch(() => {});
     }
-    fetch(`/api/institutions/picker`)
-      .then((res) => res.json())
-      .then((json) => {
-        const data = json.data || [];
-        const uni = data.find((u: any) => u.id === universityId);
-        if (uni) {
-          setAcademicSystem(uni.academicSystem || 'SEMESTERLY');
-        }
-      })
-      .catch(() => setAcademicSystem('SEMESTERLY'));
-  }, [universityId]);
+  }, [levelId, institutionId]);
 
-  // Get period options based on academic system
-  const getPeriodOptions = () => {
-    if (!academicSystem) return [];
-    switch (academicSystem) {
-      case 'YEARLY':
-        return [{ value: '', label: 'Full Year' }];
-      case 'SEMESTERLY':
-        return [
-          { value: '1', label: 'Semester 1' },
-          { value: '2', label: 'Semester 2' },
-        ];
-      case 'TRIMESTERLY':
-        return [
-          { value: '1', label: 'Trimester 1' },
-          { value: '2', label: 'Trimester 2' },
-          { value: '3', label: 'Trimester 3' },
-        ];
-      default:
-        return [];
+  useEffect(() => {
+    if (periodId) {
+      fetch(`/api/admin/periods?institutionId=${institutionId}`)
+        .then((r) => r.json())
+        .then((json) => {
+          const data = json.data || [];
+          const p = data.find((pp: any) => pp.id === periodId);
+          if (p) setPeriod(String(p.order));
+        })
+        .catch(() => {});
     }
-  };
+  }, [periodId, institutionId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -110,10 +99,12 @@ export default function LectureSlideForm({ initialData, isEditing = false }: Sli
           body: JSON.stringify({
             code: newCourseCode,
             title: newCourseTitle,
-            universityId,
+            universityId: institutionId,
             programmeId,
             year,
             period: period || null,
+            levelId: levelId || null,
+            periodId: periodId || null,
           }),
         });
         if (!courseRes.ok) {
@@ -266,55 +257,32 @@ export default function LectureSlideForm({ initialData, isEditing = false }: Sli
         <h3 className="text-sm font-medium mb-3">Academic Scope *</h3>
 
         <InstitutionSelect
-          value={universityId}
+          value={institutionId}
           onChange={(v) => {
-            setUniversityId(v);
+            setInstitutionId(v);
             setProgrammeId('');
-            setPeriod('');
+            setLevelId('');
+            setPeriodId('');
           }}
         />
 
         <ProgrammeSelect
-          institutionId={universityId || undefined}
+          institutionId={institutionId || undefined}
           value={programmeId}
           onChange={setProgrammeId}
         />
 
-        {/* Year */}
-        <div className="mb-3">
-          <label className="block text-sm font-medium">Year *</label>
-          <select
-            value={year}
-            onChange={(e) => setYear(parseInt(e.target.value))}
-            required
-            className="w-full border rounded-lg px-4 py-2"
-          >
-            {[1, 2, 3, 4, 5, 6, 7].map((y) => (
-              <option key={y} value={y}>
-                Year {y}
-              </option>
-            ))}
-          </select>
-        </div>
+        <LevelSelect
+          institutionId={institutionId || undefined}
+          value={levelId}
+          onChange={setLevelId}
+        />
 
-        {/* Period */}
-        <div className="mb-3">
-          <label className="block text-sm font-medium">Period *</label>
-          <select
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            required
-            disabled={!universityId}
-            className="w-full border rounded-lg px-4 py-2 disabled:opacity-50"
-          >
-            <option value="">Select period</option>
-            {getPeriodOptions().map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <PeriodSelect
+          institutionId={institutionId || undefined}
+          value={periodId}
+          onChange={setPeriodId}
+        />
       </div>
 
       {/* Course Selection */}
@@ -349,7 +317,7 @@ export default function LectureSlideForm({ initialData, isEditing = false }: Sli
         {courseMode === 'existing' ? (
           <CourseSelect
             programmeId={programmeId || undefined}
-            universityId={universityId || undefined}
+            universityId={institutionId || undefined}
             year={year}
             period={period || undefined}
             value={courseId}

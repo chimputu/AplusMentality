@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { ArrowLeft, Upload, Loader2, FileText, Image as ImageIcon, File } from 'lucide-react';
 import { InstitutionSelect } from '@/components/ui/selects/institution-select';
 import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
+import { LevelSelect } from '@/components/ui/selects/level-select';
+import { PeriodSelect } from '@/components/ui/selects/period-select';
 import { CourseSelect } from '@/components/ui/selects/course-select';
 
 interface Course {
@@ -34,8 +36,10 @@ export default function CreatePastPaperPage() {
   const [fileName, setFileName] = useState('');
 
   // Academic scoping
-  const [universityId, setUniversityId] = useState('');
+  const [institutionId, setInstitutionId] = useState('');
   const [programmeId, setProgrammeId] = useState('');
+  const [levelId, setLevelId] = useState('');
+  const [periodId, setPeriodId] = useState('');
   const [year, setYear] = useState(1);
   const [period, setPeriod] = useState('');
   const [courseMode, setCourseMode] = useState<'existing' | 'new'>('new');
@@ -49,47 +53,32 @@ export default function CreatePastPaperPage() {
     category: 'final_exam',
   });
 
-  // Load academic system for period options
-  const [academicSystem, setAcademicSystem] = useState<'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY' | null>(null);
+  // Derive numeric year/period from selected level/period for backward compat
   useEffect(() => {
-    if (!universityId) {
-      setAcademicSystem(null);
-      setPeriod('');
-      return;
+    if (levelId) {
+      fetch(`/api/admin/levels?institutionId=${institutionId}`)
+        .then((r) => r.json())
+        .then((json) => {
+          const data = json.data || [];
+          const level = data.find((l: any) => l.id === levelId);
+          if (level) setYear(level.order);
+        })
+        .catch(() => {});
     }
-    fetch(`/api/institutions/picker`)
-      .then((res) => res.json())
-      .then((json) => {
-        const data = json.data || [];
-        const uni = data.find((u: any) => u.id === universityId);
-        if (uni) {
-          setAcademicSystem(uni.academicSystem || 'SEMESTERLY');
-        }
-      })
-      .catch(() => setAcademicSystem('SEMESTERLY'));
-  }, [universityId]);
+  }, [levelId, institutionId]);
 
-  // Get period options based on academic system
-  const getPeriodOptions = () => {
-    if (!academicSystem) return [];
-    switch (academicSystem) {
-      case 'YEARLY':
-        return [{ value: '', label: 'Full Year' }];
-      case 'SEMESTERLY':
-        return [
-          { value: '1', label: 'Semester 1' },
-          { value: '2', label: 'Semester 2' },
-        ];
-      case 'TRIMESTERLY':
-        return [
-          { value: '1', label: 'Trimester 1' },
-          { value: '2', label: 'Trimester 2' },
-          { value: '3', label: 'Trimester 3' },
-        ];
-      default:
-        return [];
+  useEffect(() => {
+    if (periodId) {
+      fetch(`/api/admin/periods?institutionId=${institutionId}`)
+        .then((r) => r.json())
+        .then((json) => {
+          const data = json.data || [];
+          const p = data.find((pp: any) => pp.id === periodId);
+          if (p) setPeriod(String(p.order));
+        })
+        .catch(() => {});
     }
-  };
+  }, [periodId, institutionId]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,8 +127,8 @@ export default function CreatePastPaperPage() {
       setError('Title and file are required');
       return;
     }
-    if (!universityId || !programmeId) {
-      setError('University and programme are required');
+    if (!institutionId || !programmeId) {
+      setError('Institution and programme are required');
       return;
     }
     if (courseMode === 'existing' && !courseId) {
@@ -166,10 +155,12 @@ export default function CreatePastPaperPage() {
           body: JSON.stringify({
             code: newCourseCode,
             title: newCourseTitle,
-            universityId,
+            universityId: institutionId,
             programmeId,
             year,
             period: period || null,
+            levelId: levelId || null,
+            periodId: periodId || null,
           }),
         });
         if (!courseRes.ok) {
@@ -294,64 +285,37 @@ export default function CreatePastPaperPage() {
               Academic Scope *
             </h3>
 
-            {/* University */}
+            {/* Institution */}
             <InstitutionSelect
-              value={universityId}
+              value={institutionId}
               onChange={(v) => {
-                setUniversityId(v);
+                setInstitutionId(v);
                 setProgrammeId('');
-                setPeriod('');
+                setLevelId('');
+                setPeriodId('');
               }}
-              label="University *"
+              label="Institution *"
             />
 
             {/* Programme */}
             <ProgrammeSelect
-              institutionId={universityId || undefined}
+              institutionId={institutionId || undefined}
               value={programmeId}
               onChange={setProgrammeId}
               label="Programme *"
             />
 
-            {/* Year */}
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Year *
-              </label>
-              <select
-                value={year}
-                onChange={(e) => setYear(parseInt(e.target.value))}
-                required
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              >
-                {[1, 2, 3, 4, 5, 6, 7].map((y) => (
-                  <option key={y} value={y}>
-                    Year {y}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <LevelSelect
+              institutionId={institutionId || undefined}
+              value={levelId}
+              onChange={setLevelId}
+            />
 
-            {/* Period */}
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Period *
-              </label>
-              <select
-                value={period}
-                onChange={(e) => setPeriod(e.target.value)}
-                required
-                disabled={!universityId}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
-              >
-                <option value="">Select period</option>
-                {getPeriodOptions().map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <PeriodSelect
+              institutionId={institutionId || undefined}
+              value={periodId}
+              onChange={setPeriodId}
+            />
           </div>
 
           {/* Course Selection */}
@@ -388,7 +352,7 @@ export default function CreatePastPaperPage() {
             {courseMode === 'existing' ? (
               <CourseSelect
                 programmeId={programmeId || undefined}
-                universityId={universityId || undefined}
+                universityId={institutionId || undefined}
                 year={year}
                 period={period || undefined}
                 value={courseId}

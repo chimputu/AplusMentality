@@ -11,6 +11,9 @@ import {
   ExternalLink,
   Image as ImageIcon,
   File as FileIcon,
+  AlertCircle,
+  ArrowLeft,
+  RefreshCw,
 } from 'lucide-react';
 import { getInlineUrl } from '@/lib/cloudinary-url';
 import FileViewer from '@/components/FileViewer';
@@ -66,23 +69,35 @@ export default function StudentPastPapersPage() {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [yearFilter, setYearFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   // ✅ Preview modal state (shared FileViewer)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewTitle, setPreviewTitle] = useState('');
   const [previewType, setPreviewType] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchPapers = () => {
     const params = new URLSearchParams();
     if (universityFilter) params.set('university', universityFilter);
+    setLoading(true);
+    setError(false);
     fetch(`/api/past-papers${params.toString() ? '?' + params.toString() : ''}`)
       .then((r) => r.json())
       .then((data) => {
-        setPapers(Array.isArray(data) ? data : []);
-        setFiltered(Array.isArray(data) ? data : []);
+        const arr = Array.isArray(data) ? data : [];
+        setPapers(arr);
+        setFiltered(arr);
       })
-      .catch(() => setPapers([]))
+      .catch(() => {
+        setPapers([]);
+        setFiltered([]);
+        setError(true);
+      })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchPapers();
   }, [universityFilter]);
 
   useEffect(() => {
@@ -197,16 +212,40 @@ export default function StudentPastPapersPage() {
       )}
 
       {/* List */}
-      {filtered.length === 0 ? (
+      {error ? (
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
+          <AlertCircle className="w-12 h-12 text-red-400 dark:text-red-500 mx-auto mb-3" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+            Failed to load past papers
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">
+            Something went wrong while fetching data. Please try again.
+          </p>
+          <button
+            onClick={fetchPapers}
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 h-12 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg shadow-blue-600/20"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Retry
+          </button>
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
           <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500 dark:text-gray-400 mb-4">
             {search || categoryFilter || yearFilter
               ? 'No past papers match your filters.'
-              : papers.length === 0
-              ? 'No past papers for your current period. Check back later.'
-              : 'No past papers match your filters.'}
+              : 'No past papers found for your current selection.'}
           </p>
+          {!search && !categoryFilter && !yearFilter && (
+            <button
+              onClick={() => window.history.back()}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 h-12 text-sm font-medium bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

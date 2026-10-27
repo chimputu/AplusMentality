@@ -37,86 +37,33 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
   const joinSlug = params.slug;
   const joinType = params.type;
 
-  // If a join link is provided, fetch the locked institution/university
-  let lockedInstitution: any = null;
-  let lockedType: 'institution' | 'university' | null = null;
+  // If a join link is provided, fetch the locked institution details
+  let lockedInstitutionId: string | undefined;
+  let lockedInstitutionName: string | undefined;
+  let lockedInstitutionDetails: any;
 
-  if (joinSlug && joinType) {
+  if (joinSlug && joinType === 'institution') {
     try {
-      if (joinType === 'institution') {
-        lockedInstitution = await prisma.institution.findUnique({
-          where: { slug: joinSlug },
-          include: {
-            programmes: {
-              orderBy: { name: 'asc' },
-              include: {
-                faculty: true,
-                branches: { orderBy: { name: 'asc' } },
-              },
-            },
-            levels: { orderBy: { order: 'asc' } },
-          },
-        });
-        if (lockedInstitution) lockedType = 'institution';
-      } else if (joinType === 'university') {
-        lockedInstitution = await prisma.university.findUnique({
-          where: { joinSlug: joinSlug },
-          include: {
-            programmes: {
-              orderBy: { name: 'asc' },
-              include: {
-                faculty: true,
-                branches: { orderBy: { name: 'asc' } },
-              },
-            },
-          },
-        });
-        if (lockedInstitution) lockedType = 'university';
+      const inst = await prisma.institution.findUnique({
+        where: { slug: joinSlug },
+        include: {
+          levels: { orderBy: { order: 'asc' } },
+          periods: { orderBy: { order: 'asc' } },
+        },
+      });
+      if (inst) {
+        lockedInstitutionId = inst.id;
+        lockedInstitutionName = inst.name;
+        lockedInstitutionDetails = {
+          id: inst.id,
+          name: inst.name,
+          levels: inst.levels,
+          periods: inst.periods,
+          hasBranches: inst.hasBranches,
+        };
       }
     } catch (err: any) {
       console.error('[Onboarding] Failed to fetch join link data:', err.message);
-    }
-  }
-
-  // If no join link, fetch all institutions and universities for the dropdown
-  let institutions: any[] = [];
-  let universities: any[] = [];
-
-  if (!lockedInstitution) {
-    try {
-      [institutions, universities] = await withRetry(
-        () => Promise.all([
-          prisma.institution.findMany({
-            where: { isActive: true },
-            orderBy: { name: 'asc' },
-            include: {
-              programmes: {
-                orderBy: { name: 'asc' },
-                include: {
-                  faculty: true,
-                  branches: { orderBy: { name: 'asc' } },
-                },
-              },
-              levels: { orderBy: { order: 'asc' } },
-            },
-          }),
-          prisma.university.findMany({
-            orderBy: { name: 'asc' },
-            include: {
-              programmes: {
-                orderBy: { name: 'asc' },
-                include: {
-                  faculty: true,
-                  branches: { orderBy: { name: 'asc' } },
-                },
-              },
-            },
-          }),
-        ]),
-        { attempts: 3, delayMs: 500 }
-      );
-    } catch (err: any) {
-      console.error('[Onboarding] Failed to fetch data:', err.message);
     }
   }
 
@@ -132,20 +79,19 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
           </p>
         </div>
 
-        {lockedInstitution && lockedType && (
+        {lockedInstitutionName && (
           <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
             <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
-              🎓 Joining <strong>{lockedInstitution.name}</strong> via official link
+              🎓 Joining <strong>{lockedInstitutionName}</strong> via official link
             </p>
           </div>
         )}
 
         <OnboardingForm
           user={user}
-          institutions={institutions}
-          universities={universities}
-          lockedInstitution={lockedInstitution || undefined}
-          lockedType={lockedType || undefined}
+          lockedInstitutionId={lockedInstitutionId}
+          lockedInstitutionName={lockedInstitutionName}
+          lockedInstitutionDetails={lockedInstitutionDetails}
         />
       </div>
     </div>

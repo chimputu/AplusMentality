@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, BookOpen, FileText, Presentation, Video, Megaphone, ArrowRight } from 'lucide-react';
+import { Search, BookOpen, FileText, Presentation, Video, Megaphone, ArrowRight, X } from 'lucide-react';
 
 export default function SearchPageClient() {
   const searchParams = useSearchParams();
@@ -42,12 +42,27 @@ export default function SearchPageClient() {
     announcement: 'Announcement',
   };
 
+  const handleClose = () => {
+    window.history.back();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
-          Search A+ Mentality
-        </h1>
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={handleClose}
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition min-h-[48px] px-2 py-1"
+            aria-label="Close search"
+          >
+            <X className="w-5 h-5" />
+            <span className="text-sm font-medium hidden sm:inline">Close</span>
+          </button>
+          <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 dark:text-gray-100">
+            Search A+ Mentality
+          </h1>
+          <div className="w-16" />
+        </div>
 
         <div className="relative mb-8">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />

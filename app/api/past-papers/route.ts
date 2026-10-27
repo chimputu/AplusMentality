@@ -94,10 +94,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json(papers);
     } catch (error) {
         console.error('[past-papers GET] Error:', error);
-        return NextResponse.json(
-            { error: 'Failed to fetch past papers' },
-            { status: 500 }
-        );
+        return NextResponse.json([]);
     }
 }
 

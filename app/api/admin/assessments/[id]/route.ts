@@ -125,7 +125,7 @@ export async function PUT(
   } catch (error: any) {
     console.error('[admin/assessments/[id] PUT] Error:', error);
     return NextResponse.json(
-      { error: error?.message || 'Failed to update assessment' },
+      { error: 'Failed to update assessment' },
       { status: 500 }
     );
   }

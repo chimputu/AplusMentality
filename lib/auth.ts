@@ -32,7 +32,7 @@ export async function requireAuth(allowedRoles?: string[]) {
     );
   } catch (err: any) {
     console.error('[requireAuth] ❌ DB query failed for clerkId=%s: %s', userId, err.message);
-    redirect('/unauthorized?reason=db_error&detail=' + encodeURIComponent(err.message));
+    redirect('/unauthorized?reason=db_error');
   }
 
   if (user) {
@@ -64,7 +64,7 @@ export async function requireAuth(allowedRoles?: string[]) {
       );
     } catch (err: any) {
       console.error('[requireAuth] ❌ DB query by email failed for clerkId=%s: %s', userId, err.message);
-      redirect('/unauthorized?reason=db_error&detail=' + encodeURIComponent(err.message));
+      redirect('/unauthorized?reason=db_error');
     }
 
     if (existingUser) {
@@ -79,7 +79,7 @@ export async function requireAuth(allowedRoles?: string[]) {
         );
       } catch (err: any) {
         console.error('[requireAuth] ❌ Failed to update user email=%s: %s', email, err.message);
-        redirect('/unauthorized?reason=db_error&detail=' + encodeURIComponent(err.message));
+        redirect('/unauthorized?reason=db_error');
       }
       console.log('✅ User updated with clerkId:', user.email);
     } else {
@@ -132,7 +132,7 @@ export async function requireAuth(allowedRoles?: string[]) {
           }
           if (!user) {
             console.error('[requireAuth] ❌ Could not create user for clerkId=%s after all retries', userId);
-            redirect('/unauthorized?reason=user_not_found&detail=' + encodeURIComponent('Could not find or create your account'));
+            redirect('/unauthorized?reason=user_not_found');
           }
         }
       }
@@ -140,12 +140,12 @@ export async function requireAuth(allowedRoles?: string[]) {
     }
   } catch (error: any) {
     console.error('[requireAuth] ❌ Unexpected error for clerkId=%s: %s', userId, error.message);
-    redirect('/unauthorized?reason=unexpected_error&detail=' + encodeURIComponent(error.message));
+    redirect('/unauthorized?reason=unexpected_error');
   }
 
   if (!user) {
     console.error('[requireAuth] ❌ Could not find or create user for clerkId=%s', userId);
-    redirect('/unauthorized?reason=user_not_found&detail=' + encodeURIComponent('Your account could not be found or created'));
+    redirect('/unauthorized?reason=user_not_found');
   }
 
   const role = user.role;
