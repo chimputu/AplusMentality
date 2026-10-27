@@ -7,6 +7,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import CookieConsentModal from '@/components/CookieConsentModal';
+import DownloadBanner from '@/components/DownloadBanner';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -59,6 +60,9 @@ export default function RootLayout({
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
+      appearance={{
+        variables: { colorPrimary: '#2563eb' },
+      }}
     >
       <html lang="en" suppressHydrationWarning className={inter.variable}>
         <body className={`${inter.className} font-sans antialiased`}>
@@ -73,6 +77,7 @@ export default function RootLayout({
             <Toaster />
             <Analytics />
             <CookieConsentModal />
+            <DownloadBanner />
           </Providers>
         </body>
       </html>

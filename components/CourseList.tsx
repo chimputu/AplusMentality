@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { BookOpen, Users, Calendar, Trash2, Edit, Eye, GraduationCap, PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import ConfirmModal from '@/components/ui/confirm-modal';
 
 interface Course {
   id: string;
@@ -32,11 +33,17 @@ interface CourseListProps {
 export default function CourseList({ courses, isAdmin = false }: CourseListProps) {
   const router = useRouter();
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
+  const handleDeleteClick = (id: string, title: string, e: React.MouseEvent) => {
     e.stopPropagation(); // ✅ Prevent navigation when clicking delete
-    if (!confirm('Are you sure you want to delete this course? This will also delete all modules and lessons.')) return;
+    setDeleteTarget({ id, title });
+  };
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    const { id } = deleteTarget;
+    setDeleteTarget(null);
     setDeleting(id);
     try {
       const res = await fetch(`/api/courses?id=${id}`, {
@@ -87,6 +94,7 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
   }
 
   return (
+    <>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {courses.map((course) => {
         const totalLessons = course.modules?.reduce(
@@ -120,7 +128,7 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={(e) => handleDelete(course.id, e)}
+                      onClick={(e) => handleDeleteClick(course.id, course.title, e)}
                       disabled={deleting === course.id}
                       className="p-1.5 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 disabled:opacity-50"
                       title="Delete Course"
@@ -224,5 +232,23 @@ export default function CourseList({ courses, isAdmin = false }: CourseListProps
         );
       })}
     </div>
+
+    <ConfirmModal
+      open={deleteTarget !== null}
+      onOpenChange={(open) => {
+        if (!open) setDeleteTarget(null);
+      }}
+      title="Delete Course?"
+      description={
+        deleteTarget
+          ? `Are you sure you want to delete "${deleteTarget.title}"? This will permanently delete all modules, lessons, and student enrollments. This action cannot be undone.`
+          : ''
+      }
+      confirmLabel="Delete"
+      variant="destructive"
+      onConfirm={handleDeleteConfirm}
+      confirmButtonDisabled={deleting !== null}
+    />
+    </>
   );
 }

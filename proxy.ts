@@ -1,14 +1,6 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-// Map Clerk org roles to app roles
-const ORG_ROLE_MAP: Record<string, string> = {
-  'org:admin': 'ADMIN',
-  'org:tutor': 'TUTOR',
-  'org:lecturer': 'LECTURER',
-  'org:member': 'STUDENT',
-};
-
 // Routes that don't require authentication
 const publicRoutePatterns = [
   '/',
@@ -20,6 +12,7 @@ const publicRoutePatterns = [
   '/sign-up',
   '/join',
   '/onboarding',
+  '/download',
   '/api/webhooks',
   '/api/health',
   '/api/debug',
@@ -37,6 +30,16 @@ const routeRoleRequirements: Record<string, string[]> = {
   '/tutor': ['TUTOR', 'LECTURER'],
   '/lecturer': ['LECTURER'],
   '/student': ['STUDENT'],
+};
+
+// Map Prisma roles to default dashboard paths
+// Used when a user accesses a route they don't have permission for
+const ROLE_TO_DEFAULT_DASHBOARD: Record<string, string> = {
+  STUDENT: '/student',
+  TUTOR: '/tutor',
+  LECTURER: '/lecturer',
+  ADMIN: '/admin',
+  SUPER_ADMIN: '/admin',
 };
 
 function isPublicRoute(pathname: string): boolean {
@@ -76,38 +79,49 @@ export const proxy = clerkMiddleware(async (auth, request) => {
     return authObj.redirectToSignIn();
   }
 
-  // Get the user's Clerk org role and map to app role
-  const orgRole = authObj.orgRole ?? null;
-  let appRole = orgRole ? (ORG_ROLE_MAP[orgRole] || 'STUDENT') : 'STUDENT';
-
-  // Fallback: if Clerk org role is STUDENT, check the database role via API
-  // This handles cases where the DB role was changed but Clerk org role wasn't synced
-  if (appRole === 'STUDENT' && authObj.userId) {
-    try {
-      const baseUrl = request.nextUrl.origin;
-      const dbRoleRes = await fetch(`${baseUrl}/api/user/role`, {
-        headers: { Authorization: request.headers.get('Authorization') || '' },
-        cache: 'no-store',
-      });
-      if (dbRoleRes.ok) {
-        const dbRoleData = await dbRoleRes.json();
-        if (dbRoleData?.role && dbRoleData.role !== 'STUDENT') {
-          appRole = dbRoleData.role;
-          console.log(`[Proxy] DB role fallback: user=${authObj.userId}, orgRole=${orgRole}, dbRole=${dbRoleData.role}`);
-        }
+  // Prisma-first auth: Always fetch the user's role from the database.
+  // Clerk is used only for authentication (who you are), not authorization (what you can do).
+  // This ensures role changes in the admin dashboard take effect instantly on the next page load.
+  let appRole: string | null = null;
+  let hasInstitution = false;
+  try {
+    const baseUrl = request.nextUrl.origin;
+    const dbRoleRes = await fetch(`${baseUrl}/api/user/role`, {
+      headers: { Authorization: request.headers.get('Authorization') || '' },
+      cache: 'no-store',
+    });
+    if (dbRoleRes.ok) {
+      const dbRoleData = await dbRoleRes.json();
+      if (dbRoleData?.role) {
+        appRole = dbRoleData.role;
       }
-    } catch (err) {
-      console.error('[Proxy] DB role lookup failed:', err);
+      hasInstitution = !!dbRoleData?.hasInstitution;
     }
+  } catch (err) {
+    console.error('[Proxy] DB role lookup failed:', err);
+  }
+
+  // If we couldn't get the role from DB, default to STUDENT for safety
+  if (!appRole) {
+    appRole = 'STUDENT';
+  }
+
+  // Onboarding enforcement: redirect un-onboarded non-admin users to /onboarding
+  // ADMIN and SUPER_ADMIN can access their dashboards without being tied to an institution
+  const exemptFromOnboarding = appRole === 'ADMIN' || appRole === 'SUPER_ADMIN';
+  if (!exemptFromOnboarding && !hasInstitution && !pathname.startsWith('/onboarding')) {
+    return NextResponse.redirect(new URL('/onboarding', request.url));
   }
 
   // Check role-based route protection
   const requiredRoles = getRouteRoleRequirement(pathname);
   if (requiredRoles && !requiredRoles.includes(appRole)) {
     console.warn(
-      `[Proxy] Role mismatch: user has role=${appRole} (orgRole=${orgRole}), required=${requiredRoles.join(', ')}, path=${pathname}`,
+      `[Proxy] Role mismatch: user has role=${appRole}, required=${requiredRoles.join(', ')}, path=${pathname}`,
     );
-    return NextResponse.redirect(new URL('/unauthorized?reason=role_mismatch', request.url));
+    // Redirect to the user's default dashboard based on their Prisma role
+    const defaultDashboard = ROLE_TO_DEFAULT_DASHBOARD[appRole] || '/student';
+    return NextResponse.redirect(new URL(defaultDashboard, request.url));
   }
 
   return NextResponse.next();

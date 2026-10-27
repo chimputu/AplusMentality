@@ -7,20 +7,7 @@ import Link from 'next/link';
 import { ArrowLeft, Upload, Loader2, FileText, Image as ImageIcon, File } from 'lucide-react';
 import { InstitutionSelect } from '@/components/ui/selects/institution-select';
 import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
-
-interface University {
-  id: string;
-  name: string;
-  code: string;
-  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
-  programmes: Programme[];
-}
-
-interface Programme {
-  id: string;
-  name: string;
-  shortName: string | null;
-}
+import { CourseSelect } from '@/components/ui/selects/course-select';
 
 interface Course {
   id: string;
@@ -47,12 +34,10 @@ export default function CreatePastPaperPage() {
   const [fileName, setFileName] = useState('');
 
   // Academic scoping
-  const [universities, setUniversities] = useState<University[]>([]);
   const [universityId, setUniversityId] = useState('');
   const [programmeId, setProgrammeId] = useState('');
   const [year, setYear] = useState(1);
   const [period, setPeriod] = useState('');
-  const [courses, setCourses] = useState<Course[]>([]);
   const [courseMode, setCourseMode] = useState<'existing' | 'new'>('new');
   const [courseId, setCourseId] = useState('');
   const [newCourseCode, setNewCourseCode] = useState('');
@@ -64,54 +49,30 @@ export default function CreatePastPaperPage() {
     category: 'final_exam',
   });
 
-  // Load universities for academic system lookup
+  // Load academic system for period options
+  const [academicSystem, setAcademicSystem] = useState<'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY' | null>(null);
   useEffect(() => {
-    async function loadUniversities() {
-      try {
-        const res = await fetch('/api/admin/universities');
-        if (res.ok) {
-          const data = await res.json();
-          setUniversities(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
-        }
-      } catch {
-        console.error('Failed to load universities');
-      }
-    }
-    loadUniversities();
-  }, []);
-
-  // Load courses when filters change
-  useEffect(() => {
-    if (courseMode !== 'existing' || !universityId || !programmeId) {
-      setCourses([]);
+    if (!universityId) {
+      setAcademicSystem(null);
+      setPeriod('');
       return;
     }
-    async function loadCourses() {
-      try {
-        const params = new URLSearchParams({
-          universityId,
-          programmeId,
-          year: String(year),
-          period: period || '',
-        });
-        const res = await fetch(`/api/courses?${params}`);
-        if (res.ok) {
-          const data = await res.json();
-          setCourses(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
+    fetch(`/api/institutions/picker`)
+      .then((res) => res.json())
+      .then((json) => {
+        const data = json.data || [];
+        const uni = data.find((u: any) => u.id === universityId);
+        if (uni) {
+          setAcademicSystem(uni.academicSystem || 'SEMESTERLY');
         }
-      } catch {
-        console.error('Failed to load courses');
-      }
-    }
-    loadCourses();
-  }, [universityId, programmeId, year, period, courseMode]);
+      })
+      .catch(() => setAcademicSystem('SEMESTERLY'));
+  }, [universityId]);
 
-  // Get period options based on selected university's academic system
+  // Get period options based on academic system
   const getPeriodOptions = () => {
-    const uni = universities.find((u) => u.id === universityId);
-    if (!uni) return [];
-
-    switch (uni.academicSystem) {
+    if (!academicSystem) return [];
+    switch (academicSystem) {
       case 'YEARLY':
         return [{ value: '', label: 'Full Year' }];
       case 'SEMESTERLY':
@@ -425,20 +386,14 @@ export default function CreatePastPaperPage() {
             </div>
 
             {courseMode === 'existing' ? (
-              <select
+              <CourseSelect
+                programmeId={programmeId || undefined}
+                universityId={universityId || undefined}
+                year={year}
+                period={period || undefined}
                 value={courseId}
-                onChange={(e) => setCourseId(e.target.value)}
-                required
-                disabled={!programmeId}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
-              >
-                <option value="">Select course</option>
-                {courses.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.code} — {c.title}
-                  </option>
-                ))}
-              </select>
+                onChange={setCourseId}
+              />
             ) : (
               <div className="space-y-3">
                 <div>

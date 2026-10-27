@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, GraduationCap, Lock } from 'lucide-react';
+import { joinUniversity } from '@/lib/actions/user-admin';
 
 interface Branch {
   id: string;
@@ -97,6 +98,28 @@ export default function OnboardingForm({ user, institutions, universities, locke
 
     startTransition(async () => {
       try {
+        // If this is a magic link flow (locked institution), use joinUniversity for double-write
+        if (isLocked && lockedInstitution) {
+          const result = await joinUniversity({
+            slug: lockedType === 'university'
+              ? (lockedInstitution as any).joinSlug || ''
+              : (lockedInstitution as any).slug || '',
+            programmeId: programmeId || undefined,
+            year: year ? parseInt(year) : undefined,
+            period: period || undefined,
+            branchId: branchId || undefined,
+          });
+
+          if (result.error) {
+            throw new Error(result.error);
+          }
+
+          router.refresh();
+          window.location.href = '/student';
+          return;
+        }
+
+        // Standard onboarding flow — use the existing API
         const data: any = {
           onboarded: true,
         };

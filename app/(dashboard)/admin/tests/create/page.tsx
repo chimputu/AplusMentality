@@ -3,33 +3,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-
-interface University {
-  id: string;
-  name: string;
-  code: string;
-  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
-  programmes: Programme[];
-}
-
-interface Programme {
-  id: string;
-  name: string;
-  shortName: string | null;
-}
-
-interface Course {
-  id: string;
-  code: string;
-  title: string;
-}
+import { InstitutionSelect } from '@/components/ui/selects/institution-select';
+import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
+import { CourseSelect } from '@/components/ui/selects/course-select';
 
 export default function CreateTestPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [universities, setUniversities] = useState<University[]>([]);
-  const [programmes, setProgrammes] = useState<Programme[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -46,77 +26,30 @@ export default function CreateTestPage() {
   });
   const [file, setFile] = useState<File | null>(null);
 
-  // Load universities
-  useEffect(() => {
-    async function loadUniversities() {
-      try {
-        const res = await fetch('/api/admin/universities');
-        if (res.ok) {
-          const data = await res.json();
-          setUniversities(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
-        }
-      } catch {
-        console.error('Failed to load universities');
-      }
-    }
-    loadUniversities();
-  }, []);
-
-  // Load programmes when university changes
+  // Load academic system for period options
+  const [academicSystem, setAcademicSystem] = useState<'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY' | null>(null);
   useEffect(() => {
     if (!form.universityId) {
-      setProgrammes([]);
+      setAcademicSystem(null);
+      setForm({ ...form, period: '' });
       return;
     }
-    async function loadProgrammes() {
-      try {
-        // If universityId starts with 'inst-', it's an Institution record — use institutionId param
-        const isInstitution = form.universityId.startsWith('inst-');
-        const actualId = isInstitution ? form.universityId.slice(5) : form.universityId;
-        const param = isInstitution ? 'institutionId' : 'universityId';
-        const res = await fetch(`/api/admin/programmes?${param}=${actualId}`);
-        if (res.ok) {
-          const data = await res.json();
-          setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
+    fetch(`/api/institutions/picker`)
+      .then((res) => res.json())
+      .then((json) => {
+        const data = json.data || [];
+        const uni = data.find((u: any) => u.id === form.universityId);
+        if (uni) {
+          setAcademicSystem(uni.academicSystem || 'SEMESTERLY');
         }
-      } catch {
-        console.error('Failed to load programmes');
-      }
-    }
-    loadProgrammes();
+      })
+      .catch(() => setAcademicSystem('SEMESTERLY'));
   }, [form.universityId]);
 
-  // Load courses when programme changes
-  useEffect(() => {
-    if (!form.programmeId) {
-      setCourses([]);
-      return;
-    }
-    async function loadCourses() {
-      try {
-        const qs = new URLSearchParams({
-          programmeId: form.programmeId,
-          year: String(form.year),
-        });
-        if (form.period) qs.set('period', form.period);
-        const res = await fetch(`/api/courses?${qs}`);
-        if (res.ok) {
-          const data = await res.json();
-          setCourses(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
-        }
-      } catch {
-        console.error('Failed to load courses');
-      }
-    }
-    loadCourses();
-  }, [form.programmeId, form.year, form.period]);
-
-  // Get period options based on selected university's academic system
+  // Get period options based on academic system
   const getPeriodOptions = () => {
-    const uni = universities.find((u) => u.id === form.universityId);
-    if (!uni) return [];
-
-    switch (uni.academicSystem) {
+    if (!academicSystem) return [];
+    switch (academicSystem) {
       case 'YEARLY':
         return [{ value: '', label: 'Full Year' }];
       case 'SEMESTERLY':
@@ -180,8 +113,6 @@ export default function CreateTestPage() {
     }
   };
 
-  const selectedUni = universities.find((u) => u.id === form.universityId);
-
   return (
     <div className="max-w-3xl mx-auto">
       <Link href="/admin/tests" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
@@ -195,51 +126,18 @@ export default function CreateTestPage() {
           Academic Scoping
         </h2>
 
-        {/* University */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            University *
-          </label>
-          <select
-            value={form.universityId}
-            onChange={(e) => setForm({ ...form, universityId: e.target.value, programmeId: '', period: '', courseId: '' })}
-            required
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-          >
-            <option value="">Select university</option>
-            {universities.map((uni) => (
-              <option key={uni.id} value={uni.id}>
-                {uni.name} ({uni.code})
-              </option>
-            ))}
-          </select>
-        </div>
+        <InstitutionSelect
+          value={form.universityId}
+          onChange={(v) => setForm({ ...form, universityId: v, programmeId: '', period: '', courseId: '' })}
+          label="University *"
+        />
 
-        {/* Programme */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Programme *
-          </label>
-          <select
-            value={form.programmeId}
-            onChange={(e) => setForm({ ...form, programmeId: e.target.value, courseId: '' })}
-            required
-            disabled={!form.universityId}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
-          >
-            <option value="">Select programme</option>
-            {programmes.map((prog) => (
-              <option key={prog.id} value={prog.id}>
-                {prog.shortName || prog.name}
-              </option>
-            ))}
-          </select>
-          {form.universityId && programmes.length > 0 && (
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-              Showing programmes for {selectedUni?.name}
-            </p>
-          )}
-        </div>
+        <ProgrammeSelect
+          institutionId={form.universityId || undefined}
+          value={form.programmeId}
+          onChange={(v) => setForm({ ...form, programmeId: v, courseId: '' })}
+          label="Programme *"
+        />
 
         {/* Year */}
         <div>
@@ -282,25 +180,15 @@ export default function CreateTestPage() {
         </div>
 
         {/* Course */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Course *
-          </label>
-          <select
-            value={form.courseId}
-            onChange={(e) => setForm({ ...form, courseId: e.target.value })}
-            required
-            disabled={!form.programmeId}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
-          >
-            <option value="">Select course</option>
-            {courses.map((course) => (
-              <option key={course.id} value={course.id}>
-                {course.code} — {course.title}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CourseSelect
+          programmeId={form.programmeId || undefined}
+          universityId={form.universityId || undefined}
+          year={form.year}
+          period={form.period || undefined}
+          value={form.courseId}
+          onChange={(v) => setForm({ ...form, courseId: v })}
+          label="Course *"
+        />
 
         <hr className="border-gray-200 dark:border-gray-700" />
 

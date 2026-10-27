@@ -1,32 +1,15 @@
-import { requireAuth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
 import LectureSlideForm from '@/components/LectureSlideForm';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-export default async function CreateLectureSlidePage() {
-  // Auth handled by layout (ADMIN + SUPER_ADMIN)
-  let universities: any[] = [];
-  try {
-    universities = await prisma.university.findMany({
-      orderBy: { name: 'asc' },
-      include: {
-        programmes: {
-          orderBy: { name: 'asc' },
-        },
-      },
-    });
-  } catch (err) {
-    console.error('[CreateLectureSlide] Failed to fetch universities:', err);
-  }
-
+export default function CreateLectureSlidePage() {
   return (
     <div className="max-w-3xl mx-auto">
       <Link href="/admin/lecture-slides" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
         <ArrowLeft className="w-4 h-4" /> Back
       </Link>
       <h1 className="text-2xl font-bold mb-6">Create Lecture Slide</h1>
-      <LectureSlideForm universities={universities} />
+      <LectureSlideForm />
     </div>
   );
 }

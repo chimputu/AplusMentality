@@ -31,6 +31,7 @@ const platformLinks = [
   { href: '/sign-in', label: 'Sign In' },
   { href: '/sign-up', label: 'Sign Up' },
   { href: '/apply-as-tutor', label: 'Become a Tutor' },
+  { href: '/download', label: 'Download App' },
 ];
 
 export default function AppFooter() {

@@ -72,8 +72,9 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
   const [invitePending, setInvitePending] = useState(false);
   const [inviteCopied, setInviteCopied] = useState(false);
   
-  // Refs for tracking trigger button positions
+  // Refs for tracking trigger button positions and the portal dropdown
   const triggerRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number } | null>(null);
 
   // Calculate dropdown position when menu opens
@@ -93,9 +94,11 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
       if (openMenu) {
         const target = event.target as Node;
         const trigger = triggerRefs.current[openMenu];
-        
-        // Only close if clicking outside the trigger button
-        if (trigger && !trigger.contains(target)) {
+
+        // Close only if clicking outside BOTH the trigger button AND the portal dropdown
+        const isTriggerClick = trigger && trigger.contains(target);
+        const isDropdownClick = dropdownRef.current && dropdownRef.current.contains(target);
+        if (!isTriggerClick && !isDropdownClick) {
           setOpenMenu(null);
         }
       }
@@ -325,6 +328,7 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
         
         return createPortal(
           <div
+            ref={dropdownRef}
             className="fixed z-50 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 text-sm"
             style={{
               top: dropdownPosition.top,
