@@ -1,6 +1,5 @@
 import { requireAuth } from '@/lib/auth';
-import { getScopeContext, buildCourseScopeWhere } from '@/lib/auth/scope';
-import { prisma } from '@/lib/prisma';
+import { getCoursesWithVideos } from '@/lib/actions/video-course';
 import Link from 'next/link';
 import { Search, Video, PlayCircle, ArrowRight } from 'lucide-react';
 
@@ -26,39 +25,14 @@ export default async function StudentVideosPage({
   searchParams: Promise<{ university?: string; search?: string }>;
 }) {
   await requireAuth(['STUDENT']);
-  const scope = await getScopeContext();
   const params = await searchParams;
   const universityId = params.university || null;
   const searchQuery = params.search || '';
 
-  // Fetch distinct courses that have at least one video, scoped to the student's university/year/period
+  // Fetch courses with videos via server action (scoped to user's university/year/period)
   let coursesData: any[] = [];
   try {
-    const scopeWhere = buildCourseScopeWhere(scope);
-    coursesData = await prisma.course.findMany({
-      where: {
-        ...scopeWhere,
-        ...(universityId ? { universityId } : {}),
-        ...(searchQuery
-          ? {
-              OR: [
-                { title: { contains: searchQuery, mode: 'insensitive' } },
-                { code: { contains: searchQuery, mode: 'insensitive' } },
-                { description: { contains: searchQuery, mode: 'insensitive' } },
-              ],
-            }
-          : {}),
-        videos: { some: {} }, // only courses with at least one video
-      },
-      select: {
-        id: true,
-        code: true,
-        title: true,
-        description: true,
-        _count: { select: { videos: true } },
-      },
-      orderBy: { title: 'asc' },
-    });
+    coursesData = await getCoursesWithVideos(searchQuery || undefined, universityId);
   } catch (err) {
     console.error('[StudentVideos] Failed to fetch courses:', err);
   }
