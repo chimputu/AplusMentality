@@ -2,13 +2,14 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, PlayCircle, FileText, User } from 'lucide-react';
+import { Home, PlayCircle, FileText, Search, User } from 'lucide-react';
 
 const tabs = [
   { href: '/student', label: 'Home', icon: Home },
   { href: '/student/videos', label: 'Videos', icon: PlayCircle },
-  { href: '/materials', label: 'Materials', icon: FileText },
-  { href: '/profile', label: 'Profile', icon: User },
+  { href: '/student/materials', label: 'Materials', icon: FileText },
+  { href: '/search', label: 'Search', icon: Search },
+  { href: '/student/profile', label: 'Profile', icon: User },
 ];
 
 export default function MobileTabBar() {

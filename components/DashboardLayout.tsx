@@ -35,6 +35,7 @@ import {
   Compass,
   Star,
   User,
+  Download,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
@@ -389,6 +390,12 @@ export default function DashboardLayout({
       label: 'Explore Universities', 
       icon: Compass,
       section: 'Discovery'
+    },
+    { 
+      href: '/download', 
+      label: 'Download App', 
+      icon: Download,
+      section: 'General'
     },
     { 
       href: '/student/settings', 

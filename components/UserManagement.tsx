@@ -20,10 +20,12 @@ import {
   Pencil,
   X,
   Check,
+  RefreshCw,
 } from 'lucide-react';
 import { formatDate } from '@/lib/formatDate';
 import { toast } from 'sonner';
 import type { Role } from '@/generated/prisma/client';
+import ConfirmModal from '@/components/ui/confirm-modal';
 
 interface User {
   id: string;
@@ -90,18 +92,26 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
   const [filterInstitution, setFilterInstitution] = useState('ALL');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editForm, setEditForm] = useState({ role: '', institutionId: '', year: '', period: '' });
+  const [pendingRoleChange, setPendingRoleChange] = useState<{ userId: string; role: Role; displayName: string } | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ userId: string; displayName: string } | null>(null);
+  const [syncing, setSyncing] = useState<string | null>(null);
 
   const safeUsers = users ?? [];
 
-  const handleRoleChange = async (userId: string, newRole: Role) => {
-    if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
+  const handleRoleChangeClick = (user: User, newRole: Role) => {
+    setPendingRoleChange({ userId: user.clerkId, role: newRole, displayName: getDisplayName(user) });
+  };
 
+  const handleRoleChangeConfirm = async () => {
+    if (!pendingRoleChange) return;
+    const { userId, role } = pendingRoleChange;
+    setPendingRoleChange(null);
     setUpdating(userId);
     try {
       const res = await fetch(`/api/users/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: newRole }),
+        body: JSON.stringify({ role }),
       });
 
       if (res.ok) {
@@ -119,9 +129,14 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+  const handleDeleteUserClick = (user: User) => {
+    setPendingDelete({ userId: user.clerkId, displayName: getDisplayName(user) });
+  };
 
+  const handleDeleteUserConfirm = async () => {
+    if (!pendingDelete) return;
+    const { userId } = pendingDelete;
+    setPendingDelete(null);
     try {
       const res = await fetch(`/api/users/${userId}`, {
         method: 'DELETE',
@@ -137,6 +152,30 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
     } catch (error) {
       console.error('Delete error:', error);
       toast.error('An error occurred');
+    }
+  };
+
+  const handleSyncRole = async (user: User) => {
+    setSyncing(user.clerkId);
+    try {
+      const res = await fetch('/api/users/sync-role', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.clerkId }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(`Role synced to Clerk (${data.role})`);
+      } else {
+        const error = await res.json();
+        toast.error(error.error || 'Failed to sync role');
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+      toast.error('An error occurred');
+    } finally {
+      setSyncing(null);
     }
   };
 
@@ -442,7 +481,7 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                         </button>
                         {user.role === 'ADMIN' ? (
                           <button
-                            onClick={() => handleRoleChange(user.clerkId, 'STUDENT')}
+                            onClick={() => handleRoleChangeClick(user, 'STUDENT')}
                             disabled={updating === user.clerkId}
                             className="flex items-center gap-1 text-xs px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 rounded-lg transition disabled:opacity-50"
                           >
@@ -451,7 +490,7 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                           </button>
                         ) : (
                           <button
-                            onClick={() => handleRoleChange(user.clerkId, 'ADMIN')}
+                            onClick={() => handleRoleChangeClick(user, 'ADMIN')}
                             disabled={updating === user.clerkId}
                             className="flex items-center gap-1 text-xs px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-lg transition disabled:opacity-50"
                           >
@@ -460,7 +499,15 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                           </button>
                         )}
                         <button
-                          onClick={() => handleDeleteUser(user.clerkId)}
+                          onClick={() => handleSyncRole(user)}
+                          disabled={syncing === user.clerkId}
+                          className="flex items-center gap-1 text-xs px-3 py-1.5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-lg transition disabled:opacity-50"
+                          title="Sync role to Clerk"
+                        >
+                          <RefreshCw className={`w-3 h-3 ${syncing === user.clerkId ? 'animate-spin' : ''}`} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUserClick(user)}
                           className="flex items-center gap-1 text-xs px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition"
                         >
                           <Trash2 className="w-3 h-3" />
@@ -584,6 +631,41 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
           </div>
         </div>
       )}
+
+      {/* Role Change Confirmation Modal */}
+      <ConfirmModal
+        open={pendingRoleChange !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingRoleChange(null);
+        }}
+        title="Change Role?"
+        description={
+          pendingRoleChange
+            ? `Are you sure you want to change ${pendingRoleChange.displayName}'s role to ${pendingRoleChange.role}? This will also sync the change to Clerk.`
+            : ''
+        }
+        confirmLabel="Change Role"
+        variant="destructive"
+        onConfirm={handleRoleChangeConfirm}
+        confirmButtonDisabled={updating !== null}
+      />
+
+      {/* Delete User Confirmation Modal */}
+      <ConfirmModal
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
+        title="Delete User?"
+        description={
+          pendingDelete
+            ? `Are you sure you want to delete ${pendingDelete.displayName}? This action cannot be undone.`
+            : ''
+        }
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={handleDeleteUserConfirm}
+      />
     </div>
   );
 }

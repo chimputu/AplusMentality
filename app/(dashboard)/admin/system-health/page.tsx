@@ -89,7 +89,7 @@ export default function SystemHealthPage() {
 
   const fetchHealth = useCallback(async () => {
     try {
-      const res = await fetch('/api/health');
+      const res = await fetch('/api/health/detailed');
       if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
       const json = await res.json();
       setData(json);

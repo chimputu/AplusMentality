@@ -67,10 +67,23 @@ export async function PATCH(req: Request) {
         });
         clerkOrgId = inst?.clerkOrgId ?? null;
       } else if (body.universityId) {
-        // Universities don't have Clerk orgs directly — skip Clerk sync
-        console.warn(
-          `[Onboarding] User ${userId} selected a University (legacy model) without Clerk org support. Manual org assignment needed.`
-        );
+        // University joins: look up associated Institution via programmes to find clerkOrgId
+        const prog = await prisma.programme.findFirst({
+          where: { universityId: body.universityId },
+          select: { institutionId: true },
+        });
+        if (prog?.institutionId) {
+          const inst = await prisma.institution.findUnique({
+            where: { id: prog.institutionId },
+            select: { clerkOrgId: true },
+          });
+          clerkOrgId = inst?.clerkOrgId ?? null;
+        }
+        if (!clerkOrgId) {
+          console.warn(
+            `[Onboarding] User ${userId} joined via University ${body.universityId} but no associated Institution with clerkOrgId found. Clerk org membership not created.`
+          );
+        }
       }
 
       if (clerkOrgId) {

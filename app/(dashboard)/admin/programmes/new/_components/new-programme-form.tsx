@@ -1,45 +1,23 @@
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, ArrowLeft, GraduationCap, Building2 } from 'lucide-react';
-import { createProgramme, getFacultiesForInstitution } from '@/lib/actions/programme-crud';
+import { Loader2, ArrowLeft, GraduationCap } from 'lucide-react';
+import { createProgramme } from '@/lib/actions/programme-crud';
 import { toast } from 'sonner';
+import { InstitutionSelect } from '@/components/ui/selects/institution-select';
+import { FacultySelect } from '@/components/ui/selects/faculty-select';
 
-interface Institution {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-interface Faculty {
-  id: string;
-  name: string;
-  code: string;
-}
-
-export default function NewProgrammeForm({ institutions }: { institutions: Institution[] }) {
+export default function NewProgrammeForm() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [faculties, setFaculties] = useState<Faculty[]>([]);
 
   const [name, setName] = useState('');
   const [shortName, setShortName] = useState('');
   const [code, setCode] = useState('');
   const [institutionId, setInstitutionId] = useState('');
   const [facultyId, setFacultyId] = useState('');
-
-  useEffect(() => {
-    if (institutionId) {
-      getFacultiesForInstitution(institutionId).then((data) => {
-        setFaculties(data);
-        setFacultyId('');
-      });
-    } else {
-      setFaculties([]);
-    }
-  }, [institutionId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,49 +56,23 @@ export default function NewProgrammeForm({ institutions }: { institutions: Insti
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Institution */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-            <Building2 className="w-4 h-4 inline mr-1" />
-            Institution <span className="text-red-500">*</span>
-          </label>
-          <select
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InstitutionSelect
             value={institutionId}
-            onChange={(e) => setInstitutionId(e.target.value)}
-            required
+            onChange={(v) => {
+              setInstitutionId(v);
+              setFacultyId('');
+            }}
             disabled={isPending}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
-          >
-            <option value="">Select institution</option>
-            {institutions.map((inst) => (
-              <option key={inst.id} value={inst.id}>
-                {inst.name}
-              </option>
-            ))}
-          </select>
-        </div>
+          />
 
-        {/* Faculty */}
-        {institutionId && faculties.length > 0 && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Faculty
-            </label>
-            <select
-              value={facultyId}
-              onChange={(e) => setFacultyId(e.target.value)}
-              disabled={isPending}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
-            >
-              <option value="">No faculty</option>
-              {faculties.map((fac) => (
-                <option key={fac.id} value={fac.id}>
-                  {fac.name} ({fac.code})
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+          <FacultySelect
+            institutionId={institutionId || undefined}
+            value={facultyId}
+            onChange={setFacultyId}
+            disabled={isPending}
+          />
+        </div>
 
         {/* Programme Name */}
         <div>

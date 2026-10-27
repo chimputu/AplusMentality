@@ -123,8 +123,8 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
         throw new Error(errData.error || 'Upload failed');
       }
       const data = await res.json();
-      handleChange('imageUrl', data.secure_url);
-      setImagePreview(data.secure_url);
+      handleChange('imageUrl', data.url);
+      setImagePreview(data.url);
       toast.success('Image uploaded', { description: 'Your banner image is ready' });
     } catch (err: any) {
       console.error('[banner-form] Upload error:', err);

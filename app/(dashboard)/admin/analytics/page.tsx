@@ -1,7 +1,35 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Users, GraduationCap, BookOpen, FileCheck, Building2, UserPlus } from 'lucide-react';
+import {
+  Users,
+  GraduationCap,
+  BookOpen,
+  FileCheck,
+  Building2,
+  UserPlus,
+  TrendingUp,
+  BarChart3,
+  PieChart as PieChartIcon,
+  Activity,
+} from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 
 interface Stats {
   totalUsers: number;
@@ -12,9 +40,34 @@ interface Stats {
   totalAssessments: number;
 }
 
+interface ChartDataPoint {
+  date: string;
+  users?: number;
+  enrollments?: number;
+}
+
+interface TopCourseData {
+  name: string;
+  enrollments: number;
+}
+
+const CHART_COLORS = {
+  blue: '#3b82f6',
+  green: '#22c55e',
+  purple: '#a855f7',
+  yellow: '#eab308',
+  red: '#ef4444',
+  indigo: '#6366f1',
+  pink: '#ec4899',
+  orange: '#f97316',
+};
+
 export default function AnalyticsPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
+  const [userGrowth, setUserGrowth] = useState<ChartDataPoint[]>([]);
+  const [enrollmentActivity, setEnrollmentActivity] = useState<ChartDataPoint[]>([]);
+  const [topCourses, setTopCourses] = useState<TopCourseData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,6 +76,9 @@ export default function AnalyticsPage() {
       .then((data) => {
         setStats(data.stats);
         setRecentUsers(data.recentUsers || []);
+        setUserGrowth(data.userGrowth || []);
+        setEnrollmentActivity(data.enrollmentActivity || []);
+        setTopCourses(data.topCourses || []);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -36,6 +92,12 @@ export default function AnalyticsPage() {
     { label: 'Assessments', value: stats?.totalAssessments || 0, icon: FileCheck, color: 'text-red-600' },
     { label: 'New Users (Recent)', value: recentUsers.length, icon: UserPlus, color: 'text-indigo-600' },
   ];
+
+  // Role distribution data for PieChart
+  const roleDistribution = (stats?.usersByRole || []).map((item) => ({
+    name: item.role,
+    value: item._count.role,
+  }));
 
   if (loading) {
     return (
@@ -75,6 +137,187 @@ export default function AnalyticsPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Line Chart: User Growth */}
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-blue-600" />
+            User Growth (7 Days)
+          </h2>
+          {userGrowth.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={userGrowth}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                <XAxis
+                  dataKey="date"
+                  stroke="#9ca3af"
+                  fontSize={12}
+                  tickFormatter={(value) => value.slice(5)}
+                />
+                <YAxis stroke="#9ca3af" fontSize={12} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1f2937',
+                    border: '1px solid #374151',
+                    borderRadius: '8px',
+                    color: '#f9fafb',
+                  }}
+                  labelFormatter={(label) => `Date: ${label}`}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="users"
+                  name="New Users"
+                  stroke={CHART_COLORS.blue}
+                  strokeWidth={2}
+                  dot={{ fill: CHART_COLORS.blue, r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[280px] text-gray-500 dark:text-gray-400">
+              No user growth data available
+            </div>
+          )}
+        </div>
+
+        {/* Bar Chart: Top Courses */}
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-green-600" />
+            Top Courses by Enrollment
+          </h2>
+          {topCourses.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={topCourses}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                <XAxis
+                  dataKey="name"
+                  stroke="#9ca3af"
+                  fontSize={12}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis stroke="#9ca3af" fontSize={12} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1f2937',
+                    border: '1px solid #374151',
+                    borderRadius: '8px',
+                    color: '#f9fafb',
+                  }}
+                />
+                <Legend />
+                <Bar dataKey="enrollments" name="Enrollments" radius={[4, 4, 0, 0]}>
+                  {topCourses.map((_entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={Object.values(CHART_COLORS)[index % Object.values(CHART_COLORS).length]}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[280px] text-gray-500 dark:text-gray-400">
+              No course enrollment data available
+            </div>
+          )}
+        </div>
+
+        {/* Pie Chart: Role Distribution */}
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <PieChartIcon className="w-5 h-5 text-purple-600" />
+            Role Distribution
+          </h2>
+          {roleDistribution.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={roleDistribution}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={90}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {roleDistribution.map((_entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={Object.values(CHART_COLORS)[index % Object.values(CHART_COLORS).length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1f2937',
+                    border: '1px solid #374151',
+                    borderRadius: '8px',
+                    color: '#f9fafb',
+                  }}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[280px] text-gray-500 dark:text-gray-400">
+              No role distribution data available
+            </div>
+          )}
+        </div>
+
+        {/* Area Chart: Daily Enrollment Activity */}
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-orange-600" />
+            Daily Enrollment Activity (7 Days)
+          </h2>
+          {enrollmentActivity.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <AreaChart data={enrollmentActivity}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                <XAxis
+                  dataKey="date"
+                  stroke="#9ca3af"
+                  fontSize={12}
+                  tickFormatter={(value) => value.slice(5)}
+                />
+                <YAxis stroke="#9ca3af" fontSize={12} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1f2937',
+                    border: '1px solid #374151',
+                    borderRadius: '8px',
+                    color: '#f9fafb',
+                  }}
+                  labelFormatter={(label) => `Date: ${label}`}
+                />
+                <Legend />
+                <Area
+                  type="monotone"
+                  dataKey="enrollments"
+                  name="Enrollments"
+                  stroke={CHART_COLORS.orange}
+                  fill={CHART_COLORS.orange}
+                  fillOpacity={0.3}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[280px] text-gray-500 dark:text-gray-400">
+              No enrollment activity data available
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Users by Role */}

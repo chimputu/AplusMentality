@@ -2,46 +2,25 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-
-interface University {
-  id: string;
-  name: string;
-  code: string;
-  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
-  programmes: Programme[];
-}
-
-interface Programme {
-  id: string;
-  name: string;
-  shortName: string | null;
-}
-
-interface Course {
-  id: string;
-  code: string;
-  title: string;
-}
+import { InstitutionSelect } from '@/components/ui/selects/institution-select';
+import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
+import { CourseSelect } from '@/components/ui/selects/course-select';
 
 interface SlideFormProps {
   initialData?: any;
   isEditing?: boolean;
-  universities?: University[];
 }
 
-export default function LectureSlideForm({ initialData, isEditing = false, universities: initialUniversities }: SlideFormProps) {
+export default function LectureSlideForm({ initialData, isEditing = false }: SlideFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
   // Academic scoping
-  const [universities, setUniversities] = useState<University[]>(initialUniversities || []);
   const [universityId, setUniversityId] = useState('');
-  const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeId, setProgrammeId] = useState('');
   const [year, setYear] = useState(1);
   const [period, setPeriod] = useState('');
-  const [courses, setCourses] = useState<Course[]>([]);
   const [courseMode, setCourseMode] = useState<'existing' | 'new'>('new');
   const [courseId, setCourseId] = useState('');
   const [newCourseCode, setNewCourseCode] = useState('');
@@ -57,79 +36,30 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
     category: initialData?.category || '',
   });
 
-  // Load universities server-side passed as props, fallback to client-side fetch
-  useEffect(() => {
-    if (universities.length > 0) return; // Already loaded from server
-    async function loadUniversities() {
-      try {
-        const res = await fetch('/api/admin/universities');
-        if (res.ok) {
-          const data = await res.json();
-          setUniversities(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
-        }
-      } catch {
-        console.error('Failed to load universities');
-      }
-    }
-    loadUniversities();
-  }, [universities.length]);
-
-  // Load programmes when university changes
+  // Load academic system for period options
+  const [academicSystem, setAcademicSystem] = useState<'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY' | null>(null);
   useEffect(() => {
     if (!universityId) {
-      setProgrammes([]);
+      setAcademicSystem(null);
+      setPeriod('');
       return;
     }
-    async function loadProgrammes() {
-      try {
-        // If universityId starts with 'inst-', it's an Institution record — use institutionId param
-        const isInstitution = universityId.startsWith('inst-');
-        const actualId = isInstitution ? universityId.slice(5) : universityId;
-        const param = isInstitution ? 'institutionId' : 'universityId';
-        const res = await fetch(`/api/admin/programmes?${param}=${actualId}`);
-        if (res.ok) {
-          const data = await res.json();
-          setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
+    fetch(`/api/institutions/picker`)
+      .then((res) => res.json())
+      .then((json) => {
+        const data = json.data || [];
+        const uni = data.find((u: any) => u.id === universityId);
+        if (uni) {
+          setAcademicSystem(uni.academicSystem || 'SEMESTERLY');
         }
-      } catch {
-        console.error('Failed to load programmes');
-      }
-    }
-    loadProgrammes();
+      })
+      .catch(() => setAcademicSystem('SEMESTERLY'));
   }, [universityId]);
 
-  // Load courses when filters change
-  useEffect(() => {
-    if (courseMode !== 'existing' || !universityId || !programmeId) {
-      setCourses([]);
-      return;
-    }
-    async function loadCourses() {
-      try {
-        const params = new URLSearchParams({
-          universityId,
-          programmeId,
-          year: String(year),
-          period: period || '',
-        });
-        const res = await fetch(`/api/courses?${params}`);
-        if (res.ok) {
-          const data = await res.json();
-          setCourses(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
-        }
-      } catch {
-        console.error('Failed to load courses');
-      }
-    }
-    loadCourses();
-  }, [universityId, programmeId, year, period, courseMode]);
-
-  // Get period options based on selected university's academic system
+  // Get period options based on academic system
   const getPeriodOptions = () => {
-    const uni = universities.find((u) => u.id === universityId);
-    if (!uni) return [];
-
-    switch (uni.academicSystem) {
+    if (!academicSystem) return [];
+    switch (academicSystem) {
       case 'YEARLY':
         return [{ value: '', label: 'Full Year' }];
       case 'SEMESTERLY':
@@ -335,47 +265,20 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
       <div className="border-t border-border pt-4">
         <h3 className="text-sm font-medium mb-3">Academic Scope *</h3>
 
-        {/* University */}
-        <div className="mb-3">
-          <label className="block text-sm font-medium">University *</label>
-          <select
-            value={universityId}
-            onChange={(e) => {
-              setUniversityId(e.target.value);
-              setProgrammes([]);
-              setProgrammeId('');
-              setPeriod('');
-            }}
-            required
-            className="w-full border rounded-lg px-4 py-2"
-          >
-            <option value="">Select university</option>
-            {universities.map((uni) => (
-              <option key={uni.id} value={uni.id}>
-                {uni.name} ({uni.code})
-              </option>
-            ))}
-          </select>
-        </div>
+        <InstitutionSelect
+          value={universityId}
+          onChange={(v) => {
+            setUniversityId(v);
+            setProgrammeId('');
+            setPeriod('');
+          }}
+        />
 
-        {/* Programme */}
-        <div className="mb-3">
-          <label className="block text-sm font-medium">Programme *</label>
-          <select
-            value={programmeId}
-            onChange={(e) => setProgrammeId(e.target.value)}
-            required
-            disabled={!universityId}
-            className="w-full border rounded-lg px-4 py-2 disabled:opacity-50"
-          >
-            <option value="">Select programme</option>
-            {programmes.map((prog) => (
-              <option key={prog.id} value={prog.id}>
-                {prog.shortName || prog.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <ProgrammeSelect
+          institutionId={universityId || undefined}
+          value={programmeId}
+          onChange={setProgrammeId}
+        />
 
         {/* Year */}
         <div className="mb-3">
@@ -444,20 +347,14 @@ export default function LectureSlideForm({ initialData, isEditing = false, unive
         </div>
 
         {courseMode === 'existing' ? (
-          <select
+          <CourseSelect
+            programmeId={programmeId || undefined}
+            universityId={universityId || undefined}
+            year={year}
+            period={period || undefined}
             value={courseId}
-            onChange={(e) => setCourseId(e.target.value)}
-            required
-            disabled={!programmeId}
-            className="w-full border rounded-lg px-4 py-2 disabled:opacity-50"
-          >
-            <option value="">Select course</option>
-            {courses.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.code} — {c.title}
-              </option>
-            ))}
-          </select>
+            onChange={setCourseId}
+          />
         ) : (
           <div className="space-y-3">
             <div>

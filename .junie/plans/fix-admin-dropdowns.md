@@ -169,20 +169,20 @@ Fix the search bar visibility on mobile and update all typed wrappers to use the
 - Update `components/ui/selects/question-select.tsx` to parse `{ data }` from API response
 - Add missing wrappers: `branch-select.tsx` and `student-select.tsx`
 
-### * Step 4: Migrate tutor and programme forms
+### ✓ Step 4: Migrate tutor and programme forms
 Replace server-side props pattern with shared dropdown wrappers in tutor and programme forms.
 - Migrate `app/(dashboard)/admin/tutors/new/page.tsx` — remove server-side Prisma fetch, pass no props
 - Migrate `app/(dashboard)/admin/tutors/new/_components/new-tutor-form.tsx` — replace native `<select>` dropdowns with `<InstitutionSelect />`, `<ProgrammeSelect />`, `<BranchSelect />` and use `<DataSelect>` for courses
 - Migrate `app/(dashboard)/admin/programmes/new/page.tsx` — remove server-side fetch
 - Migrate `app/(dashboard)/admin/programmes/new/_components/new-programme-form.tsx` — replace native `<select>` with `<InstitutionSelect />` and `<FacultySelect />`
 
-###   Step 5: Migrate video upload form
+### ✓ Step 5: Migrate video upload form
 Replace inline fetch logic with shared dropdown wrappers in the video upload form.
 - Migrate `components/VideoUploadForm.tsx` — replace inline `fetch()` calls and `<select>` dropdowns with `<InstitutionSelect />`, `<ProgrammeSelect />`, and `<CourseSelect />`
 - Remove `universities` prop and all related `useEffect` fetch logic
 - Keep the academic scoping UI (year, period, course mode) but use the shared components for entity selection
 
-###   Step 6: Migrate remaining admin forms
+### ✓ Step 6: Migrate remaining admin forms
 Migrate all remaining admin forms to use shared dropdown wrappers.
 - Migrate `app/(dashboard)/admin/assessments/new/page.tsx` — replace inline `fetchCourses` with `<CourseSelect />`
 - Migrate `app/(dashboard)/admin/lecture-slides/create/page.tsx` — use `<CourseSelect />`

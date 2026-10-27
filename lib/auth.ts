@@ -3,6 +3,15 @@ import { redirect } from 'next/navigation';
 import { prisma } from './prisma';
 import { withRetry } from './retry';
 
+// Map Prisma roles to default dashboard paths
+const ROLE_TO_DEFAULT_DASHBOARD: Record<string, string> = {
+  STUDENT: '/student',
+  TUTOR: '/tutor',
+  LECTURER: '/lecturer',
+  ADMIN: '/admin',
+  SUPER_ADMIN: '/admin',
+};
+
 export async function requireAuth(allowedRoles?: string[]) {
   const { userId } = await auth();
 
@@ -30,7 +39,9 @@ export async function requireAuth(allowedRoles?: string[]) {
     const role = user.role;
     if (allowedRoles && !allowedRoles.includes(role)) {
       console.warn('[requireAuth] ❌ Role mismatch: clerkId=%s has role=%s, required=%s', userId, role, allowedRoles.join(', '));
-      redirect('/unauthorized?reason=role_mismatch&detail=' + encodeURIComponent(`Your role is ${role} but this page requires ${allowedRoles.join(', ')}`));
+      // Redirect to the user's default dashboard based on their Prisma role
+      const defaultDashboard = ROLE_TO_DEFAULT_DASHBOARD[role] || '/student';
+      redirect(defaultDashboard);
     }
     return { userId, role, user };
   }
@@ -138,10 +149,10 @@ export async function requireAuth(allowedRoles?: string[]) {
   }
 
   const role = user.role;
-
   if (allowedRoles && !allowedRoles.includes(role)) {
     console.warn('[requireAuth] ❌ Role mismatch (after create): clerkId=%s has role=%s, required=%s', userId, role, allowedRoles.join(', '));
-    redirect('/unauthorized?reason=role_mismatch&detail=' + encodeURIComponent(`Your role is ${role} but this page requires ${allowedRoles.join(', ')}`));
+    const defaultDashboard = ROLE_TO_DEFAULT_DASHBOARD[role] || '/student';
+    redirect(defaultDashboard);
   }
 
   return { userId, role, user };

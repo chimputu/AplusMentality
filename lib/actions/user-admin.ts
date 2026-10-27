@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { Role } from '../../generated/prisma/client';
 import { clerkClient } from '@clerk/nextjs/server';
-import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
+import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK, addUserToClerkOrg } from '@/lib/clerk-org';
 
 // ============================================
 // Internal Helpers
@@ -39,6 +39,14 @@ const reassignUserAcademicSchema = z.object({
   programmeId: z.string().optional(),
   levelId: z.string().optional(),
   periodId: z.string().optional(),
+  branchId: z.string().optional(),
+});
+
+const joinUniversitySchema = z.object({
+  slug: z.string().min(1),
+  programmeId: z.string().optional(),
+  year: z.coerce.number().int().min(1).max(10).optional(),
+  period: z.string().optional(),
   branchId: z.string().optional(),
 });
 
@@ -275,4 +283,162 @@ export async function deleteUser(id: string) {
 
   revalidatePath('/admin/users');
   return { success: true };
+}
+
+/**
+ * Magic Join Link Server Action — handles the full join flow with Clerk double-write.
+ *
+ * 1. Finds the Organization (Institution or University) by its join slug.
+ * 2. **Clerk Write:** Adds the user to the Clerk organization as `org:member`.
+ * 3. **Prisma Write:** Updates the User with academic data and marks as onboarded.
+ * 4. Returns success/error; the caller redirects to `/student`.
+ *
+ * Graceful degradation: Prisma write always succeeds even if Clerk fails.
+ */
+export async function joinUniversity(rawInput: unknown) {
+  const { userId: clerkUserId } = await auth();
+  if (!clerkUserId) {
+    return { error: 'You must be logged in to join.' };
+  }
+
+  const input = joinUniversitySchema.parse(rawInput);
+
+  // Find the organization by slug — check Institution first, then University
+  const institution = await prisma.institution.findUnique({
+    where: { slug: input.slug },
+    select: { id: true, name: true, clerkOrgId: true },
+  });
+
+  const university = await prisma.university.findUnique({
+    where: { joinSlug: input.slug },
+    select: { id: true, name: true },
+  });
+
+  let orgType: 'institution' | 'university' | null = null;
+  let orgId: string;
+  let clerkOrgId: string | null = null;
+  let orgName: string;
+
+  if (institution) {
+    orgType = 'institution';
+    orgId = institution.id;
+    clerkOrgId = institution.clerkOrgId;
+    orgName = institution.name;
+  } else if (university) {
+    orgType = 'university';
+    orgId = university.id;
+    orgName = university.name;
+  } else {
+    return { error: 'Organization not found. The join link may be invalid.' };
+  }
+
+  // Find or create the Prisma user record
+  let user = await prisma.user.findUnique({
+    where: { clerkId: clerkUserId },
+  });
+
+  if (!user) {
+    // User doesn't exist in Prisma yet — create a minimal record
+    const clerkUser = await (await clerkClient()).users.getUser(clerkUserId);
+    user = await prisma.user.create({
+      data: {
+        clerkId: clerkUserId,
+        email: clerkUser.primaryEmailAddress?.emailAddress || clerkUser.id,
+        firstName: clerkUser.firstName,
+        lastName: clerkUser.lastName,
+        name: clerkUser.fullName,
+        imageUrl: clerkUser.imageUrl,
+      },
+    });
+  }
+
+  // Build the Prisma update data
+  const updateData: any = {
+    role: 'STUDENT',
+    onboarded: true,
+  };
+
+  if (orgType === 'institution') {
+    updateData.institutionId = orgId;
+    updateData.universityId = null;
+  } else {
+    updateData.universityId = orgId;
+    updateData.institutionId = null;
+  }
+
+  if (input.programmeId) updateData.programmeId = input.programmeId;
+  if (input.year) updateData.year = input.year;
+  if (input.period) updateData.period = input.period;
+  if (input.branchId) updateData.branchId = input.branchId;
+
+  // Also update clerkOrgId on the user if available
+  if (clerkOrgId) {
+    updateData.clerkOrgId = clerkOrgId;
+    updateData.clerkOrgRole = 'org:member';
+  }
+
+  // --- Clerk Write: Add user to Clerk organization ---
+  if (clerkOrgId) {
+    const clerkResult = await addUserToClerkOrg(clerkUserId, clerkOrgId, 'org:member');
+    if (!clerkResult.success) {
+      // Log but don't fail — Prisma write is the source of truth
+      console.warn(
+        `[joinUniversity] Clerk org membership failed for ${clerkUserId} in ${clerkOrgId}:`,
+        clerkResult.error,
+      );
+    }
+  }
+
+  // --- Prisma Write: Always commit ---
+  await prisma.user.update({
+    where: { id: user.id },
+    data: updateData,
+  });
+
+  revalidatePath('/student');
+  return { success: true, orgType, orgName };
+}
+
+/**
+ * Sync a user's Prisma role to their Clerk org membership.
+ * Useful when a role was changed outside the app (e.g., Prisma Studio).
+ */
+export async function syncUserRoleToClerk(clerkId: string) {
+  await requireAdmin();
+
+  const user = await prisma.user.findUnique({
+    where: { clerkId },
+    include: {
+      institution: { select: { clerkOrgId: true } },
+    },
+  });
+
+  if (!user) throw new Error('User not found');
+
+  const clerkOrgRole = APP_ROLE_TO_CLERK[user.role];
+  if (!clerkOrgRole) {
+    throw new Error(`No Clerk role mapping for ${user.role}`);
+  }
+
+  let synced = false;
+
+  // Sync to institution org
+  if (user.institution?.clerkOrgId) {
+    const result = await updateUserClerkOrgRole(
+      user.clerkId,
+      user.institution.clerkOrgId,
+      clerkOrgRole,
+    );
+    if (result.success) synced = true;
+  }
+
+  // Sync to user's active org if different
+  const activeOrgId = user.clerkOrgId;
+  if (activeOrgId && activeOrgId !== user.institution?.clerkOrgId) {
+    const result = await updateUserClerkOrgRole(user.clerkId, activeOrgId, clerkOrgRole);
+    if (result.success) synced = true;
+  }
+
+  // If no orgs were found, still return success (user may not have an org yet)
+  return { success: true, role: user.role, synced };
 }
