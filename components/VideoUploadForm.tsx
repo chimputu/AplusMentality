@@ -12,11 +12,17 @@ interface Course {
   title: string;
 }
 
-interface VideoUploadFormProps {
-  // No props needed — all dropdowns are self-fetching
+interface University {
+  id: string;
+  name: string;
+  programmes?: Array<{ id: string; name: string }>;
 }
 
-export default function VideoUploadForm() {
+interface VideoUploadFormProps {
+  universities?: University[];
+}
+
+export default function VideoUploadForm({ universities }: VideoUploadFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
