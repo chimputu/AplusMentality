@@ -15,8 +15,6 @@ const publicRoutePatterns = [
   '/download',
   '/api/webhooks',
   '/api/health',
-  '/api/debug',
-  '/api/fix-user',
   '/api/user/role',
   '/favicon.ico',
   '/manifest.json',

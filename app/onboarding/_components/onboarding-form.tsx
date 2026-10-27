@@ -1,29 +1,12 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, GraduationCap, Lock } from 'lucide-react';
 import { joinUniversity } from '@/lib/actions/user-admin';
-
-interface Branch {
-  id: string;
-  name: string;
-}
-
-interface Faculty {
-  id: string;
-  name: string;
-  code: string;
-}
-
-interface Programme {
-  id: string;
-  name: string;
-  code: string | null;
-  facultyId: string | null;
-  faculty: Faculty | null;
-  branches: Branch[];
-}
+import { InstitutionSelect } from '@/components/ui/selects/institution-select';
+import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
+import { BranchSelect } from '@/components/ui/selects/branch-select';
 
 interface AcademicLevel {
   id: string;
@@ -31,21 +14,19 @@ interface AcademicLevel {
   order: number;
 }
 
-interface Institution {
+interface AcademicPeriod {
+  id: string;
+  name: string;
+  order: number;
+}
+
+interface InstitutionWithDetails {
   id: string;
   name: string;
   slug: string;
-  programmes: Programme[];
   levels: AcademicLevel[];
-  hasFaculties: boolean;
+  periods: AcademicPeriod[];
   hasBranches: boolean;
-}
-
-interface University {
-  id: string;
-  name: string;
-  code: string;
-  programmes: Programme[];
 }
 
 interface User {
@@ -57,86 +38,98 @@ interface User {
 
 interface OnboardingFormProps {
   user: User;
-  institutions: Institution[];
-  universities: University[];
-  lockedInstitution?: Institution | University;
-  lockedType?: 'institution' | 'university';
+  lockedInstitutionId?: string;
+  lockedInstitutionName?: string;
+  lockedInstitutionDetails?: InstitutionWithDetails;
 }
 
-export default function OnboardingForm({ user, institutions, universities, lockedInstitution, lockedType }: OnboardingFormProps) {
+export default function OnboardingForm({
+  user,
+  lockedInstitutionId,
+  lockedInstitutionName,
+  lockedInstitutionDetails,
+}: OnboardingFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  // If locked via join link, pre-fill the institution ID and type
-  const [institutionId, setInstitutionId] = useState(lockedInstitution?.id || '');
+  const [institutionId, setInstitutionId] = useState(lockedInstitutionId || '');
   const [programmeId, setProgrammeId] = useState('');
   const [branchId, setBranchId] = useState('');
   const [year, setYear] = useState('');
   const [period, setPeriod] = useState('');
 
-  const isLocked = !!lockedInstitution;
+  // Dynamic data fetched on the client
+  const [levels, setLevels] = useState<AcademicLevel[]>([]);
+  const [periods, setPeriods] = useState<AcademicPeriod[]>([]);
+  const [hasBranches, setHasBranches] = useState(false);
+  const [loadingMeta, setLoadingMeta] = useState(false);
 
-  // Determine whether the selected school is an institution or a university
-  const selectedInstitution = institutions.find((i) => i.id === institutionId);
-  const selectedUniversity = universities.find((u) => u.id === institutionId);
-  const isUniversity = lockedType === 'university' || !!selectedUniversity;
+  const isLocked = !!lockedInstitutionId;
 
-  // Get programmes from the locked institution or the selected school
-  const schoolProgrammes = lockedInstitution?.programmes || selectedInstitution?.programmes || selectedUniversity?.programmes || [];
-  const selectedProgramme = schoolProgrammes.find((p) => p.id === programmeId);
-  const programmeBranches = selectedProgramme?.branches || [];
-  const institutionLevels = lockedInstitution && 'levels' in lockedInstitution ? (lockedInstitution as Institution).levels : selectedInstitution?.levels || [];
+  // Fetch institution metadata (levels, periods, hasBranches) when institution changes
+  useEffect(() => {
+    if (!institutionId) {
+      setLevels([]);
+      setPeriods([]);
+      setHasBranches(false);
+      return;
+    }
 
-  // Combine institutions and universities into a single list for display
-  const allSchools = [
-    ...institutions.map((inst) => ({ id: inst.id, name: inst.name, type: 'institution' as const })),
-    ...universities.map((uni) => ({ id: uni.id, name: uni.name, type: 'university' as const })),
-  ].sort((a, b) => a.name.localeCompare(b.name));
+    // If locked, use preloaded details
+    if (isLocked && lockedInstitutionDetails) {
+      setLevels(lockedInstitutionDetails.levels || []);
+      setPeriods(lockedInstitutionDetails.periods || []);
+      setHasBranches(lockedInstitutionDetails.hasBranches || false);
+      return;
+    }
+
+    setLoadingMeta(true);
+    Promise.all([
+      fetch(`/api/admin/levels?institutionId=${institutionId}`).then((r) => r.json()).catch(() => ({ data: [] as AcademicLevel[] })),
+      fetch(`/api/admin/periods?institutionId=${institutionId}`).then((r) => r.json()).catch(() => ({ data: [] as AcademicPeriod[] })),
+      fetch(`/api/institutions/picker`).then((r) => r.json()).catch(() => ({ data: [] as any[] })),
+    ]).then(([levelsRes, periodsRes, institutionsRes]) => {
+      setLevels(levelsRes.data || []);
+      setPeriods(periodsRes.data || []);
+      const instData = institutionsRes.data || [];
+      const inst = instData.find((i: any) => i.id === institutionId);
+      setHasBranches(inst?.hasBranches || false);
+    }).finally(() => {
+      setLoadingMeta(false);
+    });
+  }, [institutionId, isLocked, lockedInstitutionDetails]);
+
+  // When programme changes, reset branch
+  const handleProgrammeChange = (value: string) => {
+    setProgrammeId(value);
+    setBranchId('');
+  };
+
+  // When institution changes, reset all children
+  const handleInstitutionChange = (value: string) => {
+    setInstitutionId(value);
+    setProgrammeId('');
+    setBranchId('');
+    setYear('');
+    setPeriod('');
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     startTransition(async () => {
       try {
-        // If this is a magic link flow (locked institution), use joinUniversity for double-write
-        if (isLocked && lockedInstitution) {
-          const result = await joinUniversity({
-            slug: lockedType === 'university'
-              ? (lockedInstitution as any).joinSlug || ''
-              : (lockedInstitution as any).slug || '',
-            programmeId: programmeId || undefined,
-            year: year ? parseInt(year) : undefined,
-            period: period || undefined,
-            branchId: branchId || undefined,
-          });
-
-          if (result.error) {
-            throw new Error(result.error);
-          }
-
-          router.refresh();
-          window.location.href = '/student';
-          return;
-        }
-
         // Standard onboarding flow — use the existing API
         const data: any = {
           onboarded: true,
+          institutionId: institutionId || null,
+          universityId: null,
         };
 
-        if (institutionId) {
-          if (isUniversity) {
-            data.universityId = institutionId;
-            data.institutionId = null;
-          } else {
-            data.institutionId = institutionId;
-            data.universityId = null;
-          }
-          if (programmeId) data.programmeId = programmeId;
-          if (branchId) data.branchId = branchId;
-          if (year) data.year = parseInt(year);
-          if (period) data.period = period;
-        }
+        if (programmeId) data.programmeId = programmeId;
+        if (branchId) data.branchId = branchId;
+        if (year) data.year = parseInt(year);
+        if (period) data.period = period;
 
         const res = await fetch('/api/users/me', {
           method: 'PATCH',
@@ -163,7 +156,7 @@ export default function OnboardingForm({ user, institutions, universities, locke
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* School / Institution */}
+        {/* Institution */}
         {isLocked ? (
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
@@ -171,143 +164,103 @@ export default function OnboardingForm({ user, institutions, universities, locke
             </label>
             <div className="w-full border border-blue-300 dark:border-blue-700 rounded-lg px-3 py-2.5 bg-blue-50 dark:bg-blue-900/20 text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <Lock className="w-4 h-4 text-blue-500 shrink-0" />
-              <span className="font-medium">{lockedInstitution!.name}</span>
+              <span className="font-medium">{lockedInstitutionName}</span>
             </div>
             <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
               This institution was pre-selected by your join link and cannot be changed.
             </p>
           </div>
         ) : (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Institution <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={institutionId}
-              onChange={(e) => {
-                setInstitutionId(e.target.value);
-                setProgrammeId('');
-                setBranchId('');
-                setYear('');
-                setPeriod('');
-              }}
-              required
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-base"
-            >
-              <option value="">Select your institution</option>
-              {allSchools.map((school) => (
-                <option key={school.id} value={school.id}>
-                  {school.name}
-                </option>
-              ))}
-            </select>
-            {allSchools.length === 0 && (
-              <div className="mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
-                <p className="text-amber-700 dark:text-amber-400">
-                  No institutions available yet. Please contact an admin to set up your institution.
-                </p>
-              </div>
-            )}
-          </div>
+          <InstitutionSelect
+            value={institutionId}
+            onChange={handleInstitutionChange}
+            label="Institution"
+          />
         )}
 
         {/* Programme */}
-        {institutionId && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Programme
-            </label>
-            {schoolProgrammes.length > 0 ? (
-              <select
-                value={programmeId}
-                onChange={(e) => {
-                  setProgrammeId(e.target.value);
-                  setBranchId('');
-                }}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-base"
-              >
-                <option value="">Select your programme</option>
-                {schoolProgrammes.map((prog) => (
-                  <option key={prog.id} value={prog.id}>
-                    {prog.name}
-                    {prog.faculty && ` — ${prog.faculty.name}`}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
-                <p className="text-amber-700 dark:text-amber-400">
-                  No programmes available for this institution yet. Please contact an admin.
-                </p>
-              </div>
-            )}
-          </div>
+        <ProgrammeSelect
+          institutionId={institutionId || undefined}
+          value={programmeId}
+          onChange={handleProgrammeChange}
+          label="Programme"
+        />
+
+        {/* Branch (only if institution has branches) */}
+        {hasBranches && (
+          <BranchSelect
+            programmeId={programmeId || undefined}
+            value={branchId}
+            onChange={setBranchId}
+            label="Branch"
+          />
         )}
 
-        {/* Branch */}
-        {programmeId && programmeBranches.length > 0 && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Branch
-            </label>
-            <select
-              value={branchId}
-              onChange={(e) => setBranchId(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-base"
-            >
-              <option value="">Select your branch</option>
-              {programmeBranches.map((br) => (
-                <option key={br.id} value={br.id}>
-                  {br.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {/* Year/Level */}
+        {/* Year/Level — dynamic dropdown */}
         {institutionId && (
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Academic Level
             </label>
-            {institutionLevels.length > 0 ? (
+            {loadingMeta ? (
+              <div className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 text-base flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading levels...
+              </div>
+            ) : levels.length > 0 ? (
               <select
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
                 className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-base"
               >
                 <option value="">Select your level</option>
-                {institutionLevels.map((level) => (
+                {levels.map((level) => (
                   <option key={level.id} value={level.order}>
                     {level.name}
                   </option>
                 ))}
               </select>
             ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                No academic levels defined yet.
-              </p>
+              <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
+                <p className="text-amber-700 dark:text-amber-400">
+                  No academic levels defined for this institution yet.
+                </p>
+              </div>
             )}
           </div>
         )}
 
-        {/* Period */}
+        {/* Period — dynamic dropdown */}
         {institutionId && (
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Period
             </label>
-            <select
-              value={period}
-              onChange={(e) => setPeriod(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-base"
-            >
-              <option value="">Select your period</option>
-              <option value="1">Period 1</option>
-              <option value="2">Period 2</option>
-              <option value="3">Period 3</option>
-            </select>
+            {loadingMeta ? (
+              <div className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 text-base flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading periods...
+              </div>
+            ) : periods.length > 0 ? (
+              <select
+                value={period}
+                onChange={(e) => setPeriod(e.target.value)}
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-base"
+              >
+                <option value="">Select your period</option>
+                {periods.map((p) => (
+                  <option key={p.id} value={String(p.order)}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
+                <p className="text-amber-700 dark:text-amber-400">
+                  No periods defined for this institution yet.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

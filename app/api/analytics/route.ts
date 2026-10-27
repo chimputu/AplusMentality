@@ -52,9 +52,9 @@ export async function GET() {
       }),
       // Enrollments grouped by date
       prisma.enrollment.groupBy({
-        by: ['createdAt'],
-        _count: { createdAt: true },
-        where: { createdAt: { gte: last30Days } },
+        by: ['enrolledAt'],
+        _count: { enrolledAt: true },
+        where: { enrolledAt: { gte: last30Days } },
       }),
       // Top courses by enrollment count
       prisma.course.findMany({
@@ -82,8 +82,8 @@ export async function GET() {
       const date = new Date(now.getTime() - (6 - i) * 24 * 60 * 60 * 1000);
       const dateStr = date.toISOString().split('T')[0];
       const dayEnrollments = enrollmentActivity
-        .filter((e) => e.createdAt.toISOString().split('T')[0] === dateStr)
-        .reduce((sum, e) => sum + e._count.createdAt, 0);
+        .filter((e) => e.enrolledAt.toISOString().split('T')[0] === dateStr)
+        .reduce((sum, e) => sum + e._count.enrolledAt, 0);
       return { date: dateStr, enrollments: dayEnrollments };
     });
 
