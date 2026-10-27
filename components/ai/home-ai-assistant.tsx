@@ -67,26 +67,28 @@ export function HomeAIAssistant() {
     if (!isLoaded) return;
     const isLoggedInNow = isLoaded && isSignedIn;
 
-    // Restore last conversation from localStorage
-    const saved = localStorage.getItem(LAST_CONVO_KEY);
-    if (saved && isValidConvoId(saved)) {
-      setConversationId(saved);
-      // Load history
-      (async () => {
-        try {
-          const convo = await getConversation(saved);
-          if (convo && convo.messages && convo.messages.length) {
-            const msgs: Message[] = convo.messages.map((m: any) => ({
-              id: m.id,
-              role: m.role,
-              content: m.content,
-            }));
-            setMessages(msgs);
+    // Restore last conversation from localStorage (logged-in users only)
+    if (isLoggedInNow) {
+      const saved = localStorage.getItem(LAST_CONVO_KEY);
+      if (saved && isValidConvoId(saved)) {
+        setConversationId(saved);
+        // Load history
+        (async () => {
+          try {
+            const convo = await getConversation(saved);
+            if (convo && convo.messages && convo.messages.length) {
+              const msgs: Message[] = convo.messages.map((m: any) => ({
+                id: m.id,
+                role: m.role,
+                content: m.content,
+              }));
+              setMessages(msgs);
+            }
+          } catch {
+            // Silently fail — will create new conversation on next send
           }
-        } catch {
-          // Silently fail — will create new conversation on next send
-        }
-      })();
+        })();
+      }
     }
 
     // Send greeting
@@ -113,17 +115,19 @@ export function HomeAIAssistant() {
     try {
       let convoId = conversationId;
 
-      // Create conversation if needed
-      if (!convoId || !isValidConvoId(convoId)) {
-        const result = await createConversation({ title: text.slice(0, 100) });
-        if (result && result.id) {
-          convoId = result.id;
-          setConversationId(convoId);
-          localStorage.setItem(LAST_CONVO_KEY, convoId);
+      // Create conversation if needed (logged-in users only)
+      if (isLoggedIn) {
+        if (!convoId || !isValidConvoId(convoId)) {
+          const result = await createConversation({ title: text.slice(0, 100) });
+          if (result && result.id) {
+            convoId = result.id;
+            setConversationId(convoId);
+            localStorage.setItem(LAST_CONVO_KEY, convoId);
+          }
         }
       }
 
-      // Send message via API
+      // Send message via API (works for both anonymous and logged-in users)
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -159,8 +163,8 @@ export function HomeAIAssistant() {
         );
       }
 
-      // Save to DB
-      if (convoId) {
+      // Save to DB (logged-in users only)
+      if (isLoggedIn && convoId) {
         await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
