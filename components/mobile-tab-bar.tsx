@@ -2,12 +2,12 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, PlayCircle, FileText, Search, User } from 'lucide-react';
+import { Home, PlayCircle, GraduationCap, Search, User } from 'lucide-react';
 
 const tabs = [
   { href: '/student', label: 'Home', icon: Home },
   { href: '/student/videos', label: 'Videos', icon: PlayCircle },
-  { href: '/student/materials', label: 'Materials', icon: FileText },
+  { href: '/student/courses', label: 'Course', icon: GraduationCap },
   { href: '/search', label: 'Search', icon: Search },
   { href: '/student/profile', label: 'Profile', icon: User },
 ];
@@ -17,17 +17,17 @@ export default function MobileTabBar() {
 
   const isActive = (href: string) => {
     if (href === '/student') {
-      return pathname === '/student' || pathname === '/student/';
+      return pathname === '/student' || pathname === '/student/' || pathname.startsWith('/student/');
     }
     return pathname.startsWith(href);
   };
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
+      className="fixed bottom-0 left-0 right-0 z-[60] md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      <div className="flex items-center justify-around h-16">
+      <div className="flex items-center justify-around h-16" style={{ height: 'max(4rem, calc(4rem + env(safe-area-inset-bottom, 0px)))' }}>
         {tabs.map((tab) => {
           const active = isActive(tab.href);
           const Icon = tab.icon;
@@ -35,7 +35,7 @@ export default function MobileTabBar() {
             <Link
               key={tab.href}
               href={tab.href}
-              className={`flex flex-col items-center justify-center gap-0.5 w-full h-full min-h-[48px] transition-colors ${
+              className={`flex flex-col items-center justify-center gap-0.5 w-full h-full min-h-[48px] min-w-[48px] transition-colors ${
                 active
                   ? 'text-blue-600 dark:text-blue-400'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
