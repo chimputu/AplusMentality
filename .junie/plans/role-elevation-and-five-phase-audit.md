@@ -184,11 +184,10 @@ Add `isSuperAdmin` boolean to OrgScope so server actions can bypass org scoping 
 - Set `isSuperAdmin` from the user's Prisma role (`user.role === 'SUPER_ADMIN'`).
 - Update `buildCourseScopeWhere()` to skip institution scoping when `isSuperAdmin` is true.
 
-### ✓ Step 8: Create assignTutorToCourse server action
+### ✓ Step 8: Create assignTutorToCourse server action (later removed as dead code)
 New server action for admins to assign a tutor to a course, with full org scoping.
-- Created `lib/actions/course-tutor.ts` with `assignTutorToCourse(courseId, tutorUserId)`.
-- Security: Only `org:admin` or `SUPER_ADMIN` can call this.
-- Verifies the course belongs to the admin's institution via `getCourseInstitutionId()`.
+- ~~Created `lib/actions/course-tutor.ts`~~ — **removed as dead code** (no UI ever called these actions).
+- Would need to be recreated if a tutor-course assignment UI is built.
 - Verifies the tutor user belongs to the same institution.
 - Creates a `TutorSpecialty` record linking the tutor to the course.
 - Also includes `removeTutorFromCourse`, `listCourseTutors`, and `updateTutorSpecialty` actions.

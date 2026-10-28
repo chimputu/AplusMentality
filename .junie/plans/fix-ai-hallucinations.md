@@ -202,9 +202,9 @@ All pages are Server Components (no `'use client'` unless interactivity is neede
    - If logged in: "Explore courses →" CTA to `/explore/[slug]`
    - If not logged in: "Sign up to explore" CTA
 
-### Exploration Logging (`lib/analytics/exploration.ts`)
+### Exploration Logging (~~`lib/analytics/exploration.ts`~~ — **removed as dead code**, never used by any page)
 
-New file with `logExplorationView()` server function:
+Was planned as a new file with `logExplorationView()` server function, but was never integrated and later removed.
 - Creates `ExplorationLog` record
 - Wrapped in try/catch — never fails the request if logging fails
 - Called from each exploration page

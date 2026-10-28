@@ -388,8 +388,7 @@ export function AIAssistant({
       {/* Floating button — positioned higher on mobile to avoid tab bar overlap */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg flex items-center justify-center hover:opacity-90 transition active:scale-95"
-        style={{ marginBottom: 'env(safe-area-inset-bottom, 0px)' }}
+        className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-[55] w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg flex items-center justify-center hover:opacity-90 transition active:scale-95"
         aria-label="Open AI assistant"
       >
         {open ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}

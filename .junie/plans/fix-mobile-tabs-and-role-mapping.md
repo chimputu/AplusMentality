@@ -48,8 +48,8 @@ Two issues need fixing:
 - `isSuperAdmin` is derived from `user.role === 'SUPER_ADMIN'`
 - `buildCourseScopeWhere` bypasses institution scoping for super admins
 
-**assignTutorToCourse** (`lib/actions/course-tutor.ts`):
-- Already implemented with proper security: checks `requireAdminWithOrg`, verifies course belongs to admin's institution, verifies tutor belongs to same institution, SUPER_ADMIN bypasses scoping
+**assignTutorToCourse** (~~`lib/actions/course-tutor.ts`~~ — **removed as dead code**, never called from UI):
+- Was implemented with proper security, but the file was removed because no UI called these actions
 
 ### Proposed Changes
 
@@ -85,7 +85,7 @@ Two issues need fixing:
 
 #### 5. Update `assignTutorToCourse` to also set `Course.tutorId`
 
-**File:** `lib/actions/course-tutor.ts`
+**File:** ~~`lib/actions/course-tutor.ts`~~ (removed as dead code — would need to be recreated if tutor-course assignment UI is built)
 
 - After creating/updating `TutorSpecialty`, also update the `Course.tutorId` field to point to the assigned tutor
 - This provides a direct lookup for "which tutor teaches this course"
@@ -97,7 +97,7 @@ Modified:
   components/mobile-tab-bar.tsx       — z-index, active state, touch targets
   components/SimpleChat.tsx           — mobile z-index reduction
   prisma/schema.prisma                — add isSuperAdmin to User, tutorId to Course
-  lib/actions/course-tutor.ts         — update Course.tutorId in assignTutorToCourse
+  ~~lib/actions/course-tutor.ts~~         — **removed as dead code**, would need recreation if tutor-course assignment UI is built
   prisma/migrations/                  — new migration for schema changes
 ```
 
@@ -132,6 +132,6 @@ Add `isSuperAdmin` boolean to User, `tutorId` to Course, and update the server a
 - Add `isSuperAdmin Boolean @default(false)` to `User` model in `prisma/schema.prisma`
 - Add `tutorId String?` and `tutor Tutor?` relation to `Course` model
 - Add `primaryCourses Course[]` relation to `Tutor` model
-- Update `assignTutorToCourse` in `lib/actions/course-tutor.ts` to also set `Course.tutorId` when assigning
+- ~~Update `assignTutorToCourse` in `lib/actions/course-tutor.ts`~~ — file removed as dead code; would need recreation if tutor-course assignment UI is built
 - Generate and apply the Prisma migration
 - Verify `getOrgScope` returns the correct shape (already does — no changes needed)

@@ -479,9 +479,9 @@ Build the admin question bank: list page, create/edit form, and server actions f
 
 ### ✓ Step 4: 4. Assessment builder extension
 Extend existing admin assessment pages with question selection, reorder, and settings.
-- Create lib/validations/assessment.ts — Zod schemas
-- Create lib/actions/assessments.ts — server actions (create, update, delete, publish, add/remove/reorder questions)
-- Extend app/(dashboard)/admin/assessments/ with builder UI
+- ~~Create lib/validations/assessment.ts~~ — **removed as dead code** (validations done inline)
+- ✓ lib/actions/assessments.ts — server actions (create, update, delete, publish, add/remove/reorder questions)
+- ✓ app/(dashboard)/admin/assessments/ with builder UI
 - Create assessment builder with drag-drop (using existing patterns)
 - Add question picker dialog with search + filters
 - Run tsc + lint + build

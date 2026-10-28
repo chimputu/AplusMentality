@@ -286,7 +286,7 @@ The assessment engine is **substantially implemented**. Here's what's already in
 - ✅ `components/DashboardLayout.tsx` — sidebar with nav items (assessments already present)
 
 ### Validations
-- ✅ `lib/validations/assessment.ts` — Zod schemas for create/update/reorder
+- ❌ `lib/validations/assessment.ts` — Was removed as dead code (validations done inline). Schema references in this plan are outdated.
 
 ---
 
@@ -325,12 +325,11 @@ The assessment engine is **substantially implemented**. Here's what's already in
 - The API routes work correctly
 
 ### Gap 8: Offline Support
-- ✅ `lib/offline/assessment-queue.ts` — **created** with IndexedDB queue
-- ✅ `app/api/attempts/answer/route.ts` — **created** for offline sync
+- ❌ `lib/offline/assessment-queue.ts` — Was created but later removed as dead code (never wired to UI). Can be re-added when offline-first is needed.
 - ❌ Offline badge component — deferred
 
 ### Gap 9: Manual Grading Actions
-- ✅ `lib/actions/grading.ts` — **created** with gradeEssayAnswer, gradeAllAnswersInAttempt, getAttemptsNeedingGrading
+- ❌ `lib/actions/grading.ts` — Was created but later removed as dead code (grading page doesn't use these actions). Can be re-added when grading page is wired up.
 
 ### Gap 10: not-found.tsx Pages
-- ✅ Custom 404 pages created for admin/assessments, admin/questions, and student/assessments
+- ✅ Custom 404 pages created for admin/assessments, admin/questions, student/assessments, join, and root

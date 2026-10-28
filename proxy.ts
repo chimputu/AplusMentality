@@ -65,6 +65,13 @@ function getRouteRoleRequirement(pathname: string): string[] | null {
 
 export const proxy = clerkMiddleware(async (auth, request) => {
   const pathname = request.nextUrl.pathname;
+  const searchParams = request.nextUrl.searchParams;
+
+  // Let Clerk handshake URLs pass through without any redirect logic
+  // These are internal Clerk redirects (e.g., after sign-in) that need to complete
+  if (searchParams.has('__clerk_handshake')) {
+    return NextResponse.next();
+  }
 
   // Allow public routes without auth
   if (isPublicRoute(pathname)) {
@@ -136,8 +143,8 @@ export const config = {
   matcher: [
     // Clerk auto-proxy path — required for *.vercel.app domains
     '/(__clerk)(.*)',
-    // All non-static file routes
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // All non-static file routes, excluding public auth pages
+    '/((?!_next|sign-in|sign-up|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
     // API and tRPC routes
     '/(api|trpc)(.*)',
   ],

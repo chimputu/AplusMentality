@@ -41,7 +41,7 @@ sessionId: session-261025-171810-1pct
 
 ### ✓ Step 1: Create `middleware.ts` for Clerk auth + org role-based route protection
 
-### ✓ Step 2: Create `lib/auth/tenant-isolation.ts` with IDOR protection helpers
+### ✓ Step 2: Create `lib/auth/tenant-isolation.ts` with IDOR protection helpers (later removed as dead code — never integrated into API routes)
 
 ### ✓ Step 3: Verify middleware works with existing layout auth
 
@@ -150,7 +150,7 @@ Build the foundation for **multi-tenant data isolation** using Clerk Organizatio
 | `lib/auth/scope.ts` | `getScopeContext()` — returns university/year/period scope. **No org awareness.** |
 | `lib/auth.ts` | `requireAuth()` — checks user's Prisma role. **Does not check org membership.** |
 | `lib/clerk-org.ts` | `addUserToClerkOrg()`, `removeUserFromClerkOrg()`, `createClerkOrg()` — Clerk API helpers |
-| `lib/orgs/lookup.ts` | `getInstitutionByClerkOrgId()`, `getUserOrganizations()`, `isUserMemberOfOrg()`, `getUserOrgRole()` |
+| ~~`lib/orgs/lookup.ts`~~ | **Removed as dead code** — superseded by `lib/auth/org-scope.ts` |
 | `app/api/webhooks/clerk/route.ts` | Handles all org webhook events (created, updated, deleted, membership created/updated/deleted) |
 
 **Schema already supports multi-tenancy:**

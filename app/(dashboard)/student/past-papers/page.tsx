@@ -163,8 +163,8 @@ export default function StudentPastPapersPage() {
         </p>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3">
+      {/* Filters — horizontal scroll on mobile to prevent squishing */}
+      <div className="flex flex-nowrap gap-3 overflow-x-auto hide-scrollbar">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
