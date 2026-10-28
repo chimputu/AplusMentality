@@ -644,27 +644,27 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Navbar */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-16 flex items-center justify-between px-4 lg:px-6">
-        {/* Left Section - Logo */}
-        <div className="flex items-center space-x-4">
+      {/* Top Navbar — sticky on mobile, fixed on desktop */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-16 flex items-center justify-between px-4 lg:px-6" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+        {/* Left Section - Logo & Hamburger (mobile only) */}
+        <div className="flex items-center space-x-3 md:space-x-4">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 rounded-full hover:bg-muted transition"
+            className="md:hidden flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full hover:bg-muted transition"
             aria-label="Toggle mobile menu"
           >
             <Menu className="w-5 h-5 text-muted-foreground" />
           </button>
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
               <span className="text-white font-bold text-sm">A+</span>
             </div>
-            <span className="text-xl font-bold text-foreground hidden sm:block">
+            <span className="text-base md:text-xl font-bold text-foreground">
               Mentality
             </span>
           </Link>
           <div className="h-6 w-px border-border bg-border hidden lg:block" />
-          <h1 className="text-lg font-semibold text-foreground hidden lg:block">
+          <h1 className="text-sm md:text-lg font-semibold text-foreground hidden lg:block truncate max-w-[200px]">
             {navItems.find(item => item.href === pathname || (item.href.includes('#') && pathname === item.href.split('#')[0]))?.label || 'Dashboard'}
           </h1>
         </div>
@@ -997,22 +997,24 @@ export default function DashboardLayout({
           )}
         </div>
 
-        {/* Right Section */}
-        <div className="flex items-center space-x-2">
+        {/* Right Section — Profile icon visible on mobile, full controls on desktop */}
+        <div className="flex items-center space-x-1 md:space-x-2">
           <ThemeToggle />
           <NotificationBell role={role} />
-          <span className="text-sm text-muted-foreground hidden sm:block">
+          <span className="text-xs md:text-sm text-muted-foreground hidden md:block">
             {role === 'ADMIN' ? 'Admin' : role === 'TUTOR' ? 'Tutor' : role === 'LECTURER' ? 'Lecturer' : 'Student'}
           </span>
-          <UserButton
-            appearance={{
-              variables: {
-                colorPrimary: 'var(--primary)',
-                colorBackground: 'var(--card)',
-                colorForeground: 'var(--foreground)',
-              },
-            }}
-          />
+          <div className="min-w-[44px] min-h-[44px] flex items-center justify-center">
+            <UserButton
+              appearance={{
+                variables: {
+                  colorPrimary: 'var(--primary)',
+                  colorBackground: 'var(--card)',
+                  colorForeground: 'var(--foreground)',
+                },
+              }}
+            />
+          </div>
         </div>
       </header>
 
@@ -1147,15 +1149,13 @@ export default function DashboardLayout({
         </div>
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar — hidden on mobile, slide-in drawer when toggled; persistent on desktop */}
       <aside
         className={`
           fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] bg-card border-r border-border
           transition-all duration-300 ease-in-out
-          ${isCollapsed ? 'w-16' : 'w-64'}
-          lg:translate-x-0
-          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          overflow-y-auto
+          hidden md:block
+          ${isCollapsed ? 'md:w-16' : 'md:w-64'}
         `}
       >
         <div className="flex flex-col h-full">
@@ -1277,8 +1277,8 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main Content */}
-      <div className={`pt-16 pb-20 md:pb-0 transition-all duration-300 ${isCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      {/* Main Content — no sidebar margin on mobile, proper padding for bottom tab bar */}
+      <div className="pt-16 pb-20 md:pb-0 transition-all duration-300 md:ml-64">
         <main className="p-4 lg:p-8">
           {children}
         </main>
@@ -1287,12 +1287,54 @@ export default function DashboardLayout({
       {/* Mobile Bottom Tab Bar */}
       <MobileTabBar />
 
-      {/* Mobile Overlay */}
+      {/* Mobile Navigation Drawer Overlay */}
       {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 dark:bg-black/60 z-30 lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
+        <div className="fixed inset-0 z-40 md:hidden">
+          <div
+            className="absolute inset-0 bg-black/40 dark:bg-black/60"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <div className="absolute top-16 left-0 bottom-0 w-64 max-w-[80vw] bg-card border-r border-border overflow-y-auto shadow-2xl">
+            {/* Role Badge */}
+            <div className="px-4 py-3 border-b border-border">
+              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-muted text-foreground">
+                {roleLabel(role)}
+              </span>
+            </div>
+            {/* Mobile Nav Items */}
+            <nav className="p-2 space-y-1">
+              {Object.entries(groupedNavItems).map(([section, items]) => (
+                <div key={section} className="mb-3">
+                  <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    {section}
+                  </div>
+                  {items.map((item) => {
+                    const isActive = pathname === item.href ||
+                                    (item.href.includes('#') && pathname === item.href.split('#')[0]);
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`
+                          flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all min-h-[44px]
+                          ${isActive
+                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-medium'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:text-foreground'
+                          }
+                        `}
+                      >
+                        <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-muted-foreground'}`} />
+                        <span className="text-sm">{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))}
+            </nav>
+          </div>
+        </div>
       )}
     </div>
   );
