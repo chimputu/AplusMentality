@@ -19,7 +19,7 @@ const nextConfig = {
   },
   // ✅ Silence the Turbopack warning
   turbopack: {},
-  // ✅ Security headers including Content-Security-Policy
+  // ✅ Security headers including Content-Security-Policy and CORS for manifest
   async headers() {
     return [
       {
@@ -47,6 +47,22 @@ const nextConfig = {
           { key: 'X-XSS-Protection', value: '1; mode=block' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+      // ✅ CORS headers for manifest.json — fixes PWA installation errors on Vercel
+      {
+        source: '/manifest.json',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      // ✅ CORS headers for site.webmanifest (fallback name)
+      {
+        source: '/site.webmanifest',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
     ];

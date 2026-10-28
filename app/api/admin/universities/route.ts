@@ -19,7 +19,8 @@ function mapPeriodTypeToAcademicSystem(periodType: string | null): string {
 }
 
 // GET — list universities with programmes (authenticated users)
-// Returns BOTH University model records AND Institution model records (type=UNIVERSITY)
+// Returns ONLY Institution model records (type=UNIVERSITY) — the single source of truth.
+// The legacy University model is no longer used to avoid data pollution.
 export async function GET() {
   try {
     const auth = await getAuthUser();
@@ -27,20 +28,11 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch University model records
-    const universities = await prisma.university.findMany({
-      include: {
-        programmes: {
-          orderBy: { name: 'asc' },
-        },
-      },
-      orderBy: { name: 'asc' },
-    });
-
-    // Fetch Institution model records where type is UNIVERSITY
+    // Fetch ONLY Institution model records where type is UNIVERSITY
     const institutions = await prisma.institution.findMany({
       where: {
         type: 'UNIVERSITY',
+        isActive: true,
       },
       include: {
         programmes: {
@@ -50,21 +42,16 @@ export async function GET() {
       orderBy: { name: 'asc' },
     });
 
-    // Normalize Institution records to match University interface shape
-    const normalizedInstitutions = institutions.map((inst) => ({
-      id: `inst-${inst.id}`, // Prefix to distinguish from University IDs
+    // Normalize Institution records to match the expected interface shape
+    const universities = institutions.map((inst) => ({
+      id: inst.id,
       name: inst.name,
       code: inst.slug || inst.shortName || inst.id,
       academicSystem: mapPeriodTypeToAcademicSystem(inst.periodType),
       programmes: inst.programmes,
     }));
 
-    // Combine and sort by name
-    const combined = [...universities, ...normalizedInstitutions].sort(
-      (a, b) => a.name.localeCompare(b.name)
-    );
-
-    return NextResponse.json({ data: combined, count: combined.length });
+    return NextResponse.json({ data: universities, count: universities.length });
   } catch (error) {
     console.error('[admin/universities GET] Error:', error);
     return NextResponse.json(

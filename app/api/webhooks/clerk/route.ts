@@ -186,7 +186,9 @@ export async function POST(req: Request) {
         },
       });
       // Sync user's active org fields AND the main role enum from Clerk → DB
-      const appRole: AppRole = CLERK_TO_APP_ROLE[role ?? ''] || user.role;
+      // IMPORTANT: Never override SUPER_ADMIN — it is a global Prisma-only role,
+      // not managed by Clerk organizations. Only update the role if the user is NOT SUPER_ADMIN.
+      const appRole: AppRole = user.role === 'SUPER_ADMIN' ? 'SUPER_ADMIN' : (CLERK_TO_APP_ROLE[role ?? ''] || user.role);
       await prisma.user.update({
         where: { id: user.id },
         data: { clerkOrgId: organization.id, clerkOrgRole: role, role: appRole },
@@ -212,7 +214,9 @@ export async function POST(req: Request) {
     });
     // Sync BOTH clerkOrgRole AND the main role enum from Clerk → DB
     // This ensures changing a role in Clerk dashboard automatically updates the DB
-    const appRole: AppRole = CLERK_TO_APP_ROLE[role ?? ''] || user.role;
+    // IMPORTANT: Never override SUPER_ADMIN — it is a global Prisma-only role,
+    // not managed by Clerk organizations.
+    const appRole: AppRole = user.role === 'SUPER_ADMIN' ? 'SUPER_ADMIN' : (CLERK_TO_APP_ROLE[role ?? ''] || user.role);
     await prisma.user.update({
       where: { id: user.id },
       data: { clerkOrgRole: role, role: appRole },

@@ -575,6 +575,18 @@ export default function DashboardLayout({
     },
   ];
 
+  // Format raw role enum values to human-readable labels
+  const roleLabel = (r: string) => {
+    const labels: Record<string, string> = {
+      SUPER_ADMIN: 'Platform Owner',
+      ADMIN: 'Admin',
+      LECTURER: 'Lecturer',
+      TUTOR: 'Tutor',
+      STUDENT: 'Student',
+    };
+    return labels[r] ?? r;
+  };
+
   let navItems: NavItem[];
   if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
     navItems = adminNavItems;
@@ -587,9 +599,9 @@ export default function DashboardLayout({
   }
 
   // Filter nav items by role requirements (e.g., SUPER_ADMIN only)
-  if (role === 'ADMIN') {
-    navItems = navItems.filter((item) => !item.roles || item.roles.includes(role));
-  }
+  // Items without `roles` are visible to all roles within that nav set.
+  // Items with `roles: ['SUPER_ADMIN']` are hidden from ADMIN.
+  navItems = navItems.filter((item) => !item.roles || item.roles.includes(role));
 
   // Group navigation items by section
   const groupedNavItems = navItems.reduce((acc, item) => {
@@ -1152,13 +1164,13 @@ export default function DashboardLayout({
             <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
               {!isCollapsed && <span className="text-xs font-medium text-muted-foreground">Role</span>}
               <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-muted text-foreground ${isCollapsed ? 'text-[10px] px-2' : ''}`}>
-                {role}
+                {roleLabel(role)}
               </span>
             </div>
           </div>
 
-          {/* Organization Switcher - Only visible to ADMIN and SUPER_ADMIN roles */}
-          {(role === 'ADMIN' || role === 'SUPER_ADMIN') && !isCollapsed && (
+          {/* Organization Switcher - Visible to all authenticated users */}
+          {!isCollapsed && (
             <div className="px-3 py-3 border-b border-border">
               <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                 Organization

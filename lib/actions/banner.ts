@@ -5,6 +5,7 @@ import { revalidatePath, updateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { BannerVariant, BannerPlacement, BannerScope } from '../../generated/prisma/client';
+import { getOrgScope } from '@/lib/auth/org-scope';
 
 // ============================================
 // Internal Helpers
@@ -21,6 +22,12 @@ async function requireAdmin() {
     throw new Error('Admin access required');
   }
   return user;
+}
+
+async function requireAdminWithOrg() {
+  const admin = await requireAdmin();
+  const scope = await getOrgScope();
+  return { admin, scope };
 }
 
 // ============================================
@@ -62,19 +69,33 @@ export async function listBanners(filters?: {
   isActive?: boolean;
   scope?: BannerScope;
 }) {
-  await requireAdmin();
+  const { admin, scope } = await requireAdminWithOrg();
 
   const where: any = {};
-  if (filters?.institutionId !== undefined) {
-    where.institutionId = filters.institutionId;
+
+  // ADMIN is scoped to their institution; SUPER_ADMIN sees all
+  if (!scope.isSuperAdmin) {
+    where.OR = [
+      // Banners with no institution filter (GLOBAL/ALL scope)
+      { scope: 'GLOBAL' },
+      { scope: 'ALL' },
+      // Banners targeting this admin's institution
+      {
+        scope: 'SPECIFIC',
+        targets: { some: { institutionId: scope.institutionId } },
+      },
+      // Legacy banners linked directly to this institution
+      { institutionId: scope.institutionId },
+    ];
   }
+
   if (filters?.placement) {
     where.placement = filters.placement;
   }
   if (filters?.isActive !== undefined) {
     where.isActive = filters.isActive;
   }
-  if (filters?.scope) {
+  if (filters?.scope && scope.isSuperAdmin) {
     where.scope = filters.scope;
   }
 
@@ -207,9 +228,19 @@ export async function getActiveBanners(
 }
 
 export async function createBanner(rawInput: unknown) {
-  const admin = await requireAdmin();
+  const { admin, scope } = await requireAdminWithOrg();
 
   const input = createBannerSchema.parse(rawInput);
+
+  // ADMIN can only target their own institution; SUPER_ADMIN can target any
+  if (!scope.isSuperAdmin && input.scope === 'SPECIFIC') {
+    const allowedIds = input.institutionIds.filter((id) => id === scope.institutionId);
+    if (allowedIds.length === 0) {
+      return { success: false, error: 'Can only create banners for your institution' };
+    }
+    // Restrict to only the admin's institution
+    (input as any).institutionIds = allowedIds;
+  }
 
   const startsAt = typeof input.startsAt === 'string' ? new Date(input.startsAt) : input.startsAt;
   const endsAt = input.endsAt
@@ -263,13 +294,37 @@ export async function createBanner(rawInput: unknown) {
 }
 
 export async function updateBanner(id: string, rawInput: unknown) {
-  await requireAdmin();
+  const { admin, scope } = await requireAdminWithOrg();
 
   const input = updateBannerSchema.parse(rawInput);
 
-  const existing = await prisma.banner.findUnique({ where: { id } });
+  const existing = await prisma.banner.findUnique({ where: { id }, include: { targets: true } });
   if (!existing) {
     throw new Error('Banner not found');
+  }
+
+  // ADMIN can only update banners for their own institution
+  if (!scope.isSuperAdmin) {
+    const bannerTargetsOwnOrg =
+      existing.scope === 'GLOBAL' ||
+      existing.scope === 'ALL' ||
+      existing.institutionId === scope.institutionId;
+
+    // Also check if any target matches the admin's institution
+    const hasTargetMatch = existing.targets?.some(
+      (t: any) => t.institutionId === scope.institutionId
+    );
+
+    if (!bannerTargetsOwnOrg && !hasTargetMatch) {
+      return { success: false, error: 'Can only update banners for your institution' };
+    }
+
+    // Restrict institutionIds to admin's institution
+    if (input.scope === 'SPECIFIC' && input.institutionIds) {
+      (input as any).institutionIds = input.institutionIds.filter(
+        (id) => id === scope.institutionId
+      );
+    }
   }
 
   const startsAt = input.startsAt
@@ -338,7 +393,25 @@ export async function updateBanner(id: string, rawInput: unknown) {
 }
 
 export async function deleteBanner(id: string) {
-  await requireAdmin();
+  const { admin, scope } = await requireAdminWithOrg();
+
+  const existing = await prisma.banner.findUnique({ where: { id }, include: { targets: true } });
+  if (!existing) {
+    return { success: false, error: 'Banner not found' };
+  }
+
+  // ADMIN can only delete banners for their own institution
+  if (!scope.isSuperAdmin) {
+    const bannerTargetsOwnOrg =
+      existing.scope === 'GLOBAL' ||
+      existing.scope === 'ALL' ||
+      existing.institutionId === scope.institutionId ||
+      existing.targets?.some((t: any) => t.institutionId === scope.institutionId);
+
+    if (!bannerTargetsOwnOrg) {
+      return { success: false, error: 'Can only delete banners for your institution' };
+    }
+  }
 
   await prisma.banner.delete({ where: { id } });
 
@@ -351,11 +424,24 @@ export async function deleteBanner(id: string) {
 }
 
 export async function toggleBannerActive(id: string) {
-  await requireAdmin();
+  const { admin, scope } = await requireAdminWithOrg();
 
-  const existing = await prisma.banner.findUnique({ where: { id } });
+  const existing = await prisma.banner.findUnique({ where: { id }, include: { targets: true } });
   if (!existing) {
-    throw new Error('Banner not found');
+    return { success: false, error: 'Banner not found' };
+  }
+
+  // ADMIN can only toggle banners for their own institution
+  if (!scope.isSuperAdmin) {
+    const bannerTargetsOwnOrg =
+      existing.scope === 'GLOBAL' ||
+      existing.scope === 'ALL' ||
+      existing.institutionId === scope.institutionId ||
+      existing.targets?.some((t: any) => t.institutionId === scope.institutionId);
+
+    if (!bannerTargetsOwnOrg) {
+      return { success: false, error: 'Can only toggle banners for your institution' };
+    }
   }
 
   await prisma.banner.update({

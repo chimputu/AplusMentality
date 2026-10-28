@@ -13,7 +13,7 @@ interface InstitutionSelectProps {
 export function InstitutionSelect({
   value,
   onChange,
-  label = 'Institution',
+  label = 'University',
   disabled,
   className,
 }: InstitutionSelectProps) {
@@ -33,10 +33,10 @@ export function InstitutionSelect({
       }}
       getValue={(i: any) => i.id}
       getLabel={(i: any) => `${i.name}${i.shortName ? ` (${i.shortName})` : ''}`}
-      placeholder="Select institution"
-      emptyMessage="No institutions available."
-      emptyAction={{ label: 'Create institution', href: '/admin/institutions/new' }}
-      errorMessage="Couldn't load institutions."
+      placeholder="Select university"
+      emptyMessage="No universities available."
+      emptyAction={{ label: 'Create university', href: '/admin/institutions/new' }}
+      errorMessage="Couldn't load universities."
     />
   );
 }
