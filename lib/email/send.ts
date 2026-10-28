@@ -6,12 +6,23 @@
 'use server';
 
 import * as Sentry from '@sentry/nextjs';
-import {
-  getBrevoClient,
-  EMAIL_FROM,
-  EMAIL_FROM_NAME,
-  EMAIL_REPLY_TO,
-} from './brevo-client';
+import { BrevoClient } from '@getbrevo/brevo';
+
+let brevoClient: BrevoClient | null = null;
+
+function getBrevoClient() {
+  if (brevoClient) return brevoClient;
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) {
+    console.warn('[Brevo] BREVO_API_KEY not set — email sends will fail');
+  }
+  brevoClient = new BrevoClient({ apiKey: apiKey ?? '' });
+  return brevoClient;
+}
+
+const EMAIL_FROM = process.env.EMAIL_FROM ?? 'kafiswegchimputu@gmail.com';
+const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME ?? 'A+ Mentality';
+const EMAIL_REPLY_TO = process.env.EMAIL_REPLY_TO ?? 'kafiswegchimputu@gmail.com';
 
 /**
  * Options for sending an email via Brevo.

@@ -82,7 +82,7 @@ export default function StudentTestsPage() {
   return (
     <div className="max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Tests</h1>
-      <div className="flex flex-wrap gap-4 mb-6 items-center">
+      <div className="flex flex-nowrap gap-4 mb-6 items-center overflow-x-auto hide-scrollbar">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
           <input
