@@ -90,7 +90,9 @@ export function DataSelect<T>({
         onChange(getValue(data[0]));
       }
     } catch (e: any) {
-      setError(e.message ?? 'Failed to load');
+      const errorMsg = e.message ?? 'Failed to load';
+      console.error('[DataSelect] Fetch error:', errorMsg, e);
+      setError(errorMsg);
       setItems([]);
     } finally {
       setLoading(false);

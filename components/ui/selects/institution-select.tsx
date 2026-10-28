@@ -26,7 +26,12 @@ export function InstitutionSelect({
       className={className}
       fetchFn={async () => {
         const res = await fetch('/api/institutions/picker');
-        if (!res.ok) throw new Error('Failed to fetch');
+        if (!res.ok) {
+          const errorBody = await res.text().catch(() => '');
+          const errorMsg = `Failed to fetch institutions: HTTP ${res.status} ${res.statusText}${errorBody ? ' — ' + errorBody : ''}`;
+          console.error('[InstitutionSelect] Fetch error:', errorMsg, { status: res.status, statusText: res.statusText });
+          throw new Error(errorMsg);
+        }
         const json = await res.json();
         const data = json.data;
         return Array.isArray(data) ? data : [];

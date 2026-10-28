@@ -172,6 +172,7 @@ model User {
   name           String?
   imageUrl       String?
   role           Role           @default(STUDENT)
+  isSuperAdmin   Boolean        @default(false)
   isVerifiedTutor Boolean       @default(false)
   theme          String?        @default("system")
 
@@ -336,6 +337,10 @@ model Course {
   tutorialSheets   TutorialSheet[]
   assessments      Assessment[]
   tutorSpecialties TutorSpecialty[]
+
+  // Primary tutor assigned to this course
+  tutorId      String?
+  tutor        Tutor?   @relation("PrimaryTutor", fields: [tutorId], references: [id], onDelete: SetNull)
 
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -1136,6 +1141,7 @@ model Tutor {
   updatedAt       DateTime   @updatedAt
   specialties     TutorSpecialty[]
   requests        TutorRequest[]
+  primaryCourses  Course[]      @relation("PrimaryTutor")
 
   @@index([universityId, isActive])
   @@index([isVerified, isActive])

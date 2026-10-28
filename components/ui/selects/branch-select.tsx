@@ -31,7 +31,12 @@ export function BranchSelect({
       fetchFn={async () => {
         if (!programmeId) return [];
         const res = await fetch(`/api/admin/branches?programmeId=${programmeId}`);
-        if (!res.ok) throw new Error('Failed to fetch');
+        if (!res.ok) {
+          const errorBody = await res.text().catch(() => '');
+          const errorMsg = `Failed to fetch branches: HTTP ${res.status} ${res.statusText}${errorBody ? ' — ' + errorBody : ''}`;
+          console.error('[BranchSelect] Fetch error:', errorMsg, { status: res.status });
+          throw new Error(errorMsg);
+        }
         const json = await res.json();
         const data = json.data;
         return Array.isArray(data) ? data : [];

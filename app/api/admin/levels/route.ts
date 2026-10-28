@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET — list academic levels for dropdown (admin only)
+// GET — list academic levels for dropdown (public — used by onboarding)
 export async function GET(req: NextRequest) {
-  const admin = await getAuthUser(['ADMIN']);
-  if (!admin) {
-    return NextResponse.json({ error: 'Unauthorized', data: [], count: 0 }, { status: 401 });
-  }
-
   try {
     const { searchParams } = new URL(req.url);
     const institutionId = searchParams.get('institutionId');
