@@ -71,12 +71,22 @@ export async function PUT(
       );
     }
 
+    const updateData: any = {
+      name: body.name,
+      role: body.role,
+    };
+
+    // Academic profile fields
+    if (body.institutionId !== undefined) updateData.institutionId = body.institutionId || null;
+    if (body.facultyId !== undefined) updateData.facultyId = body.facultyId || null;
+    if (body.programmeId !== undefined) updateData.programmeId = body.programmeId || null;
+    if (body.branchId !== undefined) updateData.branchId = body.branchId || null;
+    if (body.year !== undefined) updateData.year = body.year ?? null;
+    if (body.period !== undefined) updateData.period = body.period || null;
+
     const user = await prisma.user.update({
       where: { clerkId: id },
-      data: {
-        name: body.name,
-        role: body.role,
-      },
+      data: updateData,
       include: {
         institution: { select: { clerkOrgId: true } },
       },

@@ -5,17 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Upload, Loader2, FileText, Image as ImageIcon, File } from 'lucide-react';
-import { InstitutionSelect } from '@/components/ui/selects/institution-select';
-import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
-import { LevelSelect } from '@/components/ui/selects/level-select';
-import { PeriodSelect } from '@/components/ui/selects/period-select';
 import { CourseSelect } from '@/components/ui/selects/course-select';
-
-interface Course {
-  id: string;
-  code: string;
-  title: string;
-}
 
 const CATEGORIES = [
   { value: 'test', label: 'Test', icon: '📝' },
@@ -52,33 +42,6 @@ export default function CreatePastPaperPage() {
     description: '',
     category: 'final_exam',
   });
-
-  // Derive numeric year/period from selected level/period for backward compat
-  useEffect(() => {
-    if (levelId) {
-      fetch(`/api/admin/levels?institutionId=${institutionId}`)
-        .then((r) => r.json())
-        .then((json) => {
-          const data = json.data || [];
-          const level = data.find((l: any) => l.id === levelId);
-          if (level) setYear(level.order);
-        })
-        .catch(() => {});
-    }
-  }, [levelId, institutionId]);
-
-  useEffect(() => {
-    if (periodId) {
-      fetch(`/api/admin/periods?institutionId=${institutionId}`)
-        .then((r) => r.json())
-        .then((json) => {
-          const data = json.data || [];
-          const p = data.find((pp: any) => pp.id === periodId);
-          if (p) setPeriod(String(p.order));
-        })
-        .catch(() => {});
-    }
-  }, [periodId, institutionId]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -125,10 +88,6 @@ export default function CreatePastPaperPage() {
 
     if (!form.title || !fileUrl) {
       setError('Title and file are required');
-      return;
-    }
-    if (!institutionId || !programmeId) {
-      setError('Institution and programme are required');
       return;
     }
     if (courseMode === 'existing' && !courseId) {
@@ -279,46 +238,7 @@ export default function CreatePastPaperPage() {
             />
           </div>
 
-          {/* Academic Scoping */}
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-              Academic Scope *
-            </h3>
-
-            {/* Institution */}
-            <InstitutionSelect
-              value={institutionId}
-              onChange={(v) => {
-                setInstitutionId(v);
-                setProgrammeId('');
-                setLevelId('');
-                setPeriodId('');
-              }}
-              label="Institution *"
-            />
-
-            {/* Programme */}
-            <ProgrammeSelect
-              institutionId={institutionId || undefined}
-              value={programmeId}
-              onChange={setProgrammeId}
-              label="Programme *"
-            />
-
-            <LevelSelect
-              institutionId={institutionId || undefined}
-              value={levelId}
-              onChange={setLevelId}
-            />
-
-            <PeriodSelect
-              institutionId={institutionId || undefined}
-              value={periodId}
-              onChange={setPeriodId}
-            />
-          </div>
-
-          {/* Course Selection */}
+          {/* Course Selection — Single dropdown replaces Institution → Programme → Level → Period chain */}
           <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
             <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Course *
@@ -351,12 +271,20 @@ export default function CreatePastPaperPage() {
 
             {courseMode === 'existing' ? (
               <CourseSelect
-                programmeId={programmeId || undefined}
-                universityId={institutionId || undefined}
-                year={year}
-                period={period || undefined}
                 value={courseId}
-                onChange={setCourseId}
+                onChange={(v) => {
+                  setCourseId(v);
+                  // Auto-infer academic scope from selected course
+                  fetch(`/api/courses/${v}`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                      if (data?.universityId) setInstitutionId(data.universityId);
+                      if (data?.programmeId) setProgrammeId(data.programmeId);
+                      if (data?.year) setYear(data.year);
+                      if (data?.period) setPeriod(data.period);
+                    })
+                    .catch(() => {});
+                }}
               />
             ) : (
               <div className="space-y-3">

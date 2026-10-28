@@ -26,6 +26,7 @@ import { formatDate } from '@/lib/formatDate';
 import { toast } from 'sonner';
 import type { Role } from '@/generated/prisma/client';
 import ConfirmModal from '@/components/ui/confirm-modal';
+import { AcademicSelector, AcademicProfile } from '@/components/ui/academic-selector';
 
 interface User {
   id: string;
@@ -38,11 +39,14 @@ interface User {
   imageUrl: string | null;
   role: Role;
   institutionId: string | null;
+  facultyId: string | null;
   programmeId: string | null;
+  branchId: string | null;
   year: number | null;
   period: string | null;
   onboarded: boolean;
   institution?: { id: string; name: string; shortName: string } | null;
+  programme?: { id: string; name: string; code: string } | null;
   createdAt: string;
   enrollments?: any[];
   courses?: any[];
@@ -91,7 +95,8 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
   const [filterRole, setFilterRole] = useState<'ALL' | Role>('ALL');
   const [filterInstitution, setFilterInstitution] = useState('ALL');
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [editForm, setEditForm] = useState({ role: '', institutionId: '', year: '', period: '' });
+  const [editForm, setEditForm] = useState({ role: '' });
+  const [academicProfile, setAcademicProfile] = useState<AcademicProfile | null>(null);
   const [pendingRoleChange, setPendingRoleChange] = useState<{ userId: string; role: Role; displayName: string } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<{ userId: string; displayName: string } | null>(null);
   const [syncing, setSyncing] = useState<string | null>(null);
@@ -181,25 +186,28 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
 
   const handleEditUser = (user: User) => {
     setEditingUser(user);
-    setEditForm({
-      role: user.role,
-      institutionId: user.institutionId || '',
-      year: user.year?.toString() || '',
-      period: user.period || '',
+    setEditForm({ role: user.role });
+    setAcademicProfile({
+      institutionId: user.institutionId,
+      facultyId: user.facultyId,
+      programmeId: user.programmeId,
+      branchId: user.branchId,
+      year: user.year,
+      period: user.period,
     });
   };
 
   const handleSaveEdit = async () => {
-    if (!editingUser) return;
+    if (!editingUser || !academicProfile) return;
     setUpdating(editingUser.clerkId);
     try {
       const body: any = { role: editForm.role };
-      if (editForm.institutionId) body.institutionId = editForm.institutionId;
-      else body.institutionId = null;
-      if (editForm.year) body.year = parseInt(editForm.year);
-      else body.year = null;
-      if (editForm.period) body.period = editForm.period;
-      else body.period = null;
+      body.institutionId = academicProfile.institutionId;
+      body.facultyId = academicProfile.facultyId;
+      body.programmeId = academicProfile.programmeId;
+      body.branchId = academicProfile.branchId;
+      body.year = academicProfile.year;
+      body.period = academicProfile.period;
 
       const res = await fetch(`/api/users/${editingUser.clerkId}`, {
         method: 'PUT',
@@ -210,6 +218,7 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
       if (res.ok) {
         toast.success('User updated successfully');
         setEditingUser(null);
+        setAcademicProfile(null);
         router.refresh();
       } else {
         const error = await res.json();
@@ -361,28 +370,147 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+      {/* Mobile Card Layout */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {filteredUsers.map((user) => {
+          const displayName = getDisplayName(user);
+          const secondaryName = getSecondaryName(user);
+
+          return (
+            <div key={user.id} className="bg-card rounded-xl border border-border p-4 space-y-3">
+              {/* Header: Avatar + Name + Role */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  {user.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={user.imageUrl}
+                      alt={displayName}
+                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-medium text-slate-500">
+                      {displayName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-medium text-slate-900 dark:text-slate-100 truncate">
+                      {user.username ? (
+                        <span className="inline-flex items-center gap-1">
+                          <AtSign className="w-3 h-3 text-slate-500" />
+                          {user.username}
+                        </span>
+                      ) : (
+                        displayName
+                      )}
+                    </p>
+                    {secondaryName && (
+                      <p className="text-xs text-slate-500 truncate">{secondaryName}</p>
+                    )}
+                  </div>
+                </div>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0 ${
+                  user.role === 'ADMIN'
+                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                }`}>
+                  {user.role}
+                </span>
+              </div>
+
+              {/* Details */}
+              <div className="space-y-1.5 text-sm">
+                <div className="flex items-center gap-2 text-slate-500">
+                  <Mail className="w-4 h-4 flex-shrink-0" />
+                  <span className="truncate">{user.email}</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-500">
+                  <Building2 className="w-4 h-4 flex-shrink-0" />
+                  <span className="truncate">{user.institution?.shortName || user.institution?.name || '—'}</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-500">
+                  <Calendar className="w-4 h-4 flex-shrink-0" />
+                  <span>{formatDate(user.createdAt)}</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-500 text-xs">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" />
+                    {user._count?.enrollments || 0}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Video className="w-3 h-3" />
+                    {user._count?.videos || 0}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <FileQuestion className="w-3 h-3" />
+                    {(user._count?.quizzes || 0) + (user._count?.tests || 0)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                <button
+                  onClick={() => handleEditUser(user)}
+                  className="flex-1 flex items-center justify-center gap-1 text-xs px-3 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg transition"
+                  aria-label={`Edit ${displayName}`}
+                >
+                  <Pencil className="w-3 h-3" />
+                  Edit
+                </button>
+                {user.role === 'ADMIN' ? (
+                  <button
+                    onClick={() => handleRoleChangeClick(user, 'STUDENT')}
+                    disabled={updating === user.clerkId}
+                    className="flex-1 flex items-center justify-center gap-1 text-xs px-3 py-2 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-lg transition disabled:opacity-50"
+                  >
+                    <UserX className="w-3 h-3" />
+                    Demote
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleRoleChangeClick(user, 'ADMIN')}
+                    disabled={updating === user.clerkId}
+                    className="flex-1 flex items-center justify-center gap-1 text-xs px-3 py-2 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-lg transition disabled:opacity-50"
+                  >
+                    <Award className="w-3 h-3" />
+                    Promote
+                  </button>
+                )}
+                <button
+                  onClick={() => handleDeleteUserClick(user)}
+                  className="flex items-center justify-center px-3 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden md:block bg-card rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-muted/50 border-b border-border">
+            <thead className="bg-slate-50 dark:bg-slate-800 border-b border-border">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Institution</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Role</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Activity</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Joined</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">User</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Institution</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Role</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Activity</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Joined</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
               {filteredUsers.map((user) => {
                 const displayName = getDisplayName(user);
                 const secondaryName = getSecondaryName(user);
 
                 return (
-                  <tr key={user.id} className="hover:bg-muted /50 transition">
+                  <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {user.imageUrl ? (
@@ -393,15 +521,15 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                             className="w-9 h-9 rounded-full object-cover flex-shrink-0"
                           />
                         ) : (
-                          <div className="w-9 h-9 bg-muted  rounded-full flex items-center justify-center flex-shrink-0 text-sm font-medium text-muted-foreground dark:text-foreground">
+                          <div className="w-9 h-9 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-medium text-slate-500">
                             {displayName.charAt(0).toUpperCase()}
                           </div>
                         )}
                         <div className="min-w-0">
-                          <p className="font-medium text-foreground truncate">
+                          <p className="font-medium text-slate-900 dark:text-slate-100 truncate">
                             {user.username ? (
                               <span className="inline-flex items-center gap-1">
-                                <AtSign className="w-3 h-3 text-muted-foreground" />
+                                <AtSign className="w-3 h-3 text-slate-500" />
                                 {user.username}
                               </span>
                             ) : (
@@ -409,26 +537,23 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                             )}
                           </p>
                           {secondaryName && (
-                            <p className="text-xs text-muted-foreground truncate">
+                            <p className="text-xs text-slate-500 truncate">
                               {secondaryName}
                             </p>
                           )}
-                          <p className="text-xs text-muted-foreground truncate">
-                            {user.clerkId.substring(0, 12)}…
-                          </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                        <span className="text-muted-foreground dark:text-foreground truncate">{user.email}</span>
+                        <Mail className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                        <span className="text-slate-500 truncate">{user.email}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                        <span className="text-muted-foreground dark:text-foreground truncate">
+                        <Building2 className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                        <span className="text-slate-500 truncate">
                           {user.institution?.shortName || user.institution?.name || '—'}
                         </span>
                       </div>
@@ -448,7 +573,7 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-3 text-xs text-slate-500">
                         <span className="flex items-center gap-1">
                           <BookOpen className="w-3 h-3" />
                           {user._count?.enrollments || 0}
@@ -464,7 +589,7 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                      <div className="flex items-center gap-2 text-slate-500 text-xs">
                         <Calendar className="w-4 h-4" />
                         {formatDate(user.createdAt)}
                       </div>
@@ -524,12 +649,12 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
 
       {/* Edit Modal */}
       {editingUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setEditingUser(null)}>
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { setEditingUser(null); setAcademicProfile(null); }}>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Edit User</h2>
               <button
-                onClick={() => setEditingUser(null)}
+                onClick={() => { setEditingUser(null); setAcademicProfile(null); }}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
                 aria-label="Close modal"
               >
@@ -564,57 +689,23 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Institution
-                </label>
-                <select
-                  value={editForm.institutionId}
-                  onChange={(e) => setEditForm({ ...editForm, institutionId: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">No Institution</option>
-                  {institutions.map((inst) => (
-                    <option key={inst.id} value={inst.id}>
-                      {inst.shortName || inst.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Year
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={editForm.year}
-                    onChange={(e) => setEditForm({ ...editForm, year: e.target.value })}
-                    placeholder="e.g. 1"
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Period
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.period}
-                    onChange={(e) => setEditForm({ ...editForm, period: e.target.value })}
-                    placeholder="e.g. 2024/2025"
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Academic Profile</h3>
+                <AcademicSelector
+                  initialInstitutionId={editingUser.institutionId}
+                  initialFacultyId={editingUser.facultyId}
+                  initialProgrammeId={editingUser.programmeId}
+                  initialBranchId={editingUser.branchId}
+                  initialYear={editingUser.year}
+                  initialPeriod={editingUser.period}
+                  onChange={setAcademicProfile}
+                />
               </div>
             </div>
 
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => setEditingUser(null)}
+                onClick={() => { setEditingUser(null); setAcademicProfile(null); }}
                 className="flex-1 px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
               >
                 Cancel

@@ -1,25 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Upload, Loader2, CheckCircle, XCircle, Film, Video } from 'lucide-react';
-import { InstitutionSelect } from '@/components/ui/selects/institution-select';
-import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
+import { Upload, Loader2, CheckCircle, XCircle, Film } from 'lucide-react';
 import { CourseSelect } from '@/components/ui/selects/course-select';
 
-interface Course {
-  id: string;
-  code: string;
-  title: string;
-}
-
-interface University {
-  id: string;
-  name: string;
-  programmes?: Array<{ id: string; name: string }>;
-}
-
 interface VideoUploadFormProps {
-  universities?: University[];
+  universities?: Array<{ id: string; name: string }>;
 }
 
 export default function VideoUploadForm({ universities }: VideoUploadFormProps) {
@@ -101,10 +87,6 @@ export default function VideoUploadForm({ universities }: VideoUploadFormProps) 
     }
     if (!title.trim()) {
       setError('Please enter a title');
-      return;
-    }
-    if (!universityId || !programmeId || (!period && academicSystem !== 'YEARLY')) {
-      setError('Please select university, programme, and period');
       return;
     }
     if (courseMode === 'existing' && !courseId) {
@@ -338,69 +320,7 @@ export default function VideoUploadForm({ universities }: VideoUploadFormProps) 
         </div>
       )}
 
-      {/* Academic Scoping */}
-      <div className="border-t border-border pt-4">
-        <h3 className="text-sm font-medium text-foreground mb-3">Academic Scope *</h3>
-
-        <div className="space-y-3">
-          <InstitutionSelect
-            value={universityId}
-            onChange={(v) => {
-              setUniversityId(v);
-              setProgrammeId('');
-              setPeriod('');
-            }}
-          />
-
-          <ProgrammeSelect
-            institutionId={universityId || undefined}
-            value={programmeId}
-            onChange={setProgrammeId}
-          />
-        </div>
-
-        {/* Year */}
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-foreground mb-1">
-            Year *
-          </label>
-          <select
-            value={year}
-            onChange={(e) => setYear(parseInt(e.target.value))}
-            required
-            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-          >
-            {[1, 2, 3, 4, 5, 6, 7].map((y) => (
-              <option key={y} value={y}>
-                Year {y}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Period */}
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-foreground mb-1">
-            Period *
-          </label>
-          <select
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            required
-            disabled={!universityId}
-            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
-          >
-            <option value="">Select period</option>
-            {getPeriodOptions().map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Course Selection */}
+      {/* Course Selection — Single dropdown replaces University → Programme → Year → Period chain */}
       <div className="border-t border-border pt-4">
         <h3 className="text-sm font-medium text-foreground mb-3">Course *</h3>
 
@@ -431,12 +351,20 @@ export default function VideoUploadForm({ universities }: VideoUploadFormProps) 
 
         {courseMode === 'existing' ? (
           <CourseSelect
-            programmeId={programmeId || undefined}
-            universityId={universityId || undefined}
-            year={year}
-            period={period || undefined}
             value={courseId}
-            onChange={setCourseId}
+            onChange={(v) => {
+              setCourseId(v);
+              // Auto-infer academic scope from selected course
+              fetch(`/api/courses/${v}`)
+                .then((res) => res.json())
+                .then((data) => {
+                  if (data?.universityId) setUniversityId(data.universityId);
+                  if (data?.programmeId) setProgrammeId(data.programmeId);
+                  if (data?.year) setYear(data.year);
+                  if (data?.period) setPeriod(data.period);
+                })
+                .catch(() => {});
+            }}
           />
         ) : (
           <div className="space-y-3">

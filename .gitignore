@@ -48,3 +48,7 @@ next-env.d.ts
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# build artifacts
+build-result.txt
+build-output.txt

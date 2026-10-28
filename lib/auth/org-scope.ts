@@ -18,6 +18,7 @@ export interface OrgScope {
   institutionName: string;
   orgRole: string;
   appRole: string;
+  isSuperAdmin: boolean;
   universityId: string | null;
   year: number | null;
   period: string | null;
@@ -83,6 +84,7 @@ export async function getOrgScope(): Promise<OrgScope> {
   }
 
   const appRole = ORG_ROLE_MAP[orgRole ?? ''] || user.role;
+  const isSuperAdmin = user.role === 'SUPER_ADMIN';
 
   return {
     userId: user.id,
@@ -92,8 +94,47 @@ export async function getOrgScope(): Promise<OrgScope> {
     institutionName: institution.name,
     orgRole: orgRole ?? 'org:member',
     appRole,
+    isSuperAdmin,
     universityId: user.universityId,
     year: user.year,
     period: user.period,
   };
+}
+
+/**
+ * Resolve the current user's active organization scope, or return null
+ * if the user has no active organization.
+ *
+ * Unlike `getOrgScope()`, this does NOT throw when the user lacks an org.
+ * Use this for ADMIN/SUPER_ADMIN pages where the user may not have joined
+ * a Clerk organization yet (they are exempt from onboarding).
+ */
+export async function getOrgScopeOrNull(): Promise<OrgScope | null> {
+  try {
+    return await getOrgScope();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Build a Prisma WHERE clause for scoping Course queries to the current
+ * user's organization, year, and period. Use this helper in any server
+ * action or page that fetches courses to ensure multi-tenant isolation.
+ *
+ * Example:
+ *   const scope = await getOrgScope();
+ *   const courses = await prisma.course.findMany({
+ *     where: buildCourseScopeWhere(scope),
+ *   });
+ */
+export function buildCourseScopeWhere(scope: OrgScope): any {
+  // SUPER_ADMIN bypasses institution scoping — they can see all courses
+  const where: any = {};
+  if (!scope.isSuperAdmin) {
+    where.institutionId = scope.institutionId;
+  }
+  if (scope.year != null) where.year = scope.year;
+  if (scope.period) where.period = scope.period;
+  return where;
 }

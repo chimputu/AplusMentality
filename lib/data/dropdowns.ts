@@ -23,6 +23,30 @@ export async function fetchInstitutionsForDropdown() {
   });
 }
 
+/**
+ * Returns ONLY Institution records with type UNIVERSITY.
+ * This is the strict university query used by all dropdowns that should
+ * show actual universities — not regulatory bodies, colleges, or polytechnics.
+ */
+export async function fetchStrictUniversitiesForDropdown() {
+  return prisma.institution.findMany({
+    where: {
+      isActive: true,
+      type: 'UNIVERSITY',
+    },
+    select: {
+      id: true,
+      name: true,
+      shortName: true,
+      slug: true,
+      type: true,
+      logoUrl: true,
+      periodType: true,
+    },
+    orderBy: { name: 'asc' },
+  });
+}
+
 export async function fetchProgrammesForDropdown(institutionId?: string) {
   return prisma.programme.findMany({
     where: {

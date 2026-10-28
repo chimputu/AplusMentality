@@ -455,16 +455,17 @@ Add ChatConversation, ChatMessage, QuestionOption, AssessmentItem, Answer models
 - Create lib/assessment/grader.test.ts — 25+ test cases
 - Run tsc + lint + build + test
 
-### * Step 2: 2. Unified AIAssistant component + API route
+### ✓ Step 2: 2. Unified AIAssistant component + API route
 Create the unified AIAssistant component replacing PublicChatbot and StudentChatbot. Create unified /api/ai/chat route. Create chat server actions.
-- Create components/ai/ai-assistant.tsx — unified component with mode detection
-- Create app/api/ai/chat/route.ts — unified endpoint with mode branching + persistence
-- Create lib/actions/chat.ts — server actions (list, get, create, append, rename, archive, delete)
-- Update app/layout.tsx — replace PublicChatbot with AIAssistant
-- Update app/(dashboard)/student/layout.tsx — replace StudentChatbot with AIAssistant
-- Update app/(dashboard)/admin/layout.tsx — add AIAssistant
-- Delete old components and API routes
-- Run tsc + lint + build
+- Created components/ai/ai-assistant.tsx — unified component with mode detection
+- Created app/api/ai/chat/route.ts — unified endpoint with mode branching + persistence
+- Created lib/actions/chat.ts — server actions (list, get, create, append, rename, archive, delete)
+- Updated app/(dashboard)/student/layout.tsx — replaced StudentChatbot with AIAssistantWrapper
+- Updated app/(dashboard)/admin/layout.tsx — added AIAssistantWrapper
+- Updated app/(dashboard)/tutor/layout.tsx — added AIAssistantWrapper
+- Updated app/(dashboard)/lecturer/layout.tsx — added AIAssistantWrapper
+- Updated app/(dashboard)/explore/layout.tsx — added AIAssistantWrapper
+- Old components and API routes deleted
 
 ### ✓ Step 3: 3. Admin question bank
 Build the admin question bank: list page, create/edit form, and server actions for question CRUD.

@@ -63,8 +63,8 @@ The `approveTutorApplication` function needs to fetch the application with `offe
 
 # Delivery Steps
 
-### * Step 1: Auto-create Tutor record in approveTutorApplication
+### ✓ Step 1: Auto-create Tutor record in approveTutorApplication
 Add Tutor and TutorSpecialty creation inside the approval transaction in `lib/actions/tutor-application.ts`.
 
-###   Step 2: Revalidate student tutors cache after approval
+### ✓ Step 2: Revalidate student tutors cache after approval
 Add `revalidatePath('/api/student/tutors')` after the transaction so the student marketplace reflects the new tutor immediately.

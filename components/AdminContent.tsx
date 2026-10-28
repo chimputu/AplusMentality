@@ -39,7 +39,9 @@ interface User {
   imageUrl: string | null;
   role: Role;
   institutionId: string | null;
+  facultyId: string | null;
   programmeId: string | null;
+  branchId: string | null;
   year: number | null;
   period: string | null;
   onboarded: boolean;

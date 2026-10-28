@@ -18,6 +18,7 @@ import {
   createRejectedEmail,
 } from '@/lib/email';
 import { updateUserClerkOrgRole } from '@/lib/clerk-org';
+import { getOrgScope } from '@/lib/auth/org-scope';
 
 // ============================================
 // Internal Helpers
@@ -43,6 +44,12 @@ async function requireAdmin() {
     throw new Error('Admin access required');
   }
   return user;
+}
+
+async function requireAdminWithOrg() {
+  const admin = await requireAdmin();
+  const scope = await getOrgScope();
+  return { admin, scope };
 }
 
 // ============================================
@@ -357,14 +364,13 @@ export async function withdrawTutorApplication() {
 // ============================================
 
 export async function listTutorApplications(rawInput?: unknown) {
-  await requireAdmin();
+  const { scope } = await requireAdminWithOrg();
 
   const input = listApplicationsSchema.parse(rawInput || {});
   const skip = (input.page - 1) * input.limit;
 
-  const where: any = {};
+  const where: any = { institutionId: scope.institutionId };
   if (input.status) where.status = input.status;
-  if (input.institutionId) where.institutionId = input.institutionId;
 
   const [total, applications] = await Promise.all([
     prisma.tutorApplication.count({ where }),
@@ -421,7 +427,7 @@ export async function listTutorApplications(rawInput?: unknown) {
 // ============================================
 
 export async function getTutorApplication(applicationId: string) {
-  await requireAdmin();
+  const { scope } = await requireAdminWithOrg();
 
   const application = await prisma.tutorApplication.findUnique({
     where: { id: applicationId },
@@ -443,6 +449,11 @@ export async function getTutorApplication(applicationId: string) {
   });
 
   if (!application) throw new Error('Application not found');
+
+  // Multi-tenant isolation: only allow access to applications from the admin's institution
+  if (application.institutionId !== scope.institutionId) {
+    throw new Error('Application not found');
+  }
 
   return {
     id: application.id,
@@ -470,7 +481,7 @@ export async function getTutorApplication(applicationId: string) {
 // ============================================
 
 export async function approveTutorApplication(rawInput: unknown) {
-  const admin = await requireAdmin();
+  const { scope } = await requireAdminWithOrg();
 
   const input = approveApplicationSchema.parse(rawInput);
 
@@ -479,6 +490,12 @@ export async function approveTutorApplication(rawInput: unknown) {
   });
 
   if (!application) throw new Error('Application not found');
+
+  // Multi-tenant isolation: only allow approving applications from the admin's institution
+  if (application.institutionId !== scope.institutionId) {
+    throw new Error('Application not found');
+  }
+
   if (application.status !== 'PENDING' && application.status !== 'UNDER_REVIEW') {
     throw new Error('Only pending or under-review applications can be approved');
   }
@@ -597,7 +614,7 @@ export async function approveTutorApplication(rawInput: unknown) {
 // ============================================
 
 export async function rejectTutorApplication(rawInput: unknown) {
-  await requireAdmin();
+  const { scope } = await requireAdminWithOrg();
 
   const input = rejectApplicationSchema.parse(rawInput);
 
@@ -609,6 +626,12 @@ export async function rejectTutorApplication(rawInput: unknown) {
   });
 
   if (!application) throw new Error('Application not found');
+
+  // Multi-tenant isolation: only allow rejecting applications from the admin's institution
+  if (application.institutionId !== scope.institutionId) {
+    throw new Error('Application not found');
+  }
+
   if (application.status !== 'PENDING' && application.status !== 'UNDER_REVIEW') {
     throw new Error('Only pending or under-review applications can be rejected');
   }
@@ -641,7 +664,7 @@ export async function rejectTutorApplication(rawInput: unknown) {
 // ============================================
 
 export async function requestMoreInfo(rawInput: unknown) {
-  await requireAdmin();
+  const { scope } = await requireAdminWithOrg();
 
   const input = requestInfoSchema.parse(rawInput);
 
@@ -650,6 +673,11 @@ export async function requestMoreInfo(rawInput: unknown) {
   });
 
   if (!application) throw new Error('Application not found');
+
+  // Multi-tenant isolation: only allow requesting info from the admin's institution
+  if (application.institutionId !== scope.institutionId) {
+    throw new Error('Application not found');
+  }
 
   await prisma.tutorApplication.update({
     where: { id: input.applicationId },
@@ -668,9 +696,10 @@ export async function requestMoreInfo(rawInput: unknown) {
 // ============================================
 
 export async function getApplicationStats() {
-  await requireAdmin();
+  const { scope } = await requireAdminWithOrg();
 
   const counts = await prisma.tutorApplication.groupBy({
+    where: { institutionId: scope.institutionId },
     by: ['status'],
     _count: { status: true },
   });

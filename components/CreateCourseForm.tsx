@@ -79,11 +79,8 @@ export default function CreateCourseForm({
     }
     async function loadProgrammes() {
       try {
-        // If universityId starts with 'inst-', it's an Institution record — use institutionId param
-        const isInstitution = formData.universityId.startsWith('inst-');
-        const actualId = isInstitution ? formData.universityId.slice(5) : formData.universityId;
-        const param = isInstitution ? 'institutionId' : 'universityId';
-        const res = await fetch(`/api/admin/programmes?${param}=${actualId}`);
+        // All university IDs are now Institution IDs — use institutionId param
+        const res = await fetch(`/api/admin/programmes?institutionId=${formData.universityId}`);
         if (res.ok) {
           const data = await res.json();
           setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));

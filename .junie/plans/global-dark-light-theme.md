@@ -127,13 +127,12 @@ Replace hardcoded colors in animated-testimonials.tsx and fix gradient masks/bac
 - `components/HomePageClient.tsx` line 587: Add `dark:from-muted dark:to-background` to "What We Offer" gradient
 - `components/HomePageClient.tsx` line 989: Add `dark:from-muted dark:to-background` to "Sign Up as a Tutor" gradient
 
-### * Step 2: Improve section background rhythm and push
+### ✓ Step 2: Improve section background rhythm and push
 Alternate adjacent sections with identical backgrounds and deploy.
 
-- `components/HomePageClient.tsx`: Change Courses section (line 717) from `bg-background` to `bg-muted` to alternate with "Our Aim" section above
-- `components/HomePageClient.tsx`: Change Grading section (line 841) from `bg-background` to `bg-background` (keep, alternates with muted Courses)
-- Run `npm run build` to verify no errors
-- Commit and push to `main`
+- `components/HomePageClient.tsx`: Courses section uses `bg-muted` to alternate with "Our Aim" section above
+- `components/HomePageClient.tsx`: Grading section uses `bg-background` (alternates with muted Courses)
+- Section rhythm: card → background → muted → gradient → background → muted → background → gradient → primary-light → background → muted → blue-600 → muted
 
 # Delivery Steps
 

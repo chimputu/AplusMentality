@@ -17,6 +17,13 @@ export default async function AdminUsersPage() {
             shortName: true,
           },
         },
+        programme: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
         enrollments: {
           include: {
             course: {
