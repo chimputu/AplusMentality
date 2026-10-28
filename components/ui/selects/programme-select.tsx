@@ -31,7 +31,12 @@ export function ProgrammeSelect({
       fetchFn={async () => {
         if (!institutionId) return [];
         const res = await fetch(`/api/institutions/${institutionId}/programmes`);
-        if (!res.ok) throw new Error('Failed to fetch');
+        if (!res.ok) {
+          const errorBody = await res.text().catch(() => '');
+          const errorMsg = `Failed to fetch programmes: HTTP ${res.status} ${res.statusText}${errorBody ? ' — ' + errorBody : ''}`;
+          console.error('[ProgrammeSelect] Fetch error:', errorMsg, { status: res.status });
+          throw new Error(errorMsg);
+        }
         const json = await res.json();
         const data = json.data;
         return Array.isArray(data) ? data : [];

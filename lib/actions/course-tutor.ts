@@ -97,6 +97,12 @@ export async function assignTutorToCourse(courseId: string, tutorUserId: string)
       },
     });
 
+    // Also set the Course's primary tutor
+    await prisma.course.update({
+      where: { id: courseId },
+      data: { tutorId: tutor.id },
+    });
+
     revalidatePath('/admin/tutors');
     revalidatePath('/admin/courses');
 

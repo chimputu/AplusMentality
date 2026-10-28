@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET — list branches for dropdown (admin only)
+// GET — list branches for dropdown (public — used by onboarding)
 export async function GET(req: NextRequest) {
-  const admin = await getAuthUser(['ADMIN']);
-  if (!admin) {
-    return NextResponse.json({ error: 'Unauthorized', data: [], count: 0 }, { status: 401 });
-  }
-
   try {
     const { searchParams } = new URL(req.url);
     const programmeId = searchParams.get('programmeId');

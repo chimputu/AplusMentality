@@ -194,7 +194,7 @@ export default function SimpleChat() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-4 sm:bottom-8 sm:right-6 z-[9999] w-14 h-14 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group active:scale-95"
+        className="fixed bottom-6 right-4 sm:bottom-8 sm:right-6 z-[55] md:z-[9999] w-14 h-14 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group active:scale-95"
         aria-label="Open AI Study Assistant"
       >
         {isOpen ? (
