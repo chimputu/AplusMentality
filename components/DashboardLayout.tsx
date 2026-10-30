@@ -41,6 +41,7 @@ import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
 import ThemeToggle from './ThemeToggle';
 import MobileTabBar from './mobile-tab-bar';
+import { OfflineDetector } from './offline-detector';
 import type { Role } from '@/generated/prisma/client';
 
 interface DashboardLayoutProps {
@@ -309,7 +310,7 @@ export default function DashboardLayout({
       section: 'Learning'
     },
     { 
-      href: '/student/tutors', 
+      href: '/student/find-tutor', 
       label: 'Find Tutors', 
       icon: Users,
       section: 'Learning'
@@ -645,6 +646,9 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Offline Detection Banner */}
+      <OfflineDetector />
+
       {/* Top Navbar — sticky on mobile, fixed on desktop */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-16 flex items-center justify-between px-4 lg:px-6" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         {/* Left Section - Logo & Hamburger (mobile only) */}

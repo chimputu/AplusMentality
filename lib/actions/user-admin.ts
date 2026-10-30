@@ -53,6 +53,14 @@ const joinUniversitySchema = z.object({
   branchId: z.string().optional(),
 });
 
+const completeOnboardingSchema = z.object({
+  institutionId: z.string().min(1),
+  programmeId: z.string().optional(),
+  year: z.coerce.number().int().min(1).max(10).optional(),
+  period: z.string().optional(),
+  branchId: z.string().optional(),
+});
+
 // ============================================
 // Server Actions
 // ============================================
@@ -409,6 +417,94 @@ export async function joinUniversity(rawInput: unknown) {
 
   revalidatePath('/student');
   return { success: true, orgType, orgName };
+}
+
+/**
+ * Complete Onboarding Server Action — handles the standard onboarding form flow.
+ *
+ * 1. Authenticates the user via Clerk.
+ * 2. Looks up the institution's Clerk organization ID.
+ * 3. **Clerk Write:** Adds the user to the Clerk organization as `org:member`.
+ * 4. **Prisma Write:** Updates the User with academic data and marks as onboarded.
+ *
+ * Graceful degradation: Prisma write always succeeds even if Clerk fails.
+ */
+export async function completeOnboarding(rawInput: unknown) {
+  const { userId: clerkUserId } = await auth();
+  if (!clerkUserId) {
+    return { error: 'You must be logged in to complete onboarding.' };
+  }
+
+  const input = completeOnboardingSchema.parse(rawInput);
+
+  // Find the institution and its Clerk org ID
+  const institution = await prisma.institution.findUnique({
+    where: { id: input.institutionId },
+    select: { id: true, name: true, clerkOrgId: true },
+  });
+
+  if (!institution) {
+    return { error: 'Institution not found.' };
+  }
+
+  // Find or create the Prisma user record
+  let user = await prisma.user.findUnique({
+    where: { clerkId: clerkUserId },
+  });
+
+  if (!user) {
+    const clerkUser = await (await clerkClient()).users.getUser(clerkUserId);
+    user = await prisma.user.create({
+      data: {
+        clerkId: clerkUserId,
+        email: clerkUser.primaryEmailAddress?.emailAddress || clerkUser.id,
+        firstName: clerkUser.firstName,
+        lastName: clerkUser.lastName,
+        name: clerkUser.fullName,
+        imageUrl: clerkUser.imageUrl,
+      },
+    });
+  }
+
+  // Build the Prisma update data
+  const updateData: any = {
+    role: 'STUDENT',
+    onboarded: true,
+    institutionId: institution.id,
+    universityId: null,
+  };
+
+  if (input.programmeId) updateData.programmeId = input.programmeId;
+  if (input.year) updateData.year = input.year;
+  if (input.period) updateData.period = input.period;
+  if (input.branchId) updateData.branchId = input.branchId;
+
+  // Update clerkOrgId on the user if available
+  if (institution.clerkOrgId) {
+    updateData.clerkOrgId = institution.clerkOrgId;
+    updateData.clerkOrgRole = 'org:member';
+  }
+
+  // --- Clerk Write: Add user to Clerk organization ---
+  if (institution.clerkOrgId) {
+    const clerkResult = await addUserToClerkOrg(clerkUserId, institution.clerkOrgId, 'org:member');
+    if (!clerkResult.success) {
+      // Log but don't fail — Prisma write is the source of truth
+      console.warn(
+        `[completeOnboarding] Clerk org membership failed for ${clerkUserId} in ${institution.clerkOrgId}:`,
+        clerkResult.error,
+      );
+    }
+  }
+
+  // --- Prisma Write: Always commit ---
+  await prisma.user.update({
+    where: { id: user.id },
+    data: updateData,
+  });
+
+  revalidatePath('/student');
+  return { success: true, institutionName: institution.name };
 }
 
 /**

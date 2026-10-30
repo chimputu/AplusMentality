@@ -71,9 +71,10 @@ const variantStyles: Record<string, { bg: string; border: string; text: string }
 interface BannerFormProps {
   bannerId?: string;
   initialData?: BannerFormData;
+  isSuperAdmin?: boolean;
 }
 
-export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
+export default function BannerForm({ bannerId, initialData, isSuperAdmin = false }: BannerFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<BannerFormData>(initialData || initialFormData);
   const [loading, setLoading] = useState(false);
@@ -267,19 +268,21 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
             </div>
 
             {/* Target Audience - Scope */}
-            <div className="border-t border-border pt-4">
-              <ScopeSelector
-                scope={formData.scope}
-                institutionIds={formData.institutionIds}
-                onScopeChange={(scope) => {
-                  handleChange('scope', scope);
-                  if (scope !== 'SPECIFIC') {
-                    handleChange('institutionIds', []);
-                  }
-                }}
-                onInstitutionIdsChange={(ids) => handleChange('institutionIds', ids)}
-              />
-            </div>
+            {isSuperAdmin && (
+              <div className="border-t border-border pt-4">
+                <ScopeSelector
+                  scope={formData.scope}
+                  institutionIds={formData.institutionIds}
+                  onScopeChange={(scope) => {
+                    handleChange('scope', scope);
+                    if (scope !== 'SPECIFIC') {
+                      handleChange('institutionIds', []);
+                    }
+                  }}
+                  onInstitutionIdsChange={(ids) => handleChange('institutionIds', ids)}
+                />
+              </div>
+            )}
 
             {/* CTA */}
             <div className="grid grid-cols-2 gap-3">

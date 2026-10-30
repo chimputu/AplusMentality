@@ -1,6 +1,31 @@
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import PageHeader from '@/components/PageHeader';
+import { syncOrganizationToClerk } from '@/lib/actions/institution-crud';
+import { revalidatePath } from 'next/cache';
+
+// Client component for the Sync button
+function SyncButton({ institutionId }: { institutionId: string }) {
+  const handleSync = async () => {
+    const result = await syncOrganizationToClerk(institutionId);
+    if (result.success) {
+      // Revalidate by reloading the page
+      window.location.reload();
+    } else {
+      alert(result.message || 'Failed to sync organization');
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleSync}
+      className="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
+    >
+      Sync
+    </button>
+  );
+}
 
 export default async function OrganizationsPage() {
   // Auth handled by layout (ADMIN + SUPER_ADMIN) - SUPER_ADMIN only page
@@ -74,12 +99,13 @@ export default async function OrganizationsPage() {
                 <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Clerk Org ID</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Clerk Org Slug</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Status</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {institutions.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                     No institutions found.
                   </td>
                 </tr>
@@ -110,6 +136,13 @@ export default async function OrganizationsPage() {
                         <span className="inline-flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
                           Not linked ⚠️
                         </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      {!institution.clerkOrgId ? (
+                        <SyncButton institutionId={institution.id} />
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
                       )}
                     </td>
                   </tr>

@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, GraduationCap, Lock } from 'lucide-react';
-import { joinUniversity } from '@/lib/actions/user-admin';
+import { completeOnboarding } from '@/lib/actions/user-admin';
 import { InstitutionSelect } from '@/components/ui/selects/institution-select';
 import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
 import { BranchSelect } from '@/components/ui/selects/branch-select';
@@ -119,11 +119,8 @@ export default function OnboardingForm({
 
     startTransition(async () => {
       try {
-        // Standard onboarding flow — use the existing API
         const data: any = {
-          onboarded: true,
-          institutionId: institutionId || null,
-          universityId: null,
+          institutionId,
         };
 
         if (programmeId) data.programmeId = programmeId;
@@ -131,15 +128,10 @@ export default function OnboardingForm({
         if (year) data.year = parseInt(year);
         if (period) data.period = period;
 
-        const res = await fetch('/api/users/me', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
+        const result = await completeOnboarding(data);
 
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error || 'Failed to complete onboarding');
+        if (result.error) {
+          throw new Error(result.error);
         }
 
         // Redirect based on role
