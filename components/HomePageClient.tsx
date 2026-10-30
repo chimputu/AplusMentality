@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import * as Sentry from '@sentry/nextjs';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Menu, X, Mail, Phone, MapPin, Send,
   Share2, Globe, AtSign, Link as LinkIcon,
@@ -217,6 +217,17 @@ const partnerInstitutions = [
   { name: 'Mukuba University', shortName: 'MUK', logoUrl: '/universities/Mukuba_University.png' },
 ];
 
+const featureCards = [
+  { title: 'Expert Tutors', description: 'Learn from qualified professionals.', image: '/photos/expertTutors.png' },
+  { title: 'Lecture Slides', description: 'Comprehensive slide decks for each course.', image: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=600&h=400&fit=crop' },
+  { title: 'Past Exam Papers', description: 'Practice with past papers from Zambia.', image: '/photos/exampapers.png' },
+  { title: 'E-Books & Notes', description: 'Curated e-books and study notes.', image: '/photos/e-book&notes.png' },
+  { title: 'Video Lessons', description: 'Engaging tutorials on every topic.', image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=400&fit=crop' },
+  { title: 'Interactive Quizzes', description: 'Test your knowledge with instant feedback.', image: '/photos/quizzes.png' },
+  { title: 'Mentorship & Support', description: 'One-on-one guidance from mentors.', image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=400&fit=crop' },
+  { title: 'Career Guidance', description: 'Prepare for your future with career resources.', image: '/photos/careerGuidance.png' },
+];
+
 function UniversitiesCarousel() {
   // Duplicate the array for seamless infinite loop
   const doubled = [...partnerInstitutions, ...partnerInstitutions];
@@ -250,6 +261,420 @@ function UniversitiesCarousel() {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function FeatureCardsMarquee() {
+  // Duplicate the array for seamless infinite loop
+  const doubled = [...featureCards, ...featureCards];
+
+  return (
+    <div className="relative overflow-hidden">
+      {/* Fade masks on the edges for a smooth blend */}
+      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-r from-blue-50 dark:from-muted to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-l from-blue-50 dark:from-muted to-transparent z-10 pointer-events-none" />
+
+      {/* Infinite marquee track */}
+      <div className="flex gap-6 animate-feature-marquee">
+        {doubled.map((item, idx) => (
+          <div
+            key={idx}
+            className="flex-shrink-0 w-[280px] sm:w-[320px]"
+          >
+            <div className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-48 sm:h-56 cursor-pointer">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-blue-400">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 640px) 280px, 320px"
+                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+              </div>
+
+              <div className="relative h-full flex flex-col justify-end p-5">
+                <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                <p className="text-sm text-gray-100 mt-1">{item.description}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// GradingCycle — 4-second cycling between Degree Classification and Grade Bands
+// ============================================================
+function GradingCycle() {
+  const [activeView, setActiveView] = useState<'degree' | 'gradeBands'>('degree');
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveView((prev) => (prev === 'degree' ? 'gradeBands' : 'degree'));
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      {/* Navigation dots */}
+      <div className="flex items-center justify-center gap-3 mb-6">
+        <button
+          onClick={() => setActiveView('degree')}
+          className={`h-2.5 rounded-full transition-all duration-300 ${
+            activeView === 'degree' ? 'w-8 bg-blue-600' : 'w-2.5 bg-muted-foreground/40 hover:bg-muted-foreground/60'
+          }`}
+          aria-label="Show Degree Classification"
+          title="Degree Classification"
+        />
+        <button
+          onClick={() => setActiveView('gradeBands')}
+          className={`h-2.5 rounded-full transition-all duration-300 ${
+            activeView === 'gradeBands' ? 'w-8 bg-blue-600' : 'w-2.5 bg-muted-foreground/40 hover:bg-muted-foreground/60'
+          }`}
+          aria-label="Show Grade Bands"
+          title="Grade Bands"
+        />
+      </div>
+
+      {/* Cycling content container with fixed min-height */}
+      <div className="relative min-h-[400px] sm:min-h-[350px]">
+        <AnimatePresence mode="wait">
+          {activeView === 'degree' ? (
+            <motion.div
+              key="degree"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h3 className="text-xl sm:text-2xl font-bold text-foreground text-center mb-2">
+                Degree Classification
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground text-center mb-6 max-w-2xl mx-auto">
+                Based on cumulative points from 20 courses at 3rd &amp; 4th Year Levels (4-Year programmes)
+                or 4th &amp; 5th Year Levels (5-Year programmes)
+              </p>
+
+              {/* Degree classification cards — responsive grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Distinction */}
+                <div className="relative rounded-2xl border-2 border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-green-600 flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">★</span>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-green-600 text-white text-xs font-bold">
+                          Distinction
+                        </span>
+                      </div>
+                      <p className="text-lg sm:text-xl font-bold text-green-800 dark:text-green-300 mt-1">
+                        40 Points and above
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Merit */}
+                <div className="relative rounded-2xl border-2 border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">◆</span>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-xs font-bold">
+                          Merit
+                        </span>
+                      </div>
+                      <p className="text-lg sm:text-xl font-bold text-blue-800 dark:text-blue-300 mt-1">
+                        30-39.9 Points
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Credit */}
+                <div className="relative rounded-2xl border-2 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/30 dark:border-yellow-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-yellow-600 flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">●</span>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-yellow-600 text-white text-xs font-bold">
+                          Credit
+                        </span>
+                      </div>
+                      <p className="text-lg sm:text-xl font-bold text-yellow-800 dark:text-yellow-300 mt-1">
+                        20-29.9 Points
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pass */}
+                <div className="relative rounded-2xl border-2 border-gray-200 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gray-500 flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">○</span>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gray-500 text-white text-xs font-bold">
+                          Pass
+                        </span>
+                      </div>
+                      <p className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-300 mt-1">
+                        Less than 20 Points
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="gradeBands"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h3 className="text-xl sm:text-2xl font-bold text-foreground text-center mb-2">
+                Grade Bands
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground text-center mb-6">
+                Each grade band shows the letter grade, percentage range, and points awarded.
+              </p>
+
+              {/* Color legend */}
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-6 text-xs sm:text-sm">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 h-3 rounded-full bg-green-600" />
+                  <span className="text-foreground">Distinction</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 h-3 rounded-full bg-blue-600" />
+                  <span className="text-foreground">Merit / Credit</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 h-3 rounded-full bg-yellow-600" />
+                  <span className="text-foreground">Pass</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 h-3 rounded-full bg-red-600" />
+                  <span className="text-foreground">Fail</span>
+                </span>
+              </div>
+
+              {/* Grade badges grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                {/* A+ */}
+                <div className="group rounded-xl border-2 border-green-200 bg-white dark:bg-neutral-900 dark:border-green-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-green-600 text-white text-lg font-bold">
+                      A+
+                    </span>
+                    <div>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-xs font-semibold">
+                        Upper Distinction
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Percentage</span>
+                      <span className="font-semibold text-foreground">86 and above</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Points</span>
+                      <span className="font-bold text-green-700 dark:text-green-400">2.5</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* A */}
+                <div className="group rounded-xl border-2 border-green-200 bg-white dark:bg-neutral-900 dark:border-green-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-green-600 text-white text-lg font-bold">
+                      A
+                    </span>
+                    <div>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-xs font-semibold">
+                        Distinction
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Percentage</span>
+                      <span className="font-semibold text-foreground">76-85</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Points</span>
+                      <span className="font-bold text-green-700 dark:text-green-400">2.0</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* B+ */}
+                <div className="group rounded-xl border-2 border-blue-200 bg-white dark:bg-neutral-900 dark:border-blue-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-600 text-white text-lg font-bold">
+                      B+
+                    </span>
+                    <div>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-semibold">
+                        Merit
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Percentage</span>
+                      <span className="font-semibold text-foreground">66-75</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Points</span>
+                      <span className="font-bold text-blue-700 dark:text-blue-400">1.5</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* B */}
+                <div className="group rounded-xl border-2 border-blue-200 bg-white dark:bg-neutral-900 dark:border-blue-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-600 text-white text-lg font-bold">
+                      B
+                    </span>
+                    <div>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-semibold">
+                        Credit
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Percentage</span>
+                      <span className="font-semibold text-foreground">60-65</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Points</span>
+                      <span className="font-bold text-blue-700 dark:text-blue-400">1.0</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* C+ */}
+                <div className="group rounded-xl border-2 border-yellow-200 bg-white dark:bg-neutral-900 dark:border-yellow-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-yellow-600 text-white text-lg font-bold">
+                      C+
+                    </span>
+                    <div>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-xs font-semibold">
+                        Clear Pass
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Percentage</span>
+                      <span className="font-semibold text-foreground">55-59</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Points</span>
+                      <span className="font-bold text-yellow-700 dark:text-yellow-400">0.5</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* C */}
+                <div className="group rounded-xl border-2 border-yellow-200 bg-white dark:bg-neutral-900 dark:border-yellow-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-yellow-600 text-white text-lg font-bold">
+                      C
+                    </span>
+                    <div>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-xs font-semibold">
+                        Bare Pass
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Percentage</span>
+                      <span className="font-semibold text-foreground">50-54</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Points</span>
+                      <span className="font-bold text-yellow-700 dark:text-yellow-400">0.25</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* D+ */}
+                <div className="group rounded-xl border-2 border-red-200 bg-white dark:bg-neutral-900 dark:border-red-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-red-600 text-white text-lg font-bold">
+                      D+
+                    </span>
+                    <div>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-semibold">
+                        Bare Fail
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Percentage</span>
+                      <span className="font-semibold text-foreground">45-49</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Points</span>
+                      <span className="font-bold text-red-700 dark:text-red-400">0</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* D */}
+                <div className="group rounded-xl border-2 border-red-200 bg-white dark:bg-neutral-900 dark:border-red-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-red-600 text-white text-lg font-bold">
+                      D
+                    </span>
+                    <div>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-semibold">
+                        Fail
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Percentage</span>
+                      <span className="font-semibold text-foreground">44 and below</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Points</span>
+                      <span className="font-bold text-red-700 dark:text-red-400">0</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -731,76 +1156,7 @@ export default function HomePageClient() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {[
-              {
-                title: 'Expert Tutors',
-                description: 'Learn from qualified professionals.',
-                image: '/photos/expertTutors.png'
-              },
-              {
-                title: 'Lecture Slides',
-                description: 'Comprehensive slide decks for each course.',
-                image: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=600&h=400&fit=crop'
-              },
-              {
-                title: 'Past Exam Papers',
-                description: 'Practice with past papers from Zambia.',
-                image: '/photos/exampapers.png'
-              },
-              {
-                title: 'E-Books & Notes',
-                description: 'Curated e-books and study notes.',
-                image: '/photos/e-book&notes.png'
-              },
-              {
-                title: 'Video Lessons',
-                description: 'Engaging tutorials on every topic.',
-                image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=400&fit=crop'
-              },
-              {
-                title: 'Interactive Quizzes',
-                description: 'Test your knowledge with instant feedback.',
-                image: '/photos/quizzes.png'
-              },
-              {
-                title: 'Mentorship & Support',
-                description: 'One-on-one guidance from mentors.',
-                image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=400&fit=crop'
-              },
-              {
-                title: 'Career Guidance',
-                description: 'Prepare for your future with career resources.',
-                image: '/photos/careerGuidance.png'
-              },
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeInUp}
-                className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.03] h-48 sm:h-56 cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-blue-400">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    priority={idx < 4}
-                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                </div>
-
-                <div className="relative h-full flex flex-col justify-end p-5">
-                  <h3 className="text-lg font-bold text-white">{item.title}</h3>
-                  <p className="text-sm text-gray-100 mt-1">{item.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <FeatureCardsMarquee />
         </div>
       </motion.section>
 
@@ -989,320 +1345,8 @@ export default function HomePageClient() {
             </p>
           </div>
 
-          {/* ===== DEGREE CLASSIFICATION — TOP (main message) ===== */}
-          <div className="max-w-4xl mx-auto mb-10 sm:mb-14">
-            <h3 className="text-xl sm:text-2xl font-bold text-foreground text-center mb-2">
-              Degree Classification
-            </h3>
-            <p className="text-xs sm:text-sm text-muted-foreground text-center mb-6 max-w-2xl mx-auto">
-              Based on cumulative points from 20 courses at 3rd &amp; 4th Year Levels (4-Year programmes)
-              or 4th &amp; 5th Year Levels (5-Year programmes)
-            </p>
-
-            {/* Degree classification cards — responsive grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Distinction */}
-              <div className="relative rounded-2xl border-2 border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-green-600 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">★</span>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-green-600 text-white text-xs font-bold">
-                        Distinction
-                      </span>
-                    </div>
-                    <p className="text-lg sm:text-xl font-bold text-green-800 dark:text-green-300 mt-1">
-                      40 Points and above
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Merit */}
-              <div className="relative rounded-2xl border-2 border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">◆</span>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-xs font-bold">
-                        Merit
-                      </span>
-                    </div>
-                    <p className="text-lg sm:text-xl font-bold text-blue-800 dark:text-blue-300 mt-1">
-                      30-39.9 Points
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Credit */}
-              <div className="relative rounded-2xl border-2 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/30 dark:border-yellow-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-yellow-600 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">●</span>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-yellow-600 text-white text-xs font-bold">
-                        Credit
-                      </span>
-                    </div>
-                    <p className="text-lg sm:text-xl font-bold text-yellow-800 dark:text-yellow-300 mt-1">
-                      20-29.9 Points
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Pass */}
-              <div className="relative rounded-2xl border-2 border-gray-200 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gray-500 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">○</span>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gray-500 text-white text-xs font-bold">
-                        Pass
-                      </span>
-                    </div>
-                    <p className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-300 mt-1">
-                      Less than 20 Points
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ===== GRADE BADGES — visual scale ===== */}
-          <div className="max-w-4xl mx-auto mb-8">
-            <h3 className="text-xl sm:text-2xl font-bold text-foreground text-center mb-2">
-              Grade Bands
-            </h3>
-            <p className="text-xs sm:text-sm text-muted-foreground text-center mb-6">
-              Each grade band shows the letter grade, percentage range, and points awarded.
-            </p>
-
-            {/* Color legend */}
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-6 text-xs sm:text-sm">
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-3 h-3 rounded-full bg-green-600" />
-                <span className="text-foreground">Distinction</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-3 h-3 rounded-full bg-blue-600" />
-                <span className="text-foreground">Merit / Credit</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-3 h-3 rounded-full bg-yellow-600" />
-                <span className="text-foreground">Pass</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-3 h-3 rounded-full bg-red-600" />
-                <span className="text-foreground">Fail</span>
-              </span>
-            </div>
-
-            {/* Grade badges grid — 1 col mobile, 2 col tablet, 4 col desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              {/* A+ */}
-              <div className="group rounded-xl border-2 border-green-200 bg-white dark:bg-neutral-900 dark:border-green-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-green-600 text-white text-lg font-bold">
-                    A+
-                  </span>
-                  <div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-xs font-semibold">
-                      Upper Distinction
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Percentage</span>
-                    <span className="font-semibold text-foreground">86 and above</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Points</span>
-                    <span className="font-bold text-green-700 dark:text-green-400">2.5</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* A */}
-              <div className="group rounded-xl border-2 border-green-200 bg-white dark:bg-neutral-900 dark:border-green-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-green-600 text-white text-lg font-bold">
-                    A
-                  </span>
-                  <div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-xs font-semibold">
-                      Distinction
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Percentage</span>
-                    <span className="font-semibold text-foreground">76-85</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Points</span>
-                    <span className="font-bold text-green-700 dark:text-green-400">2.0</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* B+ */}
-              <div className="group rounded-xl border-2 border-blue-200 bg-white dark:bg-neutral-900 dark:border-blue-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-600 text-white text-lg font-bold">
-                    B+
-                  </span>
-                  <div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-semibold">
-                      Merit
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Percentage</span>
-                    <span className="font-semibold text-foreground">66-75</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Points</span>
-                    <span className="font-bold text-blue-700 dark:text-blue-400">1.5</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* B */}
-              <div className="group rounded-xl border-2 border-blue-200 bg-white dark:bg-neutral-900 dark:border-blue-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-600 text-white text-lg font-bold">
-                    B
-                  </span>
-                  <div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-semibold">
-                      Credit
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Percentage</span>
-                    <span className="font-semibold text-foreground">60-65</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Points</span>
-                    <span className="font-bold text-blue-700 dark:text-blue-400">1.0</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* C+ */}
-              <div className="group rounded-xl border-2 border-yellow-200 bg-white dark:bg-neutral-900 dark:border-yellow-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-yellow-600 text-white text-lg font-bold">
-                    C+
-                  </span>
-                  <div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-xs font-semibold">
-                      Clear Pass
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Percentage</span>
-                    <span className="font-semibold text-foreground">55-59</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Points</span>
-                    <span className="font-bold text-yellow-700 dark:text-yellow-400">0.5</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* C */}
-              <div className="group rounded-xl border-2 border-yellow-200 bg-white dark:bg-neutral-900 dark:border-yellow-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-yellow-600 text-white text-lg font-bold">
-                    C
-                  </span>
-                  <div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-xs font-semibold">
-                      Bare Pass
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Percentage</span>
-                    <span className="font-semibold text-foreground">50-54</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Points</span>
-                    <span className="font-bold text-yellow-700 dark:text-yellow-400">0.25</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* D+ */}
-              <div className="group rounded-xl border-2 border-red-200 bg-white dark:bg-neutral-900 dark:border-red-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-red-600 text-white text-lg font-bold">
-                    D+
-                  </span>
-                  <div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-semibold">
-                      Bare Fail
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Percentage</span>
-                    <span className="font-semibold text-foreground">45-49</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Points</span>
-                    <span className="font-bold text-red-700 dark:text-red-400">0</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* D */}
-              <div className="group rounded-xl border-2 border-red-200 bg-white dark:bg-neutral-900 dark:border-red-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-red-600 text-white text-lg font-bold">
-                    D
-                  </span>
-                  <div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-semibold">
-                      Fail
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Percentage</span>
-                    <span className="font-semibold text-foreground">44 and below</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Points</span>
-                    <span className="font-bold text-red-700 dark:text-red-400">0</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* ===== CYCLING: Degree Classification ↔ Grade Bands ===== */}
+          <GradingCycle />
 
           {/* ===== FULL TABLE — collapsible accordion ===== */}
           <div className="max-w-4xl mx-auto">
@@ -1676,6 +1720,16 @@ export default function HomePageClient() {
           animation: marquee 30s linear infinite;
         }
         .animate-marquee:hover {
+          animation-play-state: paused;
+        }
+        @keyframes featureMarquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-feature-marquee {
+          animation: featureMarquee 25s linear infinite;
+        }
+        .animate-feature-marquee:hover {
           animation-play-state: paused;
         }
       `}</style>

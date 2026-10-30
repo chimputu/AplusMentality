@@ -5,104 +5,74 @@ sessionId: session-261030-113956-113g
 # Requirements
 
 ### Overview
-Elevate the public `HomeClient` page from "good" to "world-class" across 5 pillars: Visual Hierarchy, Performance, Conversion Optimization, Micro-Interactions, and Accessibility. Additionally, add a QR code to the Download section and a Light/Dark mode theme toggle to the public navbar.
+Convert the "What We Offer" feature cards in `HomePageClient.tsx` from a static 4-column grid into an infinite horizontal marquee that scrolls smoothly, matching the style of the university logo carousel.
 
 ### Functional Requirements
 
-#### QR Code in Download Section
-- As a desktop visitor, I see a QR code in the Download section that I can scan with my phone to download the app.
-- The QR code is wrapped in a white container so it scans reliably in both light and dark modes.
-
-#### Theme Toggle in Public Navbar
-- As a visitor (not logged in), I can switch between Light, Dark, and System themes using a toggle button in the navbar.
-- The toggle is visible on both desktop and mobile.
-- The theme preference persists across page reloads (via `next-themes` localStorage).
-
-#### Performance Improvements
-- Heavy below-the-fold components (World Map, Testimonials) are lazy-loaded to speed up initial page load.
-- No layout shift (CLS) from images — all images use Next.js `<Image>` with proper `sizes` and `priority`.
-
-#### Accessibility
-- All buttons and links have visible focus rings (`focus-visible:ring-2`).
-- The page works at 360px width with all grids stacking vertically.
+#### Feature Cards Marquee
+- As a visitor, I see the 8 feature cards scrolling horizontally in an infinite loop.
+- The marquee scrolls right-to-left seamlessly without visible gaps.
+- The animation pauses when I hover over the cards.
+- The cards have gradient fade masks on the left and right edges for a smooth blend.
+- On mobile, the cards scroll at a comfortable speed and are tappable.
 
 ### Out of Scope
-- Changes to the authenticated dashboard (it already has a theme toggle).
-- New content or copy changes.
-- Grading section redesign (already completed).
+- Changing card content, images, or descriptions.
+- Adding new feature cards.
+- Changing the section heading or subtitle.
 
 # Technical Design
 
 ### Current Implementation
 
-**Navbar (inline in `HomePageClient.tsx`, lines 387-444):**
-- Already sticky (`sticky top-0 z-50`).
-- Uses `bg-card` background (theme-aware).
-- No theme toggle present.
-- Mobile menu exists with hamburger toggle.
+**Feature Cards (lines 717-805 of `HomePageClient.tsx`):**
+- 8 cards in a `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6` layout.
+- Each card is a `motion.div` with `variants={fadeInUp}`, `h-48 sm:h-56`, and hover effects.
+- Cards use Next.js `<Image>` with gradient overlays (`from-black/80 via-black/40`).
+- White text (`text-white` titles, `text-gray-100` descriptions).
 
-**Feature Cards (lines 710-779):**
-- Already have `text-white` titles and `text-gray-100` descriptions.
-- Already have gradient overlay (`from-black/80 via-black/40`).
-- Use Next.js `<Image>` with `fill`, `sizes`, and `priority` props.
-- Have hover effects (`hover:scale-[1.03]`, `group-hover:scale-110`).
+**University Logo Marquee (lines 220-256):**
+- Uses CSS keyframes (`@keyframes marquee`) — `translateX(0)` to `translateX(-50%)`.
+- Duplicates the array (`[...items, ...items]`) for seamless looping.
+- Wraps in `flex gap-4 animate-marquee` with `overflow-hidden` container.
+- Edge fade masks: `absolute` positioned gradient divs (`from-background to-transparent`).
+- Pauses on hover via `.animate-marquee:hover { animation-play-state: paused; }`.
 
-**Download Section (lines 1526-1614):**
-- Has desktop mockup, CTA button, and feature cards.
-- No QR code present.
-- `react-qr-code` is NOT installed.
-
-**Theme Support:**
-- `next-themes` and `ThemeProvider` are already set up globally in `app/providers.tsx`.
-- `ThemeToggle.tsx` exists in `components/` with a dropdown menu (Light/Dark/System).
-- Used in `DashboardLayout.tsx` but NOT in the public navbar.
-- The component handles hydration mismatch (shows placeholder when `theme === undefined`).
-
-**Animations:**
-- Framer Motion variants (`fadeInUp`, `staggerContainer`) already defined and used extensively.
-- Sections use `whileInView` with `viewport={{ once: true }}`.
-
-**Heavy Components:**
-- `WorldMapDemo` and `AnimatedTestimonialsDemo` are imported directly (not lazy loaded).
-- These are below the fold and block initial paint.
+**CSS Keyframes (lines 1661-1681):**
+- `@keyframes marquee` already defined and used by `animate-marquee` class.
+- 30s linear infinite duration.
 
 ### Key Decisions
 
-1. **Reuse existing ThemeToggle** — The `ThemeToggle.tsx` component is already production-ready with hydration fix, dropdown menu, and DB sync for logged-in users. For public visitors, the DB sync is skipped automatically. No new component needed.
+1. **Reuse the existing CSS marquee pattern** — The university logo carousel already uses a proven CSS-based infinite scroll. No need for Framer Motion here — CSS is simpler and more performant for this use case.
 
-2. **Install `react-qr-code`** — A lightweight, well-maintained library for generating QR codes in React. The QR code will encode the app download URL.
+2. **Duplicate the 8 cards array** — Create a `doubled` array (`[...cards, ...cards]`) so the animation loops seamlessly when `translateX` reaches -50%.
 
-3. **Lazy load World Map and Testimonials** — Use `next/dynamic` with `ssr: false` and `loading` fallback. These components are below the fold and don't need to render on the server.
+3. **Fixed card widths** — Each card needs a fixed width (e.g., `w-[280px] sm:w-[320px]`) to ensure consistent spacing and seamless looping.
 
-4. **Add focus-visible rings** — Add `focus-visible:ring-2 focus-visible:ring-blue-500` to interactive elements that lack them.
+4. **Same fade masks** — Reuse the left/right gradient overlay pattern from the university carousel for visual consistency.
 
 ### Proposed Changes
 
-#### 1. Install `react-qr-code` and add QR Code to Download Section
-- Run `npm install react-qr-code`.
-- In `HomePageClient.tsx`, import `QRCode` from `react-qr-code`.
-- Add a QR code component in the Download section (lines 1526-1614) next to the desktop mockup.
-- Wrap in a white container: `bg-white p-4 rounded-xl inline-block`.
-- The QR code encodes the app download URL (e.g., the sign-up page or Windows download link).
+#### Convert Feature Cards Grid to Marquee in `HomePageClient.tsx`
 
-#### 2. Add Theme Toggle to Public Navbar
-- Import `ThemeToggle` from `@/components/ThemeToggle` in `HomePageClient.tsx`.
-- Add `<ThemeToggle />` to the desktop navbar (line 397-420) next to the "Download App" link.
-- Add `<ThemeToggle />` to the mobile menu (lines 427-443) above the "Sign In" link.
+1. **Extract card data into a constant** — Move the 8-card array from the JSX into a `featureCards` constant (similar to `partnerInstitutions`).
 
-#### 3. Lazy Load Heavy Components
-- Wrap `WorldMapDemo` and `AnimatedTestimonialsDemo` imports with `next/dynamic`.
-- Add loading fallback skeletons.
+2. **Create a `FeatureCardsMarquee` component** — A function component that:
+   - Duplicates the cards array for seamless looping.
+   - Wraps cards in an `overflow-hidden` container with edge fade masks.
+   - Uses the existing `animate-marquee` CSS class.
+   - Each card has a fixed width (`w-[280px] sm:w-[320px]`) and `flex-shrink-0`.
 
-#### 4. Add Focus States
-- Add `focus-visible:ring-2 focus-visible:ring-blue-500` to CTA buttons, explore cards, and nav links that lack them.
+3. **Replace the grid** — Remove the `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` wrapper and replace it with the new marquee component.
+
+4. **Adjust animation speed** — The university marquee uses 30s. For 8 cards (16 doubled), a slightly faster speed (e.g., 25s) may be better since cards are wider. This can be tuned.
 
 ### File Structure
 
 | File | Change |
 |------|--------|
-| `package.json` | Add `react-qr-code` dependency |
-| `components/HomePageClient.tsx` | Add QR code, theme toggle, lazy imports, focus states |
+| `components/HomePageClient.tsx` | Convert feature cards grid to infinite marquee |
 
 # Delivery Steps
 
@@ -140,3 +110,16 @@ Improve initial page load performance and accessibility.
 - Wrap `AnimatedTestimonialsDemo` import similarly.
 - Add `focus-visible:ring-2 focus-visible:ring-blue-500` to CTA buttons, explore cards, and nav links that lack visible focus indicators.
 - Verify the page works at 360px width with all grids stacking vertically.
+
+### ✓ Step 6: Convert Feature Cards to Infinite Marquee
+Replace the static 4-column grid with an infinite horizontal scrolling marquee.
+- Extract the 8 feature cards into a `featureCards` constant array near the top of the file (after `partnerInstitutions`).
+- Create a `FeatureCardsMarquee` function component (similar to `UniversitiesCarousel`):
+  - Duplicate the array: `const doubled = [...featureCards, ...featureCards]`.
+  - Wrap in `div.relative.overflow-hidden` with left/right gradient fade masks.
+  - Inner track uses `flex gap-6 animate-marquee` classes.
+  - Each card has `flex-shrink-0 w-[280px] sm:w-[320px]` fixed width.
+  - Reuse the existing card markup (Image, gradient overlay, text) but without `motion.div` wrappers (CSS animation handles the scrolling).
+- Replace the current grid section (lines 734-803) with `<FeatureCardsMarquee />`.
+- Add a new CSS keyframe (e.g., `@keyframes featureMarquee`) with a slightly faster duration (25s) for wider cards, or reuse the existing `animate-marquee` class.
+- Ensure hover pause works: `.animate-feature-marquee:hover { animation-play-state: paused; }`.
