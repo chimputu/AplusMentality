@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -20,8 +21,169 @@ import BannerCarousel from '@/components/banner-carousel';
 import { CourseCard } from '@/components/course-card';
 import { InstitutionLogo } from '@/components/institution-logo';
 import { HomeAIAssistantWrapper } from '@/components/ai/home-ai-assistant-wrapper';
-import WorldMapDemo from '@/components/world-map-demo';
-import AnimatedTestimonialsDemo from '@/components/animated-testimonials-demo';
+import QRCode from 'react-qr-code';
+import ThemeToggle from '@/components/ThemeToggle';
+
+// Lazy load heavy below-the-fold components for faster initial page load
+const WorldMapDemoLazy = dynamic(() => import('@/components/world-map-demo'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[400px] bg-muted rounded-2xl animate-pulse flex items-center justify-center">
+      <span className="text-muted-foreground">Loading map...</span>
+    </div>
+  ),
+});
+
+const AnimatedTestimonialsDemoLazy = dynamic(() => import('@/components/animated-testimonials-demo'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[300px] bg-muted rounded-2xl animate-pulse flex items-center justify-center">
+      <span className="text-muted-foreground">Loading testimonials...</span>
+    </div>
+  ),
+});
+
+// ============================================================
+// AccordionTable — collapsible full grade table (accessible)
+// ============================================================
+function AccordionTable() {
+  const [isOpen, setIsOpen] = useState(false);
+  const tableId = 'grade-full-table';
+
+  return (
+    <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+      {/* Accordion trigger button */}
+      <div className="border-b border-border">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          aria-controls={tableId}
+          className="w-full flex items-center justify-between px-4 sm:px-6 py-4 text-left hover:bg-muted/50 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-t-2xl"
+        >
+          <span className="text-base sm:text-lg font-semibold text-foreground">
+            View Full Grade Table
+          </span>
+          <span
+            className={`flex-shrink-0 ml-4 transition-transform duration-200 text-muted-foreground ${
+              isOpen ? 'rotate-180' : ''
+            }`}
+            aria-hidden="true"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 7.5L10 12.5L15 7.5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+
+      {/* Collapsible panel */}
+      <div
+        id={tableId}
+        role="region"
+        aria-labelledby={`accordion-trigger-${tableId}`}
+        className={`transition-all duration-200 ${
+          isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+        }`}
+      >
+        <div className="p-2 sm:p-4">
+          <table className="w-full text-sm" caption="top">
+            <caption className="sr-only">
+              Complete Zambian university grading points system — grade, points, percentage range, and description
+            </caption>
+            <thead className="bg-blue-600 text-white">
+              <tr>
+                <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">
+                  Grade
+                </th>
+                <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">
+                  Points
+                </th>
+                <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">
+                  Percentage
+                </th>
+                <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">
+                  Description
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              <tr className="bg-green-50 hover:bg-green-100 transition">
+                <td className="px-3 sm:px-4 py-3 font-bold text-green-700 text-sm">A+</td>
+                <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">2.5</td>
+                <td className="px-3 sm:px-4 py-3 text-foreground text-sm">86 and above</td>
+                <td className="px-3 sm:px-4 py-3 text-green-700 font-medium text-sm">
+                  Upper Distinction
+                </td>
+              </tr>
+              <tr className="bg-green-50/50 hover:bg-green-100 transition">
+                <td className="px-3 sm:px-4 py-3 font-bold text-green-700 text-sm">A</td>
+                <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">2.0</td>
+                <td className="px-3 sm:px-4 py-3 text-foreground text-sm">76-85</td>
+                <td className="px-3 sm:px-4 py-3 text-green-700 font-medium text-sm">
+                  Distinction
+                </td>
+              </tr>
+              <tr className="bg-primary-light hover:bg-blue-100 transition">
+                <td className="px-3 sm:px-4 py-3 font-bold text-blue-700 text-sm">B+</td>
+                <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">1.5</td>
+                <td className="px-3 sm:px-4 py-3 text-foreground text-sm">66-75</td>
+                <td className="px-3 sm:px-4 py-3 text-blue-700 font-medium text-sm">Merit</td>
+              </tr>
+              <tr className="bg-primary-light/50 hover:bg-blue-100 transition">
+                <td className="px-3 sm:px-4 py-3 font-bold text-blue-700 text-sm">B</td>
+                <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">1.0</td>
+                <td className="px-3 sm:px-4 py-3 text-foreground text-sm">60-65</td>
+                <td className="px-3 sm:px-4 py-3 text-blue-700 font-medium text-sm">Credit</td>
+              </tr>
+              <tr className="bg-yellow-50 hover:bg-yellow-100 transition">
+                <td className="px-3 sm:px-4 py-3 font-bold text-yellow-700 text-sm">C+</td>
+                <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0.5</td>
+                <td className="px-3 sm:px-4 py-3 text-foreground text-sm">55-59</td>
+                <td className="px-3 sm:px-4 py-3 text-yellow-700 font-medium text-sm">
+                  Clear Pass
+                </td>
+              </tr>
+              <tr className="bg-yellow-50/50 hover:bg-yellow-100 transition">
+                <td className="px-3 sm:px-4 py-3 font-bold text-yellow-700 text-sm">C</td>
+                <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0.25</td>
+                <td className="px-3 sm:px-4 py-3 text-foreground text-sm">50-54</td>
+                <td className="px-3 sm:px-4 py-3 text-yellow-700 font-medium text-sm">
+                  Bare Pass
+                </td>
+              </tr>
+              <tr className="bg-red-50 hover:bg-red-100 transition">
+                <td className="px-3 sm:px-4 py-3 font-bold text-red-700 text-sm">D+</td>
+                <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0</td>
+                <td className="px-3 sm:px-4 py-3 text-foreground text-sm">45-49</td>
+                <td className="px-3 sm:px-4 py-3 text-red-700 font-medium text-sm">
+                  Bare Fail
+                </td>
+              </tr>
+              <tr className="bg-red-50/50 hover:bg-red-100 transition">
+                <td className="px-3 sm:px-4 py-3 font-bold text-red-700 text-sm">D</td>
+                <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0</td>
+                <td className="px-3 sm:px-4 py-3 text-foreground text-sm">44 and below</td>
+                <td className="px-3 sm:px-4 py-3 text-red-700 font-medium text-sm">Fail</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const fadeInUp: any = {
   hidden: { opacity: 0, y: 30 },
@@ -253,22 +415,23 @@ export default function HomePageClient() {
             </Link>
 
             <div className="hidden md:flex items-center space-x-2">
-              <Link href="/sign-in" className="text-sm font-medium text-foreground hover:text-blue-600 transition">
+              <Link href="/sign-in" className="text-sm font-medium text-foreground hover:text-blue-600 transition focus-visible:ring-2 focus-visible:ring-blue-500 rounded">
                 Sign In
               </Link>
               <Link
                 href="/sign-up"
-                className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm"
+                className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm focus-visible:ring-2 focus-visible:ring-blue-500"
               >
                 Get Started
               </Link>
               <a
                 href="/#download"
-                className="inline-flex items-center gap-1.5 border border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950 rounded-md px-3 py-1.5 text-sm font-medium transition"
+                className="inline-flex items-center gap-1.5 border border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950 rounded-md px-3 py-1.5 text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
               >
                 <Download className="w-4 h-4" />
                 Download App
               </a>
+              <ThemeToggle />
               <span className="w-px h-5 border-border mx-1"></span>
               <Link href="https://smartcorp-zeta.vercel.app">
                 <div className="bg-muted text-foreground text-[10px] font-medium px-2.5 py-1 rounded-full border border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.5),0_0_30px_rgba(147,51,234,0.3)] animate-pulse">
@@ -284,13 +447,17 @@ export default function HomePageClient() {
         </div>
         {isMenuOpen && (
           <div className="md:hidden bg-card border-b border-border px-2 py-4 space-y-3">
-            <Link href="/sign-in" className="block text-sm font-medium text-foreground hover:text-blue-600 transition" onClick={() => setIsMenuOpen(false)}>
+            <div className="flex items-center justify-between px-2">
+              <span className="text-sm text-muted-foreground">Theme</span>
+              <ThemeToggle />
+            </div>
+            <Link href="/sign-in" className="block text-sm font-medium text-foreground hover:text-blue-600 transition focus-visible:ring-2 focus-visible:ring-blue-500 rounded" onClick={() => setIsMenuOpen(false)}>
               Sign In
             </Link>
-            <Link href="/sign-up" className="block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/sign-up" className="block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center focus-visible:ring-2 focus-visible:ring-blue-500" onClick={() => setIsMenuOpen(false)}>
               Get Started
             </Link>
-            <a href="/#download" className="flex items-center gap-2 text-sm font-medium text-blue-500 hover:text-blue-600 transition" onClick={() => setIsMenuOpen(false)}>
+            <a href="/#download" className="flex items-center gap-2 text-sm font-medium text-blue-500 hover:text-blue-600 transition focus-visible:ring-2 focus-visible:ring-blue-500 rounded" onClick={() => setIsMenuOpen(false)}>
               <Download className="w-4 h-4" />
               Download App
             </a>
@@ -513,7 +680,7 @@ export default function HomePageClient() {
       </motion.section>
 
       {/* ===== WORLD MAP — CONNECTING ZAMBIA GLOBALLY ===== */}
-      <WorldMapDemo />
+      <WorldMapDemoLazy />
 
       {/* ===== MUST EXPLORE ===== */}
       <motion.section
@@ -808,139 +975,339 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-background"
+        className="py-10 sm:py-16 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-muted dark:to-background"
+        aria-labelledby="grading-section-heading"
       >
         <div className="w-full px-3 sm:px-4">
-          <div className="text-center mb-8 sm:mb-10">
+          {/* Section heading */}
+          <div className="text-center mb-8 sm:mb-12">
             <Award className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Zambian University Grading System</h2>
-            <p className="mt-2 text-sm text-muted-foreground">Understanding how Zambian universities grade academic performance</p>
+            <h2 id="grading-section-heading" className="text-2xl sm:text-3xl font-bold text-foreground">
+              Zambian University Grading System
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground max-w-2xl mx-auto">
+              Understanding how Zambian universities grade academic performance
+            </p>
           </div>
 
-          {/* ===== GRADING POINTS SYSTEM ===== */}
-          <div className="mb-8 sm:mb-12">
-            <h3 className="text-xl font-bold text-foreground mb-4 text-center">Grading Points System</h3>
-            <p className="sm:hidden text-xs text-muted-foreground text-center mb-2">← Swipe to see full table →</p>
-            <div className="max-w-4xl mx-auto bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
-              <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
-                <table className="w-full min-w-[500px]">
-                  <thead className="bg-blue-600 text-white">
-                    <tr>
-                      <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Grade</th>
-                      <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Points</th>
-                      <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Percentage</th>
-                      <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    <tr className="bg-green-50 hover:bg-green-100 transition">
-                      <td className="px-3 sm:px-4 py-3 font-bold text-green-700 text-sm">A+</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">2.5</td>
-                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">86 and above</td>
-                      <td className="px-3 sm:px-4 py-3 text-green-700 font-medium text-sm">Upper Distinction</td>
-                    </tr>
-                    <tr className="bg-green-50/50 hover:bg-green-100 transition">
-                      <td className="px-3 sm:px-4 py-3 font-bold text-green-700 text-sm">A</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">2.0</td>
-                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">76-85</td>
-                      <td className="px-3 sm:px-4 py-3 text-green-700 font-medium text-sm">Distinction</td>
-                    </tr>
-                    <tr className="bg-primary-light hover:bg-blue-100 transition">
-                      <td className="px-3 sm:px-4 py-3 font-bold text-blue-700 text-sm">B+</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">1.5</td>
-                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">66-75</td>
-                      <td className="px-3 sm:px-4 py-3 text-blue-700 font-medium text-sm">Merit</td>
-                    </tr>
-                    <tr className="bg-primary-light/50 hover:bg-blue-100 transition">
-                      <td className="px-3 sm:px-4 py-3 font-bold text-blue-700 text-sm">B</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">1.0</td>
-                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">60-65</td>
-                      <td className="px-3 sm:px-4 py-3 text-blue-700 font-medium text-sm">Credit</td>
-                    </tr>
-                    <tr className="bg-yellow-50 hover:bg-yellow-100 transition">
-                      <td className="px-3 sm:px-4 py-3 font-bold text-yellow-700 text-sm">C+</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0.5</td>
-                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">55-59</td>
-                      <td className="px-3 sm:px-4 py-3 text-yellow-700 font-medium text-sm">Clear Pass</td>
-                    </tr>
-                    <tr className="bg-yellow-50/50 hover:bg-yellow-100 transition">
-                      <td className="px-3 sm:px-4 py-3 font-bold text-yellow-700 text-sm">C</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0.25</td>
-                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">50-54</td>
-                      <td className="px-3 sm:px-4 py-3 text-yellow-700 font-medium text-sm">Bare Pass</td>
-                    </tr>
-                    <tr className="bg-red-50 hover:bg-red-100 transition">
-                      <td className="px-3 sm:px-4 py-3 font-bold text-red-700 text-sm">D+</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0</td>
-                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">45-49</td>
-                      <td className="px-3 sm:px-4 py-3 text-red-700 font-medium text-sm">Bare Fail</td>
-                    </tr>
-                    <tr className="bg-red-50/50 hover:bg-red-100 transition">
-                      <td className="px-3 sm:px-4 py-3 font-bold text-red-700 text-sm">D</td>
-                      <td className="px-3 sm:px-4 py-3 font-semibold text-foreground text-sm">0</td>
-                      <td className="px-3 sm:px-4 py-3 text-foreground text-sm">44 and below</td>
-                      <td className="px-3 sm:px-4 py-3 text-red-700 font-medium text-sm">Fail</td>
-                    </tr>
-                  </tbody>
-                </table>
+          {/* ===== DEGREE CLASSIFICATION — TOP (main message) ===== */}
+          <div className="max-w-4xl mx-auto mb-10 sm:mb-14">
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground text-center mb-2">
+              Degree Classification
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-foreground text-center mb-6 max-w-2xl mx-auto">
+              Based on cumulative points from 20 courses at 3rd &amp; 4th Year Levels (4-Year programmes)
+              or 4th &amp; 5th Year Levels (5-Year programmes)
+            </p>
+
+            {/* Degree classification cards — responsive grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Distinction */}
+              <div className="relative rounded-2xl border-2 border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-green-600 flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">★</span>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-green-600 text-white text-xs font-bold">
+                        Distinction
+                      </span>
+                    </div>
+                    <p className="text-lg sm:text-xl font-bold text-green-800 dark:text-green-300 mt-1">
+                      40 Points and above
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Merit */}
+              <div className="relative rounded-2xl border-2 border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">◆</span>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-xs font-bold">
+                        Merit
+                      </span>
+                    </div>
+                    <p className="text-lg sm:text-xl font-bold text-blue-800 dark:text-blue-300 mt-1">
+                      30-39.9 Points
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Credit */}
+              <div className="relative rounded-2xl border-2 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/30 dark:border-yellow-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-yellow-600 flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">●</span>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-yellow-600 text-white text-xs font-bold">
+                        Credit
+                      </span>
+                    </div>
+                    <p className="text-lg sm:text-xl font-bold text-yellow-800 dark:text-yellow-300 mt-1">
+                      20-29.9 Points
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pass */}
+              <div className="relative rounded-2xl border-2 border-gray-200 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gray-500 flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">○</span>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gray-500 text-white text-xs font-bold">
+                        Pass
+                      </span>
+                    </div>
+                    <p className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-300 mt-1">
+                      Less than 20 Points
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* ===== DEGREE CLASSIFICATION SYSTEM ===== */}
-          <p className="sm:hidden text-xs text-muted-foreground text-center mb-2">← Swipe to see full table →</p>
-          <div className="max-w-4xl mx-auto bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 sm:px-6 py-4">
-              <h3 className="text-lg sm:text-xl font-bold text-foreground text-center">Degree Classification System</h3>
-              <p className="text-blue-100 text-xs sm:text-sm text-center mt-1">
-                Based on cumulative points from 20 courses at 3rd &amp; 4th Year Levels (4-Year programmes)<br />
-                or 4th &amp; 5th Year Levels (5-Year programmes)
-              </p>
+          {/* ===== GRADE BADGES — visual scale ===== */}
+          <div className="max-w-4xl mx-auto mb-8">
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground text-center mb-2">
+              Grade Bands
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-foreground text-center mb-6">
+              Each grade band shows the letter grade, percentage range, and points awarded.
+            </p>
+
+            {/* Color legend */}
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-6 text-xs sm:text-sm">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-3 h-3 rounded-full bg-green-600" />
+                <span className="text-foreground">Distinction</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-3 h-3 rounded-full bg-blue-600" />
+                <span className="text-foreground">Merit / Credit</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-3 h-3 rounded-full bg-yellow-600" />
+                <span className="text-foreground">Pass</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-3 h-3 rounded-full bg-red-600" />
+                <span className="text-foreground">Fail</span>
+              </span>
             </div>
-            <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0 p-2 sm:p-4">
-              <table className="w-full min-w-[400px]">
-                <thead>
-                  <tr className="border-b-2 border-border">
-                    <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold text-foreground">Cumulative Points</th>
-                    <th className="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-semibold text-foreground">Degree Classification</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  <tr className="hover:bg-green-50 transition">
-                    <td className="px-3 sm:px-4 py-4 font-bold text-green-700 text-sm">40 Points and above</td>
-                    <td className="px-3 sm:px-4 py-4">
-                      <span className="inline-block bg-green-100 text-green-800 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
-                         Distinction
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-primary-light transition">
-                    <td className="px-3 sm:px-4 py-4 font-bold text-blue-700 text-sm">30-39.9 Points</td>
-                    <td className="px-3 sm:px-4 py-4">
-                      <span className="inline-block bg-blue-100 text-blue-800 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
-                         Merit
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-yellow-50 transition">
-                    <td className="px-3 sm:px-4 py-4 font-bold text-yellow-700 text-sm">20-29.9 Points</td>
-                    <td className="px-3 sm:px-4 py-4">
-                      <span className="inline-block bg-yellow-100 text-yellow-800 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
-                         Credit
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-card-hover transition">
-                    <td className="px-3 sm:px-4 py-4 font-bold text-foreground text-sm">Less than 20 Points</td>
-                    <td className="px-3 sm:px-4 py-4">
-                      <span className="inline-block bg-muted text-foreground px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold">
-                        Pass
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+
+            {/* Grade badges grid — 1 col mobile, 2 col tablet, 4 col desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              {/* A+ */}
+              <div className="group rounded-xl border-2 border-green-200 bg-white dark:bg-neutral-900 dark:border-green-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-green-600 text-white text-lg font-bold">
+                    A+
+                  </span>
+                  <div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-xs font-semibold">
+                      Upper Distinction
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Percentage</span>
+                    <span className="font-semibold text-foreground">86 and above</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Points</span>
+                    <span className="font-bold text-green-700 dark:text-green-400">2.5</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* A */}
+              <div className="group rounded-xl border-2 border-green-200 bg-white dark:bg-neutral-900 dark:border-green-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-green-600 text-white text-lg font-bold">
+                    A
+                  </span>
+                  <div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-xs font-semibold">
+                      Distinction
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Percentage</span>
+                    <span className="font-semibold text-foreground">76-85</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Points</span>
+                    <span className="font-bold text-green-700 dark:text-green-400">2.0</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* B+ */}
+              <div className="group rounded-xl border-2 border-blue-200 bg-white dark:bg-neutral-900 dark:border-blue-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-600 text-white text-lg font-bold">
+                    B+
+                  </span>
+                  <div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-semibold">
+                      Merit
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Percentage</span>
+                    <span className="font-semibold text-foreground">66-75</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Points</span>
+                    <span className="font-bold text-blue-700 dark:text-blue-400">1.5</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* B */}
+              <div className="group rounded-xl border-2 border-blue-200 bg-white dark:bg-neutral-900 dark:border-blue-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-600 text-white text-lg font-bold">
+                    B
+                  </span>
+                  <div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-semibold">
+                      Credit
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Percentage</span>
+                    <span className="font-semibold text-foreground">60-65</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Points</span>
+                    <span className="font-bold text-blue-700 dark:text-blue-400">1.0</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* C+ */}
+              <div className="group rounded-xl border-2 border-yellow-200 bg-white dark:bg-neutral-900 dark:border-yellow-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-yellow-600 text-white text-lg font-bold">
+                    C+
+                  </span>
+                  <div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-xs font-semibold">
+                      Clear Pass
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Percentage</span>
+                    <span className="font-semibold text-foreground">55-59</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Points</span>
+                    <span className="font-bold text-yellow-700 dark:text-yellow-400">0.5</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* C */}
+              <div className="group rounded-xl border-2 border-yellow-200 bg-white dark:bg-neutral-900 dark:border-yellow-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-yellow-600 text-white text-lg font-bold">
+                    C
+                  </span>
+                  <div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-xs font-semibold">
+                      Bare Pass
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Percentage</span>
+                    <span className="font-semibold text-foreground">50-54</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Points</span>
+                    <span className="font-bold text-yellow-700 dark:text-yellow-400">0.25</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* D+ */}
+              <div className="group rounded-xl border-2 border-red-200 bg-white dark:bg-neutral-900 dark:border-red-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-red-600 text-white text-lg font-bold">
+                    D+
+                  </span>
+                  <div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-semibold">
+                      Bare Fail
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Percentage</span>
+                    <span className="font-semibold text-foreground">45-49</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Points</span>
+                    <span className="font-bold text-red-700 dark:text-red-400">0</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* D */}
+              <div className="group rounded-xl border-2 border-red-200 bg-white dark:bg-neutral-900 dark:border-red-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-red-600 text-white text-lg font-bold">
+                    D
+                  </span>
+                  <div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-semibold">
+                      Fail
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Percentage</span>
+                    <span className="font-semibold text-foreground">44 and below</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Points</span>
+                    <span className="font-bold text-red-700 dark:text-red-400">0</span>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* ===== FULL TABLE — collapsible accordion ===== */}
+          <div className="max-w-4xl mx-auto">
+            <AccordionTable />
           </div>
 
           {/* Source Note */}
@@ -984,7 +1351,7 @@ export default function HomePageClient() {
               </a>
               <Link
                 href="mailto:kafiswegchimputu@gmail.com"
-                className="bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
+                className="bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500"
               >
                 <Mail className="w-5 h-5" /> Email Us
               </Link>
@@ -1009,7 +1376,7 @@ export default function HomePageClient() {
           <div className="relative">
             <button
               onClick={() => setShowContactMenu(!showContactMenu)}
-              className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2"
+              className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition shadow-md inline-flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               Get in touch <span className="text-lg">→</span>
             </button>
@@ -1042,7 +1409,7 @@ export default function HomePageClient() {
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground">What Our Community Says</h2>
             <p className="mt-2 text-muted-foreground">Real stories from real Zambian learners</p>
           </div>
-          <AnimatedTestimonialsDemo />
+          <AnimatedTestimonialsDemoLazy />
         </div>
       </section>
 
@@ -1089,7 +1456,7 @@ export default function HomePageClient() {
               </ul>
 
               <div className="flex flex-wrap gap-4 pt-4">
-                <Link href="/sign-up" className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition-colors">
+                <Link href="/sign-up" className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500">
                   Join Now
                 </Link>
                 <a href="https://wa.me/260772231300" target="_blank" rel="noopener noreferrer" className="bg-green-500 text-foreground px-6 py-3 rounded-full font-medium hover:bg-green-600 transition-colors flex items-center gap-2">
@@ -1172,10 +1539,9 @@ export default function HomePageClient() {
           <div className="text-center mt-8">
             <Link
               href="/universities"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               View All Universities
-              <span className="text-lg">→</span>
             </Link>
           </div>
         </div>
@@ -1200,9 +1566,9 @@ export default function HomePageClient() {
             </p>
           </div>
 
-          {/* CSS Desktop Mockup */}
-          <div className="flex justify-center mb-12">
-            <div className="relative w-full max-w-2xl">
+          {/* CSS Desktop Mockup + QR Code */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12">
+            <div className="relative w-full max-w-xl">
               {/* Monitor frame */}
               <div className="bg-gray-800 dark:bg-neutral-700 rounded-xl p-3 shadow-2xl">
                 {/* Screen */}
@@ -1223,6 +1589,22 @@ export default function HomePageClient() {
               <div className="mx-auto w-32 h-3 bg-gray-600 dark:bg-neutral-600 rounded-b-lg"></div>
               <div className="mx-auto w-48 h-1 bg-gray-500 dark:bg-neutral-500 rounded-b-full"></div>
             </div>
+
+            {/* QR Code for mobile download */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="bg-white p-4 rounded-xl shadow-lg inline-block">
+                <QRCode
+                  value="https://aplusmentality.com/sign-up"
+                  size={160}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                  level="H"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground text-center max-w-[200px]">
+                Scan with your phone to get the app
+              </p>
+            </div>
           </div>
 
           {/* CTA Button */}
@@ -1230,7 +1612,7 @@ export default function HomePageClient() {
             <a
               href="/downloads/aplus-setup.exe"
               download
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-medium text-lg transition shadow-lg hover:shadow-xl"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-medium text-lg transition shadow-lg hover:shadow-xl focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               <Download className="w-5 h-5" />
               Download for Windows
