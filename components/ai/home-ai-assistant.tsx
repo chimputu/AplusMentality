@@ -233,7 +233,7 @@ export function HomeAIAssistant() {
             onClick={() => setOpen(false)}
           />
 
-          <div className="fixed z-50 flex flex-col bottom-0 right-0 left-0 h-[70dvh] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-card shadow-2xl border border-border">
+          <div className="fixed z-50 flex flex-col bottom-16 right-0 left-0 h-[calc(70dvh-4rem)] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-card shadow-2xl border border-border">
             {/* Header — blue-500 */}
             <div className="p-4 border-b border-border bg-blue-500 text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
               <div>
