@@ -24,6 +24,19 @@ async function requireAdmin() {
   return user;
 }
 
+async function requireSuperAdmin() {
+  const { userId, orgRole } = await auth();
+  if (!userId) throw new Error('Unauthorized');
+
+  const user = await prisma.user.findUnique({ where: { clerkId: userId } });
+  if (!user) throw new Error('User not found');
+
+  if (user.role !== 'SUPER_ADMIN' || orgRole !== 'org:super_admin') {
+    throw new Error('Unauthorized: Only the Platform Super Admin can create Universities.');
+  }
+  return user;
+}
+
 function getLevelPrefix(levelType: LevelType): string {
   switch (levelType) {
     case LevelType.YEAR: return 'Year';
@@ -95,7 +108,7 @@ const updateInstitutionSchema = z.object({
 // ============================================
 
 export async function createInstitution(rawInput: unknown) {
-  await requireAdmin();
+  await requireSuperAdmin();
 
   const input = createInstitutionSchema.parse(rawInput);
 

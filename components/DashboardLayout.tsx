@@ -234,7 +234,8 @@ export default function DashboardLayout({
       href: '/admin/institutions', 
       label: 'Institutions', 
       icon: Building2,
-      section: 'Management'
+      section: 'Management',
+      roles: ['SUPER_ADMIN'],
     },
     { 
       href: '/admin/programmes', 

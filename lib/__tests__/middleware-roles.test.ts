@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest';
 // Test the org role mapping logic used by middleware and org-scope
 describe('middleware role mapping', () => {
   const ORG_ROLE_MAP: Record<string, string> = {
+    'org:super_admin': 'SUPER_ADMIN',
     'org:admin': 'ADMIN',
     'org:tutor': 'TUTOR',
     'org:lecturer': 'LECTURER',
@@ -52,6 +53,10 @@ describe('middleware role mapping', () => {
 
     it('falls back to STUDENT when org role is null', () => {
       expect(mapOrgRole(null)).toBe('STUDENT');
+    });
+
+    it('maps org:super_admin to SUPER_ADMIN', () => {
+      expect(mapOrgRole('org:super_admin')).toBe('SUPER_ADMIN');
     });
   });
 
@@ -123,6 +128,11 @@ describe('middleware role mapping', () => {
 
     it('admin (org:admin) can access /admin/institutions', () => {
       const appRole = mapOrgRole('org:admin');
+      expect(canAccessRoute(appRole, '/admin/institutions')).toBe(true);
+    });
+
+    it('super_admin (org:super_admin) can access /admin/institutions', () => {
+      const appRole = mapOrgRole('org:super_admin');
       expect(canAccessRoute(appRole, '/admin/institutions')).toBe(true);
     });
 
