@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import { X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { X, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 // Error boundary to prevent banner crashes from breaking the page
@@ -68,6 +68,64 @@ const variantStyles: Record<string, { bg: string; border: string; text: string; 
   },
 };
 
+/**
+ * Renders a single banner card.
+ */
+function BannerCard({
+  banner,
+  onDismiss,
+}: {
+  banner: Banner;
+  onDismiss: (id: string) => void;
+}) {
+  const style = variantStyles[banner.variant] || variantStyles.INFO;
+
+  return (
+    <div
+      className={`${style.bg} border-l-4 ${style.border} px-4 py-3 relative flex-shrink-0`}
+    >
+      <div className="flex items-center justify-between gap-4">
+        {/* Content */}
+        <div className="flex-1 flex items-center gap-4 min-w-0">
+          <div className="flex-1 min-w-0">
+            <h3 className={`font-semibold text-sm ${style.text}`}>{banner.title}</h3>
+            <p className={`text-sm mt-0.5 ${style.text} opacity-80`}>{banner.message}</p>
+            {banner.ctaLabel && banner.ctaUrl && (
+              <Link
+                href={banner.ctaUrl}
+                target={banner.ctaUrl.startsWith('http') ? '_blank' : undefined}
+                rel={banner.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                className={`inline-flex items-center gap-1 mt-2 px-3 py-1 text-xs font-medium rounded-md transition ${style.cta}`}
+              >
+                {banner.ctaLabel}
+                {banner.ctaUrl.startsWith('http') && <ExternalLink className="w-3 h-3" />}
+              </Link>
+            )}
+          </div>
+
+          {/* Image (hidden on mobile) */}
+          {banner.imageUrl && (
+            <img
+              src={banner.imageUrl}
+              alt={banner.title}
+              className="hidden md:block w-24 h-16 object-cover rounded-lg flex-shrink-0"
+            />
+          )}
+        </div>
+
+        {/* Dismiss button */}
+        <button
+          onClick={() => onDismiss(banner.id)}
+          className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-card/10 transition flex-shrink-0"
+          aria-label="Dismiss banner"
+        >
+          <X className="w-4 h-4 text-muted-foreground" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function BannerCarousel({
   placement,
   institutionId,
@@ -90,7 +148,6 @@ function BannerCarouselInner({
   institutionId?: string;
 }) {
   const [banners, setBanners] = useState<Banner[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [dismissed, setDismissed] = useState<Set<string>>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -140,115 +197,43 @@ function BannerCarouselInner({
 
   const visibleBanners = banners.filter((b) => !dismissed.has(b.id));
 
-  // Auto-rotate every 5 seconds
-  useEffect(() => {
-    if (visibleBanners.length <= 1) return;
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % visibleBanners.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [visibleBanners.length]);
-
   if (visibleBanners.length === 0) return null;
 
-  const current = visibleBanners[currentIndex];
-  const style = variantStyles[current.variant] || variantStyles.INFO;
+  // Single banner: render as a static card
+  if (visibleBanners.length === 1) {
+    return <BannerCard banner={visibleBanners[0]} onDismiss={dismissBanner} />;
+  }
 
-  const goToPrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + visibleBanners.length) % visibleBanners.length);
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % visibleBanners.length);
-  };
+  // Multiple banners: infinite CSS marquee
+  // Duplicate the list for seamless looping
+  const marqueeBanners = [...visibleBanners, ...visibleBanners];
 
   return (
-    <div className={`${style.bg} border-l-4 ${style.border} px-4 py-3 relative`}>
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-        {/* Navigation arrows (only if multiple banners) */}
-        {visibleBanners.length > 1 && (
-          <button
-            onClick={goToPrev}
-            className="flex-shrink-0 p-1 rounded-full hover:bg-black/10 dark:hover:bg-card/10 transition"
-            aria-label="Previous banner"
-          >
-            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-          </button>
-        )}
-
-        {/* Content */}
-        <div className="flex-1 flex items-center gap-4 min-w-0">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className={`font-semibold text-sm ${style.text}`}>{current.title}</h3>
-              {visibleBanners.length > 1 && (
-                <span className="text-xs text-muted-foreground">
-                  {currentIndex + 1}/{visibleBanners.length}
-                </span>
-              )}
-            </div>
-            <p className={`text-sm mt-0.5 ${style.text} opacity-80`}>{current.message}</p>
-            {current.ctaLabel && current.ctaUrl && (
-              <Link
-                href={current.ctaUrl}
-                target={current.ctaUrl.startsWith('http') ? '_blank' : undefined}
-                rel={current.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
-                className={`inline-flex items-center gap-1 mt-2 px-3 py-1 text-xs font-medium rounded-md transition ${style.cta}`}
-              >
-                {current.ctaLabel}
-                {current.ctaUrl.startsWith('http') && <ExternalLink className="w-3 h-3" />}
-              </Link>
-            )}
+    <div className="overflow-hidden whitespace-nowrap">
+      <style>{`
+        @keyframes banner-marquee {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .banner-marquee-animate {
+          display: inline-flex;
+          animation: banner-marquee 30s linear infinite;
+        }
+        .banner-marquee-animate:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+      <div className="banner-marquee-animate">
+        {marqueeBanners.map((banner, index) => (
+          <div key={`${banner.id}-${index}`} className="w-96 flex-shrink-0 px-2">
+            <BannerCard banner={banner} onDismiss={dismissBanner} />
           </div>
-
-          {/* Image (hidden on mobile) */}
-          {current.imageUrl && (
-            <img
-              src={current.imageUrl}
-              alt={current.title}
-              className="hidden md:block w-24 h-16 object-cover rounded-lg flex-shrink-0"
-            />
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {visibleBanners.length > 1 && (
-            <button
-              onClick={goToNext}
-              className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-card/10 transition"
-              aria-label="Next banner"
-            >
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </button>
-          )}
-          <button
-            onClick={() => dismissBanner(current.id)}
-            className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-card/10 transition"
-            aria-label="Dismiss banner"
-          >
-            <X className="w-4 h-4 text-muted-foreground" />
-          </button>
-        </div>
+        ))}
       </div>
-
-      {/* Dots indicator */}
-      {visibleBanners.length > 1 && (
-        <div className="flex justify-center gap-1 mt-2">
-          {visibleBanners.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIndex(i)}
-              className={`w-1.5 h-1.5 rounded-full transition ${
-                i === currentIndex
-                  ? 'bg-blue-500 dark:bg-blue-400'
-                  : 'bg-muted '
-              }`}
-              aria-label={`Go to banner ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }

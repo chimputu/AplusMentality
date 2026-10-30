@@ -415,3 +415,56 @@ export async function inviteAdmin(institutionId: string, emailAddress?: string) 
     emailSent: false,
   };
 }
+
+export async function syncOrganizationToClerk(institutionId: string) {
+  await requireSuperAdmin();
+
+  const institution = await prisma.institution.findUnique({ where: { id: institutionId } });
+  if (!institution) throw new Error('Institution not found');
+
+  // If already linked, this is a no-op
+  if (institution.clerkOrgId) {
+    return { success: true, message: 'Organization already linked to Clerk.', clerkOrgId: institution.clerkOrgId };
+  }
+
+  // Validate that the institution has a slug (required for Clerk org creation)
+  if (!institution.slug) {
+    throw new Error('Institution must have a slug before syncing with Clerk.');
+  }
+
+  // Create the Clerk organization
+  const result = await createClerkOrg(institution.name, institution.slug);
+  if (!result.success) {
+    // If Clerk returns 409 (org already exists), try to find and link the existing org
+    if (result.error && result.error.includes('409')) {
+      const existingOrg = await fetch(`https://api.clerk.com/v1/organizations?limit=200`, {
+        headers: {
+          Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const existingData = await existingOrg.json();
+      const org = existingData.data?.find((o: any) => o.slug === institution.slug);
+      if (org) {
+        await prisma.institution.update({
+          where: { id: institutionId },
+          data: { clerkOrgId: org.id, clerkOrgSlug: org.slug },
+        });
+        revalidatePath('/admin/organizations');
+        return { success: true, message: 'Linked to existing Clerk organization.', clerkOrgId: org.id };
+      }
+    }
+    throw new Error(`Failed to create organization: ${result.error}`);
+  }
+
+  // Update the institution with the new Clerk org ID
+  if (result.orgId) {
+    await prisma.institution.update({
+      where: { id: institutionId },
+      data: { clerkOrgId: result.orgId, clerkOrgSlug: institution.slug },
+    });
+  }
+
+  revalidatePath('/admin/organizations');
+  return { success: true, message: 'Organization synced with Clerk successfully.', clerkOrgId: result.orgId };
+}

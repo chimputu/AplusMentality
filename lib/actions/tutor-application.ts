@@ -28,7 +28,7 @@ async function requireAuth() {
   const { userId } = await auth();
   if (!userId) throw new Error('Unauthorized');
 
-  let user = await prisma.user.findUnique({ where: { clerkId: userId } });
+  const user = await prisma.user.findUnique({ where: { clerkId: userId } });
   if (!user) throw new Error('User not found');
   return user;
 }
@@ -581,6 +581,13 @@ export async function approveTutorApplication(rawInput: unknown) {
         await tx.tutorSpecialty.createMany({
           data: specialtyData,
           skipDuplicates: true,
+        });
+
+        // Auto-assign the tutor as the primary tutor for each selected course
+        const courseIds = validOfferings.map((o) => o.courseId!);
+        await tx.course.updateMany({
+          where: { id: { in: courseIds } },
+          data: { tutorId: application.userId },
         });
       }
     }

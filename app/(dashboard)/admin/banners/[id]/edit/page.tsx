@@ -9,6 +9,8 @@ export default async function EditBannerPage({
   params: Promise<{ id: string }>;
 }) {
   // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  const { role } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+  const isSuperAdmin = role === 'SUPER_ADMIN';
   const { id } = await params;
 
   const banner = await prisma.banner.findUnique({
@@ -44,5 +46,5 @@ export default async function EditBannerPage({
     institutionIds,
   };
 
-  return <BannerForm bannerId={id} initialData={initialData} />;
+  return <BannerForm bannerId={id} initialData={initialData} isSuperAdmin={isSuperAdmin} />;
 }

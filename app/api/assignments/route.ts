@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, getAuthUser } from '@/lib/auth';
+import { isResourceInFullScopeFromUser } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -98,7 +99,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
    try {
-     const { userId } = await requireAuth(['TUTOR', 'LECTURER', 'ADMIN']);
+     const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN']);
+     if (!auth) {
+       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+     }
+     const userId = auth.userId;
     const body = await req.json();
 
     const {
@@ -123,11 +128,19 @@ export async function POST(req: NextRequest) {
 
     const course = await prisma.course.findUnique({
       where: { id: courseId },
-      select: { id: true },
+      select: { id: true, universityId: true, year: true, period: true },
     });
 
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 });
+    }
+
+    // SECURITY: Verify the tutor's scope matches the target course
+    if (!isResourceInFullScopeFromUser(auth.user, course)) {
+      return NextResponse.json(
+        { error: 'You are not authorized to create assignments for this course' },
+        { status: 403 }
+      );
     }
 
     const assignment = await prisma.assignment.create({
@@ -167,7 +180,10 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
    try {
-     await requireAuth(['TUTOR', 'LECTURER', 'ADMIN']);
+     const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN']);
+     if (!auth) {
+       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+     }
     const body = await req.json();
 
     const {
@@ -227,9 +243,12 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
    try {
-     await requireAuth(['TUTOR', 'LECTURER', 'ADMIN']);
+     const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN']);
+     if (!auth) {
+       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+     }
 
-    const { searchParams } = new URL(req.url);
+     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
     if (!id) {

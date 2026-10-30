@@ -245,16 +245,19 @@ model User {
 // ANNOUNCEMENTS
 // ============================================
 model Announcement {
-  id        String   @id @default(cuid())
-  title     String
-  content   String
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [clerkId])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String      @id @default(cuid())
+  title          String
+  content        String
+  authorId       String
+  author         User        @relation(fields: [authorId], references: [clerkId])
+  institutionId  String?
+  institution    Institution? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   @@index([createdAt])
   @@index([authorId])
+  @@index([institutionId])
 }
 
 // ============================================
@@ -1314,6 +1317,7 @@ model Institution {
   // Tutor applications
   tutorApplications   TutorApplication[]
   applicationWindows  ApplicationWindow[]
+  announcements       Announcement[]
 
   // Institution change requests
   changeRequestsCurrent InstitutionChangeRequest[] @relation("ChangeRequestCurrentInst")
