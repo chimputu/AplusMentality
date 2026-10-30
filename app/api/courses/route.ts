@@ -173,7 +173,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, user } = await requireAuth(['ADMIN']);
+    const { userId, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
 
     console.log(`📝 Admin ${user.email} creating course`);
 
@@ -295,7 +295,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    const { userId, role } = await requireAuth(['ADMIN']);
+    const { userId, role } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const body = await req.json();
 
     const {
@@ -379,7 +379,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { userId, role } = await requireAuth(['ADMIN']);
+    const { userId, role } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');

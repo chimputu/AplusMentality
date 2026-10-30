@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { id } = await params;
 
     const assignment = await prisma.assignment.findUnique({

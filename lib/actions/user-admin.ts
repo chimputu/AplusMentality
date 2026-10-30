@@ -16,7 +16,10 @@ async function requireAdmin() {
   const { userId } = await auth();
   if (!userId) throw new Error('Unauthorized');
 
-  const user = await prisma.user.findUnique({ where: { clerkId: userId } });
+  const user = await prisma.user.findUnique({
+    where: { clerkId: userId },
+    select: { id: true, role: true, clerkId: true, institutionId: true, email: true },
+  });
   if (!user) throw new Error('User not found');
 
   if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
@@ -62,15 +65,24 @@ export async function listUsers(filters?: {
   page?: number;
   pageSize?: number;
 }) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   const page = filters?.page || 1;
   const pageSize = filters?.pageSize || 20;
   const skip = (page - 1) * pageSize;
 
   const where: any = {};
+
+  // Strict tenant isolation: ADMIN can only see users in their own institution
+  // SUPER_ADMIN bypasses this and sees all users globally
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId) {
+    where.institutionId = adminUser.institutionId;
+  }
+  // SUPER_ADMIN: no institution filter — full global visibility
+
   if (filters?.role) where.role = filters.role;
-  if (filters?.institutionId !== undefined) where.institutionId = filters.institutionId;
+  // Only allow SUPER_ADMIN to filter by institutionId from query params
+  if (adminUser.role === 'SUPER_ADMIN' && filters?.institutionId !== undefined) where.institutionId = filters.institutionId;
   if (filters?.onboarded !== undefined) where.onboarded = filters.onboarded;
   if (filters?.search) {
     where.OR = [

@@ -8,7 +8,7 @@ export async function PUT(
   { params }: { params: Promise<{ submissionId: string }> }
 ) {
   try {
-    const authResult: any = await requireAuth(['ADMIN']);
+    const authResult: any = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const adminId = authResult?.userId ?? authResult?.clerkId ?? authResult?.id;
 
     if (!adminId) {

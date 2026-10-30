@@ -11,7 +11,8 @@ export async function GET(
     const { userId, role } = await requireAuth();
     const { id } = await params;  // ✅ Await
 
-    if (role !== 'ADMIN' && id !== userId) {
+    const isAdmin = role === 'ADMIN' || role === 'SUPER_ADMIN';
+    if (!isAdmin && id !== userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
@@ -57,18 +58,38 @@ export async function PUT(
     const { id } = await params;  // ✅ Await
     const body = await req.json();
 
-    if (body.role && role !== 'ADMIN') {
+    const isAdmin = role === 'ADMIN' || role === 'SUPER_ADMIN';
+    if (body.role && !isAdmin) {
       return NextResponse.json(
         { error: 'Only admins can change roles' },
         { status: 403 }
       );
     }
 
-    if (role !== 'ADMIN' && id !== userId) {
+    if (!isAdmin && id !== userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
       );
+    }
+
+    // Data isolation: University admins can only edit users in their own institution
+    if (role === 'ADMIN') {
+      const targetUser = await prisma.user.findUnique({
+        where: { clerkId: id },
+        select: { institutionId: true },
+      });
+      const adminUser = await prisma.user.findUnique({
+        where: { clerkId: userId },
+        select: { institutionId: true },
+      });
+      if (targetUser && adminUser && targetUser.institutionId && adminUser.institutionId
+        && targetUser.institutionId !== adminUser.institutionId) {
+        return NextResponse.json(
+          { error: 'Unauthorized: You can only manage users in your own university.' },
+          { status: 403 }
+        );
+      }
     }
 
     const updateData: any = {
@@ -132,7 +153,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { id } = await params;  // ✅ Await
 
     await prisma.user.delete({

@@ -7,7 +7,7 @@ import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
 // POST - Bulk promote/demote users
 export async function POST(req: NextRequest) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const body = await req.json();
     const { userIds, newRole } = body;
 

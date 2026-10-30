@@ -35,7 +35,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { id } = await params;
     const body = await req.json();
     const { title, description, embedUrl, fileUrl, contentType, order, category, courseId } = body;
@@ -65,7 +65,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { id } = await params;
     await prisma.lectureSlide.delete({ where: { id } });
     return NextResponse.json({ message: 'Deleted successfully' });

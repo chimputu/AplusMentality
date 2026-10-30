@@ -85,7 +85,8 @@ export async function getOrgScope(): Promise<OrgScope> {
   }
 
   const appRole = ORG_ROLE_MAP[orgRole ?? ''] || user.role;
-  const isSuperAdmin = user.role === 'SUPER_ADMIN';
+  // Super Admin must have BOTH the Prisma role AND the Clerk org role
+  const isSuperAdmin = user.role === 'SUPER_ADMIN' && orgRole === 'org:super_admin';
 
   return {
     userId: user.id,
