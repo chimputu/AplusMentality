@@ -6,7 +6,7 @@ import { SubmissionStatus } from '@/generated/prisma/enums';
 
 export async function GET(req: NextRequest) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
 
     const { searchParams } = new URL(req.url);
     const type = searchParams.get('type') || 'ALL';

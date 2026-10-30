@@ -82,7 +82,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }  // ✅ Changed to Promise
 ) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { id } = await params;  // ✅ Added await
     const body = await req.json();
     const { title, description, thumbnail } = body;
@@ -125,7 +125,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }  // ✅ Changed to Promise
 ) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { id } = await params;  // ✅ Added await
 
     // Check if video exists

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 // POST - Create announcement (Admin only)
 export async function POST(req: NextRequest) {
-  const { userId } = await requireAuth(['ADMIN']);
+  const { userId } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
   const body = await req.json();
   const { title, content } = body;
 

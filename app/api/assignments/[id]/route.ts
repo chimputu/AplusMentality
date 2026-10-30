@@ -50,7 +50,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { id } = await params;  // ✅ Await
     const body = await req.json();
 
@@ -75,7 +75,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { id } = await params;  // ✅ Await
 
     await prisma.assignment.delete({

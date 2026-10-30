@@ -34,6 +34,7 @@ const publicRoutePatterns = [
 // Map route prefixes to allowed app roles
 const routeRoleRequirements: Record<string, string[]> = {
   '/admin': ['ADMIN', 'SUPER_ADMIN'],
+  '/super-admin': ['SUPER_ADMIN'],
   '/tutor': ['TUTOR', 'LECTURER'],
   '/lecturer': ['LECTURER'],
   '/student': ['STUDENT'],

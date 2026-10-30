@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 // GET - List all modules for a course
 export async function GET(req: NextRequest) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { searchParams } = new URL(req.url);
     const courseId = searchParams.get('courseId');
 
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
 // POST - Create a new module
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await requireAuth(['ADMIN']);
+    const { userId } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const body = await req.json();
     const { title, description, order, courseId } = body;
 
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
 // PUT - Update a module
 export async function PUT(req: NextRequest) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const body = await req.json();
     const { id, title, description, order } = body;
 
@@ -161,7 +161,7 @@ export async function PUT(req: NextRequest) {
 // DELETE - Delete a module
 export async function DELETE(req: NextRequest) {
   try {
-    await requireAuth(['ADMIN']);
+    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 

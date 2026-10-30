@@ -6,7 +6,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> } // ✅ Note: params is a Promise
 ) {
-  await requireAuth(['ADMIN']);
+  await requireAuth(['ADMIN', 'SUPER_ADMIN']);
 
   // ✅ Await the params to get the id
   const { id } = await params;
