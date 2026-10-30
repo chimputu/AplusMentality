@@ -628,9 +628,9 @@ export default function HomePageClient() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 </div>
 
-                <div className="relative h-full flex flex-col justify-end p-5 text-foreground">
-                  <h3 className="text-lg font-bold">{item.title}</h3>
-                  <p className="text-sm text-foreground/80 mt-1">{item.description}</p>
+                <div className="relative h-full flex flex-col justify-end p-5">
+                  <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                  <p className="text-sm text-gray-100 mt-1">{item.description}</p>
                 </div>
               </motion.div>
             ))}
