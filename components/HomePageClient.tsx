@@ -98,7 +98,7 @@ function AccordionTable() {
         }`}
       >
         <div className="p-2 sm:p-4">
-          <table className="w-full text-sm" caption="top">
+          <table className="w-full text-sm">
             <caption className="sr-only">
               Complete Zambian university grading points system — grade, points, percentage range, and description
             </caption>
