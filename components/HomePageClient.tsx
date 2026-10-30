@@ -14,6 +14,7 @@ import {
   GraduationCap, Target, Users as UsersIcon, CheckCircle,
   FileText, Book, ClipboardList, MessageCircle, Briefcase, Crown,
   Compass, TrendingUp, PlayCircle, Megaphone, UserPlus,
+  Download, Monitor, WifiOff, Zap, RefreshCw,
 } from 'lucide-react';
 import BannerCarousel from '@/components/banner-carousel';
 import { CourseCard } from '@/components/course-card';
@@ -151,7 +152,7 @@ export default function HomePageClient() {
   ];
 
   // ============================================================
-  // EMAILJS SUBSCRIPTION HANDLER (DYNAMIC IMPORT)
+  // NEWSLETTER SUBSCRIPTION HANDLER (Brevo via API route)
   // ============================================================
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,25 +161,22 @@ export default function HomePageClient() {
     setIsLoading(true);
 
     try {
-      const emailjs = await import('@emailjs/browser');
-      emailjs.init('lq3xCtY4KtS7Z-3Wf');
-      const templateParams = {
-        user_email: email,
-        to_email: 'kafiswegchimputu@gmail.com',
-        subject: 'New A+ Mentality Subscriber!',
-        message: `A new student has subscribed with email: ${email}`,
-      };
-      const response = await emailjs.send(
-        'service_fadklbd',
-        '__ejs-test-mail-service__',
-        templateParams
-      );
-      console.log('Email sent successfully:', response);
-      setIsSubscribed(true);
-      setEmail('');
-      setTimeout(() => setIsSubscribed(false), 5000);
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setIsSubscribed(true);
+        setEmail('');
+        setTimeout(() => setIsSubscribed(false), 5000);
+      } else {
+        alert(data.error || 'Something went wrong. Please try again later.');
+      }
     } catch (error) {
-      console.error('Failed to send email:', error);
+      console.error('Failed to subscribe:', error);
       alert('Something went wrong. Please try again later.');
     } finally {
       setIsLoading(false);
@@ -264,6 +262,13 @@ export default function HomePageClient() {
               >
                 Get Started
               </Link>
+              <a
+                href="/#download"
+                className="inline-flex items-center gap-1.5 border border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950 rounded-md px-3 py-1.5 text-sm font-medium transition"
+              >
+                <Download className="w-4 h-4" />
+                Download App
+              </a>
               <span className="w-px h-5 border-border mx-1"></span>
               <Link href="https://smartcorp-zeta.vercel.app">
                 <div className="bg-muted text-foreground text-[10px] font-medium px-2.5 py-1 rounded-full border border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.5),0_0_30px_rgba(147,51,234,0.3)] animate-pulse">
@@ -285,6 +290,10 @@ export default function HomePageClient() {
             <Link href="/sign-up" className="block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center" onClick={() => setIsMenuOpen(false)}>
               Get Started
             </Link>
+            <a href="/#download" className="flex items-center gap-2 text-sm font-medium text-blue-500 hover:text-blue-600 transition" onClick={() => setIsMenuOpen(false)}>
+              <Download className="w-4 h-4" />
+              Download App
+            </a>
             <Link href="https://smartcorp-zeta.vercel.app">
             <div className="text-xs text-muted-foreground text-center">Owned by SmartCorp</div>
             </Link>
@@ -1172,6 +1181,96 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
+      {/* ===== DOWNLOAD FOR WINDOWS ===== */}
+      <motion.section
+        id="download"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0 }}
+        variants={fadeInUp}
+        className="py-14 sm:py-20 bg-gray-50 dark:bg-neutral-900"
+      >
+        <div className="w-full px-3 sm:px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+              Get A+ Mentality for Windows
+            </h2>
+            <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              Study offline, access past papers instantly, and sync your progress.
+            </p>
+          </div>
+
+          {/* CSS Desktop Mockup */}
+          <div className="flex justify-center mb-12">
+            <div className="relative w-full max-w-2xl">
+              {/* Monitor frame */}
+              <div className="bg-gray-800 dark:bg-neutral-700 rounded-xl p-3 shadow-2xl">
+                {/* Screen */}
+                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg aspect-video flex items-center justify-center overflow-hidden">
+                  <div className="text-center text-white">
+                    <Monitor className="w-16 h-16 mx-auto mb-3 opacity-80" />
+                    <p className="text-xl font-bold">A+ Mentality</p>
+                    <p className="text-sm opacity-75 mt-1">Windows Desktop App</p>
+                    <div className="mt-4 flex justify-center gap-4 text-xs opacity-60">
+                      <span>📚 Past Papers</span>
+                      <span>📝 Notes</span>
+                      <span>🎯 Progress</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Monitor stand */}
+              <div className="mx-auto w-32 h-3 bg-gray-600 dark:bg-neutral-600 rounded-b-lg"></div>
+              <div className="mx-auto w-48 h-1 bg-gray-500 dark:bg-neutral-500 rounded-b-full"></div>
+            </div>
+          </div>
+
+          {/* CTA Button */}
+          <div className="text-center mb-12">
+            <a
+              href="/downloads/aplus-setup.exe"
+              download
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-medium text-lg transition shadow-lg hover:shadow-xl"
+            >
+              <Download className="w-5 h-5" />
+              Download for Windows
+            </a>
+            <p className="mt-3 text-xs text-muted-foreground">Free • Windows 10/11 • 50MB</p>
+          </div>
+
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-border text-center hover:shadow-lg transition">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <WifiOff className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Offline Mode</h3>
+              <p className="text-sm text-muted-foreground">
+                Access all your study materials without an internet connection. Perfect for areas with limited connectivity.
+              </p>
+            </div>
+            <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-border text-center hover:shadow-lg transition">
+              <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Fast Performance</h3>
+              <p className="text-sm text-muted-foreground">
+                Native desktop performance with instant loading. No browser overhead, just pure speed.
+              </p>
+            </div>
+            <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-border text-center hover:shadow-lg transition">
+              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <RefreshCw className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Auto-Sync</h3>
+              <p className="text-sm text-muted-foreground">
+                Your progress automatically syncs across devices. Start on Windows, continue on mobile.
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
       {/* ===== FOOTER ===== */}
       <footer className="bg-neutral-950 text-white">
         <div className="w-full px-3 sm:px-4 py-10">
@@ -1198,6 +1297,7 @@ export default function HomePageClient() {
               <ul className="space-y-2 text-sm">
                 <li><Link href="https://smartcorp-zeta.vercel.app" className="text-gray-400 hover:text-white transition">About Us</Link></li>
                 <li><Link href="https://smartcorp-zeta.vercel.app/contact" className="text-gray-400 hover:text-white transition">Contact</Link></li>
+                <li><a href="/#download" className="text-gray-400 hover:text-white transition inline-flex items-center gap-1.5"><Download className="w-3.5 h-3.5" /> Download for Windows</a></li>
               </ul>
             </div>
             <div>
