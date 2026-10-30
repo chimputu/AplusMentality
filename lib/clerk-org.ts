@@ -1,7 +1,7 @@
 // lib/clerk-org.ts — Utilities for managing Clerk organization memberships
 // Used to add approved tutors to their institution's Clerk organization
 
-export type ClerkOrgRole = 'org:admin' | 'org:tutor' | 'org:lecturer' | 'org:member';
+export type ClerkOrgRole = 'org:super_admin' | 'org:admin' | 'org:tutor' | 'org:lecturer' | 'org:member';
 
 /**
  * Maps Prisma Role enum values to Clerk organization roles.
@@ -9,7 +9,7 @@ export type ClerkOrgRole = 'org:admin' | 'org:tutor' | 'org:lecturer' | 'org:mem
  */
 export const APP_ROLE_TO_CLERK: Record<string, ClerkOrgRole> = {
   ADMIN: 'org:admin',
-  SUPER_ADMIN: 'org:admin',
+  SUPER_ADMIN: 'org:super_admin',
   TUTOR: 'org:tutor',
   LECTURER: 'org:lecturer',
   STUDENT: 'org:member',
@@ -22,6 +22,7 @@ export const APP_ROLE_TO_CLERK: Record<string, ClerkOrgRole> = {
 export type AppRole = 'ADMIN' | 'TUTOR' | 'LECTURER' | 'STUDENT' | 'SUPER_ADMIN';
 
 export const CLERK_TO_APP_ROLE: Record<string, AppRole> = {
+  'org:super_admin': 'SUPER_ADMIN',
   'org:admin': 'ADMIN',
   'org:tutor': 'TUTOR',
   'org:lecturer': 'LECTURER',

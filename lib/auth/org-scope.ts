@@ -28,6 +28,7 @@ export interface OrgScope {
  * Maps Clerk organization roles to application role enum values.
  */
 const ORG_ROLE_MAP: Record<string, string> = {
+  'org:super_admin': 'SUPER_ADMIN',
   'org:admin': 'ADMIN',
   'org:tutor': 'TUTOR',
   'org:lecturer': 'LECTURER',

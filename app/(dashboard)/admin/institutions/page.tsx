@@ -1,8 +1,10 @@
 import { listInstitutions } from '@/lib/actions/institution-crud';
+import { requireAuth } from '@/lib/auth';
 import PageHeader from '@/components/PageHeader';
 import InstitutionTable from './_components/institution-table';
 
 export default async function InstitutionsPage() {
+  await requireAuth(['ADMIN', 'SUPER_ADMIN']);
   const institutions = await listInstitutions();
 
   return (
@@ -10,10 +12,6 @@ export default async function InstitutionsPage() {
       <PageHeader
         title="Institutions"
         description="Manage universities, colleges, polytechnics, and other academic institutions."
-        action={{
-          label: "Add Institution",
-          href: "/admin/institutions/new",
-        }}
       />
 
       <InstitutionTable institutions={institutions} />
