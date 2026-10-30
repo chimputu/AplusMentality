@@ -319,7 +319,7 @@ function GradingCycle() {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveView((prev) => (prev === 'degree' ? 'gradeBands' : 'degree'));
-    }, 4000);
+    }, 6000);
     return () => clearInterval(interval);
   }, []);
 
@@ -346,7 +346,7 @@ function GradingCycle() {
       </div>
 
       {/* Cycling content container with fixed min-height */}
-      <div className="relative min-h-[400px] sm:min-h-[350px]">
+      <div className="relative min-h-[320px] sm:min-h-[300px]">
         <AnimatePresence mode="wait">
           {activeView === 'degree' ? (
             <motion.div
@@ -356,29 +356,29 @@ function GradingCycle() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
             >
-              <h3 className="text-xl sm:text-2xl font-bold text-foreground text-center mb-2">
+              <h3 className="text-base sm:text-xl font-bold text-foreground text-center mb-1 sm:mb-2">
                 Degree Classification
               </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground text-center mb-6 max-w-2xl mx-auto">
+              <p className="text-[10px] sm:text-xs text-muted-foreground text-center mb-3 sm:mb-6 max-w-2xl mx-auto">
                 Based on cumulative points from 20 courses at 3rd &amp; 4th Year Levels (4-Year programmes)
                 or 4th &amp; 5th Year Levels (5-Year programmes)
               </p>
 
               {/* Degree classification cards — responsive grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                 {/* Distinction */}
-                <div className="relative rounded-2xl border-2 border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-green-600 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">★</span>
+                <div className="relative rounded-xl border-2 border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-green-600 flex items-center justify-center">
+                      <span className="text-white font-bold text-sm sm:text-lg">★</span>
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-green-600 text-white text-xs font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-600 text-white text-[10px] sm:text-xs font-bold">
                           Distinction
                         </span>
                       </div>
-                      <p className="text-lg sm:text-xl font-bold text-green-800 dark:text-green-300 mt-1">
+                      <p className="text-sm sm:text-xl font-bold text-green-800 dark:text-green-300 mt-0.5 sm:mt-1">
                         40 Points and above
                       </p>
                     </div>
@@ -386,18 +386,18 @@ function GradingCycle() {
                 </div>
 
                 {/* Merit */}
-                <div className="relative rounded-2xl border-2 border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">◆</span>
+                <div className="relative rounded-xl border-2 border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-blue-600 flex items-center justify-center">
+                      <span className="text-white font-bold text-sm sm:text-lg">◆</span>
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-xs font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] sm:text-xs font-bold">
                           Merit
                         </span>
                       </div>
-                      <p className="text-lg sm:text-xl font-bold text-blue-800 dark:text-blue-300 mt-1">
+                      <p className="text-sm sm:text-xl font-bold text-blue-800 dark:text-blue-300 mt-0.5 sm:mt-1">
                         30-39.9 Points
                       </p>
                     </div>
@@ -405,18 +405,18 @@ function GradingCycle() {
                 </div>
 
                 {/* Credit */}
-                <div className="relative rounded-2xl border-2 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/30 dark:border-yellow-800 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-yellow-600 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">●</span>
+                <div className="relative rounded-xl border-2 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/30 dark:border-yellow-800 p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-yellow-600 flex items-center justify-center">
+                      <span className="text-white font-bold text-sm sm:text-lg">●</span>
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-yellow-600 text-white text-xs font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-600 text-white text-[10px] sm:text-xs font-bold">
                           Credit
                         </span>
                       </div>
-                      <p className="text-lg sm:text-xl font-bold text-yellow-800 dark:text-yellow-300 mt-1">
+                      <p className="text-sm sm:text-xl font-bold text-yellow-800 dark:text-yellow-300 mt-0.5 sm:mt-1">
                         20-29.9 Points
                       </p>
                     </div>
@@ -424,18 +424,18 @@ function GradingCycle() {
                 </div>
 
                 {/* Pass */}
-                <div className="relative rounded-2xl border-2 border-gray-200 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gray-500 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">○</span>
+                <div className="relative rounded-xl border-2 border-gray-200 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700 p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gray-500 flex items-center justify-center">
+                      <span className="text-white font-bold text-sm sm:text-lg">○</span>
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gray-500 text-white text-xs font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-500 text-white text-[10px] sm:text-xs font-bold">
                           Pass
                         </span>
                       </div>
-                      <p className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-300 mt-1">
+                      <p className="text-sm sm:text-xl font-bold text-gray-800 dark:text-gray-300 mt-0.5 sm:mt-1">
                         Less than 20 Points
                       </p>
                     </div>
@@ -451,15 +451,15 @@ function GradingCycle() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
             >
-              <h3 className="text-xl sm:text-2xl font-bold text-foreground text-center mb-2">
+              <h3 className="text-base sm:text-xl font-bold text-foreground text-center mb-1 sm:mb-2">
                 Grade Bands
               </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground text-center mb-6">
+              <p className="text-[10px] sm:text-xs text-muted-foreground text-center mb-2 sm:mb-6">
                 Each grade band shows the letter grade, percentage range, and points awarded.
               </p>
 
               {/* Color legend */}
-              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-6 text-xs sm:text-sm">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 mb-2 sm:mb-6 text-[10px] sm:text-sm">
                 <span className="flex items-center gap-1.5">
                   <span className="inline-block w-3 h-3 rounded-full bg-green-600" />
                   <span className="text-foreground">Distinction</span>
@@ -479,20 +479,20 @@ function GradingCycle() {
               </div>
 
               {/* Grade badges grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
                 {/* A+ */}
-                <div className="group rounded-xl border-2 border-green-200 bg-white dark:bg-neutral-900 dark:border-green-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-green-600 text-white text-lg font-bold">
+                <div className="group rounded-lg sm:rounded-xl border-2 border-green-200 bg-white dark:bg-neutral-900 dark:border-green-900 p-2 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded sm:rounded-lg bg-green-600 text-white text-sm sm:text-lg font-bold">
                       A+
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-[10px] sm:text-xs font-semibold">
                         Upper Distinction
                       </span>
                     </div>
                   </div>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-foreground">86 and above</span>
@@ -505,18 +505,18 @@ function GradingCycle() {
                 </div>
 
                 {/* A */}
-                <div className="group rounded-xl border-2 border-green-200 bg-white dark:bg-neutral-900 dark:border-green-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-green-600 text-white text-lg font-bold">
+                <div className="group rounded-lg sm:rounded-xl border-2 border-green-200 bg-white dark:bg-neutral-900 dark:border-green-900 p-2 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded sm:rounded-lg bg-green-600 text-white text-sm sm:text-lg font-bold">
                       A
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-[10px] sm:text-xs font-semibold">
                         Distinction
                       </span>
                     </div>
                   </div>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-foreground">76-85</span>
@@ -529,18 +529,18 @@ function GradingCycle() {
                 </div>
 
                 {/* B+ */}
-                <div className="group rounded-xl border-2 border-blue-200 bg-white dark:bg-neutral-900 dark:border-blue-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-600 text-white text-lg font-bold">
+                <div className="group rounded-lg sm:rounded-xl border-2 border-blue-200 bg-white dark:bg-neutral-900 dark:border-blue-900 p-2 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded sm:rounded-lg bg-blue-600 text-white text-sm sm:text-lg font-bold">
                       B+
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-[10px] sm:text-xs font-semibold">
                         Merit
                       </span>
                     </div>
                   </div>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-foreground">66-75</span>
@@ -553,18 +553,18 @@ function GradingCycle() {
                 </div>
 
                 {/* B */}
-                <div className="group rounded-xl border-2 border-blue-200 bg-white dark:bg-neutral-900 dark:border-blue-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-600 text-white text-lg font-bold">
+                <div className="group rounded-lg sm:rounded-xl border-2 border-blue-200 bg-white dark:bg-neutral-900 dark:border-blue-900 p-2 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded sm:rounded-lg bg-blue-600 text-white text-sm sm:text-lg font-bold">
                       B
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-[10px] sm:text-xs font-semibold">
                         Credit
                       </span>
                     </div>
                   </div>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-foreground">60-65</span>
@@ -577,18 +577,18 @@ function GradingCycle() {
                 </div>
 
                 {/* C+ */}
-                <div className="group rounded-xl border-2 border-yellow-200 bg-white dark:bg-neutral-900 dark:border-yellow-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-yellow-600 text-white text-lg font-bold">
+                <div className="group rounded-lg sm:rounded-xl border-2 border-yellow-200 bg-white dark:bg-neutral-900 dark:border-yellow-900 p-2 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded sm:rounded-lg bg-yellow-600 text-white text-sm sm:text-lg font-bold">
                       C+
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-[10px] sm:text-xs font-semibold">
                         Clear Pass
                       </span>
                     </div>
                   </div>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-foreground">55-59</span>
@@ -601,18 +601,18 @@ function GradingCycle() {
                 </div>
 
                 {/* C */}
-                <div className="group rounded-xl border-2 border-yellow-200 bg-white dark:bg-neutral-900 dark:border-yellow-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-yellow-600 text-white text-lg font-bold">
+                <div className="group rounded-lg sm:rounded-xl border-2 border-yellow-200 bg-white dark:bg-neutral-900 dark:border-yellow-900 p-2 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded sm:rounded-lg bg-yellow-600 text-white text-sm sm:text-lg font-bold">
                       C
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-[10px] sm:text-xs font-semibold">
                         Bare Pass
                       </span>
                     </div>
                   </div>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-foreground">50-54</span>
@@ -625,18 +625,18 @@ function GradingCycle() {
                 </div>
 
                 {/* D+ */}
-                <div className="group rounded-xl border-2 border-red-200 bg-white dark:bg-neutral-900 dark:border-red-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-red-600 text-white text-lg font-bold">
+                <div className="group rounded-lg sm:rounded-xl border-2 border-red-200 bg-white dark:bg-neutral-900 dark:border-red-900 p-2 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded sm:rounded-lg bg-red-600 text-white text-sm sm:text-lg font-bold">
                       D+
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-[10px] sm:text-xs font-semibold">
                         Bare Fail
                       </span>
                     </div>
                   </div>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-foreground">45-49</span>
@@ -649,18 +649,18 @@ function GradingCycle() {
                 </div>
 
                 {/* D */}
-                <div className="group rounded-xl border-2 border-red-200 bg-white dark:bg-neutral-900 dark:border-red-900 p-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-red-600 text-white text-lg font-bold">
+                <div className="group rounded-lg sm:rounded-xl border-2 border-red-200 bg-white dark:bg-neutral-900 dark:border-red-900 p-2 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded sm:rounded-lg bg-red-600 text-white text-sm sm:text-lg font-bold">
                       D
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-[10px] sm:text-xs font-semibold">
                         Fail
                       </span>
                     </div>
                   </div>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-foreground">44 and below</span>
@@ -1444,17 +1444,6 @@ export default function HomePageClient() {
           </div>
         </div>
       </motion.section>
-
-      {/* ===== TESTIMONIALS ===== */}
-      <section className="py-20 bg-background">
-        <div className="w-full px-3 sm:px-4">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">What Our Community Says</h2>
-            <p className="mt-2 text-muted-foreground">Real stories from real Zambian learners</p>
-          </div>
-          <AnimatedTestimonialsDemoLazy />
-        </div>
-      </section>
 
       {/* ===== WHY CHOOSE A+ MENTALITY ===== */}
       <section className="py-16 md:py-24 bg-muted">
