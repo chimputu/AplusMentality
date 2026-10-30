@@ -31,23 +31,31 @@ export default function WorldMapDemo() {
         dots={[
           {
             start: { lat: -15.3875, lng: 28.3228 }, // Lusaka, Zambia
-            end: { lat: 51.5074, lng: -0.1278 }, // London
+            end: { lat: 51.5074, lng: -0.1278 }, // London (Europe)
           },
           {
             start: { lat: -15.3875, lng: 28.3228 }, // Lusaka, Zambia
-            end: { lat: 40.7128, lng: -74.0060 }, // New York
+            end: { lat: 40.7128, lng: -74.0060 }, // New York (North America)
           },
           {
             start: { lat: -15.3875, lng: 28.3228 }, // Lusaka, Zambia
-            end: { lat: 25.2048, lng: 55.2708 }, // Dubai
+            end: { lat: 39.9042, lng: 116.4074 }, // Beijing (Asia)
           },
           {
             start: { lat: -15.3875, lng: 28.3228 }, // Lusaka, Zambia
-            end: { lat: -26.2041, lng: 28.0473 }, // Johannesburg
+            end: { lat: -23.5505, lng: -46.6333 }, // São Paulo (South America)
           },
           {
             start: { lat: -15.3875, lng: 28.3228 }, // Lusaka, Zambia
-            end: { lat: 39.9042, lng: 116.4074 }, // Beijing
+            end: { lat: -33.8688, lng: 151.2093 }, // Sydney (Oceania)
+          },
+          {
+            start: { lat: -15.3875, lng: 28.3228 }, // Lusaka, Zambia
+            end: { lat: -77.8419, lng: 166.6863 }, // Antarctica
+          },
+          {
+            start: { lat: -15.3875, lng: 28.3228 }, // Lusaka, Zambia
+            end: { lat: 30.0444, lng: 31.2357 }, // Cairo (Africa)
           },
         ]}
       />

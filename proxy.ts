@@ -15,6 +15,7 @@ const publicRoutePatterns = [
   '/download',
   '/privacy-policy',
   '/terms-of-service',
+  '/api/chat',
   '/api/webhooks',
   '/api/health',
   '/api/user/role',
