@@ -2,6 +2,9 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
 // Public routes that don't require authentication
+// SECURITY: Admin routes are NOT public — they require auth in their handlers
+// SECURITY: /api/user/role and /api/users/me are NOT public — they require auth
+// NOTE: /api/chat is public for the landing page — it has rate limiting and message limits
 const isPublicRoute = createRouteMatcher([
   '/',
   '/about(.*)',
@@ -17,12 +20,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/chat(.*)',
   '/api/webhooks(.*)',
   '/api/health(.*)',
-  '/api/user/role(.*)',
   '/api/institutions(.*)',
-  '/api/admin/levels(.*)',
-  '/api/admin/periods(.*)',
-  '/api/admin/branches(.*)',
-  '/api/users/me(.*)',
 ]);
 
 // Onboarding route — accessible without org, but requires auth
@@ -39,10 +37,11 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 // Map route prefixes to allowed app roles
+// SECURITY: TUTOR and LECTURER are NOT interchangeable — each has their own dashboard
 const routeRoleRequirements: Record<string, string[]> = {
   '/admin': ['ADMIN', 'SUPER_ADMIN'],
   '/super-admin': ['SUPER_ADMIN'],
-  '/tutor': ['TUTOR', 'LECTURER'],
+  '/tutor': ['TUTOR'],
   '/lecturer': ['LECTURER'],
   '/student': ['STUDENT'],
 };
@@ -109,6 +108,7 @@ export const proxy = clerkMiddleware(async (auth, request) => {
   }
 
   // 5. Prisma-first role check for protected routes
+  // SECURITY: Fail closed — if role lookup fails, deny access rather than redirecting
   if (isProtectedRoute(request)) {
     let appRole: string | null = null;
     try {
@@ -128,8 +128,11 @@ export const proxy = clerkMiddleware(async (auth, request) => {
       console.error('[Proxy] DB role lookup failed:', err);
     }
 
+    // SECURITY: Fail closed — if we cannot determine the role, deny access
+    // Do not redirect to onboarding, as that would grant access to the protected route
     if (!appRole) {
-      appRole = 'STUDENT';
+      console.warn('[Proxy] Denying access: could not determine role for clerkId=%s, path=%s', userId, pathname);
+      return NextResponse.redirect(new URL('/unauthorized', request.url));
     }
 
     const requiredRoles = getRouteRoleRequirement(pathname);

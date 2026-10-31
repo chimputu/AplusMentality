@@ -4,7 +4,8 @@ import { prisma } from '@/lib/prisma';
 
 // GET — list students for dropdown (admin only)
 export async function GET(req: NextRequest) {
-  const admin = await getAuthUser(['ADMIN']);
+  // SECURITY: Include SUPER_ADMIN in allowed roles
+  const admin = await getAuthUser(['ADMIN', 'SUPER_ADMIN']);
   if (!admin) {
     return NextResponse.json({ error: 'Unauthorized', data: [], count: 0 }, { status: 401 });
   }
@@ -14,7 +15,14 @@ export async function GET(req: NextRequest) {
     const institutionId = searchParams.get('institutionId');
 
     const where: any = { role: 'STUDENT' };
-    if (institutionId) where.institutionId = institutionId;
+
+    // SECURITY: ADMIN is scoped to their institution; SUPER_ADMIN can see all
+    if (admin.role === 'SUPER_ADMIN') {
+      if (institutionId) where.institutionId = institutionId;
+    } else {
+      // ADMIN can only see students in their own institution
+      where.institutionId = admin.user.institutionId;
+    }
 
     const students = await prisma.user.findMany({
       where,

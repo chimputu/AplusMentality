@@ -29,6 +29,7 @@ async function requireAdmin() {
   return user;
 }
 
+'use server';
 export async function createWindowAction(formData: FormData) {
   await requireAdmin();
 
@@ -49,6 +50,7 @@ export async function createWindowAction(formData: FormData) {
   revalidatePath('/admin/tutor-applications/window');
 }
 
+'use server';
 export async function updateWindowAction(formData: FormData) {
   await requireAdmin();
 

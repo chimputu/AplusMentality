@@ -479,6 +479,7 @@ model QuizSubmission {
   score       Int?
   total       Int?
   feedback    String?
+  fileUrl     String?  // URL to uploaded answer file (e.g., Cloudinary)
 
   status      SubmissionStatus @default(PENDING)
   submittedAt DateTime @default(now())
@@ -489,6 +490,8 @@ model QuizSubmission {
 
   @@index([userId])
   @@index([quizId])
+  // Security: one submission per student per quiz
+  @@unique([quizId, userId])
 }
 
 // ============================================
@@ -544,6 +547,8 @@ model TestSubmission {
 
   @@index([userId])
   @@index([testId])
+  // Security: one submission per student per test
+  @@unique([testId, userId])
 }
 
 // ============================================
@@ -602,6 +607,8 @@ model AssignmentSubmission {
 
   @@index([userId])
   @@index([assignmentId])
+  // Security: one submission per student per assignment
+  @@unique([assignmentId, userId])
 }
 
 // ============================================

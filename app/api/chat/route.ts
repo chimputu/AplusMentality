@@ -3,8 +3,15 @@ import { streamText } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { auth } from '@clerk/nextjs/server';
 import { cache } from '@/lib/cache';
+import { createRateLimit } from '@/lib/rate-limit';
 
 export const maxDuration = 30;
+
+// SECURITY: Rate limiting — 20 messages per minute per user/IP
+const chatLimiter = createRateLimit({ maxRequests: 20, windowMs: 60000 });
+
+// SECURITY: Maximum message length to prevent token abuse
+const MAX_MESSAGE_LENGTH = 4000;
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -268,24 +275,48 @@ export async function POST(req: Request) {
       return new Response('Message is required', { status: 400 });
     }
 
-    const systemPrompt = isSignedIn ? APP_PROMPT : LANDING_PROMPT;
-    const cacheKey = `chat:${isSignedIn ? 'app-mulu' : 'landing'}:${normalizeMessage(message)}`;
-
-    // ---- 1. Instant cached response if available ----
-    const cached = await cache.get<string>(cacheKey);
-    if (cached) {
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(cached));
-          controller.close();
-        },
-      });
-      return new Response(stream, {
-        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-      });
+    // SECURITY: Rate limiting per user/IP
+    const rateLimitKey = userId || req.headers.get('x-forwarded-for') || 'anonymous';
+    const rateLimitResult = chatLimiter(rateLimitKey);
+    if (!rateLimitResult.allowed) {
+      return new Response('Too many requests. Please try again later.', { status: 429 });
     }
 
-    // ---- 2. Pick a free model (with retry on fallbacks) ----
+    // SECURITY: Maximum message length
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      return new Response('Message too long', { status: 400 });
+    }
+
+    const systemPrompt = isSignedIn ? APP_PROMPT : LANDING_PROMPT;
+
+    // SECURITY: Cache key includes user context to prevent cross-user response leakage
+    // For signed-in users, do NOT cache user-specific responses
+    const cacheKey = isSignedIn
+      ? null // Do not cache logged-in user responses — they may be personalized
+      : `chat:landing:${normalizeMessage(message)}`;
+
+    // ---- 1. Instant cached response if available (public only) ----
+    if (cacheKey) {
+      const cached = await cache.get<string>(cacheKey);
+      if (cached) {
+        const stream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode(cached));
+            controller.close();
+          },
+        });
+        return new Response(stream, {
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        });
+      }
+    }
+
+    // ---- 2. Check if API key is configured ----
+    if (!process.env.OPENROUTER_API_KEY) {
+      return new Response('AI service is not configured.', { status: 503 });
+    }
+
+    // ---- 3. Pick a free model (with retry on fallbacks) ----
     let model = await getFreeModel();
     let lastError;
 
@@ -296,7 +327,7 @@ export async function POST(req: Request) {
 
     for (const tryModel of modelsToTry) {
       try {
-        // ---- 3. Stream the response ----
+        // ---- 4. Stream the response ----
         const result = streamText({
           model: openrouter(tryModel),
           system: systemPrompt,
@@ -305,7 +336,7 @@ export async function POST(req: Request) {
           maxOutputTokens: 600,
         });
 
-        // ---- 4. Forward stream immediately + collect for cache ----
+        // ---- 5. Forward stream immediately + collect for cache (public only) ----
         let fullText = '';
         const decoder = new TextDecoder();
 
@@ -316,8 +347,8 @@ export async function POST(req: Request) {
           },
           flush() {
             fullText += decoder.decode();
-            if (fullText.trim()) {
-              // Cache in Redis for 1 hour (fire-and-forget)
+            // SECURITY: Only cache public (non-authenticated) responses
+            if (fullText.trim() && cacheKey) {
               cache.set(cacheKey, fullText, { ex: 3600 }).catch(() => {});
             }
           },
@@ -333,17 +364,17 @@ export async function POST(req: Request) {
         });
       } catch (e) {
         lastError = e;
-        console.warn(`Model ${tryModel} failed, trying next...`, e);
-        model = tryModel; // update for next iteration
+        console.warn(`Model ${tryModel} failed, trying next...`);
+        model = tryModel;
         continue;
       }
     }
 
     // All models failed
-    console.error('All free models failed:', lastError);
+    console.error('All free models failed');
     return new Response('AI service is temporarily unavailable. Please try again later.', { status: 503 });
   } catch (error) {
-    console.error('Chat API Error:', error);
+    console.error('Chat API Error');
     return new Response('Internal Server Error', { status: 500 });
   }
 }

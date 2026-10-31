@@ -3,7 +3,11 @@
 // Sentry build-time config — wraps nextConfig with source map upload and instrumentation
 const { withSentryConfig } = require('@sentry/nextjs/config');
 // Serwist PWA — replaces next-pwa (incompatible with Next.js 16)
-const { withSerwist } = require('@serwist/next');
+const withSerwistInit = require('@serwist/next').default;
+const withSerwist = withSerwistInit({
+  swSrc: 'app/sw.ts',
+  swDest: 'public/sw.js',
+});
 
 const nextConfig = {
   experimental: {
@@ -27,11 +31,13 @@ const nextConfig = {
               "default-src 'self'",
               "manifest-src 'self'",
               "img-src 'self' https://res.cloudinary.com https://img.clerk.com data: blob:",
+              // 'unsafe-inline' required for Clerk and Next.js dynamic styles
+              // 'unsafe-eval' required for Clerk — document why if removing breaks auth
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://*.clerk.accounts.dev https://cdn.protect.clerk.com https://js.sentry-cdn.com https://browser.sentry-cdn.com",
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
               "media-src 'self' https://res.cloudinary.com https://www.youtube.com https://youtube.com",
-              "connect-src 'self' https://*.clerk.accounts.dev https://cdn.protect.clerk.com https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io https://docs.google.com https://api.emailjs.com",
+              "connect-src 'self' https://*.clerk.accounts.dev https://cdn.protect.clerk.com https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io https://docs.google.com https://api.emailjs.com https://openrouter.ai",
               "frame-src 'self' https://*.clerk.accounts.dev https://www.youtube.com https://youtube.com https://docs.google.com",
               "worker-src 'self' blob: https://bm-smrwsawvav22aok.public.bumpl.cloud",
               "frame-ancestors 'self'",
@@ -98,8 +104,9 @@ module.exports = withSentryConfig(withSerwist(nextConfig), {
   autoInstrumentServerComponents: true,
   autoInstrumentAppRoutes: true,
   autoInstrumentMiddleware: true,
+  // SECURITY: Hide source maps from public access in production
   hideSourceMaps: true,
   sourcemaps: {
-    disable: false,
+    disable: true, // SECURITY: Disable public source maps; Sentry uses its own upload
   },
 });
