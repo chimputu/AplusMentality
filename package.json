@@ -42,6 +42,8 @@
     "fdir": "^6.5.0",
     "framer-motion": "^12.42.2",
     "idb": "^7.1.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.9",
     "lucide-react": "^1.24.0",
     "motion": "^14.6.0",
     "next": "^16.2.10",
