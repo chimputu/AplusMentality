@@ -3,7 +3,7 @@ import { Download, Smartphone, Shield, QrCode, ChevronRight, AlertCircle } from 
 import QRCode from 'qrcode';
 
 const APK_URL = '/app-release.apk';
-const DOWNLOAD_PAGE_URL = 'https://aplusmentality.vercel.app/download';
+const DOWNLOAD_PAGE_URL = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/download`;
 
 async function generateQRCode() {
   try {
@@ -20,7 +20,7 @@ async function generateQRCode() {
 
 async function checkApkExists() {
   try {
-    const res = await fetch(`https://aplusmentality.vercel.app${APK_URL}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}${APK_URL}`, {
       method: 'HEAD',
       cache: 'no-store',
     });

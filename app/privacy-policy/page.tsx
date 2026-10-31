@@ -75,7 +75,7 @@ const sections = [
     icon: <Mail className="w-5 h-5" />,
     title: 'Contact Us',
     items: [
-      'For privacy-related inquiries, contact us at privacy@aplusmentality.vercel.app',
+      'For privacy-related inquiries, contact us at privacy@aplusmentality.onrender.com',
       'Data protection requests will be processed within 30 days',
       'You can also reach us through the support section of the platform',
     ],

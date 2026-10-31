@@ -80,7 +80,7 @@ export const PLATFORM_FACTS = {
     whatsapp: '+260772231300',
     whatsappDisplay: '+260 77 223 1300',
     whatsappLink: 'https://wa.me/260772231300',
-    website: 'https://aplusmentality.vercel.app',
+    website: 'https://aplusmentality.onrender.com',
 
     // For logged-in users — additional options
     loggedInOptions: [
