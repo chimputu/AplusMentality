@@ -48,7 +48,7 @@ async function main() {
   console.log('=== University Table Cleanup Script ===\n');
 
   // Get all current university records
-  const allUniversities = await prisma.university.findMany({
+  const allUniversities = await prisma.legacyUniversity.findMany({
     orderBy: { name: 'asc' },
   });
 
@@ -109,7 +109,7 @@ async function main() {
   let deletedCount = 0;
   for (const id of idsToDelete) {
     try {
-      await prisma.university.delete({ where: { id } });
+      await prisma.legacyUniversity.delete({ where: { id } });
       deletedCount++;
     } catch (error) {
       console.log(`  ⚠ Failed to delete ${id}: ${error}`);
@@ -119,7 +119,7 @@ async function main() {
   console.log(`\n✅ Deleted ${deletedCount} non-university record(s).\n`);
 
   // Verify remaining records
-  const remaining = await prisma.university.findMany({
+  const remaining = await prisma.legacyUniversity.findMany({
     orderBy: { name: 'asc' },
   });
 

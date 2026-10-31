@@ -110,7 +110,7 @@ describe('deleteTutor', () => {
 
 describe('listUniversities', () => {
   it('returns universities ordered by name', async () => {
-    (prisma.university.findMany as any).mockResolvedValue([
+    (prisma.legacyUniversity.findMany as any).mockResolvedValue([
       { id: '1', name: 'University A', code: 'UA' },
     ]);
 
@@ -118,7 +118,7 @@ describe('listUniversities', () => {
     const result = await listUniversities();
 
     expect(result).toHaveLength(1);
-    expect(prisma.university.findMany).toHaveBeenCalledWith(
+    expect(prisma.legacyUniversity.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ orderBy: { name: 'asc' } })
     );
   });

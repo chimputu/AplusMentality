@@ -23,7 +23,7 @@ describe('getOrgScope', () => {
       orgRole: 'org:member',
     });
 
-    (prisma.institution.findUnique as any).mockResolvedValue({
+    (prisma.university.findUnique as any).mockResolvedValue({
       id: mockInstitutionId,
       name: 'Test University',
     });
@@ -56,7 +56,7 @@ describe('getOrgScope', () => {
       orgRole: 'org:admin',
     });
 
-    (prisma.institution.findUnique as any).mockResolvedValue({
+    (prisma.university.findUnique as any).mockResolvedValue({
       id: 'inst_1',
       name: 'Admin University',
     });
@@ -83,7 +83,7 @@ describe('getOrgScope', () => {
       orgRole: 'org:tutor',
     });
 
-    (prisma.institution.findUnique as any).mockResolvedValue({
+    (prisma.university.findUnique as any).mockResolvedValue({
       id: 'inst_1',
       name: 'Tutor University',
     });
@@ -110,7 +110,7 @@ describe('getOrgScope', () => {
       orgRole: 'org:lecturer',
     });
 
-    (prisma.institution.findUnique as any).mockResolvedValue({
+    (prisma.university.findUnique as any).mockResolvedValue({
       id: 'inst_1',
       name: 'Lecturer University',
     });
@@ -159,7 +159,7 @@ describe('getOrgScope', () => {
       orgRole: 'org:member',
     });
 
-    (prisma.institution.findUnique as any).mockResolvedValue(null);
+    (prisma.university.findUnique as any).mockResolvedValue(null);
 
     const { getOrgScope } = await import('@/lib/auth/org-scope');
     await expect(getOrgScope()).rejects.toThrow('Institution not found');
@@ -172,7 +172,7 @@ describe('getOrgScope', () => {
       orgRole: 'org:member',
     });
 
-    (prisma.institution.findUnique as any).mockResolvedValue({
+    (prisma.university.findUnique as any).mockResolvedValue({
       id: 'inst_1',
       name: 'Test University',
     });
@@ -190,7 +190,7 @@ describe('getOrgScope', () => {
       orgRole: 'org:unknown',
     });
 
-    (prisma.institution.findUnique as any).mockResolvedValue({
+    (prisma.university.findUnique as any).mockResolvedValue({
       id: 'inst_1',
       name: 'Test University',
     });

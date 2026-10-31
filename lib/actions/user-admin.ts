@@ -324,12 +324,12 @@ export async function joinUniversity(rawInput: unknown) {
   const input = joinUniversitySchema.parse(rawInput);
 
   // Find the organization by slug — check Institution first, then University
-  const institution = await prisma.institution.findUnique({
+  const institution = await prisma.university.findUnique({
     where: { slug: input.slug },
     select: { id: true, name: true, clerkOrgId: true },
   });
 
-  const university = await prisma.university.findUnique({
+  const university = await prisma.legacyUniversity.findUnique({
     where: { joinSlug: input.slug },
     select: { id: true, name: true },
   });
@@ -438,7 +438,7 @@ export async function completeOnboarding(rawInput: unknown) {
   const input = completeOnboardingSchema.parse(rawInput);
 
   // Find the institution and its Clerk org ID
-  const institution = await prisma.institution.findUnique({
+  const institution = await prisma.university.findUnique({
     where: { id: input.institutionId },
     select: { id: true, name: true, clerkOrgId: true },
   });

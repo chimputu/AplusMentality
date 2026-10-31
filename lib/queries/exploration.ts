@@ -11,7 +11,7 @@ export async function listExplorableUniversities() {
   const access = await getAccessContext();
 
   return withRetry(
-    () => prisma.institution.findMany({
+    () => prisma.university.findMany({
       where: {
         isActive: true,
         isVerified: true,
@@ -43,7 +43,7 @@ export async function listExplorableUniversities() {
  */
 export async function getUniversityForExploration(slug: string) {
   const result = await withRetry(
-    () => prisma.institution.findUnique({
+    () => prisma.university.findUnique({
       where: { slug },
       select: {
         id: true,
@@ -112,7 +112,7 @@ export async function getProgrammeForExploration(
   let institution: any;
   try {
     institution = await withRetry(
-      () => prisma.institution.findUnique({
+      () => prisma.university.findUnique({
         where: { slug: institutionSlug },
         select: { id: true },
       }),
@@ -310,7 +310,7 @@ export async function getCourseForExploration(
   let institution: any;
   try {
     institution = await withRetry(
-      () => prisma.institution.findUnique({
+      () => prisma.university.findUnique({
         where: { slug: institutionSlug },
         select: { id: true },
       }),
@@ -479,7 +479,7 @@ export async function getProgrammeCodesForInstitution(institutionSlug: string) {
   let institution: any;
   try {
     institution = await withRetry(
-      () => prisma.institution.findUnique({
+      () => prisma.university.findUnique({
         where: { slug: institutionSlug },
         select: {
           programmes: {

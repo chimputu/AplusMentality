@@ -118,11 +118,11 @@ export async function POST(req: Request) {
   // 6. Handle organization.created — link org to institution by slug
   if (type === 'organization.created') {
     const { id, name, slug } = data;
-    const institution = await prisma.institution.findUnique({
+    const institution = await prisma.university.findUnique({
       where: { slug },
     });
     if (institution) {
-      await prisma.institution.update({
+      await prisma.university.update({
         where: { id: institution.id },
         data: { clerkOrgId: id, clerkOrgSlug: slug },
       });
@@ -135,7 +135,7 @@ export async function POST(req: Request) {
   // 7. Handle organization.updated — update slug
   if (type === 'organization.updated') {
     const { id, slug } = data;
-    await prisma.institution.updateMany({
+    await prisma.university.updateMany({
       where: { clerkOrgId: id },
       data: { clerkOrgSlug: slug },
     });
@@ -144,7 +144,7 @@ export async function POST(req: Request) {
   // 8. Handle organization.deleted — nullify links, revoke memberships
   if (type === 'organization.deleted') {
     const { id } = data;
-    await prisma.institution.updateMany({
+    await prisma.university.updateMany({
       where: { clerkOrgId: id },
       data: { clerkOrgId: null, clerkOrgSlug: null },
     });

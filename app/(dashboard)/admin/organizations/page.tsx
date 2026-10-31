@@ -59,7 +59,7 @@ export default async function OrganizationsPage() {
   let usersWithoutMemberships = 0;
   try {
     // Fetch all institutions with clerkOrg fields
-    institutions = await prisma.institution.findMany({
+    institutions = await prisma.university.findMany({
       select: {
         id: true,
         name: true,

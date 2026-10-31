@@ -61,7 +61,7 @@ export async function PATCH(req: Request) {
       let clerkOrgId: string | null = null;
 
       if (body.institutionId) {
-        const inst = await prisma.institution.findUnique({
+        const inst = await prisma.university.findUnique({
           where: { id: body.institutionId },
           select: { clerkOrgId: true },
         });
@@ -73,7 +73,7 @@ export async function PATCH(req: Request) {
           select: { institutionId: true },
         });
         if (prog?.institutionId) {
-          const inst = await prisma.institution.findUnique({
+          const inst = await prisma.university.findUnique({
             where: { id: prog.institutionId },
             select: { clerkOrgId: true },
           });

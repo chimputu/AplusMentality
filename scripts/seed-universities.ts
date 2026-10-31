@@ -116,7 +116,7 @@ async function seed() {
   ];
 
   for (const uniData of universities) {
-    const uni = await prisma.university.upsert({
+    const uni = await prisma.legacyUniversity.upsert({
       where: { code: uniData.code },
       update: {},
       create: { name: uniData.name, code: uniData.code, academicSystem: uniData.academicSystem },
@@ -160,7 +160,7 @@ async function seed() {
   ];
 
   for (const instData of institutions) {
-    const inst = await prisma.institution.upsert({
+    const inst = await prisma.university.upsert({
       where: { slug: instData.slug },
       update: {},
       create: {

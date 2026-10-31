@@ -178,9 +178,9 @@ model User {
 
   // Student academic profile
   universityId  String?
-  university    University? @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  university    LegacyUniversity? @relation(fields: [universityId], references: [id], onDelete: SetNull)
   institutionId String?
-  institution   Institution? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  institution   University? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
   programmeId   String?
   programme     Programme? @relation(fields: [programmeId], references: [id], onDelete: SetNull)
   branchId      String?
@@ -251,7 +251,7 @@ model Announcement {
   authorId       String
   author         User        @relation(fields: [authorId], references: [clerkId])
   institutionId  String?
-  institution    Institution? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  institution    University? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -306,7 +306,7 @@ model Course {
   level       String?
 
   universityId String?
-  university   University? @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  university   LegacyUniversity? @relation(fields: [universityId], references: [id], onDelete: SetNull)
 
   programmeId String?
   programme   Programme? @relation(fields: [programmeId], references: [id], onDelete: SetNull)
@@ -755,9 +755,67 @@ model SavedBook {
 }
 
 // ============================================
-// UNIVERSITY & PROGRAMME
+// UNIVERSITY (Multi-type academic institution, source of truth)
+// Database table: "Institution" — renamed model for consistency
 // ============================================
 model University {
+  id              String            @id @default(cuid())
+  name            String
+  slug            String            @unique
+  shortName       String?
+  type            InstitutionType   @default(UNIVERSITY)
+  description     String?
+  country         String?           @default("Zambia")
+  province        String?
+  city            String?
+  website         String?
+  email           String?
+  phone           String?
+  logoUrl         String?
+  levelType       LevelType         @default(YEAR)
+  numLevels       Int               @default(4)
+  periodType      PeriodType        @default(SEMESTER)
+  numPeriods      Int               @default(2)
+  hasFaculties    Boolean           @default(false)
+  hasBranches     Boolean           @default(false)
+  isActive        Boolean           @default(true)
+  isVerified      Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  levels          AcademicLevel[]
+  periods         AcademicPeriod[]
+  faculties       Faculty[]
+  programmes      Programme[]
+  users           User[]
+  banners         Banner[]      @relation("BannerPrimaryInstitution")
+  bannerTargets   BannerTarget[] @relation("BannerTargetInstitution")
+
+  // Clerk Organization linkage
+  clerkOrgId     String?   @unique
+  clerkOrgSlug   String?
+
+  // Tutor applications
+  tutorApplications   TutorApplication[]
+  applicationWindows  ApplicationWindow[]
+  announcements       Announcement[]
+
+  // Institution change requests
+  changeRequestsCurrent InstitutionChangeRequest[] @relation("ChangeRequestCurrentInst")
+  changeRequestsNew     InstitutionChangeRequest[] @relation("ChangeRequestNewInst")
+
+  @@index([slug])
+  @@index([type])
+  @@index([isActive, isVerified])
+  @@index([city])
+  @@map("Institution")
+}
+
+// ============================================
+// LEGACY UNIVERSITY (Old simple model, kept for backward compat)
+// Database table: "University"
+// ============================================
+model LegacyUniversity {
   id              String         @id @default(cuid())
   name            String
   code            String         @unique  // e.g. "MU", "UNZA", "CBU"
@@ -771,6 +829,7 @@ model University {
   updatedAt       DateTime       @updatedAt
 
   @@index([academicSystem])
+  @@map("University")
 }
 
 model Programme {
@@ -779,13 +838,13 @@ model Programme {
   shortName       String?   // e.g. "BSc NS"
   code            String?   // e.g. "BSC-CS", "DIP-ACC"
 
-  // Legacy: University link
+  // Legacy: LegacyUniversity link
   universityId    String?
-  university      University? @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  university      LegacyUniversity? @relation(fields: [universityId], references: [id], onDelete: SetNull)
 
-  // New: Institution link
+  // New: University link (was Institution)
   institutionId   String?
-  institution     Institution? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  institution     University? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
 
   // Faculty link
   facultyId       String?
@@ -1129,7 +1188,7 @@ model Tutor {
   avatarUrl              String?
   profileImagePublicId   String?
   universityId           String?
-  university      University? @relation(fields: [universityId], references: [id])
+  university      LegacyUniversity? @relation(fields: [universityId], references: [id])
   programmeId     String?
   programme       Programme?  @relation(fields: [programmeId], references: [id])
   branchId        String?
@@ -1211,7 +1270,7 @@ model TutorApplication {
   userId          String                 @unique
   user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   institutionId   String?
-  institution     Institution?           @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  institution     University?           @relation(fields: [institutionId], references: [id], onDelete: SetNull)
   fullName        String
   email           String
   phone           String?
@@ -1274,60 +1333,6 @@ model TutorApplication {
   @@index([submittedAt])
 }
 
-// ============================================
-// INSTITUTION (Multi-type academic institution)
-// ============================================
-model Institution {
-  id              String            @id @default(cuid())
-  name            String
-  slug            String            @unique
-  shortName       String?
-  type            InstitutionType   @default(UNIVERSITY)
-  description     String?
-  country         String?           @default("Zambia")
-  province        String?
-  city            String?
-  website         String?
-  email           String?
-  phone           String?
-  logoUrl         String?
-  levelType       LevelType         @default(YEAR)
-  numLevels       Int               @default(4)
-  periodType      PeriodType        @default(SEMESTER)
-  numPeriods      Int               @default(2)
-  hasFaculties    Boolean           @default(false)
-  hasBranches     Boolean           @default(false)
-  isActive        Boolean           @default(true)
-  isVerified      Boolean           @default(false)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-
-  levels          AcademicLevel[]
-  periods         AcademicPeriod[]
-  faculties       Faculty[]
-  programmes      Programme[]
-  users           User[]
-  banners         Banner[]      @relation("BannerPrimaryInstitution")
-  bannerTargets   BannerTarget[] @relation("BannerTargetInstitution")
-
-  // Clerk Organization linkage
-  clerkOrgId     String?   @unique
-  clerkOrgSlug   String?
-
-  // Tutor applications
-  tutorApplications   TutorApplication[]
-  applicationWindows  ApplicationWindow[]
-  announcements       Announcement[]
-
-  // Institution change requests
-  changeRequestsCurrent InstitutionChangeRequest[] @relation("ChangeRequestCurrentInst")
-  changeRequestsNew     InstitutionChangeRequest[] @relation("ChangeRequestNewInst")
-
-  @@index([slug])
-  @@index([type])
-  @@index([isActive, isVerified])
-  @@index([city])
-}
 
 // ============================================
 // ACADEMIC LEVEL (e.g., "Year 1", "Stage 3")
@@ -1337,7 +1342,7 @@ model AcademicLevel {
   name            String    // e.g. "Year 1", "Stage 3"
   order           Int       @default(0)
   institutionId   String
-  institution     Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  institution     University @relation(fields: [institutionId], references: [id], onDelete: Cascade)
   courses         Course[]
   createdAt       DateTime  @default(now())
 
@@ -1354,7 +1359,7 @@ model AcademicPeriod {
   order           Int       @default(0)
   academicYear    Int       @default(2025)
   institutionId   String
-  institution     Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  institution     University @relation(fields: [institutionId], references: [id], onDelete: Cascade)
   courses         Course[]
   createdAt       DateTime  @default(now())
 
@@ -1371,7 +1376,7 @@ model Faculty {
   code            String    // e.g. "ICT", "ENG"
   description     String?
   institutionId   String
-  institution     Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  institution     University @relation(fields: [institutionId], references: [id], onDelete: Cascade)
   programmes      Programme[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -1386,7 +1391,7 @@ model Faculty {
 model Banner {
   id            String          @id @default(cuid())
   institutionId String?         // KEEP for backward compat (single target)
-  institution   Institution?    @relation("BannerPrimaryInstitution", fields: [institutionId], references: [id], onDelete: SetNull)
+  institution   University?    @relation("BannerPrimaryInstitution", fields: [institutionId], references: [id], onDelete: SetNull)
 
   title         String
   message       String          @db.Text
@@ -1422,7 +1427,7 @@ model BannerTarget {
   banner        Banner       @relation(fields: [bannerId], references: [id], onDelete: Cascade)
 
   institutionId String
-  institution   Institution  @relation("BannerTargetInstitution", fields: [institutionId], references: [id], onDelete: Cascade)
+  institution   University  @relation("BannerTargetInstitution", fields: [institutionId], references: [id], onDelete: Cascade)
 
   createdAt     DateTime     @default(now())
 
@@ -1533,14 +1538,14 @@ model InstitutionChangeRequest {
 
   // Current institution
   currentInstitutionId  String?
-  currentInstitution    Institution?        @relation("ChangeRequestCurrentInst", fields: [currentInstitutionId], references: [id], onDelete: SetNull)
+  currentInstitution    University?        @relation("ChangeRequestCurrentInst", fields: [currentInstitutionId], references: [id], onDelete: SetNull)
   currentProgrammeId    String?
   currentYear           Int?
   currentPeriod         String?
 
   // Requested new institution
   newInstitutionId      String?
-  newInstitution        Institution?        @relation("ChangeRequestNewInst", fields: [newInstitutionId], references: [id], onDelete: SetNull)
+  newInstitution        University?        @relation("ChangeRequestNewInst", fields: [newInstitutionId], references: [id], onDelete: SetNull)
   newProgrammeId        String?
   newProgramme          Programme?        @relation("ChangeRequestNewProg", fields: [newProgrammeId], references: [id], onDelete: SetNull)
   newYear               Int?
@@ -1566,7 +1571,7 @@ model InstitutionChangeRequest {
 model ApplicationWindow {
   id              String   @id @default(cuid())
   institutionId   String?
-  institution     Institution? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  institution     University? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
 
   isOpen          Boolean  @default(false)
   opensAt         DateTime?

@@ -9,7 +9,7 @@ export default async function JoinPage({ params }: { params: Promise<{ slug: str
   const { userId: clerkUserId } = await auth();
 
   // Check Institution first (via its slug field)
-  const institution = await prisma.institution.findUnique({
+  const institution = await prisma.university.findUnique({
     where: { slug },
     include: {
       programmes: {
@@ -38,8 +38,8 @@ export default async function JoinPage({ params }: { params: Promise<{ slug: str
     redirect(`/onboarding?slug=${encodeURIComponent(slug)}&type=institution`);
   }
 
-  // Then check University (via its joinSlug field)
-  const university = await prisma.university.findUnique({
+  // Then check LegacyUniversity (via its joinSlug field)
+  const university = await prisma.legacyUniversity.findUnique({
     where: { joinSlug: slug },
     include: {
       programmes: {

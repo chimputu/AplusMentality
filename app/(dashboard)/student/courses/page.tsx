@@ -118,7 +118,7 @@ export default async function StudentCoursesPage({
   let selectedUniversity: any = null;
   if (universityId) {
     try {
-      selectedUniversity = await prisma.university.findUnique({
+      selectedUniversity = await prisma.legacyUniversity.findUnique({
         where: { id: universityId },
         select: { name: true, code: true },
       });

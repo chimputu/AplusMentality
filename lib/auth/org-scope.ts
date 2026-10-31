@@ -59,7 +59,7 @@ export async function getOrgScope(): Promise<OrgScope> {
     throw new Error('User has no active organization. Complete onboarding first.');
   }
 
-  const institution = await prisma.institution.findUnique({
+  const institution = await prisma.university.findUnique({
     where: { clerkOrgId: orgId },
     select: { id: true, name: true },
   });

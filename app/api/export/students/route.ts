@@ -34,7 +34,7 @@ export async function GET() {
     // Fetch institution shortName if not already available
     let shortName = scope.shortName;
     if (!shortName) {
-      const inst = await prisma.institution.findUnique({
+      const inst = await prisma.university.findUnique({
         where: { id: scope.institutionId },
         select: { shortName: true, name: true },
       });

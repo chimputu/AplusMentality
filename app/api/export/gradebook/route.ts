@@ -65,7 +65,7 @@ export async function GET(request: Request) {
           });
           // For ADMIN/LECTURER, verify the course is in their institution
           // by checking if the university matches
-          const institution = await prisma.institution.findUnique({
+          const institution = await prisma.university.findUnique({
             where: { id: scope.institutionId },
             select: { name: true },
           });

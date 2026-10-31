@@ -21,7 +21,7 @@ export default async function ProgrammesPage({
   });
 
   // Fetch all institutions for the filter dropdown
-  const institutions = await prisma.institution.findMany({
+  const institutions = await prisma.university.findMany({
     select: { id: true, name: true },
     orderBy: { name: 'asc' },
   });
