@@ -1,10 +1,11 @@
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export async function GET() {
-  const { role } = await requireAuth(['SUPER_ADMIN']);
+  try {
+    const { role } = await requireAuth(['SUPER_ADMIN']);
   if (role !== 'SUPER_ADMIN') {
     return new Response('Unauthorized', { status: 403 });
   }
@@ -51,7 +52,7 @@ export async function GET() {
     String(inst._count.users),
   ]);
 
-  (doc as any).autoTable({
+  autoTable(doc, {
     startY: 34,
     head: [['Name', 'Short Name', 'Type', 'Status', 'Verified', 'Clerk', 'Programmes', 'Users']],
     body: tableData,
@@ -65,11 +66,18 @@ export async function GET() {
     styles: { fontSize: 8 },
   });
 
-  const pdfBlob = doc.output('blob');
-  return new Response(pdfBlob, {
+  const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
+  return new Response(pdfBuffer, {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename="institutions-report.pdf"',
     },
   });
+  } catch (error) {
+    console.error('[Institutions Export] PDF generation error:', error);
+    return new Response(JSON.stringify({ error: 'Failed to generate PDF' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }

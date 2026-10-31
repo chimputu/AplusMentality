@@ -1,11 +1,12 @@
 import { requireAuth } from '@/lib/auth';
 import { getOrgScope } from '@/lib/auth/org-scope';
 import { prisma } from '@/lib/prisma';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export async function GET() {
-  const { role, userId } = await requireAuth(['ADMIN', 'SUPER_ADMIN', 'LECTURER', 'TUTOR']);
+  try {
+    const { role, userId } = await requireAuth(['ADMIN', 'SUPER_ADMIN', 'LECTURER', 'TUTOR']);
   if (!['ADMIN', 'SUPER_ADMIN', 'LECTURER', 'TUTOR'].includes(role)) {
     return new Response('Unauthorized', { status: 403 });
   }
@@ -114,7 +115,7 @@ export async function GET() {
     ];
   });
 
-  (doc as any).autoTable({
+  autoTable(doc, {
     startY: 42,
     head: [['Name', 'Email', 'Assigned Courses', 'Status', 'Verified', 'University']],
     body: tableData,
@@ -139,11 +140,18 @@ export async function GET() {
   const dateFile = new Date().toISOString().split('T')[0];
   const filename = `${filenameShort}_Tutors_Report_${dateFile}.pdf`;
 
-  const pdfBlob = doc.output('blob');
-  return new Response(pdfBlob, {
+  const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
+  return new Response(pdfBuffer, {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="${filename}"`,
     },
   });
+  } catch (error) {
+    console.error('[Tutors Export] PDF generation error:', error);
+    return new Response(JSON.stringify({ error: 'Failed to generate PDF' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }

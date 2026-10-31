@@ -58,6 +58,24 @@ The platform needs three new professional PDF exports for University Admins and 
 
 ---
 
+## * Step 1: Rename Institution Model to University in Prisma Schema
+##   Step 2: Rename all TypeScript variable/function references from institution to university
+##   Step 3: Rename route paths /admin/institutions to /admin/universities
+##   Step 4: Rename file and folder names from institution* to university*
+##   Step 5: Update all UI labels from "Institution" to "University"
+##   Step 6: Verify Build & Push to GitHub
+
+### Overview
+The platform has inconsistent terminology: the Prisma `Institution` model is the source of truth, but the legacy `University` model also exists. All admin pages, API routes, and server actions use "institution" in variable names, URLs, and file names. The user wants everything standardized to "University" for consistency and easier debugging.
+
+### Key Decision
+- Rename the Prisma `Institution` model to `University` in the schema, keeping all fields intact.
+- The legacy `University` model will be renamed to `LegacyUniversity` to avoid conflicts.
+- All TypeScript code, file names, route paths, and UI labels will use "university" consistently.
+- Database migration via `prisma db push` will handle the column renames.
+
+---
+
 ## Pending Tasks (Moved to Backlog)
 
 ### Offline-First Architecture (PWA) — PENDING
