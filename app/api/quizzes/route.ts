@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, getAuthUser } from '@/lib/auth';
-import { isResourceInFullScopeFromUser } from '@/lib/auth/scope';
+import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -16,33 +15,44 @@ export async function GET(req: NextRequest) {
 
     const courseId = searchParams.get('courseId');
 
-    const institutionId =
-        searchParams.get('institutionId') || searchParams.get('institution');
-
-    const universityId =
-        searchParams.get('universityId') || searchParams.get('university');
-
     const where: any = {};
+
+    // SECURITY: Scope quiz results by user role
+    const role = auth.role;
+    const user = auth.user;
+
+    if (role === 'SUPER_ADMIN') {
+      // SUPER_ADMIN can see all quizzes
+    } else if (role === 'ADMIN') {
+      // ADMIN scoped to their institution
+      if (user.institutionId) {
+        where.course = {
+          programme: {
+            institutionId: user.institutionId,
+          },
+        };
+      }
+    } else if (role === 'TUTOR' || role === 'LECTURER') {
+      // TUTOR/LECTURER can only see quizzes they created
+      where.createdBy = user.clerkId;
+    } else {
+      // STUDENT: only see published quizzes for courses they're enrolled in
+      where.isPublished = true;
+      where.isPreview = false;
+    }
 
     if (courseId) where.courseId = courseId;
 
-    if (institutionId) {
-      where.course = {
-        programme: {
-          institutionId,
-        },
-      };
-    } else if (universityId) {
-      where.course = {
-        universityId,
-      };
-    }
+    // SECURITY: Do not expose all students' submissions to non-admin users.
+    // Only admins/tutors/lecturers may see submission counts; students see only their own.
+    const isAdmin = role === 'ADMIN' || role === 'SUPER_ADMIN';
+    const isTutorOrLecturer = role === 'TUTOR' || role === 'LECTURER';
 
     const quizzes = await prisma.quiz.findMany({
       where,
       include: {
         creator: {
-          select: { name: true, email: true },
+          select: { name: true },
         },
         course: {
           select: {
@@ -73,12 +83,20 @@ export async function GET(req: NextRequest) {
             },
           },
         },
-        submissions: true,
+        // Only admins and tutors/lecturers get submission counts (not full submission data)
+        _count: isAdmin || isTutorOrLecturer ? { select: { submissions: true } } : false,
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json(quizzes);
+    // Transform response: replace _count with submissionCount for cleaner API
+    const safeQuizzes = quizzes.map((q: any) => ({
+      ...q,
+      submissionCount: q._count?.submissions ?? 0,
+      _count: undefined,
+    }));
+
+    return NextResponse.json(safeQuizzes);
   } catch (error) {
     console.error('[quizzes GET] Error:', error);
     return NextResponse.json(
@@ -169,45 +187,70 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN']);
+    const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN', 'SUPER_ADMIN']);
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const body = await req.json();
 
-    const {
-      id,
-      title,
-      description,
-      embedUrl,
-      formUrl,
-      dueDate,
-      fileUrl,
-      contentType,
-      isPublished,
-      courseId,
-    } = body;
+    const body = await req.json();
+    const { id } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Quiz ID is required' }, { status: 400 });
     }
 
-    const quiz = await prisma.quiz.update({
+    // Re-fetch with correct ID from body
+    const quiz = await prisma.quiz.findUnique({
+      where: { id },
+      include: { course: { select: { universityId: true } } },
+    });
+
+    if (!quiz) {
+      return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
+    }
+
+    // SECURITY: Verify ownership — only creator or admin can update
+    if (auth.user.role !== 'ADMIN' && auth.user.role !== 'SUPER_ADMIN') {
+      if (quiz.createdBy !== auth.userId) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+    }
+
+    // SECURITY: If changing courseId, verify the new course is within scope
+    const { courseId } = body;
+    if (courseId && courseId !== quiz.courseId) {
+      const newCourse = await prisma.course.findUnique({
+        where: { id: courseId },
+        select: { universityId: true },
+      });
+      if (!newCourse) {
+        return NextResponse.json({ error: 'Course not found' }, { status: 404 });
+      }
+      if (!isResourceInFullScopeFromUser(auth.user, newCourse)) {
+        return NextResponse.json(
+          { error: 'You are not authorized to move this quiz to the selected course' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // SECURITY: Mass assignment protection — only accept explicit fields
+    const updated = await prisma.quiz.update({
       where: { id },
       data: {
-        title,
-        description,
-        embedUrl,
-        formUrl,
-        dueDate: dueDate ? new Date(dueDate) : null,
-        fileUrl: fileUrl || null,
-        contentType: contentType || 'google_form',
-        isPublished,
-        courseId,
+        ...(body.title !== undefined && { title: body.title }),
+        ...(body.description !== undefined && { description: body.description ?? null }),
+        ...(body.embedUrl !== undefined && { embedUrl: body.embedUrl }),
+        ...(body.formUrl !== undefined && { formUrl: body.formUrl }),
+        ...(body.dueDate !== undefined && { dueDate: body.dueDate ? new Date(body.dueDate) : null }),
+        ...(body.fileUrl !== undefined && { fileUrl: body.fileUrl ?? null }),
+        ...(body.contentType !== undefined && { contentType: body.contentType }),
+        ...(body.isPublished !== undefined && { isPublished: body.isPublished }),
+        ...(courseId !== undefined && { courseId }),
       },
     });
 
-    return NextResponse.json(quiz);
+    return NextResponse.json(updated);
   } catch (error: any) {
     console.error('[quizzes PUT] Error:', error);
 
@@ -224,7 +267,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN']);
+    const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN', 'SUPER_ADMIN']);
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -234,6 +277,18 @@ export async function DELETE(req: NextRequest) {
 
     if (!id) {
       return NextResponse.json({ error: 'Quiz ID is required' }, { status: 400 });
+    }
+
+    // SECURITY: Verify ownership before deletion
+    const quiz = await prisma.quiz.findUnique({ where: { id } });
+    if (!quiz) {
+      return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
+    }
+
+    if (auth.user.role !== 'ADMIN' && auth.user.role !== 'SUPER_ADMIN') {
+      if (quiz.createdBy !== auth.userId) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
     }
 
     await prisma.quiz.delete({ where: { id } });

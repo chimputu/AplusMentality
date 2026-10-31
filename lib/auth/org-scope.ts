@@ -85,8 +85,9 @@ export async function getOrgScope(): Promise<OrgScope> {
   }
 
   const appRole = ORG_ROLE_MAP[orgRole ?? ''] || user.role;
-  // Super Admin must have BOTH the Prisma role AND the Clerk org role
-  const isSuperAdmin = user.role === 'SUPER_ADMIN' && orgRole === 'org:super_admin';
+  // SECURITY: isSuperAdmin is based solely on the Prisma role, not the Clerk org role.
+  // The isSuperAdmin boolean field on the User model must not grant privileges independently.
+  const isSuperAdmin = user.role === 'SUPER_ADMIN';
 
   return {
     userId: user.id,

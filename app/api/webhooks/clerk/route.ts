@@ -2,7 +2,38 @@ import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { WebhookEvent } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { CLERK_TO_APP_ROLE, AppRole } from '@/lib/clerk-org';
+import { AppRole } from '@/lib/clerk-org';
+
+// SECURITY: Only allow these roles to be synced from Clerk org memberships.
+// ADMIN and SUPER_ADMIN must be granted server-side only (via promote endpoint).
+const ALLOWED_CLERK_SYNC_ROLES: Set<AppRole> = new Set(['STUDENT', 'TUTOR', 'LECTURER']);
+
+/**
+ * Map Clerk org roles to app roles, but never allow ADMIN or SUPER_ADMIN
+ * from Clerk — those must be granted server-side only.
+ */
+function safeClerkToAppRole(clerkRole: string, currentRole: AppRole): AppRole {
+  // Never override SUPER_ADMIN
+  if (currentRole === 'SUPER_ADMIN') return 'SUPER_ADMIN';
+
+  const mapped: Record<string, AppRole> = {
+    'org:super_admin': 'SUPER_ADMIN',
+    'org:admin': 'ADMIN',
+    'org:tutor': 'TUTOR',
+    'org:lecturer': 'LECTURER',
+    'org:member': 'STUDENT',
+  };
+  const appRole = mapped[clerkRole] || currentRole;
+
+  // SECURITY: Only allow STUDENT, TUTOR, LECTURER from Clerk
+  if (ALLOWED_CLERK_SYNC_ROLES.has(appRole)) return appRole;
+
+  // For ADMIN/SUPER_ADMIN from Clerk, keep the current role
+  console.warn(
+    `[Webhook] Clerk role ${clerkRole} maps to ${appRole}, but only STUDENT/TUTOR/LECTURER can be synced from Clerk. Keeping current role: ${currentRole}`
+  );
+  return currentRole;
+}
 
 export async function POST(req: Request) {
   // 1. Pull svix headers
@@ -186,9 +217,9 @@ export async function POST(req: Request) {
         },
       });
       // Sync user's active org fields AND the main role enum from Clerk → DB
-      // IMPORTANT: Never override SUPER_ADMIN — it is a global Prisma-only role,
-      // not managed by Clerk organizations. Only update the role if the user is NOT SUPER_ADMIN.
-      const appRole: AppRole = user.role === 'SUPER_ADMIN' ? 'SUPER_ADMIN' : (CLERK_TO_APP_ROLE[role ?? ''] || user.role);
+      // SECURITY: Only allow STUDENT/TUTOR/LECTURER from Clerk. ADMIN/SUPER_ADMIN
+      // must be granted server-side only via the promote endpoint.
+      const appRole: AppRole = safeClerkToAppRole(role ?? '', user.role);
       await prisma.user.update({
         where: { id: user.id },
         data: { clerkOrgId: organization.id, clerkOrgRole: role, role: appRole },
@@ -213,10 +244,9 @@ export async function POST(req: Request) {
       data: { role },
     });
     // Sync BOTH clerkOrgRole AND the main role enum from Clerk → DB
-    // This ensures changing a role in Clerk dashboard automatically updates the DB
-    // IMPORTANT: Never override SUPER_ADMIN — it is a global Prisma-only role,
-    // not managed by Clerk organizations.
-    const appRole: AppRole = user.role === 'SUPER_ADMIN' ? 'SUPER_ADMIN' : (CLERK_TO_APP_ROLE[role ?? ''] || user.role);
+    // SECURITY: Only allow STUDENT/TUTOR/LECTURER from Clerk. ADMIN/SUPER_ADMIN
+    // must be granted server-side only via the promote endpoint.
+    const appRole: AppRole = safeClerkToAppRole(role ?? '', user.role);
     await prisma.user.update({
       where: { id: user.id },
       data: { clerkOrgRole: role, role: appRole },

@@ -8,7 +8,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const auth = await getAuthUser(['ADMIN']);
+    // SECURITY: Allow ADMIN, TUTOR, LECTURER, SUPER_ADMIN to view submissions
+    const auth = await getAuthUser(['ADMIN', 'TUTOR', 'LECTURER', 'SUPER_ADMIN']);
     if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id } = await params;
@@ -21,9 +22,10 @@ export async function GET(
             user: {
               select: {
                 name: true,
-                email: true,
-                clerkId: true,
-                imageUrl: true,
+                // SECURITY: Do not expose email or clerkId to non-admin users
+                ...(auth.role === 'ADMIN' || auth.role === 'SUPER_ADMIN' ? {
+                  email: true,
+                } : {}),
               },
             },
           },

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { requireApiAuth, requireApiRole } from '@/lib/auth/api-auth';
 import { prisma } from '@/lib/prisma';
 import { Role } from '@/generated/prisma/client';
 import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
@@ -7,11 +7,15 @@ import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
 // POST - Promote/Demote a single user
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+    // SECURITY: Use API-safe auth — no redirects
+    const authResult = await requireApiRole(['ADMIN', 'SUPER_ADMIN']);
+    if (authResult instanceof NextResponse) return authResult;
+    const adminUser = authResult.user;
+
     const body = await req.json();
     const { targetUserId, newRole } = body;
 
-    console.log('🔵 Promotion request:', { targetUserId, newRole, adminId: userId });
+    console.log('🔵 Promotion request:', { targetUserId, newRole, adminId: adminUser.clerkId });
 
     // Validate input
     if (!targetUserId) {
@@ -30,9 +34,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Prevent self-role change
-    if (targetUserId === userId) {
+    if (targetUserId === adminUser.clerkId) {
       return NextResponse.json(
         { error: 'You cannot change your own role' },
+        { status: 403 }
+      );
+    }
+
+    // SECURITY: Only SUPER_ADMIN can grant SUPER_ADMIN
+    if (newRole === 'SUPER_ADMIN' && adminUser.role !== 'SUPER_ADMIN') {
+      console.warn('[Promote] ADMIN attempted to grant SUPER_ADMIN to %s — denied', targetUserId);
+      return NextResponse.json(
+        { error: 'Only SUPER_ADMIN can grant SUPER_ADMIN role' },
         { status: 403 }
       );
     }
@@ -89,7 +102,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Promotion error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update user role' },
+      { error: 'Failed to update user role' },
       { status: 500 }
     );
   }
