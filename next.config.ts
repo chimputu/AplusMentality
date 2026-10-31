@@ -2,6 +2,8 @@
 
 // Sentry build-time config — wraps nextConfig with source map upload and instrumentation
 const { withSentryConfig } = require('@sentry/nextjs/config');
+// Serwist PWA — replaces next-pwa (incompatible with Next.js 16)
+const { withSerwist } = require('@serwist/next');
 
 const nextConfig = {
   experimental: {
@@ -31,7 +33,7 @@ const nextConfig = {
               "media-src 'self' https://res.cloudinary.com https://www.youtube.com https://youtube.com",
               "connect-src 'self' https://*.clerk.accounts.dev https://cdn.protect.clerk.com https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io https://docs.google.com https://api.emailjs.com",
               "frame-src 'self' https://*.clerk.accounts.dev https://www.youtube.com https://youtube.com https://docs.google.com",
-              "worker-src 'self' blob:",
+              "worker-src 'self' blob: https://bm-smrwsawvav22aok.public.bumpl.cloud",
               "frame-ancestors 'self'",
             ].join('; '),
           },
@@ -90,8 +92,8 @@ const nextConfig = {
   },
 };
 
-// Wrap with Sentry for source map upload
-module.exports = withSentryConfig(nextConfig, {
+// Wrap with Serwist for PWA, then with Sentry for source map upload
+module.exports = withSentryConfig(withSerwist(nextConfig), {
   // Disable Sentry auto-instrumentation for server components (handled by config files)
   autoInstrumentServerComponents: true,
   autoInstrumentAppRoutes: true,

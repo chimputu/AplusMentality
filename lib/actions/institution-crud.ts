@@ -428,7 +428,7 @@ export async function inviteAdmin(institutionId: string, emailAddress?: string) 
 
   if (!orgId) throw new Error('No Clerk organization available for this institution');
 
-  const redirectUrl = 'https://aplusmentality.vercel.app/admin';
+  const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/admin`;
 
   // If email is provided, use Clerk invitation API (sends email)
   if (emailAddress) {
@@ -457,7 +457,7 @@ export async function inviteAdmin(institutionId: string, emailAddress?: string) 
   // No email — generate a sign-up link with org slug pre-filled
   return {
     success: true,
-    invitationUrl: `https://aplusmentality.vercel.app/sign-up?org_slug=${institution.slug}`,
+    invitationUrl: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/sign-up?org_slug=${institution.slug}`,
     emailSent: false,
   };
 }
