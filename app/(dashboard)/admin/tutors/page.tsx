@@ -28,13 +28,21 @@ export default async function AdminTutorsPage() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Tutors</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage tutor profiles and specialties</p>
         </div>
-        <Link
-          href="/admin/tutors/new"
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          <Plus className="w-4 h-4" />
-          Add Tutor
-        </Link>
+        <div className="flex items-center gap-3">
+          <a
+            href="/api/export/tutors"
+            className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+          >
+            Export Tutors
+          </a>
+          <Link
+            href="/admin/tutors/new"
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            <Plus className="w-4 h-4" />
+            Add Tutor
+          </Link>
+        </div>
       </div>
 
       {tutors.length === 0 ? (

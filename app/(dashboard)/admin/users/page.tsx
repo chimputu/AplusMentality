@@ -82,10 +82,10 @@ export default async function AdminUsersPage() {
           </p>
         </div>
         <a
-          href="/api/export/users"
+          href="/api/export/students"
           className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
         >
-          Export PDF
+          Export Students
         </a>
       </div>
       <UserManagement users={users} institutions={institutionsData} />

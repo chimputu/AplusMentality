@@ -158,12 +158,23 @@ export default function AdminSubmissionsPage() {
 
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {assignment.title}
-        </h1>
-        {assignment.description && (
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{assignment.description}</p>
-        )}
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {assignment.title}
+            </h1>
+            {assignment.description && (
+              <p className="text-gray-600 dark:text-gray-400 mt-1">{assignment.description}</p>
+            )}
+          </div>
+          <a
+            href={`/api/export/gradebook?assignmentId=${assignmentId}`}
+            className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors flex items-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Export Grades
+          </a>
+        </div>
         <div className="flex flex-wrap gap-4 mt-4 text-sm">
           <span className="text-gray-600 dark:text-gray-400">
             📄 {stats.total} submission{stats.total !== 1 ? 's' : ''}
