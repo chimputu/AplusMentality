@@ -98,7 +98,7 @@ const nextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },
-      // ✅ CORS headers for manifest.json — fixes PWA installation errors on Vercel
+      // ✅ CORS headers for manifest.json — fixes PWA installation errors
       {
         source: '/manifest.json',
         headers: [
@@ -117,7 +117,9 @@ const nextConfig = {
     ];
   },
   // ✅ Allow external images (required for Unsplash & Google thumbnails)
+  // ⚠️ unoptimized: true — Render does not support Vercel's Edge image optimization
   images: {
+    unoptimized: true,
     qualities: [75, 85],
     remotePatterns: [
       {
