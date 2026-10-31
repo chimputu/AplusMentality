@@ -26,7 +26,7 @@ if (!parsed.success) {
   if (criticalMissing.length > 0) {
     console.error(
       `🚨 Missing critical env vars: ${criticalMissing.join(', ')}. ` +
-      `The app will not function correctly. Set these in your Vercel project settings.`
+      `The app will not function correctly. Set these in your deployment environment variables.`
     );
   }
 

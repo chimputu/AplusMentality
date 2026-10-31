@@ -12,7 +12,7 @@ if (!connectionString || connectionString.trim() === '') {
   console.error(
     "🚨 DATABASE_URL is not set or is empty. " +
     "All database operations will fail with 500 errors. " +
-    "Set DATABASE_URL in your Vercel project Settings > Environment Variables."
+    "Set DATABASE_URL in your deployment environment variables."
   );
 } else if (process.env.NODE_ENV !== "production") {
   const host = connectionString.split("@")[1]?.split("/")[0];

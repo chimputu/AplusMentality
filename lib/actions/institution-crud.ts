@@ -113,11 +113,11 @@ export async function createInstitution(rawInput: unknown) {
   const input = createInstitutionSchema.parse(rawInput);
 
   // Check slug uniqueness
-  const existing = await prisma.institution.findUnique({ where: { slug: input.slug } });
+  const existing = await prisma.university.findUnique({ where: { slug: input.slug } });
   if (existing) throw new Error('Slug is already taken');
 
   // 1. Create in Prisma first
-  const institution = await prisma.institution.create({ data: input as any });
+  const institution = await prisma.university.create({ data: input as any });
 
   try {
     // 2. Create in Clerk
@@ -134,28 +134,28 @@ export async function createInstitution(rawInput: unknown) {
         const existingData = await existingOrg.json();
         const org = existingData.data?.find((o: any) => o.slug === institution.slug);
         if (org) {
-          await prisma.institution.update({
+          await prisma.university.update({
             where: { id: institution.id },
             data: { clerkOrgId: org.id, clerkOrgSlug: org.slug },
           });
         }
       } else {
         // If Clerk fails for another reason, rollback the Prisma creation
-        await prisma.institution.delete({ where: { id: institution.id } });
+        await prisma.university.delete({ where: { id: institution.id } });
         throw new Error(`Failed to link organization to Clerk: ${clerkResult.error}`);
       }
     } else if (clerkResult.orgId) {
       // 3. Update Prisma with the new Clerk ID
-      await prisma.institution.update({
+      await prisma.university.update({
         where: { id: institution.id },
         data: { clerkOrgId: clerkResult.orgId, clerkOrgSlug: institution.slug },
       });
     }
   } catch (error) {
     // If we haven't already rolled back, delete the orphaned Prisma record
-    const stillExists = await prisma.institution.findUnique({ where: { id: institution.id } });
+    const stillExists = await prisma.university.findUnique({ where: { id: institution.id } });
     if (stillExists && !stillExists.clerkOrgId) {
-      await prisma.institution.delete({ where: { id: institution.id } });
+      await prisma.university.delete({ where: { id: institution.id } });
     }
     if (error instanceof Error && error.message.startsWith('Failed to link')) {
       throw error;
@@ -198,7 +198,7 @@ export async function updateInstitution(id: string, rawInput: unknown) {
 
   const input = updateInstitutionSchema.parse(rawInput);
 
-  const institution = await prisma.institution.findUnique({ where: { id } });
+  const institution = await prisma.university.findUnique({ where: { id } });
   if (!institution) throw new Error('Institution not found');
 
   // Detect structural changes
@@ -209,7 +209,7 @@ export async function updateInstitution(id: string, rawInput: unknown) {
     input.numPeriods !== undefined && input.numPeriods !== institution.numPeriods;
 
   // Update institution
-  const updated = await prisma.institution.update({ where: { id }, data: input });
+  const updated = await prisma.university.update({ where: { id }, data: input });
 
   // Regenerate levels/periods if structural fields changed
   if (structuralChanged) {
@@ -256,7 +256,7 @@ export async function updateInstitution(id: string, rawInput: unknown) {
 export async function deleteInstitution(id: string) {
   await requireAdmin();
 
-  await prisma.institution.delete({ where: { id } });
+  await prisma.university.delete({ where: { id } });
 
   revalidatePath('/admin/institutions');
 
@@ -266,10 +266,10 @@ export async function deleteInstitution(id: string) {
 export async function toggleInstitutionActive(id: string) {
   await requireAdmin();
 
-  const institution = await prisma.institution.findUnique({ where: { id } });
+  const institution = await prisma.university.findUnique({ where: { id } });
   if (!institution) throw new Error('Institution not found');
 
-  const updated = await prisma.institution.update({
+  const updated = await prisma.university.update({
     where: { id },
     data: { isActive: !institution.isActive },
   });
@@ -282,10 +282,10 @@ export async function toggleInstitutionActive(id: string) {
 export async function toggleInstitutionVerified(id: string) {
   await requireAdmin();
 
-  const institution = await prisma.institution.findUnique({ where: { id } });
+  const institution = await prisma.university.findUnique({ where: { id } });
   if (!institution) throw new Error('Institution not found');
 
-  const updated = await prisma.institution.update({
+  const updated = await prisma.university.update({
     where: { id },
     data: { isVerified: !institution.isVerified },
   });
@@ -316,7 +316,7 @@ export async function listInstitutions(filters?: {
     ];
   }
 
-  const institutions = await prisma.institution.findMany({
+  const institutions = await prisma.university.findMany({
     where,
     orderBy: { name: 'asc' },
     include: {
@@ -336,7 +336,7 @@ export async function listInstitutions(filters?: {
 }
 
 export async function getInstitution(id: string) {
-  const institution = await prisma.institution.findUnique({
+  const institution = await prisma.university.findUnique({
     where: { id },
     include: {
       levels: { orderBy: { order: 'asc' } },
@@ -368,12 +368,12 @@ export async function updateInstitutionSlug(institutionId: string, slug: string)
   const parsed = slugSchema.parse(slug);
 
   // Check uniqueness
-  const existing = await prisma.institution.findFirst({
+  const existing = await prisma.university.findFirst({
     where: { slug: parsed, id: { not: institutionId } },
   });
   if (existing) throw new Error('Slug is already taken by another institution');
 
-  await prisma.institution.update({
+  await prisma.university.update({
     where: { id: institutionId },
     data: { slug: parsed },
   });
@@ -389,7 +389,7 @@ export async function updateUniversityJoinSlug(universityId: string, joinSlug: s
   const parsed = slugSchema.parse(joinSlug);
 
   // Check uniqueness against both Institution.slug and University.joinSlug
-  const existingInst = await prisma.institution.findUnique({ where: { slug: parsed } });
+  const existingInst = await prisma.university.findUnique({ where: { slug: parsed } });
   if (existingInst) throw new Error('Slug is already taken by another institution');
 
   const existingUni = await prisma.university.findFirst({
@@ -409,7 +409,7 @@ export async function updateUniversityJoinSlug(universityId: string, joinSlug: s
 export async function inviteAdmin(institutionId: string, emailAddress?: string) {
   await requireAdmin();
 
-  const institution = await prisma.institution.findUnique({ where: { id: institutionId } });
+  const institution = await prisma.university.findUnique({ where: { id: institutionId } });
   if (!institution) throw new Error('Institution not found');
 
   // Auto-create Clerk org if missing
@@ -419,7 +419,7 @@ export async function inviteAdmin(institutionId: string, emailAddress?: string) 
     if (!result.success) throw new Error(`Failed to create organization: ${result.error}`);
     if (result.orgId) {
       orgId = result.orgId;
-      await prisma.institution.update({
+      await prisma.university.update({
         where: { id: institutionId },
         data: { clerkOrgId: orgId, clerkOrgSlug: institution.slug },
       });
@@ -465,7 +465,7 @@ export async function inviteAdmin(institutionId: string, emailAddress?: string) 
 export async function syncOrganizationToClerk(institutionId: string) {
   await requireSuperAdmin();
 
-  const institution = await prisma.institution.findUnique({ where: { id: institutionId } });
+  const institution = await prisma.university.findUnique({ where: { id: institutionId } });
   if (!institution) throw new Error('Institution not found');
 
   // If already linked, this is a no-op
@@ -492,7 +492,7 @@ export async function syncOrganizationToClerk(institutionId: string) {
       const existingData = await existingOrg.json();
       const org = existingData.data?.find((o: any) => o.slug === institution.slug);
       if (org) {
-        await prisma.institution.update({
+        await prisma.university.update({
           where: { id: institutionId },
           data: { clerkOrgId: org.id, clerkOrgSlug: org.slug },
         });
@@ -505,7 +505,7 @@ export async function syncOrganizationToClerk(institutionId: string) {
 
   // Update the institution with the new Clerk org ID
   if (result.orgId) {
-    await prisma.institution.update({
+    await prisma.university.update({
       where: { id: institutionId },
       data: { clerkOrgId: result.orgId, clerkOrgSlug: institution.slug },
     });
@@ -518,7 +518,7 @@ export async function syncOrganizationToClerk(institutionId: string) {
 export async function syncAllOrgsToClerk() {
   await requireSuperAdmin();
 
-  const unlinked = await prisma.institution.findMany({
+  const unlinked = await prisma.university.findMany({
     where: { clerkOrgId: null },
     select: { id: true, name: true, slug: true },
   });
@@ -551,7 +551,7 @@ export async function syncAllOrgsToClerk() {
           const existingData = await existingOrg.json();
           const org = existingData.data?.find((o: any) => o.slug === institution.slug);
           if (org) {
-            await prisma.institution.update({
+            await prisma.university.update({
               where: { id: institution.id },
               data: { clerkOrgId: org.id, clerkOrgSlug: org.slug },
             });
@@ -565,7 +565,7 @@ export async function syncAllOrgsToClerk() {
           errors.push(`${institution.name}: ${result.error}`);
         }
       } else if (result.orgId) {
-        await prisma.institution.update({
+        await prisma.university.update({
           where: { id: institution.id },
           data: { clerkOrgId: result.orgId, clerkOrgSlug: institution.slug },
         });

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'About A+ Mentality',
   description: 'Learn about A+ Mentality\'s mission to empower Zambian students through quality education.',
   alternates: {
-    canonical: 'https://aplusmentality.vercel.app/about',
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/about`,
   },
 };
 

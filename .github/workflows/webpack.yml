@@ -1,28 +1,14 @@
-name: NodeJS with Webpack
+# Disabled: This was an auto-generated webpack workflow not applicable to this Next.js project.
+# CI/CD is handled by ci.yml (lint/test/build) and deploy.yml (Render deployment).
+# This file is kept as a no-op to preserve git history. Remove entirely if desired.
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+name: NodeJS with Webpack (Disabled)
+
+on: {}
 
 jobs:
-  build:
+  noop:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-
     steps:
-    - uses: actions/checkout@v4
+      - run: echo "This workflow is disabled. Use ci.yml and deploy.yml instead."
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: Build
-      run: |
-        npm install
-        npx webpack

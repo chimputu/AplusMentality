@@ -405,23 +405,31 @@ AplusMentality/
 
 ## 🚢 Deployment
 
-### Deploy to Vercel (Recommended)
+### Deploy to Render (Recommended)
 
-```bash
-# 1. Push code to GitHub
-git push origin main
+The app uses a GitHub Actions workflow (`.github/workflows/deploy.yml`) to automatically deploy to Render on every push to `main`.
 
-# 2. Import project in Vercel
-# - Go to vercel.com
-# - Click "Add New Project"
-# - Select your repository
-# - Add all environment variables from .env.example
-# - Deploy
-```
+**Setup:**
 
-### Environment Variables in Vercel
+1. **Create a Render account** at [render.com](https://render.com)
+2. **Create a Web Service** and connect your GitHub repository
+3. **Configure the service:**
+   - **Build Command**: `npm run build`
+   - **Start Command**: `npm start`
+   - **Environment**: Node 20
+4. **Add all environment variables** from `.env.example` in your Render service settings
+5. **Add the Render Deploy Hook URL** as a GitHub secret (`RENDER_DEPLOY_HOOK`) in your repository settings
 
-Add all variables from `.env.example` in your Vercel project settings. For production, use:
+**GitHub Secrets Required:**
+- `DATABASE_URL`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `CLERK_WEBHOOK_SECRET`
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+- `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
+- `OPENROUTER_API_KEY`, `BREVO_API_KEY`, `NEXT_PUBLIC_SITE_URL`
+- `RENDER_DEPLOY_HOOK` (your Render deploy hook URL)
+
+### Environment Variables
+
+Add all variables from `.env.example` in your Render service settings. For production, use:
 - **Clerk**: `pk_live_` / `sk_live_` keys (not test keys)
 - **Database**: Production PostgreSQL URL
 - **Redis**: Upstash production credentials
