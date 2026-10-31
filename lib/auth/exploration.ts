@@ -105,7 +105,7 @@ export async function resolveCourseByCode(
   institutionSlug: string,
   courseCode: string
 ): Promise<{ courseId: string; institutionId: string } | null> {
-  const institution = await prisma.institution.findUnique({
+  const institution = await prisma.university.findUnique({
     where: { slug: institutionSlug },
     select: { id: true },
   });

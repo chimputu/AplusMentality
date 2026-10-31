@@ -159,7 +159,7 @@ export async function deleteTutor(id: string) {
 // ============================================
 
 export async function listUniversities() {
-  return prisma.university.findMany({
+  return prisma.legacyUniversity.findMany({
     select: { id: true, name: true, code: true },
     orderBy: { name: 'asc' },
   });

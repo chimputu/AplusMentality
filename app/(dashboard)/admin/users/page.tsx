@@ -51,7 +51,7 @@ export default async function AdminUsersPage() {
         },
       },
     });
-    institutionsData = await prisma.institution.findMany({
+    institutionsData = await prisma.university.findMany({
       where: { isActive: true },
       select: { id: true, name: true, shortName: true },
       orderBy: { name: 'asc' },

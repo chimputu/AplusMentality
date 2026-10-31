@@ -12,14 +12,14 @@ export default async function AdminSettingsPage() {
   if (userId) {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } });
     if (user?.institutionId) {
-      const inst = await prisma.institution.findUnique({ where: { id: user.institutionId } });
+      const inst = await prisma.university.findUnique({ where: { id: user.institutionId } });
       if (inst) {
         institutionSlug = inst.slug;
         institutionId = inst.id;
       }
     }
     if (user?.universityId) {
-      const uni = await prisma.university.findUnique({ where: { id: user.universityId } });
+      const uni = await prisma.legacyUniversity.findUnique({ where: { id: user.universityId } });
       if (uni) {
         universityJoinSlug = uni.joinSlug ?? undefined;
         universityId = uni.id;

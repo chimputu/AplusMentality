@@ -9,7 +9,7 @@ import { prisma } from '@/lib/prisma';
  */
 
 export async function fetchInstitutionsForDropdown() {
-  return prisma.institution.findMany({
+  return prisma.university.findMany({
     where: { isActive: true },
     select: {
       id: true,
@@ -29,7 +29,7 @@ export async function fetchInstitutionsForDropdown() {
  * show actual universities — not regulatory bodies, colleges, or polytechnics.
  */
 export async function fetchStrictUniversitiesForDropdown() {
-  return prisma.institution.findMany({
+  return prisma.university.findMany({
     where: {
       isActive: true,
       type: 'UNIVERSITY',

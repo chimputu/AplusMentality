@@ -44,7 +44,7 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
 
   if (joinSlug && joinType === 'institution') {
     try {
-      const inst = await prisma.institution.findUnique({
+      const inst = await prisma.university.findUnique({
         where: { slug: joinSlug },
         include: {
           levels: { orderBy: { order: 'asc' } },

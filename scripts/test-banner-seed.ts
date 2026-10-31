@@ -37,7 +37,7 @@ async function main() {
   console.log('📝 Creating test banners...');
 
   // Get an institution for targeting
-  const institution = await prisma.institution.findFirst();
+  const institution = await prisma.university.findFirst();
   console.log(`🏫 Using institution: ${institution?.name || 'none'}`);
 
   // Test Banner 1: Global homepage banner with image

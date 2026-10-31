@@ -438,7 +438,7 @@ async function main() {
 
   for (const inst of institutions) {
     // 1. Upsert institution
-    const institution = await prisma.institution.upsert({
+    const institution = await prisma.university.upsert({
       where: { slug: inst.slug },
       update: {
         name: inst.name,

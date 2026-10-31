@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const institutions = await prisma.institution.findMany({
+    const institutions = await prisma.university.findMany({
       where: { isActive: true },
       orderBy: { name: 'asc' },
       select: {

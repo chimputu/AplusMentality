@@ -87,7 +87,7 @@ export async function GET(req: Request) {
     });
 
     // Also fetch all institutions for the filter dropdown
-    const institutions = await prisma.institution.findMany({
+    const institutions = await prisma.university.findMany({
       where: { isActive: true },
       select: { id: true, name: true, shortName: true },
       orderBy: { name: 'asc' },

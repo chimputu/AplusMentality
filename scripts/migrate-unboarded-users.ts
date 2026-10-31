@@ -99,7 +99,7 @@ async function migrateUsers() {
   }
 
   // Load all active institutions into a map for quick lookup
-  const institutions = await prisma.institution.findMany({
+  const institutions = await prisma.university.findMany({
     where: { isActive: true },
     select: { id: true, slug: true, name: true },
   });

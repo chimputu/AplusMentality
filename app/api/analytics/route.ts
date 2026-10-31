@@ -28,7 +28,7 @@ export async function GET() {
         by: ['role'],
         _count: { role: true },
       }),
-      prisma.institution.count({ where: { isActive: true } }),
+      prisma.university.count({ where: { isActive: true } }),
       prisma.course.count(),
       prisma.enrollment.count(),
       prisma.assessment.count(),

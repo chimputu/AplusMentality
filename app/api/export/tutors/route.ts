@@ -33,7 +33,7 @@ export async function GET() {
   // Fetch institution shortName
   let shortName = scope.shortName;
   if (!shortName) {
-    const inst = await prisma.institution.findUnique({
+    const inst = await prisma.university.findUnique({
       where: { id: scope.institutionId },
       select: { shortName: true, name: true },
     });
@@ -58,7 +58,7 @@ export async function GET() {
     // ADMIN: scope to their institution
     // Tutors have universityId, but we need to match by institution
     // Fetch the institution's associated university or match by name
-    const institution = await prisma.institution.findUnique({
+    const institution = await prisma.university.findUnique({
       where: { id: scope.institutionId },
       select: { name: true, slug: true },
     });

@@ -10,7 +10,7 @@ export async function GET() {
     return new Response('Unauthorized', { status: 403 });
   }
 
-  const institutions = await prisma.institution.findMany({
+  const institutions = await prisma.university.findMany({
     select: {
       name: true,
       shortName: true,

@@ -212,7 +212,7 @@ export async function deleteProgramme(id: string) {
 
 // Get all institutions for dropdown
 export async function getInstitutionsForDropdown() {
-  const institutions = await prisma.institution.findMany({
+  const institutions = await prisma.university.findMany({
     where: { isActive: true },
     select: { id: true, name: true, slug: true },
     orderBy: { name: 'asc' },
