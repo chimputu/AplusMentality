@@ -5,8 +5,8 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 export async function GET() {
-  const { role, userId } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
-  if (!['ADMIN', 'SUPER_ADMIN'].includes(role)) {
+  const { role, userId } = await requireAuth(['ADMIN', 'SUPER_ADMIN', 'LECTURER', 'TUTOR']);
+  if (!['ADMIN', 'SUPER_ADMIN', 'LECTURER', 'TUTOR'].includes(role)) {
     return new Response('Unauthorized', { status: 403 });
   }
 
