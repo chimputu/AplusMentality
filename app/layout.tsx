@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'A+ Mentality',
     description: 'Learning Management System for Zambian universities.',
-    url: 'https://aplusmentality.vercel.app',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     siteName: 'A+ Mentality',
     locale: 'en_US',
     type: 'website',
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     description: 'Learning Management System for Zambian universities.',
   },
   alternates: {
-    canonical: 'https://aplusmentality.vercel.app',
+    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   },
 };
 

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'A+ Mentality — Learning Platform for Zambian Universities',
     description: 'Access courses, quizzes, assignments, past papers, and connect with tutors.',
-    url: 'https://aplusmentality.vercel.app',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     siteName: 'A+ Mentality',
     locale: 'en_US',
     type: 'website',
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     description: 'Courses, quizzes, assignments, past papers, and tutor services.',
   },
   alternates: {
-    canonical: 'https://aplusmentality.vercel.app',
+    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   },
 };
 
@@ -123,12 +123,12 @@ export default async function HomePage() {
             '@context': 'https://schema.org',
             '@type': 'WebSite',
             name: 'A+ Mentality',
-            url: 'https://aplusmentality.vercel.app',
+            url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
             description:
               'Learning Management System for Zambian universities — courses, quizzes, assignments, past papers, and tutor services.',
             potentialAction: {
               '@type': 'SearchAction',
-              target: 'https://aplusmentality.vercel.app/search?q={search_term_string}',
+              target: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/search?q={search_term_string}`,
               'query-input': 'required name=search_term_string',
             },
           }),

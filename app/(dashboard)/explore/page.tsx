@@ -8,7 +8,7 @@ export const metadata = {
   openGraph: {
     title: 'Explore Universities — A+ Mentality',
     description: 'Browse other Zambian universities and preview their course materials.',
-    url: 'https://aplusmentality.vercel.app/explore',
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/explore`,
     siteName: 'A+ Mentality',
     locale: 'en_US',
     type: 'website',
@@ -19,7 +19,7 @@ export const metadata = {
     description: 'Browse Zambian universities and preview course materials.',
   },
   alternates: {
-    canonical: 'https://aplusmentality.vercel.app/explore',
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/explore`,
   },
 };
 

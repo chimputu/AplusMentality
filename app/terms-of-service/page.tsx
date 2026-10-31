@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Terms of Service',
   description: 'Read the terms and conditions for using the A+ Mentality learning platform.',
   alternates: {
-    canonical: 'https://aplusmentality.vercel.app/terms-of-service',
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/terms-of-service`,
   },
 };
 

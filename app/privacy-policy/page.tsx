@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Privacy Policy',
   description: 'Learn how A+ Mentality collects, uses, and protects your personal data.',
   alternates: {
-    canonical: 'https://aplusmentality.vercel.app/privacy-policy',
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/privacy-policy`,
   },
 };
 

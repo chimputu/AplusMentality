@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: ['/', '/privacy-policy', '/terms-of-service', '/explore', '/api/health'],
       disallow: ['/admin/', '/student/', '/tutor/', '/apply-as-tutor/'],
     },
-    sitemap: 'https://aplusmentality.vercel.app/sitemap.xml',
+    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/sitemap.xml`,
   };
 }
