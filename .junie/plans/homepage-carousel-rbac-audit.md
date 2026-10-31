@@ -435,3 +435,34 @@ Confirm the announcement system already enforces the correct guards and validate
 - Run `npx tsc --noEmit` to check for TypeScript errors.
 - Run `npm run build` to validate the full build.
 - Commit and push changes.
+
+---
+
+## New Task: Clerk Sync Fix, Bulk Sync, and PDF Reports
+
+### ✓ Step 15: Fix `createInstitution` to auto-create Clerk org
+The root cause of "Not linked ⚠️" — `createInstitution()` saves to Prisma but never creates the Clerk org.
+
+- Update `createInstitution()` in `lib/actions/institution-crud.ts` to call `createClerkOrg()` after Prisma creation.
+- Add try/catch with rollback: if Clerk creation fails, delete the Prisma record to avoid orphaned institutions.
+- Update the Prisma record with `clerkOrgId` and `clerkOrgSlug` on success.
+
+### ✓ Step 16: Add `syncAllOrgsToClerk` server action and "Sync All" button
+Bulk sync all unlinked institutions to Clerk from the organizations page.
+
+- Add `syncAllOrgsToClerk()` server action in `lib/actions/institution-crud.ts` — iterates all unlinked institutions and syncs each one.
+- Add a "Sync All" button at the top of `app/(dashboard)/admin/organizations/page.tsx`.
+- The button triggers the bulk sync and reloads the page on success.
+
+### ✓ Step 17: Install jspdf and add PDF export for Institutions and Users
+Generate professional PDF reports for the Super Admin.
+
+- Installed `jspdf` and `jspdf-autotable` packages.
+- Created API route `/api/export/institutions` that generates a PDF with institution details.
+- Created API route `/api/export/users` that generates a PDF table of all users.
+- Added "Export PDF" buttons to both the organizations page and the users page.
+
+### ✓ Step 18: Build, verify, and push
+- Run `npx tsc --noEmit` to check for TypeScript errors.
+- Run `npm run build` to validate the full build.
+- Commit and push all changes.

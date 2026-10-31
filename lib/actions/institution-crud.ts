@@ -116,7 +116,52 @@ export async function createInstitution(rawInput: unknown) {
   const existing = await prisma.institution.findUnique({ where: { slug: input.slug } });
   if (existing) throw new Error('Slug is already taken');
 
+  // 1. Create in Prisma first
   const institution = await prisma.institution.create({ data: input as any });
+
+  try {
+    // 2. Create in Clerk
+    const clerkResult = await createClerkOrg(institution.name, institution.slug);
+    if (!clerkResult.success) {
+      // If Clerk returns 409 (org already exists), try to find and link the existing org
+      if (clerkResult.alreadyExists || (clerkResult.error && clerkResult.error.includes('409'))) {
+        const existingOrg = await fetch(`https://api.clerk.com/v1/organizations?limit=200`, {
+          headers: {
+            Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        const existingData = await existingOrg.json();
+        const org = existingData.data?.find((o: any) => o.slug === institution.slug);
+        if (org) {
+          await prisma.institution.update({
+            where: { id: institution.id },
+            data: { clerkOrgId: org.id, clerkOrgSlug: org.slug },
+          });
+        }
+      } else {
+        // If Clerk fails for another reason, rollback the Prisma creation
+        await prisma.institution.delete({ where: { id: institution.id } });
+        throw new Error(`Failed to link organization to Clerk: ${clerkResult.error}`);
+      }
+    } else if (clerkResult.orgId) {
+      // 3. Update Prisma with the new Clerk ID
+      await prisma.institution.update({
+        where: { id: institution.id },
+        data: { clerkOrgId: clerkResult.orgId, clerkOrgSlug: institution.slug },
+      });
+    }
+  } catch (error) {
+    // If we haven't already rolled back, delete the orphaned Prisma record
+    const stillExists = await prisma.institution.findUnique({ where: { id: institution.id } });
+    if (stillExists && !stillExists.clerkOrgId) {
+      await prisma.institution.delete({ where: { id: institution.id } });
+    }
+    if (error instanceof Error && error.message.startsWith('Failed to link')) {
+      throw error;
+    }
+    throw new Error(`Error during Clerk sync: ${error instanceof Error ? error.message : String(error)}`);
+  }
 
   // Auto-generate AcademicLevels
   const levelPrefix = getLevelPrefix(input.levelType);
@@ -143,6 +188,7 @@ export async function createInstitution(rawInput: unknown) {
   await Promise.all(periods);
 
   revalidatePath('/admin/institutions');
+  revalidatePath('/admin/organizations');
 
   return { success: true, institutionId: institution.id };
 }
@@ -467,4 +513,76 @@ export async function syncOrganizationToClerk(institutionId: string) {
 
   revalidatePath('/admin/organizations');
   return { success: true, message: 'Organization synced with Clerk successfully.', clerkOrgId: result.orgId };
+}
+
+export async function syncAllOrgsToClerk() {
+  await requireSuperAdmin();
+
+  const unlinked = await prisma.institution.findMany({
+    where: { clerkOrgId: null },
+    select: { id: true, name: true, slug: true },
+  });
+
+  if (unlinked.length === 0) {
+    return { success: true, message: 'All institutions are already linked to Clerk.', synced: 0, failed: 0 };
+  }
+
+  let synced = 0;
+  let failed = 0;
+  const errors: string[] = [];
+
+  for (const institution of unlinked) {
+    if (!institution.slug) {
+      failed++;
+      errors.push(`${institution.name}: Missing slug`);
+      continue;
+    }
+
+    try {
+      const result = await createClerkOrg(institution.name, institution.slug);
+      if (!result.success) {
+        if (result.alreadyExists || (result.error && result.error.includes('409'))) {
+          const existingOrg = await fetch(`https://api.clerk.com/v1/organizations?limit=200`, {
+            headers: {
+              Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          const existingData = await existingOrg.json();
+          const org = existingData.data?.find((o: any) => o.slug === institution.slug);
+          if (org) {
+            await prisma.institution.update({
+              where: { id: institution.id },
+              data: { clerkOrgId: org.id, clerkOrgSlug: org.slug },
+            });
+            synced++;
+          } else {
+            failed++;
+            errors.push(`${institution.name}: Could not find existing Clerk org`);
+          }
+        } else {
+          failed++;
+          errors.push(`${institution.name}: ${result.error}`);
+        }
+      } else if (result.orgId) {
+        await prisma.institution.update({
+          where: { id: institution.id },
+          data: { clerkOrgId: result.orgId, clerkOrgSlug: institution.slug },
+        });
+        synced++;
+      }
+    } catch (error) {
+      failed++;
+      errors.push(`${institution.name}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  revalidatePath('/admin/organizations');
+  return {
+    success: true,
+    message: `Synced ${synced} institutions, ${failed} failed.`,
+    synced,
+    failed,
+    errors,
+  };
 }

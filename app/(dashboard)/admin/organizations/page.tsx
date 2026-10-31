@@ -1,7 +1,7 @@
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import PageHeader from '@/components/PageHeader';
-import { syncOrganizationToClerk } from '@/lib/actions/institution-crud';
+import { syncOrganizationToClerk, syncAllOrgsToClerk } from '@/lib/actions/institution-crud';
 import { revalidatePath } from 'next/cache';
 
 // Client component for the Sync button
@@ -9,7 +9,6 @@ function SyncButton({ institutionId }: { institutionId: string }) {
   const handleSync = async () => {
     const result = await syncOrganizationToClerk(institutionId);
     if (result.success) {
-      // Revalidate by reloading the page
       window.location.reload();
     } else {
       alert(result.message || 'Failed to sync organization');
@@ -23,6 +22,33 @@ function SyncButton({ institutionId }: { institutionId: string }) {
       className="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
     >
       Sync
+    </button>
+  );
+}
+
+// Client component for the Sync All button
+function SyncAllButton({ notLinkedCount }: { notLinkedCount: number }) {
+  const handleSyncAll = async () => {
+    if (!confirm(`This will attempt to sync ${notLinkedCount} unlinked institutions with Clerk. Continue?`)) {
+      return;
+    }
+    const result = await syncAllOrgsToClerk();
+    if (result.success) {
+      alert(result.message);
+      window.location.reload();
+    } else {
+      alert(result.message || 'Failed to sync organizations');
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleSyncAll}
+      disabled={notLinkedCount === 0}
+      className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-md transition-colors"
+    >
+      Sync All ({notLinkedCount})
     </button>
   );
 }
@@ -63,10 +89,21 @@ export default async function OrganizationsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Organizations"
-        description="Monitor Clerk Organization linkage status for institutions."
-      />
+      <div className="flex items-center justify-between">
+        <PageHeader
+          title="Organizations"
+          description="Monitor Clerk Organization linkage status for institutions."
+        />
+        <div className="flex items-center gap-3">
+          <a
+            href="/api/export/institutions"
+            className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+          >
+            Export PDF
+          </a>
+          <SyncAllButton notLinkedCount={notLinkedInstitutions} />
+        </div>
+      </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
