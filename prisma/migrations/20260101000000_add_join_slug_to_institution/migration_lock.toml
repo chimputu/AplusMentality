@@ -1,0 +1,4 @@
+# Prisma Migration Lock
+
+version="1"
+dialect="postgresql"
