@@ -79,11 +79,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const university = await prisma.university.create({
+    const periodType = academicSystem === 'TRIMESTERLY' ? 'TERM' : academicSystem === 'QUARTERLY' ? 'QUARTER' : 'SEMESTER';
+    const university = await prisma.institution.create({
       data: {
         name,
-        code,
-        academicSystem: academicSystem || 'SEMESTERLY',
+        slug: code,
+        periodType,
       },
     });
 
