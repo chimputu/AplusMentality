@@ -1,63 +1,7 @@
 /** @type {import('next').NextConfig} */
 
-// Sentry build-time config — wraps next-pwa with source map upload and instrumentation
+// Sentry build-time config — wraps nextConfig with source map upload and instrumentation
 const { withSentryConfig } = require('@sentry/nextjs/config');
-
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
-  // Ensure the offline fallback page is always cached
-  runtimeCaching: [
-    {
-      urlPattern: /.*\/.*\.(js|css|woff2|woff|ttf|eot)/,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-assets',
-        expiration: {
-          maxEntries: 50,
-          maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-        },
-      },
-    },
-    {
-      urlPattern: /.*\.(png|jpg|jpeg|svg|gif|webp)/,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'images',
-        expiration: {
-          maxEntries: 100,
-          maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-        },
-      },
-    },
-    {
-      urlPattern: /\/offline\/.*/,
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'offline-page',
-        networkTimeoutSeconds: 3,
-        expiration: {
-          maxEntries: 1,
-          maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
-        },
-      },
-    },
-    {
-      urlPattern: /\/api\/.*/,
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'api-cache',
-        networkTimeoutSeconds: 3,
-        expiration: {
-          maxEntries: 50,
-          maxAgeSeconds: 60 * 60 * 24, // 1 day
-        },
-      },
-    },
-  ],
-});
 
 const nextConfig = {
   experimental: {
@@ -146,8 +90,8 @@ const nextConfig = {
   },
 };
 
-// Wrap with PWA first, then with Sentry for source map upload
-module.exports = withSentryConfig(withPWA(nextConfig), {
+// Wrap with Sentry for source map upload
+module.exports = withSentryConfig(nextConfig, {
   // Disable Sentry auto-instrumentation for server components (handled by config files)
   autoInstrumentServerComponents: true,
   autoInstrumentAppRoutes: true,
