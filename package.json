@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && next build --webpack",
     "start": "next start -p ${PORT:-3000}",
     "lint": "eslint",
     "postinstall": "prisma generate",
@@ -29,6 +29,7 @@
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@sentry/nextjs": "^11.8.0",
+    "@serwist/next": "^9.5.13",
     "@starmorph/chat-widget": "^0.2.0",
     "@tabler/icons-react": "^3.49.0",
     "@upstash/redis": "^1.39.0",
@@ -86,7 +87,8 @@
     "typescript": "~5.9",
     "vite": "^8.3.3",
     "vitest": "^5.0.3",
-    "webpack-cli": "^7.2.3"
+    "webpack-cli": "^7.2.3",
+    "serwist": "^9.5.13"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
