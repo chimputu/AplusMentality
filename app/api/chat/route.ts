@@ -9,7 +9,7 @@ export const maxDuration = 30;
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
   headers: {
-    'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aplusmentality.vercel.app',
+    'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
     'X-Title': 'A+ Mentality',
   },
 });

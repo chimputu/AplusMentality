@@ -138,3 +138,17 @@ Create `.github/workflows/deploy.yml` for CI/CD deployment to Render.
 - Install dependencies with `npm ci`.
 - Run `npm run build` with all required environment variables from GitHub secrets.
 - On successful build, call the Render deploy hook using `curl -X POST` with the `RENDER_DEPLOY_HOOK` secret.
+
+### ✓ Step 5: Fix Render build errors
+Fix TypeScript and schema errors that caused Render deployment to fail.
+- Add `joinSlug` field to `University` Prisma model (maps to `Institution` table).
+- Create Prisma migration `20260101000000` to add `join_slug` column with unique index.
+- Fix `updateUniversityJoinSlug` uniqueness check to exclude current university.
+- Add `prisma migrate deploy` to build command so Render applies database migrations automatically.
+- Push fix to `main` (commit ab29caa).
+
+### ✓ Step 6: Fix remaining Vercel URLs and redirect loop
+Complete the remaining migration tasks that were marked done but not applied.
+- Replace all hardcoded `aplusmentality.vercel.app` URLs with `process.env.NEXT_PUBLIC_SITE_URL` or `onrender.com` equivalents in: app/api/chat/route.ts, app/download/page.tsx, app/privacy-policy/page.tsx, app/terms-of-service/page.tsx, components/AppFooter.tsx, lib/ai/platform-facts.ts, proxy.ts.
+- Fix infinite redirect loop on `/onboarding` by rewriting proxy.ts with Clerk's `createRouteMatcher` and `orgId`-based onboarding logic.
+- Fix P3005 Prisma error on Render by adding `prisma db push` as fallback in build command when `prisma migrate deploy` fails on existing schemas.

@@ -160,7 +160,7 @@ export default function TermsOfServicePage() {
             Lusaka, Zambia.
           </p>
           <p className="text-blue-700 dark:text-blue-400 text-sm leading-relaxed">
-            For questions about these terms, contact us at legal@aplusmentality.vercel.app.
+            For questions about these terms, contact us at legal@aplusmentality.onrender.com.
           </p>
         </div>
 

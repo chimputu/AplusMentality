@@ -108,7 +108,7 @@ export default function AppFooter() {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm text-gray-400">
                 <Mail className="w-4 h-4 flex-shrink-0" />
-                <span>support@aplusmentality.vercel.app</span>
+                <span>support@aplusmentality.onrender.com</span>
               </li>
               <li className="flex items-center gap-2 text-sm text-gray-400">
                 <Phone className="w-4 h-4 flex-shrink-0" />
