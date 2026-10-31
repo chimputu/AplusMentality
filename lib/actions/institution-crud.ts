@@ -388,14 +388,16 @@ export async function updateUniversityJoinSlug(universityId: string, joinSlug: s
   const slugSchema = z.string().min(3).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be lowercase alphanumeric with hyphens');
   const parsed = slugSchema.parse(joinSlug);
 
-  // Check uniqueness against both Institution.slug and University.joinSlug
-  const existingInst = await prisma.university.findUnique({ where: { slug: parsed } });
+  // Check uniqueness against slug and joinSlug fields
+  const existingInst = await prisma.university.findFirst({
+    where: { slug: parsed, id: { not: universityId } },
+  });
   if (existingInst) throw new Error('Slug is already taken by another institution');
 
   const existingUni = await prisma.university.findFirst({
     where: { joinSlug: parsed, id: { not: universityId } },
   });
-  if (existingUni) throw new Error('Slug is already taken by another university');
+  if (existingUni) throw new Error('Join slug is already taken by another institution');
 
   await prisma.university.update({
     where: { id: universityId },

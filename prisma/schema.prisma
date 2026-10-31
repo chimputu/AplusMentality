@@ -794,6 +794,7 @@ model University {
   // Clerk Organization linkage
   clerkOrgId     String?   @unique
   clerkOrgSlug   String?
+  joinSlug       String?   @unique  // e.g. "unza-2024" for magic join links
 
   // Tutor applications
   tutorApplications   TutorApplication[]
