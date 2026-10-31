@@ -416,7 +416,7 @@ The app uses a GitHub Actions workflow (`.github/workflows/deploy.yml`) to autom
 3. **Configure the service:**
    - **Build Command**: `npm run build`
    - **Start Command**: `npm start`
-   - **Environment**: Node 20
+   - **Environment**: Node 22 (see `.node-version`)
 4. **Add all environment variables** from `.env.example` in your Render service settings
 5. **Add the Render Deploy Hook URL** as a GitHub secret (`RENDER_DEPLOY_HOOK`) in your repository settings
 
