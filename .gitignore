@@ -52,3 +52,6 @@ next-env.d.ts
 # build artifacts
 build-result.txt
 build-output.txt
+
+# Junie AI planning folder (may contain secrets)
+.junie/
