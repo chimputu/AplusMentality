@@ -1,19 +1,18 @@
 // app/layout.tsx
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
+// Use local @fontsource/inter instead of next/font/google to avoid build-time
+// network dependency on fonts.googleapis.com (unreachable in some environments).
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
 import { Providers } from './providers';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import CookieConsentModal from '@/components/CookieConsentModal';
 import DownloadBanner from '@/components/DownloadBanner';
-
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-});
 
 export const metadata: Metadata = {
   title: {
@@ -64,8 +63,8 @@ export default function RootLayout({
         variables: { colorPrimary: '#2563eb' },
       }}
     >
-      <html lang="en" suppressHydrationWarning className={inter.variable}>
-        <body className={`${inter.className} font-sans antialiased`}>
+      <html lang="en" suppressHydrationWarning className="font-inter">
+        <body className="font-sans antialiased">
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 z-[100] bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium"
