@@ -20,13 +20,6 @@ const COOKIE_CATEGORIES: CookieCategory[] = [
     defaultChecked: true,
   },
   {
-    id: 'analytics',
-    name: 'Analytics Cookies',
-    description: 'Help us understand how visitors interact with our platform (Vercel Analytics).',
-    required: false,
-    defaultChecked: false,
-  },
-  {
     id: 'functional',
     name: 'Functional Cookies',
     description: 'Remember your preferences like theme, language, and display settings.',
@@ -128,11 +121,6 @@ export default function CookieConsentModal() {
           detail: { acceptedCategories },
         })
       );
-    }
-    // Conditionally load analytics scripts
-    if (acceptedCategories.includes('analytics')) {
-      // Analytics is already loaded via @vercel/analytics in layout.tsx
-      console.log('Analytics cookies accepted');
     }
   };
 

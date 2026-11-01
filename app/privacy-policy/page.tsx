@@ -65,7 +65,6 @@ const sections = [
     title: 'Cookies & Tracking',
     items: [
       'Essential cookies for authentication and security (always active)',
-      'Analytics cookies to understand platform usage (Vercel Analytics)',
       'Functional cookies to remember your preferences (theme, language)',
       'You can manage your cookie preferences at any time through our cookie consent modal',
       'We do not use third-party advertising or tracking cookies',

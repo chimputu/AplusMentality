@@ -715,7 +715,7 @@ export default function HomePageClient() {
               </Link>
               <ThemeToggle />
               <span className="w-px h-5 border-border mx-1"></span>
-              <Link href="https://smartcorp-zeta.vercel.app">
+              <Link href="https://smartcorp.example.com">
                 <div className="bg-muted text-foreground text-[10px] font-medium px-2.5 py-1 rounded-full border border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.5),0_0_30px_rgba(147,51,234,0.3)] animate-pulse">
                   Owned by SmartCorp
                 </div>
@@ -743,7 +743,7 @@ export default function HomePageClient() {
               <Download className="w-4 h-4" />
               Download App
             </Link>
-            <Link href="https://smartcorp-zeta.vercel.app">
+            <Link href="https://smartcorp.example.com">
             <div className="text-xs text-muted-foreground text-center">Owned by SmartCorp</div>
             </Link>
           </div>
@@ -1452,8 +1452,8 @@ export default function HomePageClient() {
             <div>
               <h4 className="text-white font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="https://smartcorp-zeta.vercel.app" className="text-gray-400 hover:text-white transition">About Us</Link></li>
-                <li><Link href="https://smartcorp-zeta.vercel.app/contact" className="text-gray-400 hover:text-white transition">Contact</Link></li>
+                <li><Link href="https://smartcorp.example.com" className="text-gray-400 hover:text-white transition">About Us</Link></li>
+                <li><Link href="https://smartcorp.example.com/contact" className="text-gray-400 hover:text-white transition">Contact</Link></li>
                 <li><Link href="/download" className="text-gray-400 hover:text-white transition inline-flex items-center gap-1.5"><Download className="w-3.5 h-3.5" /> Download App</Link></li>
               </ul>
             </div>

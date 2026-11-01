@@ -5,6 +5,10 @@ config({ path: ".env.local" });
 config(); // fallback to .env
 
 import { PrismaPg } from "@prisma/adapter-pg";
+import postgres from "@prisma/orm-postgres/runtime";
+import { contractFromJson } from "@prisma/orm-postgres/static";
+import type { Contract } from "../generated/prisma8/contract.d";
+import contractJson from "../generated/prisma8/contract.json" with { type: "json" };
 import { PrismaClient } from "../generated/prisma/client";
 
 const connectionString = process.env.DATABASE_URL;
@@ -162,3 +166,8 @@ export const prisma = basePrisma.$extends({
     },
   },
 });
+
+// Prisma ORM 8 client
+export const contract = contractFromJson<Contract>(contractJson);
+
+export const db = postgres({ url: connectionString ?? '', contract });

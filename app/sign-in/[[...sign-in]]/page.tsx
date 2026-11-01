@@ -4,7 +4,8 @@ export default function SignInPage() {
   return (
     <div className="flex justify-center items-center min-h-[80vh]">
       <SignIn
-        fallbackRedirectUrl="/"
+        fallbackRedirectUrl="/onboarding"
+        forceRedirectUrl="/onboarding"
         appearance={{
           variables: {
             colorPrimary: 'var(--primary)',

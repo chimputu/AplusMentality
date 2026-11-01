@@ -9,7 +9,6 @@ import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import { Providers } from './providers';
 import { ClerkProvider } from '@clerk/nextjs';
-import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner';
 import CookieConsentModal from '@/components/CookieConsentModal';
 import DownloadBanner from '@/components/DownloadBanner';
@@ -74,7 +73,6 @@ export default function RootLayout({
           <Providers>
             <div id="main-content">{children}</div>
             <Toaster />
-            <Analytics />
             <CookieConsentModal />
             <DownloadBanner />
           </Providers>
