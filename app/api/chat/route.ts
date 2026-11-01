@@ -277,7 +277,7 @@ export async function POST(req: Request) {
 
     // SECURITY: Rate limiting per user/IP
     const rateLimitKey = userId || req.headers.get('x-forwarded-for') || 'anonymous';
-    const rateLimitResult = chatLimiter(rateLimitKey);
+    const rateLimitResult = await chatLimiter(rateLimitKey);
     if (!rateLimitResult.allowed) {
       return new Response('Too many requests. Please try again later.', { status: 429 });
     }

@@ -2,6 +2,23 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from './prisma';
 import { withRetry } from './retry';
+import type { User } from '../generated/prisma/client';
+import type { Role } from '../generated/prisma/enums';
+
+/** User with institution relation included — matches the include shape in requireAuth/getAuthUser */
+type UserWithInstitution = User & {
+  institution: { shortName: string | null; name: string } | null;
+};
+
+/** Return type for authenticated page routes */
+export interface AuthResult {
+  userId: string;
+  role: Role;
+  user: UserWithInstitution;
+}
+
+/** Return type for API routes — nullable when unauthenticated */
+export type ApiAuthResult = AuthResult | null;
 
 // Map Prisma roles to default dashboard paths
 const ROLE_TO_DEFAULT_DASHBOARD: Record<string, string> = {
@@ -17,14 +34,14 @@ const ROLE_TO_DEFAULT_DASHBOARD: Record<string, string> = {
  * Does NOT create users — relies on the Clerk webhook to provision records.
  * If the user is not found in the database, redirects to onboarding.
  */
-export async function requireAuth(allowedRoles?: string[]) {
+export async function requireAuth(allowedRoles?: string[]): Promise<AuthResult> {
   const { userId } = await auth();
 
   if (!userId) {
     redirect('/sign-in');
   }
 
-  let user: any;
+  let user: UserWithInstitution | null;
   try {
     user = await withRetry(
       () => prisma.user.findUnique({
@@ -35,8 +52,9 @@ export async function requireAuth(allowedRoles?: string[]) {
       }),
       { attempts: 3, delayMs: 500 }
     );
-  } catch (err: any) {
-    console.error('[requireAuth] ❌ DB query failed for clerkId=%s: %s', userId, err.message);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[requireAuth] ❌ DB query failed for clerkId=%s: %s', userId, message);
     redirect('/unauthorized?reason=db_error');
   }
 
@@ -63,11 +81,11 @@ export async function requireAuth(allowedRoles?: string[]) {
  * Does NOT create users — relies on the Clerk webhook to provision records.
  * Returns null if not authenticated or user not found in DB.
  */
-export async function getAuthUser(allowedRoles?: string[]) {
+export async function getAuthUser(allowedRoles?: string[]): Promise<ApiAuthResult> {
   const { userId } = await auth();
   if (!userId) return null;
 
-  let user: any;
+  let user: UserWithInstitution | null;
   try {
     user = await withRetry(
       () => prisma.user.findUnique({
@@ -78,11 +96,12 @@ export async function getAuthUser(allowedRoles?: string[]) {
       }),
       { attempts: 3, delayMs: 500 }
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const e = err instanceof Error ? err : new Error(String(err));
     console.error('[getAuthUser] Failed to find user for clerkId=%s:', userId, {
-      message: err?.message,
-      code: err?.code,
-      meta: err?.meta,
+      message: e.message,
+      code: (err as { code?: string })?.code,
+      meta: (err as { meta?: unknown })?.meta,
     });
     return null;
   }

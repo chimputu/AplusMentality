@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 export default async function StudentAIPage() {
   const { user } = await requireAuth(['STUDENT']);
 
-  if (!user.universityId || !user.programmeId || !user.year) {
+  if (!user.institutionId || !user.programmeId || !user.year) {
     redirect('/onboarding');
   }
 

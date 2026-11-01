@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const auth = await getAuthUser(['ADMIN']);
+    const auth = await getAuthUser(['ADMIN', 'SUPER_ADMIN']);
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -18,15 +18,26 @@ export async function GET(
     const { searchParams } = new URL(req.url);
     const filter = searchParams.get('filter'); // 'ALL' | 'PENDING' | 'GRADED'
 
-    const assessment = await prisma.assessment.findUnique({ where: { id } });
+    const assessment = await prisma.assessment.findUnique({
+      where: { id },
+      include: { course: { select: { programme: { select: { institutionId: true } } } } },
+    });
     if (!assessment) {
       return NextResponse.json({ error: 'Assessment not found' }, { status: 404 });
     }
 
-    let submissions: any[] = [];
+    // SECURITY: Institution scoping
+    const assessmentInstitutionId = assessment.course?.programme?.institutionId;
+    if (auth.role !== 'SUPER_ADMIN') {
+      if (assessmentInstitutionId && auth.user.institutionId && assessmentInstitutionId !== auth.user.institutionId) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+    }
+
+    let submissions: unknown[] = [];
 
     if (assessment.mode === 'NATIVE') {
-      const where: any = { assessmentId: id };
+      const where: { assessmentId: string; score?: number | { not: number | null } | null } = { assessmentId: id };
       if (filter === 'PENDING') where.score = null;
       if (filter === 'GRADED') where.score = { not: null };
 
@@ -37,18 +48,15 @@ export async function GET(
           user: {
             select: {
               id: true,
-              clerkId: true,
-              email: true,
-              firstName: true,
-              lastName: true,
               name: true,
+              email: true,
             },
           },
         },
       });
     } else {
       // GOOGLE_FORM mode
-      const where: any = { assessmentId: id };
+      const where: { assessmentId: string; status?: string; score?: number | { not: number | null } | null } = { assessmentId: id };
       if (filter === 'PENDING') where.status = 'PENDING';
       if (filter === 'GRADED') where.score = { not: null };
 
@@ -59,11 +67,8 @@ export async function GET(
           user: {
             select: {
               id: true,
-              clerkId: true,
-              email: true,
-              firstName: true,
-              lastName: true,
               name: true,
+              email: true,
             },
           },
         },
@@ -133,10 +138,10 @@ export async function PUT(
     }
 
     return NextResponse.json(updated);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[admin/assessments/[id]/submissions PUT] Error:', error);
     return NextResponse.json(
-      { error: error?.message || 'Failed to grade submission' },
+      { error: 'Failed to grade submission' },
       { status: 500 }
     );
   }

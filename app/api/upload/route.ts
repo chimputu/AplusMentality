@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     // SECURITY: Rate limiting
-    const rateLimitResult = uploadLimiter(clerkId);
+    const rateLimitResult = await uploadLimiter(clerkId);
     if (!rateLimitResult.allowed) {
       return NextResponse.json(
         { error: 'Too many uploads. Please try again later.' },

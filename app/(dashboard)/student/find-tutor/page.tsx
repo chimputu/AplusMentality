@@ -38,7 +38,7 @@ export default async function FindTutorPage({
   }
 
   const result = await getTutors(filters);
-  const tutors = 'tutors' in result ? result.tutors : [];
+  const tutors: unknown[] = 'tutors' in result ? (result.tutors ?? []) : [];
 
   return (
     <DashboardLayout role={user?.role || 'STUDENT'}>
@@ -116,7 +116,7 @@ export default async function FindTutorPage({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tutors.map((tutor: any) => (
+            {tutors.map((tutor: { id: string }) => (
               <TutorCard key={tutor.id} tutor={tutor} />
             ))}
           </div>
