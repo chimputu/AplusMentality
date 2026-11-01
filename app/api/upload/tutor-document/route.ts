@@ -82,8 +82,10 @@ export async function POST(req: NextRequest) {
             if (error) {
               console.error('[tutor-upload] Cloudinary error:', error);
               reject(error);
-            } else {
+            } else if (result) {
               resolve(result);
+            } else {
+              reject(new Error('Cloudinary returned no result'));
             }
           }
         )
