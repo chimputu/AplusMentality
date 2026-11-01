@@ -4,14 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma7 generate && prisma contract emit && next build",
+    "build": "prisma7 generate && next build",
     "start": "next start -p $PORT",
     "lint": "eslint",
-    "postinstall": "prisma7 generate && prisma contract emit",
+    "postinstall": "prisma7 generate",
     "db:push": "prisma7 db push",
     "db:migrate": "prisma7 migrate deploy",
     "db:generate": "prisma7 generate",
-    "db:migrate:prisma8": "prisma db migrate --advance-ref db",
     "db:seed": "tsx prisma/seed.ts",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -49,7 +48,6 @@
     "motion": "^14.6.0",
     "next": "^16.2.10",
     "next-themes": "^0.4.6",
-    "@prisma/orm-postgres": "8.0.0-rc.22",
     "pg": "^8.22.0",
     "qrcode": "^1.5.4",
     "react": "19.2.4",
@@ -89,7 +87,6 @@
     "vitest": "^5.0.3",
     "webpack-cli": "^7.2.3",
     "@prisma/prisma7": "7.10.1",
-    "prisma": "8.0.0-rc.29",
     "serwist": "^9.5.13"
   },
   "prisma": {
