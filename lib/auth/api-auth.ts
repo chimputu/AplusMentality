@@ -1,13 +1,23 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import type { User } from '@/generated/prisma/client';
+
+/** Result when API auth succeeds */
+export interface ApiAuthSuccess {
+  userId: string;
+  user: User;
+}
+
+/** Union type for requireApiAuth return — either error response or success */
+export type ApiAuthResult = NextResponse | ApiAuthSuccess;
 
 /**
  * Authenticate the current Clerk user and return their Prisma user record.
  * Returns a 401 JSON response if not authenticated — safe for API routes.
  * Unlike requireAuth() which redirects, this is designed for API handlers.
  */
-export async function requireApiAuth(): Promise<NextResponse | { userId: string; user: any }> {
+export async function requireApiAuth(): Promise<ApiAuthResult> {
   const { userId: clerkId } = await auth();
   if (!clerkId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -31,9 +41,7 @@ export async function requireApiAuth(): Promise<NextResponse | { userId: string;
  * Authenticate and verify the user has one of the allowed roles.
  * Returns 401 if not authenticated, 403 if authenticated but wrong role.
  */
-export async function requireApiRole(
-  allowedRoles: string[]
-): Promise<NextResponse | { userId: string; user: any }> {
+export async function requireApiRole(allowedRoles: string[]): Promise<ApiAuthResult> {
   const result = await requireApiAuth();
   if (result instanceof NextResponse) return result;
 
@@ -44,6 +52,14 @@ export async function requireApiRole(
   return result;
 }
 
+/** Minimal shape of a resource for ownership/access checks */
+interface ResourceForAccess {
+  createdBy?: string;
+  institutionId?: string | null;
+  courseId?: string;
+  course?: { institutionId?: string | null } | null;
+}
+
 /**
  * Verify that the authenticated user owns or has access to a resource.
  * The resource must have a createdBy field matching the user's clerkId,
@@ -52,7 +68,7 @@ export async function requireApiRole(
  * resources from other institutions.
  */
 export function requireResourceOwnership(
-  user: any,
+  user: User,
   resourceCreatedBy: string,
   resourceInstitutionId?: string | null
 ): boolean {
@@ -75,8 +91,8 @@ export function requireResourceOwnership(
  * 3. Course assignment for TUTOR/LECTURER
  */
 export function requireResourceAccess(
-  user: any,
-  resource: any,
+  user: User & { assignedCourseIds?: string[] },
+  resource: ResourceForAccess,
   options?: {
     checkOwnership?: boolean;
     checkInstitutionScope?: boolean;

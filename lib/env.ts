@@ -20,8 +20,8 @@ if (!parsed.success) {
 
   // Fail fast in production for critical missing vars — a silent empty string
   // causes cryptic 500 errors at runtime (e.g. Prisma connection refused).
-  const criticalFields: (keyof typeof missing)[] = ['DATABASE_URL', 'CLERK_SECRET_KEY', 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY'];
-  const criticalMissing = criticalFields.filter((key) => missing[key]?.length);
+  const criticalFields: string[] = ['DATABASE_URL', 'CLERK_SECRET_KEY', 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY'];
+  const criticalMissing = criticalFields.filter((key) => missing[key as keyof typeof missing]?.length);
 
   if (criticalMissing.length > 0) {
     console.error(
@@ -29,15 +29,12 @@ if (!parsed.success) {
       `The app will not function correctly. Set these in your deployment environment variables.`
     );
   }
-
-  // Provide fallback values for non-critical fields only
-  parsed.data = {
-    DATABASE_URL: process.env.DATABASE_URL || '',
-    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY || '',
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '',
-    CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET || undefined,
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-  };
 }
 
-export const env = parsed.data;
+export const env = parsed.success ? parsed.data : {
+  DATABASE_URL: process.env.DATABASE_URL || '',
+  CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY || '',
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '',
+  CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+};

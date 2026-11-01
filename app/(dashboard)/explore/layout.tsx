@@ -13,8 +13,7 @@ export default async function ExploreLayout({ children }: ExploreLayoutProps) {
 
   // Force onboarding if profile incomplete
   const hasInstitutionProfile = user.institutionId && user.programmeId && user.year;
-  const hasUniversityProfile = user.universityId && user.programmeId && user.year;
-  if (!hasInstitutionProfile && !hasUniversityProfile && !user.onboarded) {
+  if (!hasInstitutionProfile && !user.onboarded) {
     redirect('/onboarding');
   }
 
