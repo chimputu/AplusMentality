@@ -25,9 +25,9 @@ export async function GET(
           select: {
             id: true,
             title: true,
-            universityId: true,
             year: true,
             period: true,
+            programme: { select: { institutionId: true } },
           },
         },
         lessons: {

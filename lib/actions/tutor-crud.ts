@@ -31,7 +31,7 @@ const createTutorSchema = z.object({
   email: z.string().email('Invalid email address'),
   phone: z.string().optional(),
   bio: z.string().optional(),
-  universityId: z.string().optional(),
+  institutionId: z.string().optional(),
   programmeId: z.string().optional(),
   branchId: z.string().optional(),
   yearsExperience: z.number().min(0).max(60).default(0),
@@ -48,7 +48,7 @@ const updateTutorSchema = z.object({
   email: z.string().email().optional(),
   phone: z.string().optional(),
   bio: z.string().optional(),
-  universityId: z.string().nullable().optional(),
+  institutionId: z.string().nullable().optional(),
   programmeId: z.string().nullable().optional(),
   branchId: z.string().nullable().optional(),
   yearsExperience: z.number().min(0).max(60).optional(),
@@ -80,7 +80,7 @@ export async function createTutor(rawInput: unknown) {
       email: tutorData.email,
       phone: tutorData.phone,
       bio: tutorData.bio,
-      universityId: tutorData.universityId,
+      institutionId: tutorData.institutionId,
       programmeId: tutorData.programmeId,
       branchId: tutorData.branchId,
       yearsExperience: tutorData.yearsExperience,
@@ -158,21 +158,21 @@ export async function deleteTutor(id: string) {
 // Data Fetching (for dropdowns)
 // ============================================
 
-export async function listUniversities() {
-  return prisma.legacyUniversity.findMany({
-    select: { id: true, name: true, code: true },
+export async function listInstitutions() {
+  return prisma.university.findMany({
+    select: { id: true, name: true, slug: true },
     orderBy: { name: 'asc' },
   });
 }
 
-export async function listProgrammes(universityId?: string) {
+export async function listProgrammes(institutionId?: string) {
   const where: any = {};
-  if (universityId) {
-    where.universityId = universityId;
+  if (institutionId) {
+    where.institutionId = institutionId;
   }
   return prisma.programme.findMany({
     where,
-    select: { id: true, name: true, code: true, university: { select: { name: true } } },
+    select: { id: true, name: true, code: true, institution: { select: { name: true } } },
     orderBy: { name: 'asc' },
   });
 }
@@ -185,10 +185,10 @@ export async function listBranches(programmeId: string) {
   });
 }
 
-export async function listCourses(universityId?: string) {
+export async function listCourses(institutionId?: string) {
   const where: any = { isPublished: true };
-  if (universityId) {
-    where.universityId = universityId;
+  if (institutionId) {
+    where.programme = { institutionId };
   }
   return prisma.course.findMany({
     where,

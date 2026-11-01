@@ -21,7 +21,7 @@ export async function POST(
     const assignment = await prisma.assignment.findUnique({
       where: { id },
       include: {
-        course: { select: { universityId: true } },
+        course: { include: { programme: { select: { institutionId: true } } } },
       },
     });
 
@@ -33,7 +33,7 @@ export async function POST(
     }
 
     // SECURITY: Block if the assignment's course is not in the user's scope
-    if (!isResourceInScope(scope, assignment.course?.universityId ?? null)) {
+    if (!isResourceInScope(scope, assignment.course?.programme?.institutionId ?? null)) {
       return NextResponse.json(
         { error: 'You can only submit assignments for your own university.' },
         { status: 403 }

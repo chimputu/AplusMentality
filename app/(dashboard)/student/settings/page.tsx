@@ -25,11 +25,9 @@ interface AcademicProfile {
   year: number | null;
   period: string | null;
   institutionId: string | null;
-  universityId: string | null;
   programmeId: string | null;
   branchId: string | null;
   institutionName?: string | null;
-  universityName?: string | null;
   programmeName?: string | null;
   branchName?: string | null;
 }
@@ -70,11 +68,9 @@ export default function StudentSettingsPage() {
           year: u.year,
           period: u.period,
           institutionId: u.institutionId,
-          universityId: u.universityId,
           programmeId: u.programmeId,
           branchId: u.branchId,
           institutionName: u.institution?.name || null,
-          universityName: u.university?.name || null,
           programmeName: u.programme?.name || null,
           branchName: u.branch?.name || null,
         });
@@ -241,7 +237,7 @@ export default function StudentSettingsPage() {
                 Institution
               </label>
               <p className="text-sm text-gray-900 dark:text-gray-100">
-                {academicProfile.universityName || academicProfile.institutionName || 'Not set'}
+                {academicProfile.institutionName || 'Not set'}
               </p>
             </div>
 

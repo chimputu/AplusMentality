@@ -378,13 +378,8 @@ export async function joinUniversity(rawInput: unknown) {
     onboarded: true,
   };
 
-  if (orgType === 'institution') {
-    updateData.institutionId = orgId;
-    updateData.universityId = null;
-  } else {
-    updateData.universityId = orgId;
-    updateData.institutionId = null;
-  }
+  // Always use the canonical institution field
+  updateData.institutionId = orgId;
 
   if (input.programmeId) updateData.programmeId = input.programmeId;
   if (input.year) updateData.year = input.year;
@@ -471,7 +466,6 @@ export async function completeOnboarding(rawInput: unknown) {
     role: 'STUDENT',
     onboarded: true,
     institutionId: institution.id,
-    universityId: null,
   };
 
   if (input.programmeId) updateData.programmeId = input.programmeId;

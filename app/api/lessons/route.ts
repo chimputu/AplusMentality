@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
     const where: any = {};
     if (moduleId) where.moduleId = moduleId;
-    if (universityId) where.module = { course: { universityId } };
+    if (universityId) where.module = { course: { programme: { institutionId: universityId } } };
 
     const lessons = await prisma.lesson.findMany({
       where,
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
           include: {
             course: {
               include: {
-                university: true,
+                programme: { include: { institution: true } },
               },
             },
           },

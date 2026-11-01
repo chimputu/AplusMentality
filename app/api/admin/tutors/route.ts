@@ -16,11 +16,11 @@ export async function GET(req: NextRequest) {
   try {
     const tutors = await prisma.tutor.findMany({
       where: {
-        ...(universityId && { universityId }),
+        ...(universityId && { institutionId: universityId }),
         ...(active !== null && { isActive: active === 'true' }),
       },
       include: {
-        university: { select: { code: true, name: true } },
+        institution: { select: { name: true } },
         programme: { select: { name: true, shortName: true } },
         specialties: {
           include: { course: { select: { code: true, title: true } } },
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       email,
       phone,
       bio,
-      universityId,
+      institutionId: universityId,
       programmeId,
       branchId,
       yearsExperience,
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
         email,
         phone,
         bio,
-        universityId,
+        institutionId: universityId,
         programmeId,
         branchId,
         yearsExperience: yearsExperience || 0,
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
       },
       include: {
         specialties: { include: { course: { select: { code: true, title: true } } } },
-        university: { select: { code: true, name: true } },
+        institution: { select: { name: true } },
       },
     });
 

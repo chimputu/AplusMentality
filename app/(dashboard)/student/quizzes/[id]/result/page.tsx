@@ -22,7 +22,7 @@ export default async function StudentQuizResultsPage({ params }: PageProps) {
     quizData = await prisma.quiz.findUnique({
       where: { id },
       include: {
-        course: { select: { universityId: true } },
+        course: { select: { programme: { select: { institutionId: true } } } },
         creator: {
           select: { name: true },
         },
@@ -45,7 +45,7 @@ export default async function StudentQuizResultsPage({ params }: PageProps) {
   }
 
   // SECURITY: Block if the quiz's course is not in the user's scope
-  if (!isResourceInScope(scope, quizData.course?.universityId ?? null)) {
+  if (!isResourceInScope(scope, quizData.course?.programme?.institutionId ?? null)) {
     notFound();
   }
 

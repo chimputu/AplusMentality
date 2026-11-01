@@ -8,7 +8,7 @@ export default async function AdminTutorsPage() {
   try {
     tutors = await prisma.tutor.findMany({
       include: {
-        university: true,
+        institution: true,
         programme: true,
         specialties: {
           include: { course: true },
@@ -69,9 +69,9 @@ export default async function AdminTutorsPage() {
                     )}
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{tutor.email}</p>
-                  {tutor.university && (
+                  {tutor.institution && (
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                      {tutor.university.name} ({tutor.university.code})
+                      {tutor.institution.name} ({tutor.institution.code})
                     </p>
                   )}
                   {tutor.programme && (

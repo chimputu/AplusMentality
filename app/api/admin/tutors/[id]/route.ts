@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const tutor = await prisma.tutor.findUnique({
       where: { id },
       include: {
-        university: { select: { code: true, name: true } },
+        institution: { select: { name: true } },
         programme: { select: { name: true, shortName: true } },
         branch: { select: { name: true } },
         specialties: { include: { course: { select: { code: true, title: true } } } },
@@ -51,7 +51,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         email: body.email,
         phone: body.phone,
         bio: body.bio,
-        universityId: body.universityId,
+        institutionId: body.institutionId || body.universityId,
         programmeId: body.programmeId,
         branchId: body.branchId,
         yearsExperience: body.yearsExperience,

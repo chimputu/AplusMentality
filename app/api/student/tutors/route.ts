@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     const tutors = await prisma.tutor.findMany({
       where: {
         isActive: true,
-        ...(universityId && { universityId }),
+        ...(universityId && { institutionId: universityId }),
         ...(sessionType && {
           specialties: {
             some: {
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
         }),
       },
       include: {
-        university: { select: { code: true, name: true } },
+        institution: { select: { name: true } },
         programme: { select: { name: true, shortName: true } },
         specialties: {
           include: { course: { select: { code: true, title: true } } },

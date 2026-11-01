@@ -30,8 +30,8 @@ export default async function StudentCoursesPage({
             creator: {
               select: { name: true },
             },
-            university: {
-              select: { id: true, name: true, code: true },
+            programme: {
+              select: { institution: { select: { id: true, name: true } } },
             },
           },
         },
@@ -62,7 +62,7 @@ export default async function StudentCoursesPage({
 
   // Filter enrolled courses by university if selected
   const filteredEnrollments = universityId
-    ? enrollments.filter((e) => e.course.university?.id === universityId)
+    ? enrollments.filter((e) => e.course.programme?.institution?.id === universityId)
     : enrollments;
 
   // Get available courses with error handling
@@ -73,7 +73,7 @@ export default async function StudentCoursesPage({
     availableCoursesData = await prisma.course.findMany({
       where: {
         ...scopeWhere,
-        ...(universityId ? { universityId } : {}),
+        ...(universityId ? { programme: { institutionId: universityId } } : {}),
         NOT: {
           enrollments: {
             some: { userId },
@@ -89,8 +89,8 @@ export default async function StudentCoursesPage({
         creator: {
           select: { name: true },
         },
-        university: {
-          select: { id: true, name: true, code: true },
+        programme: {
+          select: { institution: { select: { id: true, name: true } } },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -182,10 +182,10 @@ export default async function StudentCoursesPage({
                         <span className="text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
                           {course.code}
                         </span>
-                        {course.university && (
+                        {course.programme?.institution && (
                           <span className="ml-2 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-1 rounded flex items-center gap-1 inline-flex">
                             <Building2 className="w-3 h-3" />
-                            {course.university.code}
+                            {course.programme.institution.name}
                           </span>
                         )}
                         <h3 className="font-semibold text-gray-800 dark:text-gray-100 mt-2 line-clamp-1">

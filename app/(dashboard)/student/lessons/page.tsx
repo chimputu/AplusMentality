@@ -14,7 +14,7 @@ interface Lesson {
       id: string;
       code: string;
       title: string;
-      university: { id: string; name: string; code: string } | null;
+      programme: { institution: { id: string; name: string } | null } | null;
     } | null;
   } | null;
   video: { id: string; title: string } | null;
@@ -66,10 +66,10 @@ export default function StudentLessonsPage() {
               <div key={lesson.id} className="border rounded-xl p-4 hover:shadow-md transition bg-white dark:bg-gray-800">
                 <h2 className="font-semibold text-lg text-gray-800 dark:text-gray-100">{lesson.title}</h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{lesson.module?.course?.title}</p>
-                {lesson.module?.course?.university && (
+                {lesson.module?.course?.programme?.institution && (
                   <div className="mt-1 flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
                     <Building2 className="w-3 h-3" />
-                    {lesson.module.course.university.code}
+                    {lesson.module.course.programme.institution.name}
                   </div>
                 )}
 

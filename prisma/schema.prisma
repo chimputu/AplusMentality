@@ -176,9 +176,7 @@ model User {
   isVerifiedTutor Boolean       @default(false)
   theme          String?        @default("system")
 
-  // Student academic profile
-  universityId  String?
-  university    LegacyUniversity? @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  // Student academic profile — canonical institution reference
   institutionId String?
   institution   University? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
   programmeId   String?
@@ -305,9 +303,7 @@ model Course {
   category    String?
   level       String?
 
-  universityId String?
-  university   LegacyUniversity? @relation(fields: [universityId], references: [id], onDelete: SetNull)
-
+  // Canonical institution scope — inherited via programme → institution
   programmeId String?
   programme   Programme? @relation(fields: [programmeId], references: [id], onDelete: SetNull)
 
@@ -351,11 +347,10 @@ model Course {
 
   tutorOfferings TutorOffering[]
 
-  @@unique([universityId, programmeId, year, period, code])
+  @@unique([programmeId, year, period, code])
   @@index([isPublished])
   @@index([createdAt])
   @@index([createdBy])
-  @@index([universityId])
   @@index([programmeId])
   @@index([programmeId, yearNumber])
   @@index([levelId])
@@ -805,6 +800,7 @@ model University {
 
   // Tutor applications
   tutorApplications   TutorApplication[]
+  tutors              Tutor[]
   applicationWindows  ApplicationWindow[]
   announcements       Announcement[]
 
@@ -821,7 +817,8 @@ model University {
 
 // ============================================
 // LEGACY UNIVERSITY (Old simple model, kept for backward compat)
-// Database table: "University"
+// Database table: "University" — no longer referenced by any other model.
+// Records should be migrated to the canonical University (Institution) table.
 // ============================================
 model LegacyUniversity {
   id              String         @id @default(cuid())
@@ -829,10 +826,6 @@ model LegacyUniversity {
   code            String         @unique  // e.g. "MU", "UNZA", "CBU"
   joinSlug        String?        @unique  // e.g. "unza-2024" for magic join links
   academicSystem  AcademicSystem @default(SEMESTERLY)
-  courses         Course[]
-  programmes      Programme[]
-  tutors          Tutor[]
-  users           User[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 
@@ -846,11 +839,7 @@ model Programme {
   shortName       String?   // e.g. "BSc NS"
   code            String?   // e.g. "BSC-CS", "DIP-ACC"
 
-  // Legacy: LegacyUniversity link
-  universityId    String?
-  university      LegacyUniversity? @relation(fields: [universityId], references: [id], onDelete: SetNull)
-
-  // New: University link (was Institution)
+  // Canonical institution link
   institutionId   String?
   institution     University? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
 
@@ -867,7 +856,6 @@ model Programme {
   updatedAt       DateTime  @updatedAt
 
   @@unique([institutionId, code])
-  @@index([universityId])
   @@index([institutionId])
   @@index([facultyId])
 }
@@ -1195,8 +1183,8 @@ model Tutor {
   bio                    String?
   avatarUrl              String?
   profileImagePublicId   String?
-  universityId           String?
-  university      LegacyUniversity? @relation(fields: [universityId], references: [id])
+  institutionId          String?
+  institution     University? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
   programmeId     String?
   programme       Programme?  @relation(fields: [programmeId], references: [id])
   branchId        String?
@@ -1213,7 +1201,7 @@ model Tutor {
   requests        TutorRequest[]
   primaryCourses  Course[]      @relation("PrimaryTutor")
 
-  @@index([universityId, isActive])
+  @@index([institutionId, isActive])
   @@index([isVerified, isActive])
 }
 

@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     const institutionId = searchParams.get('institutionId');
 
     const where: any = {};
-    if (universityId) where.universityId = universityId;
+    if (universityId) where.institutionId = universityId;
     if (institutionId) where.institutionId = institutionId;
 
     const programmes = await prisma.programme.findMany({
@@ -61,8 +61,7 @@ export async function POST(req: NextRequest) {
         name,
         shortName: shortName || null,
         code: code || null,
-        universityId: universityId || null,
-        institutionId: institutionId || null,
+        institutionId: institutionId || universityId || null,
         facultyId: facultyId || null,
       },
     });

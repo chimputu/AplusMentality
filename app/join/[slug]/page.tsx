@@ -41,14 +41,6 @@ export default async function JoinPage({ params }: { params: Promise<{ slug: str
   // Then check LegacyUniversity (via its joinSlug field)
   const university = await prisma.legacyUniversity.findUnique({
     where: { joinSlug: slug },
-    include: {
-      programmes: {
-        include: {
-          faculty: true,
-          branches: true,
-        },
-      },
-    },
   });
 
   if (university) {
@@ -58,7 +50,7 @@ export default async function JoinPage({ params }: { params: Promise<{ slug: str
         <JoinForm
           slug={slug}
           orgName={university.name}
-          programmes={university.programmes}
+          programmes={[]}
         />
       );
     }

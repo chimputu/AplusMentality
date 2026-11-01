@@ -115,6 +115,11 @@ async function seed() {
     },
   ];
 
+  // NOTE: This section seeds the LegacyUniversity table, which is now orphaned.
+  // The canonical institution model is University (DB table: Institution).
+  // These legacy records are kept for backward compatibility but are no longer
+  // referenced by Course, Programme, Tutor, or User.
+  // To migrate legacy data to the canonical model, run the migration script.
   for (const uniData of universities) {
     const uni = await prisma.legacyUniversity.upsert({
       where: { code: uniData.code },
@@ -122,6 +127,9 @@ async function seed() {
       create: { name: uniData.name, code: uniData.code, academicSystem: uniData.academicSystem },
     });
 
+    // Programmes are now scoped via institutionId on the canonical University model.
+    // The legacy universityId field on Programme has been removed.
+    // These programmes should be seeded via the canonical University model instead.
     for (const progData of uniData.programmes) {
       await prisma.programme.upsert({
         where: { institutionId_code: { institutionId: uni.id, code: progData.code } },
@@ -130,7 +138,7 @@ async function seed() {
           name: progData.name,
           shortName: progData.shortName,
           code: progData.code,
-          universityId: uni.id,
+          institutionId: uni.id,
           branches: progData.branches ? { create: progData.branches.map((b) => ({ name: b })) } : undefined,
         },
       });

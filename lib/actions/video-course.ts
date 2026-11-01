@@ -11,7 +11,7 @@ import { prisma } from '@/lib/prisma';
  */
 export async function getCoursesWithVideos(
   searchQuery?: string,
-  universityId?: string | null
+  institutionId?: string | null
 ) {
   const { userId: clerkId } = await auth();
   if (!clerkId) {
@@ -23,7 +23,7 @@ export async function getCoursesWithVideos(
     select: {
       id: true,
       role: true,
-      universityId: true,
+      institutionId: true,
       year: true,
       period: true,
     },
@@ -37,12 +37,14 @@ export async function getCoursesWithVideos(
 
   const where: Record<string, unknown> = {};
 
-  // Non-admins are scoped to their university/year/period
+  // Non-admins are scoped to their institution/year/period
   if (!isAdmin) {
     where.isPublished = true;
 
-    if (user.universityId) {
-      where.universityId = user.universityId;
+    if (user.institutionId) {
+      where.programme = {
+        institutionId: user.institutionId,
+      };
     }
 
     if (user.year !== null && user.year !== undefined) {
@@ -54,9 +56,11 @@ export async function getCoursesWithVideos(
     }
   }
 
-  // Optional filter by university (for exploring other universities)
-  if (universityId && isAdmin) {
-    where.universityId = universityId;
+  // Optional filter by institution (for exploring other institutions)
+  if (institutionId && isAdmin) {
+    where.programme = {
+      institutionId,
+    };
   }
 
   // Search filter
@@ -104,7 +108,7 @@ export async function getVideosForCourse(courseId: string) {
     select: {
       id: true,
       role: true,
-      universityId: true,
+      institutionId: true,
     },
   });
 
@@ -121,8 +125,12 @@ export async function getVideosForCourse(courseId: string) {
       id: true,
       code: true,
       title: true,
-      universityId: true,
       isPublished: true,
+      programme: {
+        select: {
+          institutionId: true,
+        },
+      },
     },
   });
 
@@ -130,8 +138,8 @@ export async function getVideosForCourse(courseId: string) {
     return null;
   }
 
-  // IDOR check: block if the course belongs to a different university
-  if (!isAdmin && user.universityId && course.universityId !== user.universityId) {
+  // IDOR check: block if the course belongs to a different institution
+  if (!isAdmin && user.institutionId && course.programme?.institutionId !== user.institutionId) {
     return null;
   }
 

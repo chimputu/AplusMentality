@@ -15,7 +15,7 @@ export async function GET(
       where: { id },
       include: {
         creator: { select: { name: true, email: true } },
-        course: { select: { id: true, title: true, code: true, universityId: true, year: true, period: true } },
+        course: { select: { id: true, title: true, code: true, year: true, period: true, programme: { select: { institutionId: true } } } },
       },
     });
     if (!slide) return NextResponse.json({ error: 'Not found' }, { status: 404 });

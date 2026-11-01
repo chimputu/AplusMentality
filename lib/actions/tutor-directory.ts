@@ -28,7 +28,7 @@ export async function getTutors(filters?: {
 
   // If institutionId is provided and not null, filter by that institution
   if (filters?.institutionId) {
-    where.universityId = filters.institutionId;
+    where.institutionId = filters.institutionId;
   }
   // If institutionId is null (or not provided), show all tutors
 
@@ -52,7 +52,7 @@ export async function getTutors(filters?: {
           },
         },
       },
-      university: {
+      institution: {
         select: {
           id: true,
           name: true,

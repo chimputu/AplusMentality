@@ -31,7 +31,6 @@ describe('getOrgScope', () => {
     (prisma.user.findUnique as any).mockResolvedValue({
       id: mockUserId,
       role: 'STUDENT',
-      universityId: mockInstitutionId,
       institutionId: mockInstitutionId,
       year: 2,
       period: '2024A',
@@ -64,7 +63,6 @@ describe('getOrgScope', () => {
     (prisma.user.findUnique as any).mockResolvedValue({
       id: 'user_admin',
       role: 'STUDENT',
-      universityId: 'inst_1',
       institutionId: 'inst_1',
       year: null,
       period: null,
@@ -91,7 +89,6 @@ describe('getOrgScope', () => {
     (prisma.user.findUnique as any).mockResolvedValue({
       id: 'user_tutor',
       role: 'STUDENT',
-      universityId: 'inst_1',
       institutionId: 'inst_1',
       year: null,
       period: null,
@@ -118,7 +115,6 @@ describe('getOrgScope', () => {
     (prisma.user.findUnique as any).mockResolvedValue({
       id: 'user_lecturer',
       role: 'STUDENT',
-      universityId: 'inst_1',
       institutionId: 'inst_1',
       year: null,
       period: null,
@@ -198,7 +194,6 @@ describe('getOrgScope', () => {
     (prisma.user.findUnique as any).mockResolvedValue({
       id: 'user_1',
       role: 'TUTOR',
-      universityId: 'inst_1',
       institutionId: 'inst_1',
       year: null,
       period: null,

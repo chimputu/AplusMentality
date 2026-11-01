@@ -22,7 +22,7 @@ export default async function StudentAssignmentResultsPage({ params }: PageProps
     assignmentData = await prisma.assignment.findUnique({
       where: { id },
       include: {
-        course: { select: { universityId: true } },
+        course: { select: { programme: { select: { institutionId: true } } } },
         creator: {
           select: { name: true },
         },
@@ -45,7 +45,7 @@ export default async function StudentAssignmentResultsPage({ params }: PageProps
   }
 
   // SECURITY: Block if the assignment's course is not in the user's scope
-  if (!isResourceInScope(scope, assignmentData.course?.universityId ?? null)) {
+  if (!isResourceInScope(scope, assignmentData.course?.programme?.institutionId ?? null)) {
     notFound();
   }
 

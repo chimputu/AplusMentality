@@ -12,16 +12,13 @@ export async function GET(req: NextRequest) {
     const institutionId =
         searchParams.get('institutionId') || searchParams.get('institution');
 
-    const universityId =
-        searchParams.get('universityId') || searchParams.get('university');
-
     const programmeId = searchParams.get('programmeId');
     const year = searchParams.get('year');
     const period = searchParams.get('period');
     const all = searchParams.get('all');
 
     const hasFilters =
-        institutionId || universityId || programmeId || year || period || all;
+        institutionId || programmeId || year || period || all;
 
     let userId: string;
     let role: string;
@@ -48,10 +45,6 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    if (universityId) {
-      where.universityId = universityId;
-    }
-
     if (programmeId) where.programmeId = programmeId;
     if (year) where.year = parseInt(year);
     if (period !== null) where.period = period === '' ? '' : period;
@@ -67,18 +60,10 @@ export async function GET(req: NextRequest) {
           category: true,
           level: true,
           thumbnail: true,
-          universityId: true,
           programmeId: true,
           year: true,
           period: true,
           isPublished: true,
-          university: {
-            select: {
-              id: true,
-              name: true,
-              code: true,
-            },
-          },
           programme: {
             select: {
               id: true,
@@ -111,13 +96,6 @@ export async function GET(req: NextRequest) {
     const courses = await prisma.course.findMany({
       where: { ...where, ...scopeWhere },
       include: {
-        university: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-          },
-        },
         programme: {
           select: {
             id: true,
@@ -187,7 +165,6 @@ export async function POST(req: NextRequest) {
       level,
       thumbnail,
       institutionId,
-      universityId,
       programmeId,
       year,
       period,
@@ -212,7 +189,6 @@ export async function POST(req: NextRequest) {
       select: {
         id: true,
         institutionId: true,
-        universityId: true,
       },
     });
 
@@ -238,7 +214,6 @@ export async function POST(req: NextRequest) {
         category: category || null,
         level: level || null,
         thumbnail: thumbnail || null,
-        universityId: universityId || programme.universityId || null,
         programmeId,
         year: parseInt(String(year)),
         period: period || null,
@@ -248,13 +223,6 @@ export async function POST(req: NextRequest) {
       include: {
         creator: {
           select: { name: true, email: true },
-        },
-        university: {
-          select: {
-            id: true,
-            code: true,
-            name: true,
-          },
         },
         programme: {
           select: {
@@ -308,7 +276,6 @@ export async function PUT(req: NextRequest) {
       thumbnail,
       isPublished,
       programmeId,
-      universityId,
       year,
       period,
     } = body;
@@ -350,7 +317,6 @@ export async function PUT(req: NextRequest) {
         thumbnail,
         isPublished,
         programmeId,
-        universityId,
         year:
             year !== undefined && year !== null
                 ? parseInt(String(year))
