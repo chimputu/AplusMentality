@@ -2,28 +2,17 @@
 
 import Link from 'next/link';
 import { GraduationCap, MapPin, Clock, DollarSign, MessageSquare } from 'lucide-react';
+import type { Prisma } from '@/generated/prisma/client';
+
+type TutorCardTutorType = NonNullable<Prisma.TutorGetPayload<{
+  include: {
+    specialties: { include: { course: { select: { code: true; title: true } } } };
+    institution: { select: { id: true; name: true } };
+  };
+}>>;
 
 interface TutorCardProps {
-  tutor: {
-    id: string;
-    fullName: string;
-    email: string;
-    bio?: string | null;
-    avatarUrl?: string | null;
-    yearsExperience: number;
-    mode: string;
-    specialties?: Array<{
-      course: {
-        code: string;
-        title: string;
-      };
-      personalRate?: number | null;
-    }>;
-    institution?: {
-      id: string;
-      name: string;
-    } | null;
-  };
+  tutor: TutorCardTutorType;
 }
 
 export default function TutorCard({ tutor }: TutorCardProps) {
