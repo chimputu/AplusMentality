@@ -16,7 +16,7 @@ describe('role mapping constants', () => {
     const { APP_ROLE_TO_CLERK } = await import('@/lib/clerk-org');
 
     expect(APP_ROLE_TO_CLERK.ADMIN).toBe('org:admin');
-    expect(APP_ROLE_TO_CLERK.SUPER_ADMIN).toBe('org:admin');
+    expect(APP_ROLE_TO_CLERK.SUPER_ADMIN).toBe('org:super_admin');
     expect(APP_ROLE_TO_CLERK.TUTOR).toBe('org:tutor');
     expect(APP_ROLE_TO_CLERK.LECTURER).toBe('org:lecturer');
     expect(APP_ROLE_TO_CLERK.STUDENT).toBe('org:member');
@@ -25,6 +25,7 @@ describe('role mapping constants', () => {
   it('maps all Clerk org roles to Prisma roles', async () => {
     const { CLERK_TO_APP_ROLE } = await import('@/lib/clerk-org');
 
+    expect(CLERK_TO_APP_ROLE['org:super_admin']).toBe('SUPER_ADMIN');
     expect(CLERK_TO_APP_ROLE['org:admin']).toBe('ADMIN');
     expect(CLERK_TO_APP_ROLE['org:tutor']).toBe('TUTOR');
     expect(CLERK_TO_APP_ROLE['org:lecturer']).toBe('LECTURER');
@@ -36,8 +37,6 @@ describe('role mapping constants', () => {
 
     for (const [appRole, clerkRole] of Object.entries(APP_ROLE_TO_CLERK)) {
       const mappedBack = CLERK_TO_APP_ROLE[clerkRole];
-      // SUPER_ADMIN maps to org:admin, which maps back to ADMIN — that's expected
-      if (appRole === 'SUPER_ADMIN') continue;
       expect(mappedBack).toBe(appRole);
     }
   });

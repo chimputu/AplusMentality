@@ -2,6 +2,9 @@
 import { requireAuth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
+// This page only redirects — skip static generation to avoid client reference manifest errors
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardRootPage() {
   const { role } = await requireAuth();
 

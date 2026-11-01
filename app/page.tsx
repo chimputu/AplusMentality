@@ -5,6 +5,9 @@ import { withRetry } from '@/lib/retry';
 import { redirect } from 'next/navigation';
 import HomePageClient from '@/components/HomePageClient';
 
+// This page conditionally redirects authenticated users — skip static generation
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Home',
   description: 'A+ Mentality — your one-stop learning platform for Zambian universities. Access courses, quizzes, assignments, past papers, and connect with tutors.',

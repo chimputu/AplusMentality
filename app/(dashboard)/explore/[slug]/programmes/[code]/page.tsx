@@ -7,11 +7,12 @@ import {
 import { getProgrammeForExploration } from '@/lib/queries/exploration';
 
 interface PageProps {
-  params: { slug: string; code: string };
+  params: Promise<{ slug: string; code: string }>;
 }
 
 export default async function ProgrammePage({ params }: PageProps) {
-  const programme = await getProgrammeForExploration(params.slug, params.code);
+  const { slug, code } = await params;
+  const programme = await getProgrammeForExploration(slug, code);
 
   if (!programme) {
     notFound();
@@ -38,7 +39,7 @@ export default async function ProgrammePage({ params }: PageProps) {
         </Link>
         <ChevronRight className="w-3 h-3" />
         <Link
-          href={`/explore/${params.slug}`}
+          href={`/explore/${slug}`}
           className="hover:text-gray-900 dark:hover:text-gray-100"
         >
           {programme.institution.shortName || programme.institution.name}
@@ -76,14 +77,14 @@ export default async function ProgrammePage({ params }: PageProps) {
 
       {/* Courses by Year */}
       {sortedYears.length === 0 && programme.courses.length > 0 ? (
-        <CourseList courses={programme.courses} institutionSlug={params.slug} label="All Courses" />
+        <CourseList courses={programme.courses} institutionSlug={slug} label="All Courses" />
       ) : (
         <div className="space-y-8">
           {sortedYears.map((year) => (
             <CourseList
               key={year}
               courses={coursesByYear[year]}
-              institutionSlug={params.slug}
+              institutionSlug={slug}
               label={`Year ${year}`}
             />
           ))}
@@ -91,7 +92,7 @@ export default async function ProgrammePage({ params }: PageProps) {
           {programme.courses.filter((c) => !c.yearNumber).length > 0 && (
             <CourseList
               courses={programme.courses.filter((c) => !c.yearNumber)}
-              institutionSlug={params.slug}
+              institutionSlug={slug}
               label="Other Courses"
             />
           )}
