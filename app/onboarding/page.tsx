@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { withRetry } from '@/lib/retry';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import OnboardingForm from './_components/onboarding-form';
 
 interface OnboardingPageProps {
@@ -10,7 +11,10 @@ interface OnboardingPageProps {
 
 export default async function OnboardingPage({ searchParams }: OnboardingPageProps) {
   const { userId } = await auth();
-  if (!userId) redirect('/sign-in');
+  if (!userId) {
+    console.warn('[Onboarding] No userId, redirecting to sign-in');
+    redirect('/sign-in');
+  }
 
   let user;
   try {
@@ -18,11 +22,31 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
       () => prisma.user.findUnique({ where: { clerkId: userId } }),
       { attempts: 3, delayMs: 500 }
     );
-  } catch (err: any) {
-    console.error('[Onboarding] Failed to find user:', err.message);
-    redirect('/sign-in');
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[Onboarding] Failed to find user:', message);
+    // Don't redirect to sign-in on DB error — show a fallback so the page isn't blank
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            Something went wrong
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            We couldn&apos;t load your profile. Please try signing in again.
+          </p>
+          <Link
+            href="/sign-in"
+            className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition font-medium"
+          >
+            Sign in again
+          </Link>
+        </div>
+      </div>
+    );
   }
   if (!user) {
+    console.warn('[Onboarding] User not found in DB for clerkId=%s, redirecting to sign-in', userId);
     redirect('/sign-in');
   }
 
@@ -40,7 +64,14 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
   // If a join link is provided, fetch the locked institution details
   let lockedInstitutionId: string | undefined;
   let lockedInstitutionName: string | undefined;
-  let lockedInstitutionDetails: any;
+  let lockedInstitutionDetails: {
+    id: string;
+    name: string;
+    slug: string;
+    levels: { id: string; name: string; order: number }[];
+    periods: { id: string; name: string; order: number }[];
+    hasBranches: boolean;
+  } | undefined;
 
   if (joinSlug && joinType === 'institution') {
     try {
@@ -57,13 +88,15 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
         lockedInstitutionDetails = {
           id: inst.id,
           name: inst.name,
+          slug: inst.slug,
           levels: inst.levels,
           periods: inst.periods,
           hasBranches: inst.hasBranches,
         };
       }
-    } catch (err: any) {
-      console.error('[Onboarding] Failed to fetch join link data:', err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('[Onboarding] Failed to fetch join link data:', message);
     }
   }
 

@@ -158,7 +158,7 @@ export default function AboutPage() {
             Back to Home
           </Link>
           <a
-            href="https://smartcorp-zeta.vercel.app"
+            href="https://smartcorp.example.com"
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 text-center px-4 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition text-sm font-medium"

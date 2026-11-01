@@ -69,7 +69,7 @@ const nextConfig = {
     ];
   },
   // ✅ Allow external images (required for Unsplash & Google thumbnails)
-  // ⚠️ unoptimized: true — Render does not support Vercel's Edge image optimization
+  // ⚠️ unoptimized: true — Render does not support Edge image optimization
   images: {
     unoptimized: true,
     qualities: [75, 85],

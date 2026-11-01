@@ -262,7 +262,7 @@ export async function submitTutorApplication(rawInput: unknown) {
     console.log('[submitTutorApplication] Submission completed successfully');
     return { success: true, applicationId: application.id };
   } catch (err: any) {
-    // Log full error details for Vercel diagnostics
+    // Log full error details for debugging
     console.error('[submitTutorApplication] Fatal error:', {
       message: err?.message,
       code: err?.code,
