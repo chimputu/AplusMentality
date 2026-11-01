@@ -8,11 +8,12 @@ import {
 import { getCourseForExploration } from '@/lib/queries/exploration';
 
 interface PageProps {
-  params: { slug: string; code: string };
+  params: Promise<{ slug: string; code: string }>;
 }
 
 export default async function CoursePreviewPage({ params }: PageProps) {
-  const course = await getCourseForExploration(params.slug, params.code);
+  const { slug, code } = await params;
+  const course = await getCourseForExploration(slug, code);
 
   if (!course) {
     notFound();
@@ -38,7 +39,7 @@ export default async function CoursePreviewPage({ params }: PageProps) {
         </Link>
         <ChevronRight className="w-3 h-3" />
         <Link
-          href={`/explore/${params.slug}`}
+          href={`/explore/${slug}`}
           className="hover:text-gray-900 dark:hover:text-gray-100"
         >
           {course.institution.shortName || course.institution.name}
@@ -47,7 +48,7 @@ export default async function CoursePreviewPage({ params }: PageProps) {
           <>
             <ChevronRight className="w-3 h-3" />
             <Link
-              href={`/explore/${params.slug}/programmes/${course.programme.code || ''}`}
+              href={`/explore/${slug}/programmes/${course.programme.code || ''}`}
               className="hover:text-gray-900 dark:hover:text-gray-100"
             >
               {course.programme.name}

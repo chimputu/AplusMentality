@@ -12,11 +12,12 @@ export const metadata = {
 };
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export default async function UniversityPage({ params }: PageProps) {
-  const university = await getUniversityForExploration(params.slug);
+  const { slug } = await params;
+  const university = await getUniversityForExploration(slug);
 
   if (!university) {
     notFound();
