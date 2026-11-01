@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import CreateAnnouncementForm from '@/components/CreateAnnouncementForm';
 import AnnouncementList from '@/components/AnnouncementList';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminAnnouncementsPage() {
   // Auth handled by layout (ADMIN + SUPER_ADMIN)
 

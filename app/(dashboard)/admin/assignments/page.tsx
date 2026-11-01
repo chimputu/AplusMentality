@@ -6,6 +6,8 @@ import { Plus, ClipboardList, ExternalLink, Calendar, Users, Eye } from 'lucide-
 import DeleteButton from '@/components/DeleteButton';
 import { formatDate } from '@/lib/date-format';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminAssignmentsPage() {
   // Auth handled by layout (ADMIN + SUPER_ADMIN)
   let assignmentsData: any[] = [];
