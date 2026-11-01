@@ -36,7 +36,7 @@ export default async function StudentLectureSlideDetailPage({
     slide = await prisma.lectureSlide.findUnique({
       where: { id },
       include: {
-        course: { select: { id: true, title: true, code: true, universityId: true } },
+        course: { select: { id: true, title: true, code: true, programme: { select: { institutionId: true } } } },
         creator: true,
       },
     });

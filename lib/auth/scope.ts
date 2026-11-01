@@ -13,7 +13,6 @@ import { prisma } from '@/lib/prisma';
 export interface ScopeContext {
   userId: string;
   role: string;
-  universityId: string | null;
   institutionId: string | null;
   year: number | null;
   period: string | null;
@@ -37,7 +36,6 @@ export async function getScopeContext(): Promise<ScopeContext> {
     return {
       userId: '',
       role: 'GUEST',
-      universityId: null,
       institutionId: null,
       year: null,
       period: null,
@@ -51,7 +49,6 @@ export async function getScopeContext(): Promise<ScopeContext> {
     select: {
       id: true,
       role: true,
-      universityId: true,
       institutionId: true,
       year: true,
       period: true,
@@ -62,7 +59,6 @@ export async function getScopeContext(): Promise<ScopeContext> {
     return {
       userId: '',
       role: 'GUEST',
-      universityId: null,
       institutionId: null,
       year: null,
       period: null,
@@ -76,7 +72,6 @@ export async function getScopeContext(): Promise<ScopeContext> {
   return {
     userId: user.id,
     role: user.role,
-    universityId: user.universityId,
     institutionId: user.institutionId,
     year: user.year,
     period: user.period,
@@ -90,7 +85,7 @@ export async function getScopeContext(): Promise<ScopeContext> {
  * academic context.
  *
  * Admins get an empty where clause (no filtering).
- * Students get filtered by universityId, year, and period.
+ * Students get filtered by institution (via programme), year, and period.
  */
 export function buildCourseScopeWhere(scope: ScopeContext) {
   if (scope.mode === 'ADMIN') {
@@ -99,9 +94,11 @@ export function buildCourseScopeWhere(scope: ScopeContext) {
 
   const where: Record<string, any> = { isPublished: true };
 
-  // Prefer universityId (legacy) if set, fall back to institution via programme
-  if (scope.universityId) {
-    where.universityId = scope.universityId;
+  // Scope by canonical institution via programme
+  if (scope.institutionId) {
+    where.programme = {
+      institutionId: scope.institutionId,
+    };
   }
 
   if (scope.year !== null && scope.year !== undefined) {
@@ -119,8 +116,9 @@ export function buildCourseScopeWhere(scope: ScopeContext) {
  * Build a Prisma `where` clause for any resource that belongs to a Course
  * (LectureSlide, Quiz, Test, Assignment, PastPaper, Video).
  *
- * Filters by the course's universityId, year, and period so students only see
- * resources from their own university's courses for their current academic period.
+ * Filters by the course's programme → institution, year, and period so students
+ * only see resources from their own institution's courses for their current
+ * academic period.
  */
 export function buildCourseResourceScopeWhere(scope: ScopeContext) {
   if (scope.mode === 'ADMIN') {
@@ -129,10 +127,12 @@ export function buildCourseResourceScopeWhere(scope: ScopeContext) {
 
   const where: Record<string, any> = {};
 
-  if (scope.universityId) {
+  if (scope.institutionId) {
     where.course = {
       ...where.course,
-      universityId: scope.universityId,
+      programme: {
+        institutionId: scope.institutionId,
+      },
     };
   }
 
@@ -156,12 +156,12 @@ export function buildCourseResourceScopeWhere(scope: ScopeContext) {
 /**
  * Build a Prisma `where` clause for course resources using a raw user object
  * (from `getAuthUser()` or `requireAuth()`). This avoids an extra DB call since
- * the user object already contains universityId, year, and period.
+ * the user object already contains institutionId, year, and period.
  *
  * Admins and Super Admins get an empty where clause (no filtering).
  */
 export function buildCourseResourceScopeWhereFromUser(
-  user: { role?: string; universityId?: string | null; year?: number | null; period?: string | null } | null
+  user: { role?: string; institutionId?: string | null; year?: number | null; period?: string | null } | null
 ) {
   if (!user) {
     return {};
@@ -174,10 +174,12 @@ export function buildCourseResourceScopeWhereFromUser(
 
   const where: Record<string, any> = {};
 
-  if (user.universityId) {
+  if (user.institutionId) {
     where.course = {
       ...where.course,
-      universityId: user.universityId,
+      programme: {
+        institutionId: user.institutionId,
+      },
     };
   }
 
@@ -199,42 +201,42 @@ export function buildCourseResourceScopeWhereFromUser(
 }
 
 /**
- * Verify that a resource (identified by its universityId) belongs to the
+ * Verify that a resource (identified by its institutionId) belongs to the
  * current user's academic scope. Returns true if the user is an admin or
- * the resource's university matches the user's university.
+ * the resource's institution matches the user's institution.
  *
  * Used in IDOR protection for detail pages and write operations.
  */
 export function isResourceInScope(
   scope: ScopeContext,
-  resourceUniversityId: string | null
+  resourceInstitutionId: string | null
 ): boolean {
   if (scope.mode === 'ADMIN') {
     return true;
   }
 
-  // If the user has no university set, they can't access anything scoped
-  if (!scope.universityId) {
+  // If the user has no institution set, they can't access anything scoped
+  if (!scope.institutionId) {
     return false;
   }
 
-  return resourceUniversityId === scope.universityId;
+  return resourceInstitutionId === scope.institutionId;
 }
 
 /**
- * Full-scope IDOR check: verify that a course matches the user's university,
- * year, AND period. Use this for detail pages where the course object is
- * already loaded from the database.
+ * Full-scope IDOR check: verify that a course matches the user's institution
+ * (via programme), year, AND period. Use this for detail pages where the
+ * course object is already loaded from the database.
  *
  * Returns true for admins, false if any scope field mismatches.
  */
 export function isResourceInFullScope(
   scope: ScopeContext,
-  course: { universityId?: string | null; year?: number | null; period?: string | null } | null
+  course: { programme?: { institutionId?: string | null } | null; year?: number | null; period?: string | null } | null
 ): boolean {
   if (scope.mode === 'ADMIN') return true;
   if (!course) return false;
-  if (scope.universityId && course.universityId !== scope.universityId) return false;
+  if (scope.institutionId && course.programme?.institutionId !== scope.institutionId) return false;
   if (scope.year !== null && scope.year !== undefined && course.year !== scope.year) return false;
   if (scope.period !== null && scope.period !== undefined && course.period !== scope.period) return false;
   return true;
@@ -242,17 +244,18 @@ export function isResourceInFullScope(
 
 /**
  * Full-scope IDOR check using a raw user object (from `getAuthUser()`).
- * Verifies that a course matches the user's university, year, AND period.
+ * Verifies that a course matches the user's institution (via programme),
+ * year, AND period.
  */
 export function isResourceInFullScopeFromUser(
-  user: { role?: string; universityId?: string | null; year?: number | null; period?: string | null } | null,
-  course: { universityId?: string | null; year?: number | null; period?: string | null } | null
+  user: { role?: string; institutionId?: string | null; year?: number | null; period?: string | null } | null,
+  course: { programme?: { institutionId?: string | null } | null; year?: number | null; period?: string | null } | null
 ): boolean {
   if (!user) return false;
   const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
   if (isAdmin) return true;
   if (!course) return false;
-  if (user.universityId && course.universityId !== user.universityId) return false;
+  if (user.institutionId && course.programme?.institutionId !== user.institutionId) return false;
   if (user.year !== null && user.year !== undefined && course.year !== user.year) return false;
   if (user.period !== null && user.period !== undefined && course.period !== user.period) return false;
   return true;

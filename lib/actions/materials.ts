@@ -43,7 +43,7 @@ export async function getCoursesWithMaterials(
       select: {
         id: true,
         role: true,
-        universityId: true,
+        institutionId: true,
         year: true,
         period: true,
       },
@@ -61,12 +61,14 @@ export async function getCoursesWithMaterials(
 
   const courseWhere: Record<string, unknown> = {};
 
-  // Non-admins are scoped to their university/year/period
+  // Non-admins are scoped to their institution/year/period
   if (!isAdmin) {
     courseWhere.isPublished = true;
 
-    if (user.universityId) {
-      courseWhere.universityId = user.universityId;
+    if (user.institutionId) {
+      courseWhere.programme = {
+        institutionId: user.institutionId,
+      };
     }
 
     if (user.year !== null && user.year !== undefined) {
@@ -155,7 +157,7 @@ export async function getMaterialsForCourse(category: string, courseId: string) 
       select: {
         id: true,
         role: true,
-        universityId: true,
+        institutionId: true,
       },
     });
   } catch (err) {
@@ -178,8 +180,12 @@ export async function getMaterialsForCourse(category: string, courseId: string) 
         id: true,
         code: true,
         title: true,
-        universityId: true,
         isPublished: true,
+        programme: {
+          select: {
+            institutionId: true,
+          },
+        },
       },
     });
   } catch (err) {
@@ -191,8 +197,8 @@ export async function getMaterialsForCourse(category: string, courseId: string) 
     return null;
   }
 
-  // IDOR check: block if the course belongs to a different university
-  if (!isAdmin && user.universityId && course.universityId !== user.universityId) {
+  // IDOR check: block if the course belongs to a different institution
+  if (!isAdmin && user.institutionId && course.programme?.institutionId !== user.institutionId) {
     return null;
   }
 

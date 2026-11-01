@@ -407,7 +407,7 @@ AplusMentality/
 
 ### Deploy to Render (Recommended)
 
-The app uses a GitHub Actions workflow (`.github/workflows/deploy.yml`) to automatically deploy to Render on every push to `main`.
+The app uses a GitHub Actions workflow (`.github/workflows/deploy.yml`) to automatically deploy to Render on every push to `main`. The workflow builds the application first, and only triggers deployment to Render after the build succeeds, using the Render CLI.
 
 **Setup:**
 
@@ -418,14 +418,17 @@ The app uses a GitHub Actions workflow (`.github/workflows/deploy.yml`) to autom
    - **Start Command**: `npm start`
    - **Environment**: Node 22 (see `.node-version`)
 4. **Add all environment variables** from `.env.example` in your Render service settings
-5. **Add the Render Deploy Hook URL** as a GitHub secret (`RENDER_DEPLOY_HOOK`) in your repository settings
+5. **Add the Render API key and Service ID** as GitHub secrets:
+   - `RENDER_API_KEY` — your Render account API key (found in Render Dashboard → Account → API Keys)
+   - `RENDER_SERVICE_ID` — your Render service ID (found in the service URL: `https://dashboard.render.com/services/srv-xxxxx`)
 
 **GitHub Secrets Required:**
 - `DATABASE_URL`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `CLERK_WEBHOOK_SECRET`
 - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
 - `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
 - `OPENROUTER_API_KEY`, `BREVO_API_KEY`, `NEXT_PUBLIC_SITE_URL`
-- `RENDER_DEPLOY_HOOK` (your Render deploy hook URL)
+- `RENDER_API_KEY` (your Render API key)
+- `RENDER_SERVICE_ID` (your Render service ID)
 
 ### Environment Variables
 

@@ -6,8 +6,6 @@ export default async function AdminSettingsPage() {
   const { userId } = await auth();
   let institutionSlug: string | undefined;
   let institutionId: string | undefined;
-  let universityJoinSlug: string | undefined;
-  let universityId: string | undefined;
 
   if (userId) {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } });
@@ -18,21 +16,12 @@ export default async function AdminSettingsPage() {
         institutionId = inst.id;
       }
     }
-    if (user?.universityId) {
-      const uni = await prisma.legacyUniversity.findUnique({ where: { id: user.universityId } });
-      if (uni) {
-        universityJoinSlug = uni.joinSlug ?? undefined;
-        universityId = uni.id;
-      }
-    }
   }
 
   return (
     <AdminSettingsClient
       institutionSlug={institutionSlug}
       institutionId={institutionId}
-      universityJoinSlug={universityJoinSlug}
-      universityId={universityId}
     />
   );
 }

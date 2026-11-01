@@ -61,7 +61,6 @@ export async function PUT(
         data: {
           code: newCourseCode,
           title: newCourseTitle,
-          universityId,
           programmeId,
           year: parseInt(String(year)),
           period: period || '',

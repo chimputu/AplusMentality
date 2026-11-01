@@ -19,7 +19,7 @@ export async function PATCH(req: Request) {
 
     // Block students from changing institution after onboarding
     if (user.onboarded && user.role === 'STUDENT') {
-      const blockedFields = ['institutionId', 'universityId', 'programmeId', 'branchId'];
+      const blockedFields = ['institutionId', 'programmeId', 'branchId'];
       for (const field of blockedFields) {
         if (body[field] !== undefined) {
           return NextResponse.json(
@@ -43,7 +43,6 @@ export async function PATCH(req: Request) {
     if (body.firstName !== undefined) data.firstName = body.firstName;
     if (body.lastName !== undefined) data.lastName = body.lastName;
     if (body.institutionId !== undefined) data.institutionId = body.institutionId || null;
-    if (body.universityId !== undefined) data.universityId = body.universityId || null;
     if (body.programmeId !== undefined) data.programmeId = body.programmeId || null;
     if (body.branchId !== undefined) data.branchId = body.branchId || null;
     if (body.year !== undefined) data.year = body.year;
@@ -57,33 +56,16 @@ export async function PATCH(req: Request) {
     });
 
     // If onboarding just completed, add the user to their institution's Clerk organization
-    if (body.onboarded === true && (body.institutionId || body.universityId)) {
-      let clerkOrgId: string | null = null;
-
-      if (body.institutionId) {
-        const inst = await prisma.university.findUnique({
-          where: { id: body.institutionId },
-          select: { clerkOrgId: true },
-        });
-        clerkOrgId = inst?.clerkOrgId ?? null;
-      } else if (body.universityId) {
-        // University joins: look up associated Institution via programmes to find clerkOrgId
-        const prog = await prisma.programme.findFirst({
-          where: { universityId: body.universityId },
-          select: { institutionId: true },
-        });
-        if (prog?.institutionId) {
-          const inst = await prisma.university.findUnique({
-            where: { id: prog.institutionId },
-            select: { clerkOrgId: true },
-          });
-          clerkOrgId = inst?.clerkOrgId ?? null;
-        }
-        if (!clerkOrgId) {
-          console.warn(
-            `[Onboarding] User ${userId} joined via University ${body.universityId} but no associated Institution with clerkOrgId found. Clerk org membership not created.`
-          );
-        }
+    if (body.onboarded === true && body.institutionId) {
+      const inst = await prisma.university.findUnique({
+        where: { id: body.institutionId },
+        select: { clerkOrgId: true },
+      });
+      const clerkOrgId = inst?.clerkOrgId ?? null;
+      if (!clerkOrgId) {
+        console.warn(
+          `[Onboarding] User ${userId} joined institution ${body.institutionId} but no clerkOrgId found. Clerk org membership not created.`
+        );
       }
 
       if (clerkOrgId) {
@@ -122,7 +104,6 @@ export async function GET() {
       where: { clerkId: userId },
       include: {
         institution: { select: { name: true } },
-        university: { select: { name: true } },
         programme: { select: { name: true } },
         branch: { select: { name: true } },
       },

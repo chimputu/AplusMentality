@@ -41,7 +41,7 @@ export default async function StudentLessonPage({ params }: PageProps) {
         module: {
           include: {
             course: {
-              select: { id: true, universityId: true },
+              select: { id: true },
               include: {
                 enrollments: {
                   where: { userId },

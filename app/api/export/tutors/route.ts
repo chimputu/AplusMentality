@@ -41,7 +41,7 @@ export async function GET() {
   }
 
   // For Tutor model, we need to map institutionId to universityId
-  // The Tutor uses universityId which links to University model
+  // The Tutor uses institutionId which links to University model
   // We need to find tutors associated with this institution
   let tutors: any[] = [];
 
@@ -50,32 +50,23 @@ export async function GET() {
     tutors = await prisma.tutor.findMany({
       include: {
         specialties: { include: { course: { select: { code: true, title: true } } } },
-        university: { select: { name: true } },
+        institution: { select: { name: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
   } else {
     // ADMIN: scope to their institution
-    // Tutors have universityId, but we need to match by institution
-    // Fetch the institution's associated university or match by name
-    const institution = await prisma.university.findUnique({
-      where: { id: scope.institutionId },
-      select: { name: true, slug: true },
+    // Tutors have institutionId, match by institution
+    tutors = await prisma.tutor.findMany({
+      where: {
+        institutionId: scope.institutionId,
+      },
+      include: {
+        specialties: { include: { course: { select: { code: true, title: true } } } },
+        institution: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
     });
-
-    // Find tutors by matching university name to institution name
-    if (institution) {
-      tutors = await prisma.tutor.findMany({
-        where: {
-          university: { name: institution.name },
-        },
-        include: {
-          specialties: { include: { course: { select: { code: true, title: true } } } },
-          university: { select: { name: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-      });
-    }
   }
 
   const doc = new jsPDF({ orientation: 'landscape' });
@@ -111,7 +102,7 @@ export async function GET() {
       courses || '—',
       tutor.isActive ? 'Active' : 'Inactive',
       tutor.isVerified ? 'Verified' : 'Pending',
-      tutor.university?.name || '—',
+      tutor.institution?.name || '—',
     ];
   });
 

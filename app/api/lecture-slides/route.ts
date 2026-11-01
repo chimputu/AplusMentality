@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
             };
         } else if (universityId) {
             where.course = {
-                universityId,
+                programme: { institutionId: universityId },
             };
         }
 
@@ -79,13 +79,6 @@ export async function GET(req: NextRequest) {
                         id: true,
                         title: true,
                         code: true,
-                        university: {
-                            select: {
-                                id: true,
-                                name: true,
-                                code: true,
-                            },
-                        },
                     },
                 },
                 creator: {
@@ -143,7 +136,7 @@ export async function POST(req: NextRequest) {
 
         const course = await prisma.course.findUnique({
             where: { id: courseId },
-            select: { id: true, universityId: true, year: true, period: true },
+            select: { id: true, year: true, period: true, programme: { select: { institutionId: true } } },
         });
 
         if (!course) {

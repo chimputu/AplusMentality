@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
+import { isResourceInFullScopeFromUser } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -59,13 +60,6 @@ export async function GET(req: NextRequest) {
             id: true,
             code: true,
             title: true,
-            university: {
-              select: {
-                id: true,
-                name: true,
-                code: true,
-              },
-            },
             programme: {
               select: {
                 id: true,
@@ -136,7 +130,7 @@ export async function POST(req: NextRequest) {
 
     const course = await prisma.course.findUnique({
       where: { id: courseId },
-      select: { id: true, universityId: true, year: true, period: true },
+      select: { id: true, year: true, period: true, programme: { select: { institutionId: true } } },
     });
 
     if (!course) {
@@ -202,7 +196,7 @@ export async function PUT(req: NextRequest) {
     // Re-fetch with correct ID from body
     const quiz = await prisma.quiz.findUnique({
       where: { id },
-      include: { course: { select: { universityId: true } } },
+      include: { course: { select: { programme: { select: { institutionId: true } } } } },
     });
 
     if (!quiz) {
@@ -221,7 +215,7 @@ export async function PUT(req: NextRequest) {
     if (courseId && courseId !== quiz.courseId) {
       const newCourse = await prisma.course.findUnique({
         where: { id: courseId },
-        select: { universityId: true },
+        select: { programme: { select: { institutionId: true } } },
       });
       if (!newCourse) {
         return NextResponse.json({ error: 'Course not found' }, { status: 404 });

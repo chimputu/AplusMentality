@@ -212,7 +212,7 @@ export default function StudentProfilePage() {
   };
 
   const getCurrentSchoolName = () => {
-    return profile?.institution?.name || profile?.university?.name || 'Not set';
+    return profile?.institution?.name || 'Not set';
   };
 
   const getCurrentSchoolLogo = () => {

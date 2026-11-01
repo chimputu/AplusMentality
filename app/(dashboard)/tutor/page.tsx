@@ -26,12 +26,10 @@ export default async function TutorPage() {
       select: {
         role: true,
         institutionId: true,
-        universityId: true,
         programmeId: true,
         year: true,
         period: true,
         institution: { select: { shortName: true, name: true } },
-        university: { select: { name: true, code: true } },
         programme: { select: { name: true, shortName: true } },
       },
     });

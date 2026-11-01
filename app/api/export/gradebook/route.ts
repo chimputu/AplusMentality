@@ -27,8 +27,8 @@ export async function GET(request: Request) {
           id: true,
           code: true,
           title: true,
-          universityId: true,
           tutorId: true,
+          programme: { select: { institutionId: true } },
         },
       },
     },
@@ -61,21 +61,13 @@ export async function GET(request: Request) {
         if (course) {
           const courseFull = await prisma.course.findUnique({
             where: { id: course.id },
-            select: { universityId: true },
+            select: { programme: { select: { institutionId: true } } },
           });
           // For ADMIN/LECTURER, verify the course is in their institution
-          // by checking if the university matches
-          const institution = await prisma.university.findUnique({
-            where: { id: scope.institutionId },
-            select: { name: true },
-          });
-          if (institution && courseFull?.universityId) {
-            const university = await prisma.university.findUnique({
-              where: { id: courseFull.universityId },
-              select: { name: true },
-            });
-            // If university name doesn't match institution name, block access
-            if (university && university.name !== institution.name) {
+          // by checking if the institution matches
+          if (courseFull?.programme?.institutionId) {
+            // If course institution doesn't match scope institution, block access
+            if (courseFull.programme.institutionId !== scope.institutionId) {
               return new Response('Unauthorized: This assignment is not in your institution', { status: 403 });
             }
           }

@@ -19,7 +19,6 @@ export interface OrgScope {
   orgRole: string;
   appRole: string;
   isSuperAdmin: boolean;
-  universityId: string | null;
   year: number | null;
   period: string | null;
 }
@@ -73,7 +72,6 @@ export async function getOrgScope(): Promise<OrgScope> {
     select: {
       id: true,
       role: true,
-      universityId: true,
       institutionId: true,
       year: true,
       period: true,
@@ -98,7 +96,6 @@ export async function getOrgScope(): Promise<OrgScope> {
     orgRole: orgRole ?? 'org:member',
     appRole,
     isSuperAdmin,
-    universityId: user.universityId,
     year: user.year,
     period: user.period,
   };

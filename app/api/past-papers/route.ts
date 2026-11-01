@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
         } else if (universityId) {
             where.course = {
                 ...where.course,
-                universityId,
+                programme: { institutionId: universityId },
             };
         }
 
@@ -63,13 +63,6 @@ export async function GET(req: NextRequest) {
                         id: true,
                         code: true,
                         title: true,
-                        university: {
-                            select: {
-                                id: true,
-                                name: true,
-                                code: true,
-                            },
-                        },
                         programme: {
                             select: {
                                 id: true,
@@ -139,9 +132,9 @@ export async function POST(req: NextRequest) {
             select: {
                 id: true,
                 code: true,
-                universityId: true,
                 year: true,
                 period: true,
+                programme: { select: { institutionId: true } },
             },
         });
 

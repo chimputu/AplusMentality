@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
     const student = await prisma.user.findUnique({
       where: { clerkId: userId },
-      include: { university: true, programme: true },
+      include: { institution: true, programme: true },
     });
     if (!student) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
     // Fetch courses in scope
     const courses = await prisma.course.findMany({
       where: {
-        universityId: student.universityId!,
         programmeId: student.programmeId!,
         year: student.year!,
         ...(student.period && { period: student.period }),
@@ -46,7 +45,7 @@ export async function POST(req: NextRequest) {
     });
 
     const systemPrompt = `You are an AI insights generator for A+ Mentality.
-Student: ${student.name || 'Student'} at ${student.university?.name || 'Unknown'}, ${student.programme?.shortName || student.programme?.name || 'Unknown'}.
+Student: ${student.name || 'Student'} at ${student.institution?.name || 'Unknown'}, ${student.programme?.shortName || student.programme?.name || 'Unknown'}.
 
 Based on their data, generate 3-5 insight cards as a JSON array.
 Each card has: { "type": "warning"|"success"|"tip", "title": "...", "description": "...", "action": { "label": "...", "href": "..." } }

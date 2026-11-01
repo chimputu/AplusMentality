@@ -23,7 +23,6 @@ export async function GET(req: NextRequest) {
     // Find courses matching student's academic profile
     const studentCourses = await prisma.course.findMany({
       where: {
-        universityId: student.universityId,
         programmeId: student.programmeId,
         year: student.year,
         period: student.period ?? '',

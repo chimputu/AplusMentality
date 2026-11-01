@@ -4,7 +4,7 @@ import { requireAuth } from '@/lib/auth';
 export async function GET() {
   try {
     const { user } = await requireAuth();
-    const hasInstitution = !!(user.institutionId || user.universityId);
+    const hasInstitution = !!user.institutionId;
     return NextResponse.json({ role: user.role, hasInstitution });
   } catch (error) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

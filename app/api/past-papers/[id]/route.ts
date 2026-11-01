@@ -21,7 +21,7 @@ export async function GET(
       where: { id },
       include: {
         creator: { select: { name: true, email: true } },
-        course: { select: { universityId: true, year: true, period: true } },
+        course: { select: { year: true, period: true, programme: { select: { institutionId: true } } } },
       },
     });
 

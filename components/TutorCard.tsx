@@ -19,7 +19,7 @@ interface TutorCardProps {
       };
       personalRate?: number | null;
     }>;
-    university?: {
+    institution?: {
       id: string;
       name: string;
     } | null;
@@ -52,10 +52,10 @@ export default function TutorCard({ tutor }: TutorCardProps) {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-foreground truncate">{tutor.fullName}</h3>
-          {tutor.university && (
+          {tutor.institution && (
             <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
               <MapPin className="w-3 h-3" />
-              {tutor.university.name}
+              {tutor.institution.name}
             </p>
           )}
         </div>

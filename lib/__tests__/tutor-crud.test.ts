@@ -16,6 +16,7 @@ const mockPrisma = {
   faculty: { findUnique: vi.fn(), findMany: vi.fn() },
   tutor: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn() },
   university: { findUnique: vi.fn(), findMany: vi.fn() },
+  legacyUniversity: { findMany: vi.fn() },
   academicLevel: { findUnique: vi.fn(), findMany: vi.fn() },
   academicPeriod: { findMany: vi.fn() },
   branch: { findMany: vi.fn() },
@@ -108,17 +109,17 @@ describe('deleteTutor', () => {
   });
 });
 
-describe('listUniversities', () => {
-  it('returns universities ordered by name', async () => {
-    (prisma.legacyUniversity.findMany as any).mockResolvedValue([
-      { id: '1', name: 'University A', code: 'UA' },
+describe('listInstitutions', () => {
+  it('returns institutions ordered by name', async () => {
+    (prisma.university.findMany as any).mockResolvedValue([
+      { id: '1', name: 'University A', slug: 'ua' },
     ]);
 
-    const { listUniversities } = await import('@/lib/actions/tutor-crud');
-    const result = await listUniversities();
+    const { listInstitutions } = await import('@/lib/actions/tutor-crud');
+    const result = await listInstitutions();
 
     expect(result).toHaveLength(1);
-    expect(prisma.legacyUniversity.findMany).toHaveBeenCalledWith(
+    expect(prisma.university.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ orderBy: { name: 'asc' } })
     );
   });

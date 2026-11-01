@@ -35,11 +35,10 @@ export default async function StudentPage({
       select: {
         role: true,
         institutionId: true,
-        universityId: true,
         programmeId: true,
         year: true,
         period: true,
-        university: { select: { name: true, code: true } },
+        institution: { select: { name: true } },
         programme: { select: { name: true, shortName: true } },
       },
     });
@@ -68,7 +67,6 @@ export default async function StudentPage({
   const resourceScope = buildCourseResourceScopeWhere({
     userId: dbUser.id || '',
     role: 'STUDENT',
-    universityId: dbUser.universityId,
     institutionId: dbUser.institutionId,
     year: dbUser.year,
     period: dbUser.period,
@@ -120,8 +118,8 @@ export default async function StudentPage({
       displayName={displayName}
       searchQuery={searchQuery}
       institutionId={dbUser.institutionId || undefined}
-      universityName={dbUser.university?.name || null}
-      universityCode={dbUser.university?.code || null}
+      universityName={dbUser.institution?.name || null}
+      universityCode={null}
       programmeName={dbUser.programme?.shortName || dbUser.programme?.name || null}
       year={dbUser.year || null}
     />

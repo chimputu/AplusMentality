@@ -15,11 +15,10 @@ export async function GET(req: NextRequest) {
 
     const where: {
       institutionId?: string;
-      universityId?: string;
     } = {};
 
     if (institutionId) where.institutionId = institutionId;
-    if (universityId) where.universityId = universityId;
+    if (universityId) where.institutionId = universityId;
 
     const programmes = await prisma.programme.findMany({
       where,
@@ -29,20 +28,12 @@ export async function GET(req: NextRequest) {
         shortName: true,
         code: true,
         institutionId: true,
-        universityId: true,
         institution: {
           select: {
             id: true,
             name: true,
             slug: true,
             shortName: true,
-          },
-        },
-        university: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
           },
         },
         facultyId: true,

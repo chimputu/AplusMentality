@@ -32,7 +32,7 @@ export default async function StudentTakeTestPage({ params }: PageProps) {
     test = await prisma.test.findUnique({
       where: { id },
       include: {
-        course: { select: { universityId: true } },
+        course: { select: { programme: { select: { institutionId: true } } } },
         creator: { select: { name: true } },
         submissions: {
           where: { userId },
@@ -49,7 +49,7 @@ export default async function StudentTakeTestPage({ params }: PageProps) {
   }
 
   // SECURITY: Block if the test's course is not in the user's scope
-  if (!isResourceInScope(scope, test.course?.universityId ?? null)) {
+  if (!isResourceInScope(scope, test.course?.programme?.institutionId ?? null)) {
     notFound();
   }
 

@@ -18,7 +18,7 @@ export default async function AdminTutorDetailPage({
     tutor = await prisma.tutor.findUnique({
       where: { id },
       include: {
-        university: true,
+        institution: true,
         programme: true,
         branch: true,
         specialties: { include: { course: true } },
@@ -39,7 +39,7 @@ export default async function AdminTutorDetailPage({
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
       bio: formData.get('bio') as string,
-      universityId: (formData.get('universityId') as string) || null,
+      institutionId: (formData.get('institutionId') as string) || (formData.get('universityId') as string) || null,
       programmeId: (formData.get('programmeId') as string) || null,
       branchId: (formData.get('branchId') as string) || null,
       yearsExperience: Number(formData.get('yearsExperience')),
@@ -242,10 +242,10 @@ export default async function AdminTutorDetailPage({
               Academic Affiliation
             </h2>
             <div className="space-y-2">
-              {tutor.university && (
+              {tutor.institution && (
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   <span className="font-medium">University:</span>{' '}
-                  {tutor.university.name} ({tutor.university.code})
+                  {tutor.institution.name} ({tutor.institution.code})
                 </p>
               )}
               {tutor.programme && (

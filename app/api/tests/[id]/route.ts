@@ -25,9 +25,9 @@ export async function GET(
         },
         course: {
           select: {
-            universityId: true,
             year: true,
             period: true,
+            programme: { select: { institutionId: true } },
           },
         },
         submissions: {

@@ -47,7 +47,7 @@ export async function POST(
     const quiz = await prisma.quiz.findUnique({
       where: { id: quizId },
       include: {
-        course: { select: { universityId: true, id: true } },
+        course: { select: { id: true, programme: { select: { institutionId: true } } } },
       },
     });
 
