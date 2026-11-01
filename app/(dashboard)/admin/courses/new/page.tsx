@@ -1,16 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { addCourseToProgramme } from '@/lib/actions/programme-tree';
 import { ProgrammeSelect } from '@/components/ui/selects/programme-select';
 import { DataSelect } from '@/components/ui/data-select';
 
-export default function NewCoursePage({
-  institutionId,
-}: {
-  institutionId?: string;
-}) {
+export default function NewCoursePage() {
+  const searchParams = useSearchParams();
+  const institutionId = searchParams.get('institutionId') || undefined;
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [selectedProgrammeId, setSelectedProgrammeId] = useState('');
