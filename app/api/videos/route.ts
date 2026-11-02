@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, getAuthUser } from '@/lib/auth';
-import { buildCourseResourceScopeWhereFromUser, isResourceInFullScopeFromUser } from '@/lib/auth/scope';
+import { buildCourseResourceScopeWhereFromUser, isUserAuthorizedForCourse } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 import cloudinary from '@/lib/cloudinary';
 
@@ -208,6 +208,8 @@ export async function POST(req: NextRequest) {
           id: true,
           year: true,
           period: true,
+          tutorId: true,
+          createdBy: true,
           programme: { select: { institutionId: true } },
         },
       });
@@ -219,8 +221,8 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // SECURITY: Verify the tutor's scope matches the target course
-      if (!isResourceInFullScopeFromUser(auth.user, existingCourse)) {
+      // SECURITY: Verify the user is authorized for this course (scope + assignment)
+      if (!await isUserAuthorizedForCourse(auth.user, existingCourse)) {
         return NextResponse.json(
             { error: 'You are not authorized to upload to this course' },
             { status: 403 }

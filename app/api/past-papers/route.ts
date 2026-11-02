@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
-import { buildCourseResourceScopeWhereFromUser, isResourceInFullScopeFromUser } from '@/lib/auth/scope';
+import { buildCourseResourceScopeWhereFromUser, isUserAuthorizedForCourse } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
-        const auth = await getAuthUser(['TUTOR', 'ADMIN']);
+        const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN']);
         if (!auth) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -134,6 +134,8 @@ export async function POST(req: NextRequest) {
                 code: true,
                 year: true,
                 period: true,
+                tutorId: true,
+                createdBy: true,
                 programme: { select: { institutionId: true } },
             },
         });
@@ -145,8 +147,8 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // SECURITY: Verify the tutor's scope matches the target course
-        if (!isResourceInFullScopeFromUser(auth.user, course)) {
+        // SECURITY: Verify the user is authorized for this course (scope + assignment)
+        if (!await isUserAuthorizedForCourse(auth.user, course)) {
             return NextResponse.json(
                 { error: 'You are not authorized to upload to this course' },
                 { status: 403 }

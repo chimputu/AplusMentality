@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, getAuthUser } from '@/lib/auth';
-import { isResourceInFullScopeFromUser } from '@/lib/auth/scope';
+import { isUserAuthorizedForCourse } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -121,15 +121,15 @@ export async function POST(req: NextRequest) {
 
     const course = await prisma.course.findUnique({
       where: { id: courseId },
-      select: { id: true, year: true, period: true, programme: { select: { institutionId: true } } },
+      select: { id: true, year: true, period: true, tutorId: true, createdBy: true, programme: { select: { institutionId: true } } },
     });
 
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 });
     }
 
-    // SECURITY: Verify the tutor's scope matches the target course
-    if (!isResourceInFullScopeFromUser(auth.user, course)) {
+    // SECURITY: Verify the user is authorized for this course (scope + assignment)
+    if (!await isUserAuthorizedForCourse(auth.user, course)) {
       return NextResponse.json(
         { error: 'You are not authorized to create assignments for this course' },
         { status: 403 }

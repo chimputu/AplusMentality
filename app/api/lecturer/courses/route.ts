@@ -61,10 +61,36 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { code, title, description, category, level, year, period } = body;
+    const { code, title, description, category, level, year, period, programmeId } = body;
 
     if (!code || !title) {
       return NextResponse.json({ error: 'Code and title are required' }, { status: 400 });
+    }
+
+    // SECURITY: Scope lecturer-created courses to their institution
+    // If the lecturer has a programme, use it; otherwise require explicit programmeId
+    const finalProgrammeId = programmeId || user.programmeId;
+
+    if (user.role === 'LECTURER') {
+      if (!finalProgrammeId) {
+        return NextResponse.json(
+          { error: 'Programme is required. Please complete your profile or specify a programme.' },
+          { status: 400 }
+        );
+      }
+      // Verify the programme belongs to the lecturer's institution
+      if (user.institutionId) {
+        const prog = await prisma.programme.findUnique({
+          where: { id: finalProgrammeId },
+          select: { institutionId: true },
+        });
+        if (!prog || prog.institutionId !== user.institutionId) {
+          return NextResponse.json(
+            { error: 'You can only create courses within your institution.' },
+            { status: 403 }
+          );
+        }
+      }
     }
 
     const course = await prisma.course.create({
@@ -76,6 +102,7 @@ export async function POST(req: Request) {
         level,
         year,
         period,
+        programmeId: finalProgrammeId,
         createdBy: userId,
       },
     });

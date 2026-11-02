@@ -12,6 +12,8 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from 'sonner';
 import CookieConsentModal from '@/components/CookieConsentModal';
 import DownloadBanner from '@/components/DownloadBanner';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   title: {
@@ -75,6 +77,8 @@ export default function RootLayout({
             <Toaster />
             <CookieConsentModal />
             <DownloadBanner />
+            <Analytics />
+            <SpeedInsights />
           </Providers>
         </body>
       </html>

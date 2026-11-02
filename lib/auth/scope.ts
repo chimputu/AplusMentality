@@ -276,3 +276,95 @@ export function assertWriteAllowed(scope: ScopeContext) {
     );
   }
 }
+
+/**
+ * Verify that a TUTOR or LECTURER is actually assigned to a course before
+ * allowing write operations (upload video, create quiz, etc.).
+ *
+ * For TUTOR: checks TutorSpecialty or Course.tutorId (primary tutor).
+ * For LECTURER: checks if the lecturer created the course (Course.createdBy).
+ * For ADMIN/SUPER_ADMIN: always returns true (bypass).
+ *
+ * This is an async function because it needs to query the database for
+ * TutorSpecialty records.
+ */
+export async function isUserAuthorizedForCourse(
+  user: { id?: string; clerkId?: string; role?: string; institutionId?: string | null; year?: number | null; period?: string | null } | null,
+  course: { id?: string; tutorId?: string | null; createdBy?: string; programme?: { institutionId?: string | null } | null; year?: number | null; period?: string | null } | null
+): Promise<boolean> {
+  if (!user || !course) return false;
+
+  // Admins bypass all checks
+  if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') return true;
+
+  // First check basic scope (institution, year, period)
+  if (user.institutionId && course.programme?.institutionId !== user.institutionId) return false;
+  if (user.year !== null && user.year !== undefined && course.year !== user.year) return false;
+  if (user.period !== null && user.period !== undefined && course.period !== user.period) return false;
+
+  // For TUTOR: verify assignment via TutorSpecialty or primary tutor
+  if (user.role === 'TUTOR') {
+    if (!user.id) return false;
+
+    // Check if user has a tutor profile
+    const tutor = await prisma.tutor.findUnique({
+      where: { userId: user.id },
+      select: { id: true },
+    });
+
+    if (tutor) {
+      // Check if this tutor is the primary tutor of the course
+      if (course.tutorId === tutor.id) return true;
+
+      // Check if this tutor has a specialty for this course
+      const specialty = await prisma.tutorSpecialty.findUnique({
+        where: {
+          tutorId_courseId: {
+            tutorId: tutor.id,
+            courseId: course.id!,
+          },
+        },
+      });
+
+      if (specialty) return true;
+    }
+
+    return false;
+  }
+
+  // For LECTURER: verify they created the course or are assigned to it
+  if (user.role === 'LECTURER') {
+    // Lecturer can manage courses they created (createdBy stores clerkId)
+    if (user.clerkId && course.createdBy === user.clerkId) return true;
+
+    // Check if lecturer has a tutor profile with specialty for this course
+    // (some lecturers may also have tutor specialties)
+    if (user.id) {
+      const tutor = await prisma.tutor.findUnique({
+        where: { userId: user.id },
+        select: { id: true },
+      });
+
+      if (tutor) {
+        if (course.tutorId === tutor.id) return true;
+
+        const specialty = await prisma.tutorSpecialty.findUnique({
+          where: {
+            tutorId_courseId: {
+              tutorId: tutor.id,
+              courseId: course.id!,
+            },
+          },
+        });
+
+        if (specialty) return true;
+      }
+    }
+
+    return false;
+  }
+
+  // For STUDENT or other roles: basic scope check is sufficient for read access
+  // but they shouldn't reach this function for write operations
+  return true;
+}
