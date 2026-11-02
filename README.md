@@ -1,48 +1,50 @@
-# A+ Mentality — Learning Management System
+# A+ Mentality
 
-> **Empowering Zambian lifelong learners through technology.**
+> A multi-tenant learning management system and tutor marketplace for Zambian higher education.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-61dafb)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org)
 [![Prisma](https://img.shields.io/badge/Prisma-7.8-2d3748)](https://prisma.io)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8)](https://tailwindcss.com)
-[![License](https://img.shields.io/badge/License-Proprietary-red)](#-license)
+[![License](https://img.shields.io/badge/License-Proprietary-red)](#license)
 
 ---
 
-## 📖 About
+## About
 
 **A+ Mentality** is a multi-tenant Learning Management System (LMS) and tutor marketplace built for Zambian higher education institutions. It connects students, lecturers, tutors, and administrators in a unified platform for course delivery, content sharing, assessments, and peer tutoring — accessible from any device, even offline.
 
 The platform supports **multiple universities** with full data isolation, a **5-tier role system** with granular permissions, and a **tutor marketplace** where students can discover and book qualified tutors.
 
----
-
-## 📋 Table of Contents
-
-- [Roles & Permissions](#-roles--permissions)
-- [Features](#-features)
-- [Technology Stack](#-technology-stack)
-- [Architecture](#-architecture)
-- [Prerequisites](#-prerequisites)
-- [Getting Started](#-getting-started)
-- [Environment Variables](#-environment-variables)
-- [Database Schema](#-database-schema)
-- [Project Structure](#-project-structure)
-- [API Overview](#-api-overview)
-- [Security](#-security)
-- [Testing](#-testing)
-- [Deployment](#-deployment)
-- [Contributing](#-contributing)
-- [Troubleshooting](#-troubleshooting)
-- [License](#-license)
-- [Author](#-author)
-- [Acknowledgments](#-acknowledgments)
+**Live Demo:** [aplusmentality.com](https://aplusmentality.com)
 
 ---
 
-## 👥 Roles & Permissions
+## Table of Contents
+
+- [Roles & Permissions](#roles--permissions)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Database Schema](#database-schema)
+- [Project Structure](#project-structure)
+- [API Overview](#api-overview)
+- [Security](#security)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
+- [Author](#author)
+- [Acknowledgments](#acknowledgments)
+
+---
+
+## Roles & Permissions
 
 A+ Mentality uses a **5-tier role-based access control (RBAC)** system enforced at the middleware, API, and UI levels:
 
@@ -75,9 +77,9 @@ Unauthorized access redirects users to their role-appropriate dashboard.
 
 ---
 
-## ✨ Features
+## Features
 
-### 🎓 Learning Management
+### Learning Management
 
 - **Courses & Programmes**: Hierarchical structure — institutions → programmes → courses → modules → lessons
 - **Video Lessons**: Upload to Cloudinary or embed YouTube links, organized by course
@@ -89,7 +91,7 @@ Unauthorized access redirects users to their role-appropriate dashboard.
 - **Progress Tracking**: Lesson completion and course enrollment progress
 - **Announcements**: Institution-wide announcements with read-tracking notifications
 
-### 🤝 Tutor Marketplace
+### Tutor Marketplace
 
 - **Tutor Applications**: Students apply to become tutors; admins review and approve
 - **Tutor Profiles**: Tutors manage specialties, offerings, availability, and ratings
@@ -98,13 +100,13 @@ Unauthorized access redirects users to their role-appropriate dashboard.
 - **Reviews & Ratings**: Students rate tutors after sessions
 - **Institution Change Requests**: Tutors can request to switch institutions
 
-### 🤖 AI Study Assistant
+### AI Study Assistant
 
 - **AI Chat**: Powered by OpenRouter with multiple AI model providers (Google, Groq)
 - **Context-Aware**: Landing page chat answers platform questions; logged-in chat provides institution-specific study help
 - **Smart Caching**: Redis (Upstash) caches AI responses for fast repeat queries
 
-### 👤 User Experience
+### User Experience
 
 - **Authentication**: Clerk-powered with social login and webhook-based user sync
 - **Dark/Light/System Theme**: Persistent theme preference synced to database
@@ -114,7 +116,7 @@ Unauthorized access redirects users to their role-appropriate dashboard.
 - **Notifications**: Announcement read-tracking with notification bell
 - **E-Book Library**: Browse, read, and save books from public-domain sources
 
-### 📊 Admin & Analytics
+### Admin & Analytics
 
 - **User Management**: List, promote, and manage users with bulk operations
 - **Institution Management**: Create and configure universities, colleges, and programmes
@@ -125,7 +127,7 @@ Unauthorized access redirects users to their role-appropriate dashboard.
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Frontend
 
@@ -169,7 +171,7 @@ Unauthorized access redirects users to their role-appropriate dashboard.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -208,7 +210,7 @@ Four distinct dashboards, each with role-specific navigation:
 
 ---
 
-## 📦 Prerequisites
+## Prerequisites
 
 | Tool | Version | Purpose |
 |------|---------|---------|
@@ -231,7 +233,7 @@ Four distinct dashboards, each with role-specific navigation:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the Repository
 
@@ -305,7 +307,7 @@ npx prisma studio      # Database GUI
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
 See `.env.example` for the complete template.
 
@@ -335,7 +337,7 @@ See `.env.example` for the complete template.
 
 ---
 
-## 🗄️ Database Schema
+## Database Schema
 
 The database models a complete multi-tenant LMS:
 
@@ -395,7 +397,7 @@ The database models a complete multi-tenant LMS:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 AplusMentality/
@@ -511,7 +513,7 @@ AplusMentality/
 
 ---
 
-## 🔌 API Overview
+## API Overview
 
 All API routes require authentication unless noted. Role requirements are enforced at the route level.
 
@@ -566,7 +568,7 @@ All API routes require authentication unless noted. Role requirements are enforc
 
 ---
 
-## 🔒 Security
+## Security
 
 ### Role-Based Access Control
 
@@ -596,7 +598,7 @@ Sentry integration for production error monitoring and performance tracking.
 
 ---
 
-## 🧪 Testing
+## Testing
 
 The project uses **Vitest** with **React Testing Library** and **jsdom**.
 
@@ -618,7 +620,7 @@ Test files are co-located with source files and cover:
 
 ---
 
-## 🚢 Deployment
+## Deployment
 
 ### Platform Requirements
 
@@ -648,7 +650,7 @@ For production, ensure:
 
 ---
 
-## 🧑‍💻 Contributing
+## Contributing
 
 1. **Fork** the repository
 2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
@@ -658,12 +660,12 @@ For production, ensure:
 
 ### Coding Standards
 
-- ✅ Use TypeScript for all new code
-- ✅ Follow Next.js App Router patterns
-- ✅ Write tests for new features
-- ✅ Handle errors gracefully
-- ✅ Respect role-based access boundaries
-- ✅ Scope data queries to the user's institution
+- Use TypeScript for all new code
+- Follow Next.js App Router patterns
+- Write tests for new features
+- Handle errors gracefully
+- Respect role-based access boundaries
+- Scope data queries to the user's institution
 
 ### Pre-Commit Hooks
 
@@ -671,7 +673,7 @@ Husky runs ESLint on every commit. Fix lint errors before committing.
 
 ---
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -694,13 +696,13 @@ npm run dev              # Restart development server
 
 ---
 
-## 📄 License
+## License
 
 This project is proprietary and confidential. Unauthorized copying, distribution, or use of this software is strictly prohibited.
 
 ---
 
-## 👤 Author
+## Author
 
 **Kafiswe George Chimputu**
 
@@ -709,7 +711,7 @@ This project is proprietary and confidential. Unauthorized copying, distribution
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Next.js](https://nextjs.org) — React Framework
 - [Clerk](https://clerk.com) — Authentication
@@ -730,4 +732,4 @@ This project is proprietary and confidential. Unauthorized copying, distribution
 
 ---
 
-*Built with ❤️ by Kafiswe George Chimputu — Empowering Zambian lifelong learners.*
+Built by [Kafiswe George Chimputu](https://github.com/chimputu).
