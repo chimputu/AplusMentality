@@ -47,10 +47,10 @@ const getCachedBanners = unstable_cache(
 
 function BannersSkeleton() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div className="bg-card rounded-xl border border-border overflow-hidden">
       <div className="p-4 space-y-3">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-16 bg-gray-100 dark:bg-gray-700 rounded animate-pulse" />
+          <div key={i} className="h-16 bg-muted rounded animate-pulse" />
         ))}
       </div>
     </div>
@@ -75,8 +75,8 @@ export default async function AdminBannersPage({
     <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Banners</h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
+          <h1 className="text-2xl font-bold text-foreground">Banners</h1>
+          <p className="text-gray-600 dark:text-muted-foreground text-sm">
             Post announcements to the homepage and dashboard
           </p>
         </div>
@@ -91,7 +91,7 @@ export default async function AdminBannersPage({
 
       {/* Filters */}
       <div className="mb-4 flex items-center gap-3">
-        <span className="text-sm text-gray-500 dark:text-gray-400">Filter by scope:</span>
+        <span className="text-sm text-muted-foreground">Filter by scope:</span>
         <div className="flex gap-2">
           {[
             { value: '', label: 'All' },
@@ -105,7 +105,7 @@ export default async function AdminBannersPage({
               className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition ${
                 (!scopeFilter && !opt.value) || scopeFilter === opt.value
                   ? 'bg-blue-600 text-white border-blue-600'
-                  : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-400'
+                  : 'border-gray-300 dark:border-border text-gray-600 dark:text-muted-foreground hover:border-gray-400'
               }`}
             >
               {opt.label}
@@ -167,12 +167,12 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
 
   if (banners.length === 0) {
     return (
-      <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+      <div className="text-center py-16 bg-card rounded-xl border border-border">
         <div className="text-4xl mb-4">📢</div>
-        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+        <h3 className="text-lg font-medium text-foreground mb-2">
           No banners yet
         </h3>
-        <p className="text-gray-500 dark:text-gray-400 mb-4">
+        <p className="text-muted-foreground mb-4">
           Create your first banner to announce something to users.
         </p>
         <Link
@@ -187,52 +187,52 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div className="bg-card rounded-xl border border-border overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700">
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <tr className="border-b border-border">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Title
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Placement
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Variant
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Target
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Starts
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Ends
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Active
               </th>
-              <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {(Array.isArray(banners) ? banners : []).map((banner: any) => (
-              <tr key={banner.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+              <tr key={banner.id} className="hover:bg-muted">
                 <td className="px-4 py-3">
                   <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <p className="text-sm font-medium text-foreground">
                       {banner.title}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-xs">
+                    <p className="text-xs text-muted-foreground truncate max-w-xs">
                       {banner.message}
                     </p>
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span className="text-sm text-gray-700 dark:text-foreground">
                     {placementLabels[banner.placement] || banner.placement}
                   </span>
                 </td>
@@ -248,10 +248,10 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
                 <td className="px-4 py-3">
                   {getTargetBadge(banner)}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-4 py-3 text-sm text-muted-foreground">
                   {formatDate(banner.startsAt)}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-4 py-3 text-sm text-muted-foreground">
                   {banner.endsAt ? formatDate(banner.endsAt) : '—'}
                 </td>
                 <td className="px-4 py-3">
@@ -273,7 +273,7 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
                   <div className="flex items-center justify-end gap-1">
                     <Link
                       href={`/admin/banners/${banner.id}/edit`}
-                      className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition"
+                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground transition"
                       title="Edit"
                       aria-label="Edit banner"
                     >
@@ -283,7 +283,7 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
                       href="/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition"
+                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground transition"
                       title="Preview"
                       aria-label="Preview banner"
                     >
@@ -298,7 +298,7 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
                     >
                       <button
                         type="submit"
-                        className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition"
+                        className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 transition"
                         title="Delete"
                         aria-label="Delete banner"
                       >

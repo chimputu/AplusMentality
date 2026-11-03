@@ -98,25 +98,25 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
       {/* Back Button */}
       <Link
         href="/admin/courses"
-        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
+        className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Courses
       </Link>
 
       {/* Course Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div className="flex-1">
             {/* Badges */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
+              <span className="text-xs font-mono bg-muted text-gray-600 dark:text-muted-foreground px-2 py-1 rounded">
                 {course.code}
               </span>
               <span className={`text-xs px-2.5 py-1 rounded-full ${
                 course.isPublished
                   ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                  : 'bg-muted text-gray-600 dark:text-muted-foreground'
               }`}>
                 {course.isPublished ? 'Published' : 'Draft'}
               </span>
@@ -138,17 +138,17 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
             </div>
 
             {/* Title & Description */}
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">
+            <h1 className="text-2xl font-bold text-foreground mt-2">
               {course.title}
             </h1>
             {course.description && (
-              <p className="text-gray-600 dark:text-gray-300 mt-2 max-w-2xl">
+              <p className="text-gray-600 dark:text-foreground mt-2 max-w-2xl">
                 {course.description}
               </p>
             )}
 
             {/* Creator info */}
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Created by {course.creator?.name || 'Unknown'}
             </p>
           </div>
@@ -173,16 +173,16 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100 dark:border-border">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
               <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <p className="text-lg font-semibold text-foreground">
                 {course.modules.length}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Modules</p>
+              <p className="text-xs text-muted-foreground">Modules</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -190,10 +190,10 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
               <PlayCircle className="w-5 h-5 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <p className="text-lg font-semibold text-foreground">
                 {totalLessons}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Lessons</p>
+              <p className="text-xs text-muted-foreground">Lessons</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -201,21 +201,21 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
               <Users className="w-5 h-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <p className="text-lg font-semibold text-foreground">
                 {course.enrollments.length}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Students</p>
+              <p className="text-xs text-muted-foreground">Students</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <div className="p-2 bg-gray-50 dark:bg-muted rounded-lg">
+              <Calendar className="w-5 h-5 text-gray-600 dark:text-muted-foreground" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <p className="text-lg font-semibold text-foreground">
                 {formatDate(course.createdAt)}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Created</p>
+              <p className="text-xs text-muted-foreground">Created</p>
             </div>
           </div>
         </div>
@@ -224,7 +224,7 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
       {/* Modules Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-semibold text-foreground">
             Modules
           </h2>
           <Link
@@ -241,51 +241,51 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
 
       {/* Enrollments Section */}
       {course.enrollments.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Enrolled Students ({course.enrollments.length})
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+              <thead className="bg-gray-50 dark:bg-muted/50 border-b border-border">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                     Student
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                     Email
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                     Progress
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                     Enrolled
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {course.enrollments.map((enrollment) => (
-                  <tr key={enrollment.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-100">
+                  <tr key={enrollment.id} className="hover:bg-muted transition">
+                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-foreground">
                       {enrollment.user.name || 'Unknown'}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                    <td className="px-4 py-3 text-gray-600 dark:text-foreground">
                       {enrollment.user.email}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div className="w-24 bg-gray-200 dark:bg-muted rounded-full h-2">
                           <div
                             className="bg-blue-600 h-2 rounded-full transition-all"
                             style={{ width: `${enrollment.progress || 0}%` }}
                           />
                         </div>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                        <span className="text-xs text-muted-foreground">
                           {enrollment.progress || 0}%
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400">
+                    <td className="px-4 py-3 text-xs text-muted-foreground">
                       {formatDate(enrollment.enrolledAt)}
                     </td>
                   </tr>

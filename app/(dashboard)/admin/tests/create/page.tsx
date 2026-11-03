@@ -119,10 +119,10 @@ export default function CreateTestPage() {
         <ArrowLeft className="w-4 h-4" /> Back
       </Link>
       <h1 className="text-2xl font-bold mb-6">Create Test</h1>
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow border">
+      <form onSubmit={handleSubmit} className="space-y-4 bg-card p-6 rounded-xl shadow border">
 
         {/* ── Academic Scoping ── */}
-        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
           Academic Scoping
         </h2>
 
@@ -141,14 +141,14 @@ export default function CreateTestPage() {
 
         {/* Year */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
             Year *
           </label>
           <select
             value={form.year}
             onChange={(e) => setForm({ ...form, year: parseInt(e.target.value), courseId: '' })}
             required
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           >
             {[1, 2, 3, 4, 5, 6, 7].map((y) => (
               <option key={y} value={y}>
@@ -160,7 +160,7 @@ export default function CreateTestPage() {
 
         {/* Period */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
             Period *
           </label>
           <select
@@ -168,7 +168,7 @@ export default function CreateTestPage() {
             onChange={(e) => setForm({ ...form, period: e.target.value, courseId: '' })}
             required
             disabled={!form.universityId}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+            className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
           >
             <option value="">Select period</option>
             {getPeriodOptions().map((opt) => (
@@ -190,38 +190,38 @@ export default function CreateTestPage() {
           label="Course *"
         />
 
-        <hr className="border-gray-200 dark:border-gray-700" />
+        <hr className="border-border" />
 
         {/* ── Test Details ── */}
-        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
           Test Details
         </h2>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Title *</label>
           <input
             type="text"
             required
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-card text-foreground"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             placeholder="e.g., Mid-Semester Test"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Description</label>
           <textarea
             rows={3}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none"
+            className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-card text-foreground resize-none"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             placeholder="Test description and instructions..."
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Content Type</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Content Type</label>
           <select
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-card text-foreground"
             value={form.contentType}
             onChange={(e) => setForm({ ...form, contentType: e.target.value })}
           >
@@ -233,10 +233,10 @@ export default function CreateTestPage() {
         {form.contentType === 'google_form' && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Embed URL *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Embed URL *</label>
               <input
                 type="url"
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-card text-foreground"
                 value={form.embedUrl}
                 onChange={(e) => setForm({ ...form, embedUrl: e.target.value })}
                 required
@@ -244,10 +244,10 @@ export default function CreateTestPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Shareable Link *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Shareable Link *</label>
               <input
                 type="url"
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-card text-foreground"
                 value={form.formUrl}
                 onChange={(e) => setForm({ ...form, formUrl: e.target.value })}
                 required
@@ -258,7 +258,7 @@ export default function CreateTestPage() {
         )}
         {(form.contentType === 'pdf' || form.contentType === 'image') && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upload File *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Upload File *</label>
             <input
               type="file"
               accept={form.contentType === 'pdf' ? '.pdf' : 'image/*'}
@@ -270,19 +270,19 @@ export default function CreateTestPage() {
           </div>
         )}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date (optional)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Due Date (optional)</label>
           <input
             type="datetime-local"
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-card text-foreground"
             value={form.dueDate}
             onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max Score (optional)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Max Score (optional)</label>
           <input
             type="number"
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-card text-foreground"
             value={form.maxScore}
             onChange={(e) => setForm({ ...form, maxScore: e.target.value })}
             placeholder="100"

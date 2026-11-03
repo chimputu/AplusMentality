@@ -38,10 +38,10 @@ export default async function AdminPastPapersPage() {
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-foreground">
             Past Papers
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
+          <p className="text-gray-600 dark:text-muted-foreground text-sm">
             Upload tests, quizzes, assignments, and final exams (PDF, image, DOCX)
           </p>
         </div>
@@ -54,12 +54,12 @@ export default async function AdminPastPapersPage() {
       </div>
 
       {papers.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
-          <FileText className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+        <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-12 text-center">
+          <FileText className="w-16 h-16 text-gray-300 dark:text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-foreground">
             No past papers yet
           </h3>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
             Upload your first past paper.
           </p>
           <Link
@@ -70,27 +70,27 @@ export default async function AdminPastPapersPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+              <thead className="bg-gray-50 dark:bg-muted/50 border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Category
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Course
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Year
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     File
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                     Actions
                   </th>
                 </tr>
@@ -99,14 +99,14 @@ export default async function AdminPastPapersPage() {
                 {papers.map((paper) => (
                   <tr
                     key={paper.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+                    className="hover:bg-muted transition"
                   >
                     <td className="px-6 py-4">
-                      <p className="font-medium text-gray-800 dark:text-gray-100">
+                      <p className="font-medium text-gray-800 dark:text-foreground">
                         {paper.title}
                       </p>
                       {paper.description && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">
+                        <p className="text-sm text-muted-foreground line-clamp-1">
                           {paper.description}
                         </p>
                       )}
@@ -120,10 +120,10 @@ export default async function AdminPastPapersPage() {
                         {CATEGORY_LABELS[paper.category] || paper.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-sm text-muted-foreground">
                       {paper.courseCode || '—'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-sm text-muted-foreground">
                       {paper.year || '—'}
                     </td>
                     <td className="px-6 py-4">

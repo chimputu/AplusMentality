@@ -19,6 +19,25 @@ export async function GET(
       );
     }
 
+    // Data isolation: University admins can only view users in their own institution
+    if (role === 'ADMIN') {
+      const targetUser = await prisma.user.findUnique({
+        where: { clerkId: id },
+        select: { institutionId: true },
+      });
+      const adminUser = await prisma.user.findUnique({
+        where: { clerkId: userId },
+        select: { institutionId: true },
+      });
+      if (targetUser && adminUser && targetUser.institutionId && adminUser.institutionId
+        && targetUser.institutionId !== adminUser.institutionId) {
+        return NextResponse.json(
+          { error: 'Unauthorized: You can only manage users in your own university.' },
+          { status: 403 }
+        );
+      }
+    }
+
     const user = await prisma.user.findUnique({
       where: { clerkId: id },
       select: {
@@ -153,8 +172,27 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
-    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+    const { userId, role } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const { id } = await params;  // ✅ Await
+
+    // Data isolation: University admins can only delete users in their own institution
+    if (role === 'ADMIN') {
+      const targetUser = await prisma.user.findUnique({
+        where: { clerkId: id },
+        select: { institutionId: true },
+      });
+      const adminUser = await prisma.user.findUnique({
+        where: { clerkId: userId },
+        select: { institutionId: true },
+      });
+      if (targetUser && adminUser && targetUser.institutionId && adminUser.institutionId
+        && targetUser.institutionId !== adminUser.institutionId) {
+        return NextResponse.json(
+          { error: 'Unauthorized: You can only manage users in your own university.' },
+          { status: 403 }
+        );
+      }
+    }
 
     await prisma.user.delete({
       where: { clerkId: id },

@@ -67,7 +67,7 @@ function StatusBadge({ status }: { status: string }) {
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400 rounded-full">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-muted text-gray-700 dark:text-muted-foreground rounded-full">
       Unknown
     </span>
   );
@@ -120,18 +120,18 @@ export default function SystemHealthPage() {
     <div className="max-w-5xl mx-auto">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <Activity className="w-6 h-6 text-blue-600" />
             System Health
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+          <p className="text-gray-600 dark:text-muted-foreground text-sm mt-1">
             Monitor environment configuration, database tables, and service status
           </p>
         </div>
         <button
           onClick={fetchHealth}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium bg-card border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition disabled:opacity-50"
           aria-label="Refresh health status"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -151,7 +151,7 @@ export default function SystemHealthPage() {
           <div className={`mb-6 p-4 rounded-lg border-2 ${overallStatusColor[data.status] || ''}`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Overall Status</p>
+                <p className="text-sm text-gray-600 dark:text-muted-foreground">Overall Status</p>
                 <div className="flex items-center gap-2 mt-1">
                   <StatusBadge status={data.status} />
                   <span className="text-sm text-gray-500">
@@ -160,8 +160,8 @@ export default function SystemHealthPage() {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-600 dark:text-gray-400">Response Time</p>
-                <p className="text-lg font-mono font-bold text-gray-900 dark:text-gray-100">
+                <p className="text-sm text-gray-600 dark:text-muted-foreground">Response Time</p>
+                <p className="text-lg font-mono font-bold text-foreground">
                   {data.responseTime}
                 </p>
               </div>
@@ -187,14 +187,14 @@ export default function SystemHealthPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Database */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Database className="w-5 h-5 text-blue-600" />
                 Database
               </h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Connectivity</span>
+                  <span className="text-sm text-gray-600 dark:text-muted-foreground">Connectivity</span>
                   <StatusBadge status={data.checks.database} />
                 </div>
                 {data.checks.databaseDetails && (
@@ -203,22 +203,22 @@ export default function SystemHealthPage() {
                   </p>
                 )}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Redis Cache</span>
+                  <span className="text-sm text-gray-600 dark:text-muted-foreground">Redis Cache</span>
                   <StatusBadge status={data.checks.redis} />
                 </div>
               </div>
             </div>
 
             {/* Environment Variables */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Key className="w-5 h-5 text-purple-600" />
                 Environment Variables
               </h2>
               <div className="space-y-2">
                 {Object.entries(envVars).map(([name, status]) => (
                   <div key={name} className="flex items-center justify-between">
-                    <span className="text-sm font-mono text-gray-700 dark:text-gray-300">{name}</span>
+                    <span className="text-sm font-mono text-gray-700 dark:text-foreground">{name}</span>
                     <StatusBadge status={status} />
                   </div>
                 ))}
@@ -226,15 +226,15 @@ export default function SystemHealthPage() {
             </div>
 
             {/* Database Tables */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm md:col-span-2">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm md:col-span-2">
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Table className="w-5 h-5 text-green-600" />
                 Required Database Tables
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {Object.entries(tables).map(([name, status]) => (
-                  <div key={name} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-900/50 rounded">
-                    <span className="text-sm text-gray-700 dark:text-gray-300">{name}</span>
+                  <div key={name} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-input/50 rounded">
+                    <span className="text-sm text-gray-700 dark:text-foreground">{name}</span>
                     <StatusBadge status={status} />
                   </div>
                 ))}
@@ -242,14 +242,14 @@ export default function SystemHealthPage() {
             </div>
 
             {/* Clerk Configuration */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Globe className="w-5 h-5 text-indigo-600" />
                 Clerk Configuration
               </h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">API Key Mode</span>
+                  <span className="text-sm text-gray-600 dark:text-muted-foreground">API Key Mode</span>
                   <StatusBadge status={data.checks.clerkKeyMode} />
                 </div>
                 {data.checks.clerkKeyMode === 'test' && (
@@ -262,27 +262,27 @@ export default function SystemHealthPage() {
             </div>
 
             {/* Server Info */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Server className="w-5 h-5 text-gray-600" />
                 Server Info
               </h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Uptime</span>
-                  <span className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                  <span className="text-sm text-gray-600 dark:text-muted-foreground">Uptime</span>
+                  <span className="text-sm font-mono text-foreground">
                     {formatUptime(data.uptime)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Last Check</span>
-                  <span className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                  <span className="text-sm text-gray-600 dark:text-muted-foreground">Last Check</span>
+                  <span className="text-sm font-mono text-foreground">
                     {new Date(data.timestamp).toLocaleTimeString()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Response Time</span>
-                  <span className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                  <span className="text-sm text-gray-600 dark:text-muted-foreground">Response Time</span>
+                  <span className="text-sm font-mono text-foreground">
                     {data.responseTime}
                   </span>
                 </div>

@@ -29,7 +29,7 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
       <div className="flex items-center justify-between">
         <Link
           href="/admin/institutions"
-          className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
+          className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Institutions
@@ -44,15 +44,15 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
       </div>
 
       {/* Institution Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         <div className="flex items-start gap-4">
           <span className="text-4xl">{TYPE_EMOJI[inst.type] || '🏫'}</span>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-2xl font-bold text-foreground">
               {inst.name}
             </h1>
             <div className="flex items-center gap-3 mt-1">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {inst.shortName} · {inst.slug}
               </span>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
@@ -62,7 +62,7 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                   inst.isVerified
                     ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                    : 'bg-gray-100 text-gray-600 dark:bg-muted dark:text-muted-foreground'
                 }`}
               >
                 {inst.isVerified ? 'Verified' : 'Unverified'}
@@ -81,10 +81,10 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
         </div>
 
         {inst.description && (
-          <p className="mt-4 text-gray-600 dark:text-gray-400">{inst.description}</p>
+          <p className="mt-4 text-gray-600 dark:text-muted-foreground">{inst.description}</p>
         )}
 
-        <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600 dark:text-muted-foreground">
           {inst.city && (
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="w-4 h-4" />
@@ -120,59 +120,59 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-1">
+        <div className="bg-card rounded-xl border border-border p-4">
+          <div className="flex items-center gap-2 text-muted-foreground mb-1">
             <GraduationCap className="w-4 h-4" />
             <span className="text-sm">Levels</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <p className="text-2xl font-bold text-foreground">
             {inst.levels.length}
           </p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-1">
+        <div className="bg-card rounded-xl border border-border p-4">
+          <div className="flex items-center gap-2 text-muted-foreground mb-1">
             <Building2 className="w-4 h-4" />
             <span className="text-sm">Faculties</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <p className="text-2xl font-bold text-foreground">
             {inst.faculties.length}
           </p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-1">
+        <div className="bg-card rounded-xl border border-border p-4">
+          <div className="flex items-center gap-2 text-muted-foreground mb-1">
             <BookOpen className="w-4 h-4" />
             <span className="text-sm">Programmes</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <p className="text-2xl font-bold text-foreground">
             {inst.programmes.length}
           </p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-1">
+        <div className="bg-card rounded-xl border border-border p-4">
+          <div className="flex items-center gap-2 text-muted-foreground mb-1">
             <Users className="w-4 h-4" />
             <span className="text-sm">Users</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <p className="text-2xl font-bold text-foreground">
             {inst._count.users}
           </p>
         </div>
       </div>
 
       {/* Academic Structure */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+      <div className="bg-card rounded-xl border border-border p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">
           Academic Structure
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">
               Levels ({inst.levelType})
             </h3>
             <div className="space-y-1">
               {inst.levels.map((level) => (
                 <div
                   key={level.id}
-                  className="text-sm text-gray-700 dark:text-gray-300 py-1"
+                  className="text-sm text-gray-700 dark:text-foreground py-1"
                 >
                   {level.name}
                 </div>
@@ -180,14 +180,14 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
             </div>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">
               Periods ({inst.periodType})
             </h3>
             <div className="space-y-1">
               {inst.periods.map((period) => (
                 <div
                   key={period.id}
-                  className="text-sm text-gray-700 dark:text-gray-300 py-1"
+                  className="text-sm text-gray-700 dark:text-foreground py-1"
                 >
                   {period.name}
                 </div>
@@ -199,20 +199,20 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
 
       {/* Faculties */}
       {inst.faculties.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Faculties
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {inst.faculties.map((faculty) => (
               <div
                 key={faculty.id}
-                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50"
+                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-input/50"
               >
                 <span className="font-mono text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
                   {faculty.code}
                 </span>
-                <span className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="text-sm text-gray-700 dark:text-foreground">
                   {faculty.name}
                 </span>
               </div>
@@ -223,31 +223,31 @@ export default async function InstitutionViewPage({ params }: { params: Promise<
 
       {/* Programmes */}
       {inst.programmes.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Programmes
           </h2>
           <div className="space-y-2">
             {inst.programmes.map((prog) => (
               <div
                 key={prog.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50"
+                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-input/50"
               >
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
                     {prog.code}
                   </span>
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span className="text-sm text-gray-700 dark:text-foreground">
                     {prog.name}
                   </span>
                   {prog.faculty && (
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       ({prog.faculty.name})
                     </span>
                   )}
                 </div>
                 {prog.branches.length > 0 && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     {prog.branches.length} branch{prog.branches.length > 1 ? 'es' : ''}
                   </span>
                 )}

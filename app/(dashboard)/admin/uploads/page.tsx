@@ -155,7 +155,7 @@ export default function AdminUploadsPage() {
         );
       case 'ARCHIVED':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400">
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-muted dark:text-muted-foreground">
             <Archive className="w-3 h-3" /> Archived
           </span>
         );
@@ -169,7 +169,7 @@ export default function AdminUploadsPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold">Uploads</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Upload files first, tag them later to assign to courses.
           </p>
         </div>
@@ -187,7 +187,7 @@ export default function AdminUploadsPage() {
         className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
           dragOver
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-            : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 bg-white dark:bg-gray-800'
+            : 'border-gray-300 dark:border-border hover:border-blue-400 bg-card'
         }`}
       >
         <input
@@ -206,10 +206,10 @@ export default function AdminUploadsPage() {
         <Upload
           className={`w-10 h-10 mx-auto mb-3 ${dragOver ? 'text-blue-500' : 'text-gray-400'}`}
         />
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <p className="text-sm font-medium text-gray-700 dark:text-foreground">
           {uploading ? 'Uploading...' : 'Drag & drop files here, or click to browse'}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           PDF, PPTX, DOCX, MP4, JPG, PNG, ZIP — up to 100 MB each
         </p>
       </div>
@@ -219,13 +219,13 @@ export default function AdminUploadsPage() {
         <div className="mt-4 space-y-2">
           {uploadProgress.map((p) => (
             <div key={p.file} className="flex items-center gap-3">
-              <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div className="flex-1 bg-gray-200 dark:bg-muted rounded-full h-2">
                 <div
                   className="bg-blue-600 h-2 rounded-full transition-all"
                   style={{ width: `${p.progress}%` }}
                 />
               </div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]">
+              <span className="text-xs text-muted-foreground truncate max-w-[200px]">
                 {p.file}
               </span>
               {p.progress === 100 && <CheckCircle2 className="w-4 h-4 text-green-500" />}
@@ -244,7 +244,7 @@ export default function AdminUploadsPage() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               filter === tab
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                : 'bg-muted text-gray-700 dark:text-foreground hover:bg-gray-200 dark:hover:bg-muted'
             }`}
           >
             {tab === 'ALL' ? 'All' : tab === 'UNTAGGED' ? 'Untagged' : 'Tagged'}
@@ -253,39 +253,39 @@ export default function AdminUploadsPage() {
       </div>
 
       {/* Uploads Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
           </div>
         ) : uploads.length === 0 ? (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-12 text-muted-foreground">
             <Upload className="w-10 h-10 mx-auto mb-3 opacity-50" />
             <p className="text-sm">No uploads yet. Drop some files above to get started.</p>
           </div>
         ) : (
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+            <thead className="bg-gray-50 dark:bg-muted">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-foreground uppercase">
                   File
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-foreground uppercase">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-foreground uppercase">
                   Size
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-foreground uppercase">
                   Suggested Code
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-foreground uppercase">
                   Course
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-foreground uppercase">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-foreground uppercase">
                   Actions
                 </th>
               </tr>
@@ -294,7 +294,7 @@ export default function AdminUploadsPage() {
               {uploads.map((upload) => (
                 <tr
                   key={upload.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  className="hover:bg-muted"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -303,18 +303,18 @@ export default function AdminUploadsPage() {
                         <p className="text-sm font-medium truncate max-w-[200px]">
                           {upload.originalName}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-xs text-muted-foreground">
                           {formatDate(upload.createdAt)}
                         </p>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-xs uppercase bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                    <span className="text-xs uppercase bg-muted px-2 py-1 rounded">
                       {upload.fileType}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-muted-foreground">
                     {formatFileSize(upload.fileSize)}
                   </td>
                   <td className="px-6 py-4">
@@ -350,7 +350,7 @@ export default function AdminUploadsPage() {
                         href={upload.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-gray-600 dark:text-gray-400 hover:underline px-2"
+                        className="text-sm text-gray-600 dark:text-muted-foreground hover:underline px-2"
                       >
                         Open
                       </a>

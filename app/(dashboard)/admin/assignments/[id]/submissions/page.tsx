@@ -151,20 +151,20 @@ export default function AdminSubmissionsPage() {
       {/* Back */}
       <Link
         href="/admin/assignments"
-        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
+        className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
       >
         <ArrowLeft className="w-4 h-4" /> Back to Assignments
       </Link>
 
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-2xl font-bold text-foreground">
               {assignment.title}
             </h1>
             {assignment.description && (
-              <p className="text-gray-600 dark:text-gray-400 mt-1">{assignment.description}</p>
+              <p className="text-gray-600 dark:text-muted-foreground mt-1">{assignment.description}</p>
             )}
           </div>
           <a
@@ -176,7 +176,7 @@ export default function AdminSubmissionsPage() {
           </a>
         </div>
         <div className="flex flex-wrap gap-4 mt-4 text-sm">
-          <span className="text-gray-600 dark:text-gray-400">
+          <span className="text-gray-600 dark:text-muted-foreground">
             📄 {stats.total} submission{stats.total !== 1 ? 's' : ''}
           </span>
           <span className="text-green-600 dark:text-green-400">
@@ -186,7 +186,7 @@ export default function AdminSubmissionsPage() {
             ⏳ {stats.pending} pending
           </span>
           {assignment.maxScore && (
-            <span className="text-gray-600 dark:text-gray-400">
+            <span className="text-gray-600 dark:text-muted-foreground">
               🎯 Max score: {assignment.maxScore}
             </span>
           )}
@@ -202,7 +202,7 @@ export default function AdminSubmissionsPage() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
               filter === f
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                : 'bg-muted text-gray-700 dark:text-foreground hover:bg-gray-200 dark:hover:bg-muted'
             }`}
           >
             {f === 'ALL' ? 'All' : f === 'PENDING' ? 'Pending' : 'Graded'}
@@ -212,19 +212,19 @@ export default function AdminSubmissionsPage() {
 
       {/* Submissions list */}
       {filtered.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-          <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-500 dark:text-gray-400">
+        <div className="text-center py-12 bg-card rounded-xl border border-gray-100 dark:border-border">
+          <FileText className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">
             {filter === 'ALL'
               ? 'No submissions yet.'
               : `No ${filter.toLowerCase()} submissions.`}
           </p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+              <thead className="bg-gray-50 dark:bg-muted/50 border-b border-border">
                 <tr>
                   <th className="px-4 py-3 text-left">Student</th>
                   <th className="px-4 py-3 text-left">File</th>
@@ -236,7 +236,7 @@ export default function AdminSubmissionsPage() {
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filtered.map((sub) => (
-                  <tr key={sub.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <tr key={sub.id} className="hover:bg-muted">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         {sub.user.imageUrl ? (
@@ -248,12 +248,12 @@ export default function AdminSubmissionsPage() {
                             className="w-8 h-8 rounded-full object-cover"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-medium">
+                          <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-muted flex items-center justify-center text-xs font-medium">
                             {(sub.user.name || sub.user.email).charAt(0).toUpperCase()}
                           </div>
                         )}
                         <div>
-                          <div className="font-medium text-gray-900 dark:text-gray-100">
+                          <div className="font-medium text-foreground">
                             {sub.user.name || '—'}
                           </div>
                           <div className="text-xs text-gray-500">{sub.user.email}</div>
@@ -296,7 +296,7 @@ export default function AdminSubmissionsPage() {
                     </td>
                     <td className="px-4 py-3">
                       {sub.score !== null ? (
-                        <span className="font-semibold text-gray-900 dark:text-gray-100">
+                        <span className="font-semibold text-foreground">
                           {sub.score}/{sub.total ?? assignment.maxScore ?? '—'}
                         </span>
                       ) : (
@@ -322,18 +322,18 @@ export default function AdminSubmissionsPage() {
       {/* Grading Modal */}
       {grading && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+          <div className="bg-card rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
             <button
               onClick={closeModal}
-              className="absolute top-3 right-3 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="absolute top-3 right-3 p-1 rounded hover:bg-muted"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
+            <h2 className="text-lg font-bold text-foreground mb-1">
               Grade Submission
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               {grading.user.name || grading.user.email}
             </p>
 
@@ -352,27 +352,27 @@ export default function AdminSubmissionsPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                     Score
                   </label>
                   <input
                     type="number"
                     value={scoreInput}
                     onChange={(e) => setScoreInput(e.target.value)}
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                    className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
                     placeholder="85"
                     min="0"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                     Out of
                   </label>
                   <input
                     type="number"
                     value={totalInput}
                     onChange={(e) => setTotalInput(e.target.value)}
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                    className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
                     placeholder="100"
                     min="0"
                   />
@@ -380,14 +380,14 @@ export default function AdminSubmissionsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Feedback
                 </label>
                 <textarea
                   value={feedbackInput}
                   onChange={(e) => setFeedbackInput(e.target.value)}
                   rows={4}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
                   placeholder="Comments for the student..."
                 />
               </div>
@@ -397,7 +397,7 @@ export default function AdminSubmissionsPage() {
               <button
                 onClick={closeModal}
                 disabled={saving}
-                className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                className="px-4 py-2 rounded-lg bg-muted text-gray-700 dark:text-foreground hover:bg-gray-200 dark:hover:bg-muted"
               >
                 Cancel
               </button>

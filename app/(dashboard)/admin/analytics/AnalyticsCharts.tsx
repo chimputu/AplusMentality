@@ -102,7 +102,7 @@ export default function AnalyticsCharts() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Analytics</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-6">Analytics</h1>
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -113,8 +113,8 @@ export default function AnalyticsCharts() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Analytics Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <h1 className="text-2xl font-bold text-foreground">Analytics Dashboard</h1>
+        <p className="text-gray-600 dark:text-muted-foreground text-sm">
           Platform statistics and user activity overview
         </p>
       </div>
@@ -124,12 +124,12 @@ export default function AnalyticsCharts() {
         {statCards.map((stat) => (
           <div
             key={stat.label}
-            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm"
+            className="bg-card border border-border rounded-xl p-6 shadow-sm"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+                <p className="text-sm text-muted-foreground">{stat.label}</p>
+                <p className="text-3xl font-bold text-foreground mt-1">
                   {stat.value}
                 </p>
               </div>
@@ -142,8 +142,8 @@ export default function AnalyticsCharts() {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Line Chart: User Growth */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-blue-600" />
             User Growth (7 Days)
           </h2>
@@ -180,15 +180,15 @@ export default function AnalyticsCharts() {
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[280px] text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-center h-[280px] text-muted-foreground">
               No user growth data available
             </div>
           )}
         </div>
 
         {/* Bar Chart: Top Courses */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-green-600" />
             Top Courses by Enrollment
           </h2>
@@ -225,15 +225,15 @@ export default function AnalyticsCharts() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[280px] text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-center h-[280px] text-muted-foreground">
               No course enrollment data available
             </div>
           )}
         </div>
 
         {/* Pie Chart: Role Distribution */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <PieChartIcon className="w-5 h-5 text-purple-600" />
             Role Distribution
           </h2>
@@ -269,15 +269,15 @@ export default function AnalyticsCharts() {
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[280px] text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-center h-[280px] text-muted-foreground">
               No role distribution data available
             </div>
           )}
         </div>
 
         {/* Area Chart: Daily Enrollment Activity */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <Activity className="w-5 h-5 text-orange-600" />
             Daily Enrollment Activity (7 Days)
           </h2>
@@ -313,7 +313,7 @@ export default function AnalyticsCharts() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[280px] text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-center h-[280px] text-muted-foreground">
               No enrollment activity data available
             </div>
           )}
@@ -322,8 +322,8 @@ export default function AnalyticsCharts() {
 
       {/* Users by Role */}
       {stats?.usersByRole && stats.usersByRole.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm mb-8">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Users by Role
           </h2>
           <div className="space-y-3">
@@ -334,14 +334,14 @@ export default function AnalyticsCharts() {
               return (
                 <div key={role}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-foreground">
                       {role}
                     </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                    <span className="text-sm text-muted-foreground">
                       {_count.role} ({percentage}%)
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                  <div className="w-full bg-gray-200 dark:bg-muted rounded-full h-2.5">
                     <div
                       className="bg-blue-600 h-2.5 rounded-full"
                       style={{ width: `${percentage}%` }}
@@ -356,27 +356,27 @@ export default function AnalyticsCharts() {
 
       {/* Recent Users */}
       {recentUsers.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Recent Users
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-900/50">
+              <thead className="bg-gray-50 dark:bg-input/50">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                     Name
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                     Email
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                     Role
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                     Institution
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                     Joined
                   </th>
                 </tr>
@@ -384,19 +384,19 @@ export default function AnalyticsCharts() {
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {recentUsers.map((user) => (
                   <tr key={user.id}>
-                    <td className="px-4 py-3 text-gray-900 dark:text-gray-100">
+                    <td className="px-4 py-3 text-foreground">
                       {user.name || '—'}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{user.email}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{user.email}</td>
                     <td className="px-4 py-3">
                       <span className="px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full">
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
+                    <td className="px-4 py-3 text-muted-foreground">
                       {user.institution?.shortName || '—'}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
+                    <td className="px-4 py-3 text-muted-foreground">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                   </tr>

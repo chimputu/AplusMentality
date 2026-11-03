@@ -650,12 +650,12 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
       {/* Edit Modal */}
       {editingUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { setEditingUser(null); setAcademicProfile(null); }}>
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-card rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Edit User</h2>
+              <h2 className="text-xl font-bold text-foreground">Edit User</h2>
               <button
                 onClick={() => { setEditingUser(null); setAcademicProfile(null); }}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+                className="p-2 hover:bg-muted rounded-lg transition"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5 text-gray-500" />
@@ -664,22 +664,22 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   User
                 </label>
-                <p className="text-sm text-gray-900 dark:text-gray-100">
+                <p className="text-sm text-foreground">
                   {editingUser.name || editingUser.email}
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Role
                 </label>
                 <select
                   value={editForm.role}
                   onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="STUDENT">Student</option>
                   <option value="ADMIN">Admin</option>
@@ -689,8 +689,8 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                 </select>
               </div>
 
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Academic Profile</h3>
+              <div className="border-t border-border pt-4">
+                <h3 className="text-sm font-medium text-gray-700 dark:text-foreground mb-3">Academic Profile</h3>
                 <AcademicSelector
                   initialInstitutionId={editingUser.institutionId}
                   initialFacultyId={editingUser.facultyId}
@@ -706,7 +706,7 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => { setEditingUser(null); setAcademicProfile(null); }}
-                className="flex-1 px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                className="flex-1 px-4 py-2 text-sm font-medium bg-muted text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-200 dark:hover:bg-muted transition"
               >
                 Cancel
               </button>

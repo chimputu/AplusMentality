@@ -120,8 +120,8 @@ export default function AdminChangeRequestsPage() {
     return (
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Change Requests</h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
+          <h1 className="text-2xl font-bold text-foreground">Change Requests</h1>
+          <p className="text-gray-600 dark:text-muted-foreground text-sm">
             Review and manage student institution change requests
           </p>
         </div>
@@ -135,8 +135,8 @@ export default function AdminChangeRequestsPage() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Change Requests</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <h1 className="text-2xl font-bold text-foreground">Change Requests</h1>
+        <p className="text-gray-600 dark:text-muted-foreground text-sm">
           Review and manage student institution change requests
         </p>
       </div>
@@ -151,7 +151,7 @@ export default function AdminChangeRequestsPage() {
               className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
                 filter === status
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-muted dark:text-foreground dark:hover:bg-muted'
               }`}
             >
               {status} ({counts[status as keyof typeof counts]})
@@ -165,19 +165,19 @@ export default function AdminChangeRequestsPage() {
             placeholder="Search by name, email, or institution..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 text-sm border border-border rounded-lg bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
       </div>
 
       {/* Empty state */}
       {filteredRequests.length === 0 && (
-        <div className="text-center py-16 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+        <div className="text-center py-16 bg-muted rounded-xl">
           <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-foreground mb-2">
             No Change Requests
           </h3>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-muted-foreground">
             {filter === 'ALL'
               ? 'No institution change requests have been submitted yet.'
               : `No ${filter.toLowerCase()} change requests found.`}
@@ -190,7 +190,7 @@ export default function AdminChangeRequestsPage() {
         {filteredRequests.map((req) => (
           <div
             key={req.id}
-            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm hover:shadow-md transition"
+            className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition"
           >
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
               {/* Student info */}
@@ -202,10 +202,10 @@ export default function AdminChangeRequestsPage() {
                     </span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                    <h3 className="font-semibold text-foreground">
                       {req.user.name || 'Unnamed Student'}
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{req.user.email}</p>
+                    <p className="text-sm text-muted-foreground">{req.user.email}</p>
                   </div>
                   <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${statusColors[req.status]}`}>
                     {statusIcons[req.status]}
@@ -215,30 +215,30 @@ export default function AdminChangeRequestsPage() {
 
                 {/* Change details */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                  <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Current Institution</p>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                  <div className="p-3 bg-gray-50 dark:bg-input/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground mb-1">Current Institution</p>
+                    <p className="font-medium text-foreground">
                       {req.currentInstitution?.name || 'None'}
                     </p>
                     {req.currentProgramme && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{req.currentProgramme.name}</p>
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">{req.currentProgramme.name}</p>
                     )}
                     {req.user.year && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">
                         Year {req.user.year} {req.user.period && `• ${req.user.period}`}
                       </p>
                     )}
                   </div>
                   <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <p className="text-xs text-blue-600 dark:text-blue-400 mb-1">Requested Change</p>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                    <p className="font-medium text-foreground">
                       {req.newInstitution?.name || 'None'}
                     </p>
                     {req.newProgramme && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{req.newProgramme.name}</p>
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">{req.newProgramme.name}</p>
                     )}
                     {req.newYear && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">
                         Year {req.newYear} {req.newPeriod && `• ${req.newPeriod}`}
                       </p>
                     )}
@@ -247,14 +247,14 @@ export default function AdminChangeRequestsPage() {
 
                 {/* Reason */}
                 {req.reason && (
-                  <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Reason</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">{req.reason}</p>
+                  <div className="mt-3 p-3 bg-gray-50 dark:bg-input/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground mb-1">Reason</p>
+                    <p className="text-sm text-gray-700 dark:text-foreground">{req.reason}</p>
                   </div>
                 )}
 
                 {/* Meta info */}
-                <div className="mt-3 flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400">
+                <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
                   <span>Submitted: {new Date(req.createdAt).toLocaleDateString()}</span>
                   {req.reviewedAt && (
                     <span>Reviewed: {new Date(req.reviewedAt).toLocaleDateString()}</span>

@@ -25,8 +25,8 @@ export default async function AdminTutorsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Tutors</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage tutor profiles and specialties</p>
+          <h1 className="text-2xl font-bold text-foreground">Tutors</h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage tutor profiles and specialties</p>
         </div>
         <div className="flex items-center gap-3">
           <a
@@ -46,15 +46,15 @@ export default async function AdminTutorsPage() {
       </div>
 
       {tutors.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-12 text-center">
-          <p className="text-gray-500 dark:text-gray-400">No tutors yet. Add your first tutor to get started.</p>
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
+          <p className="text-muted-foreground">No tutors yet. Add your first tutor to get started.</p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {tutors.map((tutor: any) => (
             <div
               key={tutor.id}
-              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm"
+              className="bg-card rounded-xl border border-border p-5 shadow-sm"
             >
               <div className="flex items-start gap-3">
                 <TutorAvatar
@@ -63,19 +63,19 @@ export default async function AdminTutorsPage() {
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{tutor.fullName}</h3>
+                    <h3 className="font-semibold text-foreground truncate">{tutor.fullName}</h3>
                     {tutor.isVerified && (
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{tutor.email}</p>
+                  <p className="text-xs text-muted-foreground">{tutor.email}</p>
                   {tutor.institution && (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    <p className="text-xs text-gray-400 dark:text-muted-foreground mt-1">
                       {tutor.institution.name} ({tutor.institution.code})
                     </p>
                   )}
                   {tutor.programme && (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    <p className="text-xs text-gray-400 dark:text-muted-foreground mt-1">
                       {tutor.programme.name}
                     </p>
                   )}
@@ -86,7 +86,7 @@ export default async function AdminTutorsPage() {
                 {tutor.specialties.slice(0, 3).map((s: any) => (
                   <span
                     key={s.id}
-                    className="inline-block px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded"
+                    className="inline-block px-2 py-0.5 text-xs bg-muted text-gray-600 dark:text-foreground rounded"
                   >
                     {s.course.code}
                   </span>
@@ -109,7 +109,7 @@ export default async function AdminTutorsPage() {
               <div className="mt-4 flex gap-2">
                 <Link
                   href={`/admin/tutors/${tutor.id}`}
-                  className="flex-1 text-center text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                  className="flex-1 text-center text-xs bg-muted text-gray-700 dark:text-foreground px-3 py-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-muted transition"
                 >
                   View
                 </Link>

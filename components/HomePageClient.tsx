@@ -27,7 +27,7 @@ const BannerCarouselLazy = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
+      <div className="w-full h-48 bg-gray-200 dark:bg-muted rounded-xl animate-pulse" />
     ),
   },
 );
@@ -234,7 +234,7 @@ function GradingCycle() {
               <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white text-center mb-1 sm:mb-2">
                 Degree Classification
               </h3>
-              <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 text-center mb-3 sm:mb-6 max-w-2xl mx-auto">
+              <p className="text-[10px] sm:text-xs text-muted-foreground text-center mb-3 sm:mb-6 max-w-2xl mx-auto">
                 Based on cumulative points from 20 courses at 3rd &amp; 4th Year Levels (4-Year programmes)
                 or 4th &amp; 5th Year Levels (5-Year programmes)
               </p>
@@ -329,12 +329,12 @@ function GradingCycle() {
               <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white text-center mb-1 sm:mb-2">
                 Grade Bands
               </h3>
-              <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 text-center mb-2 sm:mb-6">
+              <p className="text-[10px] sm:text-xs text-muted-foreground text-center mb-2 sm:mb-6">
                 Each grade band shows the letter grade, percentage range, and points awarded.
               </p>
 
               {/* Color legend */}
-              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 mb-2 sm:mb-6 text-sm font-medium text-gray-600 dark:text-gray-400">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 mb-2 sm:mb-6 text-sm font-medium text-gray-600 dark:text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <span className="inline-block w-3 h-3 rounded-full bg-emerald-600" />
                   <span>Distinction</span>
@@ -369,11 +369,11 @@ function GradingCycle() {
                   </div>
                   <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Percentage</span>
+                      <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-gray-900 dark:text-white">86 and above</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Points</span>
+                      <span className="text-muted-foreground">Points</span>
                       <span className="font-bold text-emerald-600 dark:text-emerald-400">2.5</span>
                     </div>
                   </div>
@@ -393,11 +393,11 @@ function GradingCycle() {
                   </div>
                   <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Percentage</span>
+                      <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-gray-900 dark:text-white">76-85</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Points</span>
+                      <span className="text-muted-foreground">Points</span>
                       <span className="font-bold text-emerald-600 dark:text-emerald-400">2.0</span>
                     </div>
                   </div>
@@ -417,11 +417,11 @@ function GradingCycle() {
                   </div>
                   <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Percentage</span>
+                      <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-gray-900 dark:text-white">66-75</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Points</span>
+                      <span className="text-muted-foreground">Points</span>
                       <span className="font-bold text-blue-600 dark:text-blue-400">1.5</span>
                     </div>
                   </div>
@@ -441,11 +441,11 @@ function GradingCycle() {
                   </div>
                   <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Percentage</span>
+                      <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-gray-900 dark:text-white">60-65</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Points</span>
+                      <span className="text-muted-foreground">Points</span>
                       <span className="font-bold text-blue-600 dark:text-blue-400">1.0</span>
                     </div>
                   </div>
@@ -465,11 +465,11 @@ function GradingCycle() {
                   </div>
                   <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Percentage</span>
+                      <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-gray-900 dark:text-white">55-59</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Points</span>
+                      <span className="text-muted-foreground">Points</span>
                       <span className="font-bold text-amber-600 dark:text-amber-400">0.5</span>
                     </div>
                   </div>
@@ -489,11 +489,11 @@ function GradingCycle() {
                   </div>
                   <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Percentage</span>
+                      <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-gray-900 dark:text-white">50-54</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Points</span>
+                      <span className="text-muted-foreground">Points</span>
                       <span className="font-bold text-amber-600 dark:text-amber-400">0.25</span>
                     </div>
                   </div>
@@ -513,11 +513,11 @@ function GradingCycle() {
                   </div>
                   <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Percentage</span>
+                      <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-gray-900 dark:text-white">45-49</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Points</span>
+                      <span className="text-muted-foreground">Points</span>
                       <span className="font-bold text-rose-600 dark:text-rose-400">0</span>
                     </div>
                   </div>
@@ -537,11 +537,11 @@ function GradingCycle() {
                   </div>
                   <div className="space-y-0.5 sm:space-y-1 text-[11px] sm:text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Percentage</span>
+                      <span className="text-muted-foreground">Percentage</span>
                       <span className="font-semibold text-gray-900 dark:text-white">44 and below</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Points</span>
+                      <span className="text-muted-foreground">Points</span>
                       <span className="font-bold text-rose-600 dark:text-rose-400">0</span>
                     </div>
                   </div>
@@ -1215,7 +1215,7 @@ export default function HomePageClient() {
             <h2 id="grading-section-heading" className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               Zambian University Grading System
             </h2>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="mt-2 text-sm text-muted-foreground max-w-2xl mx-auto">
               Understanding how Zambian universities grade academic performance
             </p>
           </div>

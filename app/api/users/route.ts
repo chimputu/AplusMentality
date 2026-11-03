@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // SUPER_ADMIN sees all users globally; ADMIN sees only their own institution's users
 export async function GET(req: Request) {
   try {
-    const { role: userRole } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+    const { role: userRole, user: adminUser } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
 
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search') || '';
@@ -17,14 +17,8 @@ export async function GET(req: Request) {
 
     // Strict tenant isolation: ADMIN can only see users in their own institution
     // SUPER_ADMIN bypasses this and sees all users globally
-    if (userRole === 'ADMIN') {
-      const adminUser = await prisma.user.findFirst({
-        where: { role: { in: ['ADMIN'] } },
-        select: { institutionId: true },
-      });
-      if (adminUser?.institutionId) {
-        where.institutionId = adminUser.institutionId;
-      }
+    if (userRole === 'ADMIN' && adminUser.institutionId) {
+      where.institutionId = adminUser.institutionId;
     }
     // SUPER_ADMIN: no institution filter — full global visibility
 

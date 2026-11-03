@@ -42,29 +42,29 @@ export default async function GradingPage({
       <div className="flex items-center gap-3 mb-6">
         <Link
           href="/admin/assessments"
-          className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:underline"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:underline"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-foreground">
           Grade: {a.title}
         </h1>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Submissions</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{attempts.length}</p>
+        <div className="bg-card rounded-xl border border-border p-4">
+          <p className="text-xs text-muted-foreground mb-1">Total Submissions</p>
+          <p className="text-2xl font-bold text-foreground">{attempts.length}</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Essay Questions</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{essayQuestions.length}</p>
+        <div className="bg-card rounded-xl border border-border p-4">
+          <p className="text-xs text-muted-foreground mb-1">Essay Questions</p>
+          <p className="text-2xl font-bold text-foreground">{essayQuestions.length}</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg Score</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <div className="bg-card rounded-xl border border-border p-4">
+          <p className="text-xs text-muted-foreground mb-1">Avg Score</p>
+          <p className="text-2xl font-bold text-foreground">
             {attempts.length > 0
               ? `${(attempts.reduce((s, a) => s + (a.percentage || 0), 0) / attempts.length).toFixed(1)}%`
               : '—'}
@@ -74,55 +74,55 @@ export default async function GradingPage({
 
       {/* Attempts list */}
       {attempts.length === 0 ? (
-        <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+        <div className="text-center py-16 bg-card rounded-xl border border-border">
           <div className="text-4xl mb-4">📝</div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+          <h3 className="text-lg font-medium text-foreground mb-2">
             No submissions yet
           </h3>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-muted-foreground">
             Submissions will appear here when students complete the assessment.
           </p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-card rounded-xl border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <tr className="border-b border-border">
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase">
                     Student
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase">
                     Score
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase">
                     Percentage
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase">
                     Submitted
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase">
                     Status
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {attempts.map((attempt: any) => (
-                  <tr key={attempt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <tr key={attempt.id} className="hover:bg-muted">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-gray-400" />
                         <div>
-                          <p className="text-sm text-gray-900 dark:text-gray-100">
+                          <p className="text-sm text-foreground">
                             {attempt.user.firstName || 'Student'}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-muted-foreground">
                             {attempt.user.email}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                    <td className="px-4 py-3 text-sm text-gray-700 dark:text-foreground">
                       {attempt.score ?? '—'}/{attempt.totalPoints ?? '—'}
                     </td>
                     <td className="px-4 py-3">
@@ -139,7 +139,7 @@ export default async function GradingPage({
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Clock className="w-3 h-3" />
                         {attempt.submittedAt
                           ? formatDate(attempt.submittedAt)
@@ -173,19 +173,19 @@ export default async function GradingPage({
       {/* Essay grading section */}
       {essayQuestions.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Essay Questions
           </h2>
           <div className="space-y-4">
             {essayQuestions.map((q: any, i: number) => (
               <div
                 key={q.id}
-                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+                className="bg-card rounded-xl border border-border p-5"
               >
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+                <p className="text-sm font-medium text-foreground mb-2">
                   {i + 1}. {q.prompt}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   Max points: {q.points} • Requires manual grading
                 </p>
               </div>

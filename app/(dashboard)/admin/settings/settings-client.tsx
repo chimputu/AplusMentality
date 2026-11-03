@@ -154,10 +154,10 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
     <div className="max-w-3xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-foreground">
           Admin Settings
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <p className="text-gray-600 dark:text-muted-foreground text-sm">
           Manage your account and application settings
         </p>
       </div>
@@ -170,14 +170,14 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
       )}
 
       {/* Profile Section */}
-      <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+      <section className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-foreground mb-4 flex items-center gap-2">
           <User className="w-5 h-5 text-blue-500" />
           Profile
         </h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
               Display Name
             </label>
             <input
@@ -186,36 +186,36 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
               onChange={(e) =>
                 setSettings({ ...settings, name: e.target.value })
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-base"
+              className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-white dark:bg-muted text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-base"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
               Email
             </label>
             <input
               type="email"
               value={settings.email}
               disabled
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed text-base"
+              className="w-full border border-gray-300 dark:border-border rounded-lg px-4 py-2 bg-gray-50 dark:bg-muted text-muted-foreground cursor-not-allowed text-base"
             />
           </div>
         </div>
       </section>
 
       {/* Notifications */}
-      <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+      <section className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-foreground mb-4 flex items-center gap-2">
           <Bell className="w-5 h-5 text-blue-500" />
           Notifications
         </h2>
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2">
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <p className="text-sm font-medium text-gray-700 dark:text-foreground">
                 Email Notifications
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 Receive email updates
               </p>
             </div>
@@ -229,7 +229,7 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
               className={`relative w-11 h-6 rounded-full transition ${
                 settings.emailNotifications
                   ? 'bg-blue-600'
-                  : 'bg-gray-300 dark:bg-gray-600'
+                  : 'bg-gray-300 dark:bg-muted'
               }`}
             >
               <span
@@ -239,12 +239,12 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
               />
             </button>
           </div>
-          <div className="flex items-center justify-between py-2 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex items-center justify-between py-2 border-t border-gray-100 dark:border-border">
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <p className="text-sm font-medium text-gray-700 dark:text-foreground">
                 Push Notifications
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 Browser notifications
               </p>
             </div>
@@ -258,7 +258,7 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
               className={`relative w-11 h-6 rounded-full transition ${
                 settings.pushNotifications
                   ? 'bg-blue-600'
-                  : 'bg-gray-300 dark:bg-gray-600'
+                  : 'bg-gray-300 dark:bg-muted'
               }`}
             >
               <span
@@ -272,8 +272,8 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
       </section>
 
       {/* Appearance */}
-      <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+      <section className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-foreground mb-4 flex items-center gap-2">
           <Palette className="w-5 h-5 text-blue-500" />
           Appearance
         </h2>
@@ -283,11 +283,11 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
             className={`p-4 rounded-xl border-2 transition ${
               theme === 'light'
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                : 'border-border hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
             <Sun className="w-8 h-8 mx-auto text-yellow-500" />
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
+            <p className="text-sm font-medium text-gray-700 dark:text-foreground mt-2">
               Light
             </p>
           </button>
@@ -296,11 +296,11 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
             className={`p-4 rounded-xl border-2 transition ${
               theme === 'dark'
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                : 'border-border hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
-            <Moon className="w-8 h-8 mx-auto text-gray-700 dark:text-gray-300" />
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
+            <Moon className="w-8 h-8 mx-auto text-gray-700 dark:text-foreground" />
+            <p className="text-sm font-medium text-gray-700 dark:text-foreground mt-2">
               Dark
             </p>
           </button>
@@ -309,16 +309,16 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
             className={`p-4 rounded-xl border-2 transition ${
               theme === 'system'
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                : 'border-border hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
             <Monitor className="w-8 h-8 mx-auto text-gray-500" />
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
+            <p className="text-sm font-medium text-gray-700 dark:text-foreground mt-2">
               System
             </p>
           </button>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center">
+        <p className="text-xs text-muted-foreground mt-3 text-center">
           Current:{' '}
           {theme === 'system'
             ? `${isDark ? 'Dark' : 'Light'} (System)`
@@ -327,18 +327,18 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
       </section>
 
       {/* Security */}
-      <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+      <section className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-foreground mb-4 flex items-center gap-2">
           <Shield className="w-5 h-5 text-blue-500" />
           Security
         </h2>
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2">
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <p className="text-sm font-medium text-gray-700 dark:text-foreground">
                 Two-Factor Authentication
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 Add an extra layer of security
               </p>
             </div>
@@ -352,7 +352,7 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
               className={`relative w-11 h-6 rounded-full transition ${
                 settings.twoFactorAuth
                   ? 'bg-blue-600'
-                  : 'bg-gray-300 dark:bg-gray-600'
+                  : 'bg-gray-300 dark:bg-muted'
               }`}
             >
               <span
@@ -362,12 +362,12 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
               />
             </button>
           </div>
-          <div className="flex items-center justify-between py-2 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex items-center justify-between py-2 border-t border-gray-100 dark:border-border">
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <p className="text-sm font-medium text-gray-700 dark:text-foreground">
                 Session Timeout
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 Auto logout after inactivity
               </p>
             </div>
@@ -376,7 +376,7 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
               onChange={(e) =>
                 setSettings({ ...settings, sessionTimeout: e.target.value })
               }
-              className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-base"
+              className="border border-gray-300 dark:border-border rounded-lg px-3 py-1.5 bg-white dark:bg-muted text-foreground text-base"
             >
               <option value="15">15 minutes</option>
               <option value="30">30 minutes</option>
@@ -388,12 +388,12 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
       </section>
 
       {/* Join Link */}
-      <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+      <section className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-foreground mb-4 flex items-center gap-2">
           <Link2 className="w-5 h-5 text-blue-500" />
           Join Link
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">
           Share this link with students so they can join your institution directly.
         </p>
 
@@ -404,7 +404,7 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
                 type="text"
                 value={joinLink}
                 readOnly
-                className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-sm font-mono"
+                className="flex-1 border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-gray-50 dark:bg-muted text-gray-600 dark:text-muted-foreground text-sm font-mono"
               />
               <button
                 onClick={handleCopyLink}
@@ -415,16 +415,16 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
               </button>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Edit Join Slug
               </label>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0">/join/</span>
+                <span className="text-sm text-muted-foreground shrink-0">/join/</span>
                 <input
                   type="text"
                   value={editSlug}
                   onChange={(e) => setEditSlug(e.target.value.toLowerCase())}
-                  className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm font-mono text-base"
+                  className="flex-1 border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm font-mono text-base"
                   placeholder="unza-2024"
                 />
                 <button
@@ -454,8 +454,8 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
       </section>
 
       {/* Account */}
-      <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+      <section className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-foreground mb-4 flex items-center gap-2">
           <Key className="w-5 h-5 text-blue-500" />
           Account
         </h2>

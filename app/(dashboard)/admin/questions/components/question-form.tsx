@@ -158,13 +158,13 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
 
       {/* Question Type */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
           Question Type
         </label>
         <select
           value={type}
           onChange={(e) => setType(e.target.value as QuestionType)}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           {QUESTION_TYPES.map((t) => (
             <option key={t} value={t}>
@@ -176,7 +176,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
 
       {/* Prompt */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
           Question Prompt
         </label>
         <textarea
@@ -184,14 +184,14 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
           onChange={(e) => setPrompt(e.target.value)}
           rows={3}
           required
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
       {/* Points & Difficulty */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
             Points
           </label>
           <input
@@ -199,11 +199,11 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
             value={points}
             onChange={(e) => setPoints(parseInt(e.target.value) || 1)}
             min={1}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
             Difficulty (1-5)
           </label>
           <input
@@ -212,7 +212,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
             onChange={(e) => setDifficulty(parseInt(e.target.value) || 1)}
             min={1}
             max={5}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
       </div>
@@ -220,7 +220,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
       {/* Type-specific fields */}
       {(type === 'MULTIPLE_CHOICE' || type === 'TRUE_FALSE') && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-2">
             Options (select the correct answer)
           </label>
           <div className="space-y-2">
@@ -239,7 +239,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
                   onChange={(e) => updateOption(i, 'text', e.target.value)}
                   placeholder={`Option ${i + 1}`}
                   required
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button
                   type="button"
@@ -264,7 +264,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
 
       {(type === 'FILL_IN_BLANK' || type === 'SHORT_ANSWER') && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-2">
             Accepted Answers
           </label>
           <div className="space-y-2">
@@ -276,7 +276,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
                   onChange={(e) => updateAcceptedAnswer(i, e.target.value)}
                   placeholder={`Accepted answer ${i + 1}`}
                   required
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button
                   type="button"
@@ -302,7 +302,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
       {type === 'NUMERIC' && (
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
               Correct Number
             </label>
             <input
@@ -311,11 +311,11 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
               value={correctNumber}
               onChange={(e) => setCorrectNumber(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
               Tolerance (optional)
             </label>
             <input
@@ -324,7 +324,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
               value={tolerance}
               onChange={(e) => setTolerance(e.target.value)}
               placeholder="0"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -332,7 +332,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
 
       {type === 'MATCHING' && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-2">
             Matching Pairs
           </label>
           <div className="space-y-2">
@@ -344,7 +344,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
                   onChange={(e) => updateMatchingPair(i, 'left', e.target.value)}
                   placeholder="Left"
                   required
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <span className="text-gray-400">→</span>
                 <input
@@ -353,7 +353,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
                   onChange={(e) => updateMatchingPair(i, 'right', e.target.value)}
                   placeholder="Right"
                   required
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button
                   type="button"
@@ -384,23 +384,23 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
 
       {/* Explanation */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
           Explanation (optional, shown after submission)
         </label>
         <textarea
           value={explanation}
           onChange={(e) => setExplanation(e.target.value)}
           rows={2}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-card text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
       {/* Submit */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex justify-end gap-3 pt-4 border-t border-border">
         <button
           type="button"
           onClick={() => window.history.back()}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+          className="px-4 py-2 border border-gray-300 dark:border-border rounded-lg text-sm text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted transition"
         >
           Cancel
         </button>

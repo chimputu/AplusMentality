@@ -261,7 +261,7 @@ export default function TagUploadPage() {
     <div className="max-w-3xl mx-auto">
       <Link
         href="/admin/uploads"
-        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 mb-4"
+        className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-200 mb-4"
       >
         <ArrowLeft className="w-4 h-4" /> Back to Uploads
       </Link>
@@ -269,12 +269,12 @@ export default function TagUploadPage() {
       <h1 className="text-2xl font-bold mb-6">Tag File</h1>
 
       {/* File Info Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+      <div className="bg-card rounded-xl border border-border p-6 mb-6">
         <div className="flex items-center gap-4">
           <div className="flex-shrink-0">{getFileIcon()}</div>
           <div className="flex-1 min-w-0">
             <p className="font-medium truncate">{upload.originalName}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               {formatFileSize(upload.fileSize)} • {upload.fileType.toUpperCase()}
             </p>
           </div>
@@ -293,7 +293,7 @@ export default function TagUploadPage() {
       )}
 
       {/* Tag Form */}
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 space-y-6">
         {/* Content Type */}
         <div>
           <label className="block text-sm font-medium mb-2">Content Type *</label>
@@ -301,7 +301,7 @@ export default function TagUploadPage() {
             value={contentType}
             onChange={(e) => setContentType(e.target.value)}
             required
-            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-muted focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           >
             {contentTypes.map((ct) => (
               <option key={ct.value} value={ct.value}>
@@ -323,7 +323,7 @@ export default function TagUploadPage() {
               setPeriod('');
             }}
             required
-            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-muted focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           >
             <option value="">Select university</option>
             {universities.map((uni) => (
@@ -342,7 +342,7 @@ export default function TagUploadPage() {
             onChange={(e) => setProgrammeId(e.target.value)}
             required
             disabled={!universityId}
-            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-muted focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
           >
             <option value="">Select programme</option>
             {programmes.map((prog) => (
@@ -352,7 +352,7 @@ export default function TagUploadPage() {
             ))}
           </select>
           {universityId && programmes.length > 0 && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Showing programmes for{' '}
               {universities.find((u) => u.id === universityId)?.name}
             </p>
@@ -366,7 +366,7 @@ export default function TagUploadPage() {
             value={year}
             onChange={(e) => setYear(parseInt(e.target.value))}
             required
-            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-muted focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           >
             {[1, 2, 3, 4, 5, 6, 7].map((y) => (
               <option key={y} value={y}>
@@ -384,7 +384,7 @@ export default function TagUploadPage() {
             onChange={(e) => setPeriod(e.target.value)}
             required
             disabled={!universityId}
-            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-muted focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
           >
             <option value="">Select period</option>
             {getPeriodOptions().map((opt) => (
@@ -429,7 +429,7 @@ export default function TagUploadPage() {
               onChange={(e) => setCourseId(e.target.value)}
               required
               disabled={!programmeId}
-              className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+              className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-muted focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
             >
               <option value="">Select course</option>
               {courses.map((c) => (
@@ -441,7 +441,7 @@ export default function TagUploadPage() {
           ) : (
             <div className="space-y-3">
               <div>
-                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                <label className="block text-xs text-muted-foreground mb-1">
                   Course Code
                 </label>
                 <input
@@ -450,11 +450,11 @@ export default function TagUploadPage() {
                   onChange={(e) => setNewCourseCode(e.target.value)}
                   required
                   placeholder="e.g. MSM 111"
-                  className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-muted focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                <label className="block text-xs text-muted-foreground mb-1">
                   Course Title
                 </label>
                 <input
@@ -463,7 +463,7 @@ export default function TagUploadPage() {
                   onChange={(e) => setNewCourseTitle(e.target.value)}
                   required
                   placeholder="e.g. Set Theory"
-                  className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-muted focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 />
               </div>
             </div>
@@ -478,7 +478,7 @@ export default function TagUploadPage() {
             value={order}
             onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
             min={0}
-            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-muted focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           />
         </div>
 
@@ -494,7 +494,7 @@ export default function TagUploadPage() {
           </button>
           <Link
             href="/admin/uploads"
-            className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 text-center"
+            className="bg-muted text-gray-700 dark:text-foreground px-6 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-muted text-center"
           >
             Cancel
           </Link>

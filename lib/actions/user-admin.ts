@@ -28,6 +28,23 @@ async function requireAdmin() {
   return user;
 }
 
+/**
+ * Enforce tenant isolation: ensure the target user belongs to the same institution
+ * as the admin. SUPER_ADMIN bypasses this check entirely.
+ */
+async function requireSameInstitution(adminUser: Awaited<ReturnType<typeof requireAdmin>>, targetClerkId: string) {
+  if (adminUser.role === 'SUPER_ADMIN') return; // SUPER_ADMIN bypasses
+
+  const targetUser = await prisma.user.findUnique({
+    where: { clerkId: targetClerkId },
+    select: { institutionId: true },
+  });
+  if (!targetUser) throw new Error('User not found');
+  if (adminUser.institutionId && targetUser.institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage users in your own university.');
+  }
+}
+
 // ============================================
 // Schemas
 // ============================================
@@ -133,7 +150,16 @@ export async function listUsers(filters?: {
 }
 
 export async function getUser(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+  // The id parameter is a Prisma user id, not clerkId — need to look up clerkId first
+  const targetUser = await prisma.user.findUnique({
+    where: { id },
+    select: { clerkId: true, institutionId: true },
+  });
+  if (!targetUser) throw new Error('User not found');
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && targetUser.institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage users in your own university.');
+  }
 
   const user = await prisma.user.findUnique({
     where: { id },
@@ -169,7 +195,16 @@ export async function getUser(id: string) {
 }
 
 export async function updateUserRole(id: string, rawInput: unknown) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+
+  const targetUser = await prisma.user.findUnique({
+    where: { id },
+    select: { clerkId: true, institutionId: true },
+  });
+  if (!targetUser) throw new Error('User not found');
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && targetUser.institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage users in your own university.');
+  }
 
   const input = updateUserRoleSchema.parse(rawInput);
 
@@ -202,7 +237,16 @@ export async function updateUserRole(id: string, rawInput: unknown) {
 }
 
 export async function reassignUserAcademic(id: string, rawInput: unknown) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+
+  const targetUser = await prisma.user.findUnique({
+    where: { id },
+    select: { clerkId: true, institutionId: true },
+  });
+  if (!targetUser) throw new Error('User not found');
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && targetUser.institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage users in your own university.');
+  }
 
   const input = reassignUserAcademicSchema.parse(rawInput);
 
@@ -232,10 +276,15 @@ export async function reassignUserAcademic(id: string, rawInput: unknown) {
 }
 
 export async function deactivateUser(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) throw new Error('User not found');
+
+  // Data isolation: University admins can only deactivate users in their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && user.institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage users in your own university.');
+  }
 
   // Ban user in Clerk (revokes sessions and prevents sign-in)
   try {
@@ -265,10 +314,15 @@ export async function deactivateUser(id: string) {
 }
 
 export async function reactivateUser(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) throw new Error('User not found');
+
+  // Data isolation: University admins can only reactivate users in their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && user.institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage users in your own university.');
+  }
 
   // Unban user in Clerk (allows sign-in again)
   try {
@@ -284,10 +338,15 @@ export async function reactivateUser(id: string) {
 }
 
 export async function deleteUser(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) throw new Error('User not found');
+
+  // Data isolation: University admins can only delete users in their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && user.institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage users in your own university.');
+  }
 
   // Delete from Clerk
   try {
@@ -506,7 +565,8 @@ export async function completeOnboarding(rawInput: unknown) {
  * Useful when a role was changed outside the app (e.g., Prisma Studio).
  */
 export async function syncUserRoleToClerk(clerkId: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+  await requireSameInstitution(adminUser, clerkId);
 
   const user = await prisma.user.findUnique({
     where: { clerkId },

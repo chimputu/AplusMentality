@@ -52,57 +52,57 @@ export default async function WindowManagementPage() {
         <div className="flex items-center gap-3 mb-2">
           <Link
             href="/admin/tutor-applications"
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition"
+            className="text-gray-500 hover:text-gray-700 dark:text-muted-foreground dark:hover:text-gray-200 transition"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-foreground">
             Application Windows
           </h1>
         </div>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-gray-600 dark:text-muted-foreground mt-1">
           Control when tutor applications are open or closed.
         </p>
       </div>
 
       {/* Create New Window Form */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+      <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6 mb-8">
+        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
           <Plus className="w-5 h-5 text-blue-600" />
           Create New Window
         </h2>
         <form action={createWindowAction} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                 Opens At
               </label>
               <input
                 type="datetime-local"
                 name="opensAt"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                 Closes At
               </label>
               <input
                 type="datetime-local"
                 name="closesAt"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
               Public Message (optional)
             </label>
             <textarea
               name="publicMessage"
               rows={2}
               placeholder="e.g. Tutor applications are now open for the 2025 academic year."
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
             />
           </div>
           <div className="flex items-center gap-4">
@@ -113,7 +113,7 @@ export default async function WindowManagementPage() {
                 defaultChecked
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
+              <span className="text-sm text-gray-700 dark:text-foreground">
                 Open immediately
               </span>
             </label>
@@ -129,17 +129,17 @@ export default async function WindowManagementPage() {
       </div>
 
       {/* Windows List */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-        <div className="p-6 border-b border-gray-100 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+      <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border">
+        <div className="p-6 border-b border-gray-100 dark:border-border">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <CalendarDays className="w-5 h-5 text-blue-600" />
             Existing Windows
           </h2>
         </div>
 
         {serializedWindows.length === 0 ? (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-            <Clock className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+          <div className="text-center py-12 text-muted-foreground">
+            <Clock className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-muted-foreground" />
             <p>No application windows yet.</p>
             <p className="text-sm mt-1">Create one above to open tutor applications.</p>
           </div>
@@ -178,12 +178,12 @@ function WindowRow({ window: win }: { window: any }) {
               </span>
             )}
             {win.opensAt && (
-              <span className="text-xs text-gray-500 dark:text-gray-400">
+              <span className="text-xs text-muted-foreground">
                 Opens: {new Date(win.opensAt).toISOString().replace('T', ' ').substring(0, 16).replace('T', ' ')}
               </span>
             )}
             {win.closesAt && (
-              <span className="text-xs text-gray-500 dark:text-gray-400">
+              <span className="text-xs text-muted-foreground">
                 Closes: {new Date(win.closesAt).toISOString().replace('T', ' ').substring(0, 16).replace('T', ' ')}
               </span>
             )}
@@ -191,13 +191,13 @@ function WindowRow({ window: win }: { window: any }) {
 
           {/* Public message */}
           {win.publicMessage && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+            <p className="text-sm text-gray-600 dark:text-muted-foreground italic">
               &ldquo;{win.publicMessage}&rdquo;
             </p>
           )}
 
           {/* Metadata */}
-          <p className="text-xs text-gray-400 dark:text-gray-500">
+          <p className="text-xs text-gray-400 dark:text-muted-foreground">
             Created {new Date(win.createdAt).toISOString().replace('T', ' ').substring(0, 16).replace('T', ' ')}
             {win.notifiedAt && ` · Notified ${new Date(win.notifiedAt).toISOString().replace('T', ' ').substring(0, 16).replace('T', ' ')}`}
           </p>

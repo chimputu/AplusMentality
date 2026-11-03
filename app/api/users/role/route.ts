@@ -10,11 +10,30 @@ export async function GET(req: NextRequest) {
     const targetUserId = searchParams.get('userId') || userId;
 
     // Admins can check anyone, users can only check themselves
-    if (role !== 'ADMIN' && targetUserId !== userId) {
+    if (role !== 'ADMIN' && role !== 'SUPER_ADMIN' && targetUserId !== userId) {
       return NextResponse.json(
         { error: 'Unauthorized: You can only check your own role' },
         { status: 403 }
       );
+    }
+
+    // Data isolation: University admins can only check users in their own institution
+    if (role === 'ADMIN') {
+      const targetUser = await prisma.user.findUnique({
+        where: { clerkId: targetUserId },
+        select: { institutionId: true },
+      });
+      const adminUser = await prisma.user.findUnique({
+        where: { clerkId: userId },
+        select: { institutionId: true },
+      });
+      if (targetUser && adminUser && targetUser.institutionId && adminUser.institutionId
+        && targetUser.institutionId !== adminUser.institutionId) {
+        return NextResponse.json(
+          { error: 'Unauthorized: You can only manage users in your own university.' },
+          { status: 403 }
+        );
+      }
     }
 
     const user = await prisma.user.findUnique({

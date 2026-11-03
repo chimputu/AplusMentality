@@ -8,8 +8,8 @@ const AnalyticsCharts = dynamic(() => import('./AnalyticsCharts'), {
   loading: () => (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Analytics Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <h1 className="text-2xl font-bold text-foreground">Analytics Dashboard</h1>
+        <p className="text-gray-600 dark:text-muted-foreground text-sm">
           Platform statistics and user activity overview
         </p>
       </div>

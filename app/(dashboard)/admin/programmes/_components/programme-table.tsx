@@ -124,13 +124,13 @@ export default function ProgrammeTable({
                 placeholder="Search programmes…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:outline-none focus:border-blue-500"
               />
             </div>
             <select
               value={filterInstitution}
               onChange={(e) => setFilterInstitution(e.target.value)}
-              className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:border-blue-500"
+              className="px-3 py-2.5 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:outline-none focus:border-blue-500"
             >
               <option value="">All institutions</option>
               {institutions.map((inst) => (
@@ -144,12 +144,12 @@ export default function ProgrammeTable({
           </form>
         )}
 
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
-          <BookOpen className="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+        <div className="rounded-lg border border-border p-12 text-center">
+          <BookOpen className="w-12 h-12 mx-auto text-gray-400 dark:text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium text-foreground mb-1">
             {hasFilters ? 'No programmes match your filters' : 'No programmes yet'}
           </h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">
+          <p className="text-muted-foreground mb-4">
             {hasFilters
               ? 'Try adjusting your search or clearing filters.'
               : 'Add your first programme to get started.'}
@@ -179,20 +179,20 @@ export default function ProgrammeTable({
         type="button"
         onClick={() => setOpenMenu(openMenu === prog.id ? null : prog.id)}
         // 44px minimum tap target on mobile, 40px on desktop
-        className="h-11 w-11 md:h-10 md:w-10 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+        className="h-11 w-11 md:h-10 md:w-10 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-muted transition"
         aria-label={`Actions for ${prog.name}`}
       >
-        <MoreHorizontal className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+        <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
       </button>
       {openMenu === prog.id && (
-        <div className="absolute right-0 z-10 mt-1 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1">
+        <div className="absolute right-0 z-10 mt-1 w-40 bg-card rounded-lg shadow-lg border border-border py-1">
           <button
             type="button"
             onClick={() => {
               setOpenMenu(null);
               router.push(`/admin/programmes/${prog.id}`);
             }}
-            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-foreground hover:bg-muted transition"
           >
             <Pencil className="w-4 h-4" />
             View
@@ -224,13 +224,13 @@ export default function ProgrammeTable({
             placeholder="Search programmes by name or code…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:border-blue-500"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:outline-none focus:border-blue-500"
           />
         </div>
         <select
           value={filterInstitution}
           onChange={(e) => setFilterInstitution(e.target.value)}
-          className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:border-blue-500"
+          className="px-3 py-2.5 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:outline-none focus:border-blue-500"
         >
           <option value="">All institutions</option>
           {institutions.map((inst) => (
@@ -244,7 +244,7 @@ export default function ProgrammeTable({
           </button>
           {hasFilters && (
             <button type="button" onClick={clearFilters}
-              className="inline-flex items-center gap-1 px-3 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition min-h-[44px]">
+              className="inline-flex items-center gap-1 px-3 py-2.5 border border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-muted transition min-h-[44px]">
               <X className="w-4 h-4" />
               Clear
             </button>
@@ -253,33 +253,33 @@ export default function ProgrammeTable({
       </form>
 
       {/* Results count */}
-      <div className="text-sm text-gray-500 dark:text-gray-400">
+      <div className="text-sm text-muted-foreground">
         Showing {programmes.length} of {total} programme{total !== 1 ? 's' : ''}
         {hasFilters && ' matching your filters'}
       </div>
 
-      <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="rounded-lg border border-border overflow-hidden">
         {/* Desktop: native table */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">
+              <tr className="border-b border-border bg-muted">
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">
                   Programme
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">
                   Code
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">
                   Institution
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">
                   Faculty
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">
                   Stats
                 </th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600 dark:text-gray-400">
+                <th className="text-right px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">
                   Actions
                 </th>
               </tr>
@@ -292,11 +292,11 @@ export default function ProgrammeTable({
                 >
                   <td className="px-4 py-3">
                     <div>
-                      <div className="font-medium text-gray-900 dark:text-gray-100">
+                      <div className="font-medium text-foreground">
                         {prog.name}
                       </div>
                       {prog.shortName && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-muted-foreground">
                           {prog.shortName}
                         </div>
                       )}
@@ -308,36 +308,36 @@ export default function ProgrammeTable({
                         {prog.code}
                       </span>
                     ) : (
-                      <span className="text-gray-400 dark:text-gray-500">—</span>
+                      <span className="text-gray-400 dark:text-muted-foreground">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
                     {prog.institution ? (
-                      <span className="text-gray-700 dark:text-gray-300">
+                      <span className="text-gray-700 dark:text-foreground">
                         {prog.institution.name}
                       </span>
                     ) : (
-                      <span className="text-gray-400 dark:text-gray-500">—</span>
+                      <span className="text-gray-400 dark:text-muted-foreground">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
                     {prog.faculty ? (
                       <div>
-                        <div className="text-gray-700 dark:text-gray-300">
+                        <div className="text-gray-700 dark:text-foreground">
                           {prog.faculty.name}
                         </div>
                         {prog.faculty.code && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-muted-foreground">
                             {prog.faculty.code}
                           </div>
                         )}
                       </div>
                     ) : (
-                      <span className="text-gray-400 dark:text-gray-500">—</span>
+                      <span className="text-gray-400 dark:text-muted-foreground">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <span className="inline-flex items-center gap-1">
                         <BookOpen className="w-3 h-3" />
                         {prog._count.courses}
@@ -363,11 +363,11 @@ export default function ProgrammeTable({
             <div key={prog.id} className="p-4 space-y-3">
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-gray-100">
+                  <div className="font-medium text-foreground">
                     {prog.name}
                   </div>
                   {prog.shortName && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-xs text-muted-foreground">
                       {prog.shortName}
                     </div>
                   )}
@@ -376,34 +376,34 @@ export default function ProgrammeTable({
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <div className="text-xs font-medium text-muted-foreground uppercase">
                     Code
                   </div>
-                  <div className="text-gray-900 dark:text-gray-100 mt-0.5">
+                  <div className="text-foreground mt-0.5">
                     {prog.code || '—'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <div className="text-xs font-medium text-muted-foreground uppercase">
                     Institution
                   </div>
-                  <div className="text-gray-900 dark:text-gray-100 mt-0.5">
+                  <div className="text-foreground mt-0.5">
                     {prog.institution?.name || '—'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <div className="text-xs font-medium text-muted-foreground uppercase">
                     Faculty
                   </div>
-                  <div className="text-gray-900 dark:text-gray-100 mt-0.5">
+                  <div className="text-foreground mt-0.5">
                     {prog.faculty?.name || '—'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <div className="text-xs font-medium text-muted-foreground uppercase">
                     Stats
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
                     <span className="inline-flex items-center gap-1">
                       <BookOpen className="w-3 h-3" />
                       {prog._count.courses}
@@ -423,7 +423,7 @@ export default function ProgrammeTable({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-sm text-muted-foreground">
             Page {page} of {totalPages}
           </div>
           <div className="flex items-center gap-2">
@@ -431,7 +431,7 @@ export default function ProgrammeTable({
               type="button"
               onClick={() => goToPage(page - 1)}
               disabled={page <= 1}
-              className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-border text-gray-700 dark:text-foreground text-sm font-medium hover:bg-gray-50 dark:hover:bg-muted transition disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
             >
               <ChevronLeft className="w-4 h-4" />
               Previous
@@ -440,7 +440,7 @@ export default function ProgrammeTable({
               type="button"
               onClick={() => goToPage(page + 1)}
               disabled={page >= totalPages}
-              className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-border text-gray-700 dark:text-foreground text-sm font-medium hover:bg-gray-50 dark:hover:bg-muted transition disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
             >
               Next
               <ChevronRight className="w-4 h-4" />
@@ -452,11 +452,11 @@ export default function ProgrammeTable({
       {/* Delete confirmation modal */}
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <div className="bg-card rounded-xl shadow-xl border border-border p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               Delete Programme
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-gray-600 dark:text-muted-foreground mb-6">
               Are you sure you want to delete this programme? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
@@ -464,7 +464,7 @@ export default function ProgrammeTable({
                 type="button"
                 onClick={() => setDeleteId(null)}
                 disabled={isPending}
-                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50"
+                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-border text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted transition disabled:opacity-50"
               >
                 Cancel
               </button>

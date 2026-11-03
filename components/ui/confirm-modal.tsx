@@ -84,7 +84,7 @@ export default function ConfirmModal({
 
           {/* Modal Card */}
           <motion.div
-            className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700"
+            className="relative w-full max-w-md bg-card rounded-xl shadow-2xl border border-border"
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -93,7 +93,7 @@ export default function ConfirmModal({
             {/* Close button */}
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-muted-foreground dark:hover:text-gray-300 transition"
             >
               <X className="w-4 h-4" />
             </button>
@@ -105,12 +105,12 @@ export default function ConfirmModal({
               </div>
 
               {/* Title */}
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 text-center mb-2">
+              <h2 className="text-lg font-semibold text-foreground text-center mb-2">
                 {title}
               </h2>
 
               {/* Description */}
-              <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
+              <p className="text-sm text-gray-600 dark:text-muted-foreground text-center mb-6">
                 {description}
               </p>
 
@@ -118,7 +118,7 @@ export default function ConfirmModal({
               <div className="flex gap-3">
                 <button
                   onClick={handleClose}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-foreground bg-white dark:bg-muted border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition"
                 >
                   {cancelLabel}
                 </button>

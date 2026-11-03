@@ -53,7 +53,7 @@ const statusBadge = (status: string) => {
     UNDER_REVIEW: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', label: 'Under Review' },
     APPROVED: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', label: 'Approved' },
     REJECTED: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-300', label: 'Rejected' },
-    WITHDRAWN: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-400', label: 'Withdrawn' },
+    WITHDRAWN: { bg: 'bg-muted', text: 'text-gray-600 dark:text-muted-foreground', label: 'Withdrawn' },
   };
   const c = config[status] || config.PENDING;
   return (
@@ -125,32 +125,32 @@ export default function ApplicationTable({ applications, total }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700">
-              <th className="text-left py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Applicant</th>
-              <th className="text-left py-3 px-4 text-gray-500 dark:text-gray-400 font-medium hidden md:table-cell">Institution</th>
-              <th className="text-left py-3 px-4 text-gray-500 dark:text-gray-400 font-medium hidden sm:table-cell">Experience</th>
-              <th className="text-left py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Status</th>
-              <th className="text-left py-3 px-4 text-gray-500 dark:text-gray-400 font-medium hidden lg:table-cell">Submitted</th>
-              <th className="text-right py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Actions</th>
+            <tr className="border-b border-border">
+              <th className="text-left py-3 px-4 text-muted-foreground font-medium">Applicant</th>
+              <th className="text-left py-3 px-4 text-muted-foreground font-medium hidden md:table-cell">Institution</th>
+              <th className="text-left py-3 px-4 text-muted-foreground font-medium hidden sm:table-cell">Experience</th>
+              <th className="text-left py-3 px-4 text-muted-foreground font-medium">Status</th>
+              <th className="text-left py-3 px-4 text-muted-foreground font-medium hidden lg:table-cell">Submitted</th>
+              <th className="text-right py-3 px-4 text-muted-foreground font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {applications.map((app) => (
-              <tr key={app.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <tr key={app.id} className="border-b border-gray-100 dark:border-border hover:bg-gray-50 dark:hover:bg-gray-800/50">
                 <td className="py-3 px-4">
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">{app.fullName}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{app.email}</p>
+                    <p className="font-medium text-foreground">{app.fullName}</p>
+                    <p className="text-xs text-muted-foreground">{app.email}</p>
                   </div>
                 </td>
-                <td className="py-3 px-4 hidden md:table-cell text-gray-600 dark:text-gray-300">
+                <td className="py-3 px-4 hidden md:table-cell text-gray-600 dark:text-foreground">
                   {app.institution?.shortName || app.institution?.name || '—'}
                 </td>
-                <td className="py-3 px-4 hidden sm:table-cell text-gray-600 dark:text-gray-300">
+                <td className="py-3 px-4 hidden sm:table-cell text-gray-600 dark:text-foreground">
                   {app.experienceYears} yrs
                 </td>
                 <td className="py-3 px-4">{statusBadge(app.status)}</td>
-                <td className="py-3 px-4 hidden lg:table-cell text-gray-500 dark:text-gray-400 text-xs">
+                <td className="py-3 px-4 hidden lg:table-cell text-muted-foreground text-xs">
                   {formatDate(app.submittedAt)}
                 </td>
                 <td className="py-3 px-4">
@@ -201,21 +201,21 @@ export default function ApplicationTable({ applications, total }: Props) {
       {/* Reject dialog */}
       {showRejectDialog && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="bg-card rounded-2xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               Reject Application
             </h3>
             <textarea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               rows={4}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-border bg-white dark:bg-input text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Provide a detailed reason for rejection..."
             />
             <div className="flex items-center justify-end gap-2 mt-4">
               <button
                 onClick={() => setShowRejectDialog(false)}
-                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900"
+                className="px-4 py-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900"
               >
                 Cancel
               </button>
@@ -234,21 +234,21 @@ export default function ApplicationTable({ applications, total }: Props) {
       {/* Request info dialog */}
       {showInfoDialog && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="bg-card rounded-2xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               Request More Information
             </h3>
             <textarea
               value={infoMessage}
               onChange={(e) => setInfoMessage(e.target.value)}
               rows={4}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-border bg-white dark:bg-input text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Specify what additional information is needed..."
             />
             <div className="flex items-center justify-end gap-2 mt-4">
               <button
                 onClick={() => setShowInfoDialog(false)}
-                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900"
+                className="px-4 py-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900"
               >
                 Cancel
               </button>

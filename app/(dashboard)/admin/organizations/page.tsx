@@ -109,42 +109,42 @@ export default async function OrganizationsPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Total Institutions</p>
-          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">{totalInstitutions}</p>
+        <div className="bg-card rounded-lg border border-border p-5">
+          <p className="text-sm text-muted-foreground">Total Institutions</p>
+          <p className="text-3xl font-bold text-foreground mt-1">{totalInstitutions}</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Linked to Clerk</p>
+        <div className="bg-card rounded-lg border border-border p-5">
+          <p className="text-sm text-muted-foreground">Linked to Clerk</p>
           <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{linkedInstitutions}</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Not Linked</p>
+        <div className="bg-card rounded-lg border border-border p-5">
+          <p className="text-sm text-muted-foreground">Not Linked</p>
           <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">{notLinkedInstitutions}</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Users Without Memberships</p>
+        <div className="bg-card rounded-lg border border-border p-5">
+          <p className="text-sm text-muted-foreground">Users Without Memberships</p>
           <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-1">{usersWithoutMemberships}</p>
         </div>
       </div>
 
       {/* Institutions Table */}
-      <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="rounded-lg border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Name</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Slug</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Clerk Org ID</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Clerk Org Slug</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Status</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Actions</th>
+              <tr className="border-b border-border bg-muted">
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Name</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Slug</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Clerk Org ID</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Clerk Org Slug</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Status</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
               {institutions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                     No institutions found.
                   </td>
                 </tr>
@@ -152,18 +152,18 @@ export default async function OrganizationsPage() {
                 institutions.map((institution) => (
                   <tr
                     key={institution.id}
-                    className="border-b border-gray-100 dark:border-gray-800 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition"
+                    className="border-b border-gray-100 dark:border-border last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition"
                   >
-                    <td className="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium">
+                    <td className="px-4 py-3 text-foreground font-medium">
                       {institution.name}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                    <td className="px-4 py-3 text-gray-600 dark:text-muted-foreground">
                       {institution.slug}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 font-mono text-xs">
+                    <td className="px-4 py-3 text-gray-600 dark:text-muted-foreground font-mono text-xs">
                       {institution.clerkOrgId ?? '—'}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 font-mono text-xs">
+                    <td className="px-4 py-3 text-gray-600 dark:text-muted-foreground font-mono text-xs">
                       {institution.clerkOrgSlug ?? '—'}
                     </td>
                     <td className="px-4 py-3">

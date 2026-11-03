@@ -45,8 +45,8 @@ export default function NewCoursePage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Add New Course</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <h1 className="text-2xl font-bold text-foreground">Add New Course</h1>
+        <p className="text-gray-600 dark:text-muted-foreground text-sm">
           Add a course to a programme and year
         </p>
       </div>
@@ -59,20 +59,20 @@ export default function NewCoursePage() {
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                 step >= s
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                  : 'bg-gray-200 dark:bg-muted text-muted-foreground'
               }`}
             >
               {s}
             </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-gray-600 dark:text-muted-foreground">
               {s === 1 ? 'Programme' : s === 2 ? 'Year' : 'Details'}
             </span>
-            {s < 3 && <div className="w-8 h-px bg-gray-300 dark:bg-gray-600" />}
+            {s < 3 && <div className="w-8 h-px bg-gray-300 dark:bg-muted" />}
           </div>
         ))}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         {error && (
           <div className="mb-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
             {error}
@@ -153,7 +153,7 @@ export default function NewCoursePage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setStep(1)}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-muted transition"
               >
                 Back
               </button>
@@ -171,7 +171,7 @@ export default function NewCoursePage() {
         {step === 3 && (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                 Course Code
               </label>
               <input
@@ -179,12 +179,12 @@ export default function NewCoursePage() {
                 required
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm"
                 placeholder="CS101"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                 Course Name
               </label>
               <input
@@ -192,26 +192,26 @@ export default function NewCoursePage() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm"
                 placeholder="Introduction to Computer Science"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                 Description (optional)
               </label>
               <textarea
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm resize-none"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm resize-none"
               />
             </div>
             <div className="flex gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-muted transition"
               >
                 Back
               </button>

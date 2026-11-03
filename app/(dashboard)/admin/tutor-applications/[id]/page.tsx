@@ -80,7 +80,7 @@ export default async function ApplicationDetailPage({
   if (!application) {
     return (
       <div className="p-8 text-center">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-xl font-bold text-foreground">
           Application not found
         </h1>
         <Link href="/admin/tutor-applications" className="text-blue-600 hover:underline mt-4 inline-block">
@@ -99,7 +99,7 @@ export default async function ApplicationDetailPage({
     <div className="p-4 md:p-8 max-w-5xl">
       <Link
         href="/admin/tutor-applications"
-        className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-6"
+        className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to applications
@@ -107,10 +107,10 @@ export default async function ApplicationDetailPage({
 
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-foreground">
             {application.fullName}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-gray-600 dark:text-muted-foreground mt-1">
             Tutor Application
           </p>
         </div>
@@ -119,32 +119,32 @@ export default async function ApplicationDetailPage({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Personal Info */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-          <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+          <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
             <User className="w-5 h-5 text-gray-500" />
             Personal Information
           </h2>
           <dl className="space-y-3 text-sm">
             <div>
-              <dt className="text-gray-500 dark:text-gray-400">Full Name</dt>
-              <dd className="text-gray-900 dark:text-gray-100 font-medium">
+              <dt className="text-muted-foreground">Full Name</dt>
+              <dd className="text-foreground font-medium">
                 {application.fullName}
               </dd>
             </div>
             <div>
-              <dt className="text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              <dt className="text-muted-foreground flex items-center gap-1">
                 <Mail className="w-3 h-3" /> Email
               </dt>
-              <dd className="text-gray-900 dark:text-gray-100 font-medium">
+              <dd className="text-foreground font-medium">
                 {application.email}
               </dd>
             </div>
             {application.phone && (
               <div>
-                <dt className="text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                <dt className="text-muted-foreground flex items-center gap-1">
                   <Phone className="w-3 h-3" /> Phone
                 </dt>
-                <dd className="text-gray-900 dark:text-gray-100 font-medium">
+                <dd className="text-foreground font-medium">
                   {application.phone}
                 </dd>
               </div>
@@ -153,8 +153,8 @@ export default async function ApplicationDetailPage({
         </div>
 
         {/* Identity Verification */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-          <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+          <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
             <Shield className="w-5 h-5 text-gray-500" />
             Identity Verification
           </h2>
@@ -162,7 +162,7 @@ export default async function ApplicationDetailPage({
             {/* Profile Photo */}
             {application.profilePhotoUrl && (
               <div>
-                <dt className="text-gray-500 dark:text-gray-400 mb-2">Profile Photo</dt>
+                <dt className="text-muted-foreground mb-2">Profile Photo</dt>
                 <dd>
                   <div className="flex items-center gap-4">
                     <Image
@@ -170,7 +170,7 @@ export default async function ApplicationDetailPage({
                       alt="Profile"
                       width={64}
                       height={64}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
+                      className="w-16 h-16 rounded-full object-cover border-2 border-border"
                     />
                     <div className="space-x-2">
                       <a
@@ -197,26 +197,26 @@ export default async function ApplicationDetailPage({
             {/* NRC */}
             {(application.nrcFrontUrl || application.nrcBackUrl) && (
               <div>
-                <dt className="text-gray-500 dark:text-gray-400 mb-2">
+                <dt className="text-muted-foreground mb-2">
                   <span className="flex items-center gap-1">
                     <CreditCard className="w-3 h-3" /> NRC Card
                   </span>
                 </dt>
                 <dd className="space-y-2">
                   {application.nrcNumber && (
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      NRC Number: <span className="font-medium text-gray-900 dark:text-gray-100">{application.nrcNumber}</span>
+                    <p className="text-xs text-gray-600 dark:text-muted-foreground">
+                      NRC Number: <span className="font-medium text-foreground">{application.nrcNumber}</span>
                     </p>
                   )}
                   <div className="flex gap-4">
                     {application.nrcFrontUrl && (
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Front</p>
+                        <p className="text-xs text-muted-foreground mb-1">Front</p>
                         <a
                           href={application.nrcFrontUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="block w-32 rounded overflow-hidden border border-gray-200 dark:border-gray-700"
+                          className="block w-32 rounded overflow-hidden border border-border"
                         >
                           <Image
                             src={application.nrcFrontUrl}
@@ -247,12 +247,12 @@ export default async function ApplicationDetailPage({
                     )}
                     {application.nrcBackUrl && (
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Back</p>
+                        <p className="text-xs text-muted-foreground mb-1">Back</p>
                         <a
                           href={application.nrcBackUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="block w-32 rounded overflow-hidden border border-gray-200 dark:border-gray-700"
+                          className="block w-32 rounded overflow-hidden border border-border"
                         >
                           <Image
                             src={application.nrcBackUrl}
@@ -289,29 +289,29 @@ export default async function ApplicationDetailPage({
         </div>
 
         {/* Professional Info */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-          <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+          <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-gray-500" />
             Professional Information
           </h2>
           <dl className="space-y-3 text-sm">
             <div>
-              <dt className="text-gray-500 dark:text-gray-400">Experience</dt>
-              <dd className="text-gray-900 dark:text-gray-100 font-medium">
+              <dt className="text-muted-foreground">Experience</dt>
+              <dd className="text-foreground font-medium">
                 {application.experienceYears} years
               </dd>
             </div>
             {application.institution && (
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Institution</dt>
-                <dd className="text-gray-900 dark:text-gray-100 font-medium">
+                <dt className="text-muted-foreground">Institution</dt>
+                <dd className="text-foreground font-medium">
                   {application.institution.shortName || application.institution.name}
                 </dd>
               </div>
             )}
             {application.teachingModes && application.teachingModes.length > 0 && (
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Teaching Modes</dt>
+                <dt className="text-muted-foreground">Teaching Modes</dt>
                 <dd className="flex flex-wrap gap-1 mt-1">
                   {application.teachingModes.map((mode: string) => (
                     <span key={mode} className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-full">
@@ -323,18 +323,18 @@ export default async function ApplicationDetailPage({
             )}
             {application.physicalLocation && (
               <div>
-                <dt className="text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                <dt className="text-muted-foreground flex items-center gap-1">
                   <MapPin className="w-3 h-3" /> Location
                 </dt>
-                <dd className="text-gray-900 dark:text-gray-100 font-medium">
+                <dd className="text-foreground font-medium">
                   {application.physicalLocation}
                 </dd>
               </div>
             )}
             {application.hourlyRateZMW !== null && application.hourlyRateZMW !== undefined && (
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Hourly Rate</dt>
-                <dd className="text-gray-900 dark:text-gray-100 font-medium">
+                <dt className="text-muted-foreground">Hourly Rate</dt>
+                <dd className="text-foreground font-medium">
                   K{application.hourlyRateZMW.toLocaleString()} ZMW
                 </dd>
               </div>
@@ -344,18 +344,18 @@ export default async function ApplicationDetailPage({
 
         {/* Qualifications */}
         {qualifications && qualifications.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+          <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+            <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-gray-500" />
               Qualifications
             </h2>
             <div className="space-y-3">
               {qualifications.map((q: any, i: number) => (
                 <div key={i} className="border-l-2 border-blue-500 pl-3">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <p className="text-sm font-medium text-foreground">
                     {q.degree}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {q.institution} • {q.year}
                   </p>
                 </div>
@@ -366,24 +366,24 @@ export default async function ApplicationDetailPage({
 
         {/* Grade 12 Results */}
         {application.grade12School && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+          <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+            <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-gray-500" />
               Grade 12 Results
             </h2>
             <dl className="space-y-2 text-sm">
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">School</dt>
-                <dd className="text-gray-900 dark:text-gray-100 font-medium">{application.grade12School}</dd>
+                <dt className="text-muted-foreground">School</dt>
+                <dd className="text-foreground font-medium">{application.grade12School}</dd>
               </div>
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Year</dt>
-                <dd className="text-gray-900 dark:text-gray-100 font-medium">{application.grade12Year}</dd>
+                <dt className="text-muted-foreground">Year</dt>
+                <dd className="text-foreground font-medium">{application.grade12Year}</dd>
               </div>
               {application.grade12Summary && (
                 <div>
-                  <dt className="text-gray-500 dark:text-gray-400">Summary</dt>
-                  <dd className="text-gray-900 dark:text-gray-100">{application.grade12Summary}</dd>
+                  <dt className="text-muted-foreground">Summary</dt>
+                  <dd className="text-foreground">{application.grade12Summary}</dd>
                 </div>
               )}
               {application.grade12ResultsUrl && (
@@ -404,32 +404,32 @@ export default async function ApplicationDetailPage({
 
         {/* Current Academic Records */}
         {application.currentInstitution && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+          <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+            <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-gray-500" />
               Current Academic Records
             </h2>
             <dl className="space-y-2 text-sm">
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Institution</dt>
-                <dd className="text-gray-900 dark:text-gray-100 font-medium">{application.currentInstitution}</dd>
+                <dt className="text-muted-foreground">Institution</dt>
+                <dd className="text-foreground font-medium">{application.currentInstitution}</dd>
               </div>
               {application.currentProgramme && (
                 <div>
-                  <dt className="text-gray-500 dark:text-gray-400">Programme</dt>
-                  <dd className="text-gray-900 dark:text-gray-100 font-medium">{application.currentProgramme}</dd>
+                  <dt className="text-muted-foreground">Programme</dt>
+                  <dd className="text-foreground font-medium">{application.currentProgramme}</dd>
                 </div>
               )}
               {application.currentYear && (
                 <div>
-                  <dt className="text-gray-500 dark:text-gray-400">Year</dt>
-                  <dd className="text-gray-900 dark:text-gray-100 font-medium">Year {application.currentYear}</dd>
+                  <dt className="text-muted-foreground">Year</dt>
+                  <dd className="text-foreground font-medium">Year {application.currentYear}</dd>
                 </div>
               )}
               {application.academicSummary && (
                 <div>
-                  <dt className="text-gray-500 dark:text-gray-400">Summary</dt>
-                  <dd className="text-gray-900 dark:text-gray-100">{application.academicSummary}</dd>
+                  <dt className="text-muted-foreground">Summary</dt>
+                  <dd className="text-foreground">{application.academicSummary}</dd>
                 </div>
               )}
               {application.academicRecordsUrl && (
@@ -450,8 +450,8 @@ export default async function ApplicationDetailPage({
 
         {/* CV */}
         {application.cvUrl && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+          <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+            <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
               <FileText className="w-5 h-5 text-gray-500" />
               CV / Resume
             </h2>
@@ -468,22 +468,22 @@ export default async function ApplicationDetailPage({
 
         {/* References */}
         {application.references.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+          <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+            <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
               <Users className="w-5 h-5 text-gray-500" />
               References ({application.references.length})
             </h2>
             <div className="space-y-4">
               {application.references.map((ref: any) => (
                 <div key={ref.id} className="border-l-2 border-green-500 pl-3">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <p className="text-sm font-medium text-foreground">
                     {ref.fullName}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {ref.relationship}
                     {ref.institution && ` • ${ref.institution}`}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {ref.email}
                     {ref.phone && ` • ${ref.phone}`}
                   </p>
@@ -495,26 +495,26 @@ export default async function ApplicationDetailPage({
 
         {/* Course Offerings */}
         {application.offerings.length > 0 && (
-          <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+          <div className="md:col-span-2 bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+            <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-gray-500" />
               Course Offerings ({application.offerings.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {application.offerings.map((off: any) => (
-                <div key={off.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div key={off.id} className="p-4 border border-border rounded-lg">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    <h3 className="text-sm font-semibold text-foreground">
                       {off.title}
                     </h3>
                     <span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">
                       K{off.priceZMW}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  <p className="text-xs text-muted-foreground mb-2">
                     {off.level} • {off.durationMinutes}min
                   </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+                  <p className="text-xs text-gray-600 dark:text-muted-foreground line-clamp-2">
                     {off.description}
                   </p>
                   {off.modes && off.modes.length > 0 && (
@@ -534,42 +534,42 @@ export default async function ApplicationDetailPage({
 
         {/* Teaching Philosophy */}
         {application.teachingPhilosophy && (
-          <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+          <div className="md:col-span-2 bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+            <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-gray-500" />
               Teaching Philosophy
             </h2>
-            <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+            <p className="text-sm text-gray-700 dark:text-foreground whitespace-pre-wrap">
               {application.teachingPhilosophy}
             </p>
           </div>
         )}
 
         {/* Timeline */}
-        <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-          <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+        <div className="md:col-span-2 bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6">
+          <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-gray-500" />
             Timeline
           </h2>
           <dl className="space-y-3 text-sm">
             <div>
-              <dt className="text-gray-500 dark:text-gray-400">Submitted</dt>
-              <dd className="text-gray-900 dark:text-gray-100 font-medium">
+              <dt className="text-muted-foreground">Submitted</dt>
+              <dd className="text-foreground font-medium">
                 {formatDateTime(application.submittedAt)}
               </dd>
             </div>
             {application.reviewedAt && (
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Reviewed</dt>
-                <dd className="text-gray-900 dark:text-gray-100 font-medium">
+                <dt className="text-muted-foreground">Reviewed</dt>
+                <dd className="text-foreground font-medium">
                   {formatDateTime(application.reviewedAt)}
                 </dd>
               </div>
             )}
             {application.decidedAt && (
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Decision Made</dt>
-                <dd className="text-gray-900 dark:text-gray-100 font-medium">
+                <dt className="text-muted-foreground">Decision Made</dt>
+                <dd className="text-foreground font-medium">
                   {formatDateTime(application.decidedAt)}
                 </dd>
               </div>

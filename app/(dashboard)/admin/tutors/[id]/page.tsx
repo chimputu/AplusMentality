@@ -58,7 +58,7 @@ export default async function AdminTutorDetailPage({
       <div className="flex items-center gap-4">
         <Link
           href="/admin/tutors"
-          className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
+          className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Tutors
@@ -67,10 +67,10 @@ export default async function AdminTutorDetailPage({
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-foreground">
             {tutor.fullName}
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             {tutor.email}
           </p>
         </div>
@@ -100,8 +100,8 @@ export default async function AdminTutorDetailPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column - Photo upload */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Profile Photo
           </h2>
           <TutorImageUploader tutorId={tutor.id} currentUrl={tutor.avatarUrl} />
@@ -110,47 +110,47 @@ export default async function AdminTutorDetailPage({
         {/* Right column - Editable form */}
         <div className="lg:col-span-2 space-y-6">
           {/* Personal Info */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
               Personal Information
             </h2>
             <form action={handleUpdate} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                     Full Name
                   </label>
                   <input
                     name="fullName"
                     type="text"
                     defaultValue={tutor.fullName}
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                     Email
                   </label>
                   <input
                     name="email"
                     type="email"
                     defaultValue={tutor.email}
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                     Phone
                   </label>
                   <input
                     name="phone"
                     type="tel"
                     defaultValue={tutor.phone || ''}
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                     Years of Experience
                   </label>
                   <input
@@ -159,19 +159,19 @@ export default async function AdminTutorDetailPage({
                     min={0}
                     max={60}
                     defaultValue={tutor.yearsExperience}
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                   Bio
                 </label>
                 <textarea
                   name="bio"
                   rows={3}
                   defaultValue={tutor.bio || ''}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div className="flex items-center gap-4">
@@ -182,7 +182,7 @@ export default async function AdminTutorDetailPage({
                     defaultChecked={tutor.isVerified}
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">Verified</span>
+                  <span className="text-sm text-gray-700 dark:text-foreground">Verified</span>
                 </label>
                 <label className="inline-flex items-center gap-2">
                   <input
@@ -191,7 +191,7 @@ export default async function AdminTutorDetailPage({
                     defaultChecked={tutor.isActive}
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">Active</span>
+                  <span className="text-sm text-gray-700 dark:text-foreground">Active</span>
                 </label>
               </div>
               <button
@@ -204,32 +204,32 @@ export default async function AdminTutorDetailPage({
           </div>
 
           {/* Availability & Mode */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
               Availability & Mode
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Mode
                 </label>
-                <p className="text-sm text-gray-900 dark:text-gray-100 capitalize">
+                <p className="text-sm text-foreground capitalize">
                   {tutor.mode}
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Contact Via
                 </label>
-                <p className="text-sm text-gray-900 dark:text-gray-100 capitalize">
+                <p className="text-sm text-foreground capitalize">
                   {tutor.contactVia}
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Availability
                 </label>
-                <p className="text-sm text-gray-900 dark:text-gray-100">
+                <p className="text-sm text-foreground">
                   {tutor.availability || 'Not set'}
                 </p>
               </div>
@@ -237,24 +237,24 @@ export default async function AdminTutorDetailPage({
           </div>
 
           {/* Academic Affiliation */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
               Academic Affiliation
             </h2>
             <div className="space-y-2">
               {tutor.institution && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-muted-foreground">
                   <span className="font-medium">University:</span>{' '}
                   {tutor.institution.name} ({tutor.institution.code})
                 </p>
               )}
               {tutor.programme && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-muted-foreground">
                   <span className="font-medium">Programme:</span> {tutor.programme.name}
                 </p>
               )}
               {tutor.branch && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-muted-foreground">
                   <span className="font-medium">Branch:</span> {tutor.branch.name}
                 </p>
               )}
@@ -262,12 +262,12 @@ export default async function AdminTutorDetailPage({
           </div>
 
           {/* Specialties */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
               Course Specialties
             </h2>
             {tutor.specialties.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 No specialties assigned yet.
               </p>
             ) : (
@@ -285,11 +285,11 @@ export default async function AdminTutorDetailPage({
           </div>
 
           {/* Stats */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
               Activity
             </h2>
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-muted-foreground">
               <MessageSquare className="w-4 h-4" />
               {tutor._count.requests} requests received
             </div>

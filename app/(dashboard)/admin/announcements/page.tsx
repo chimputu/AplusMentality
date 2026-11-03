@@ -32,17 +32,17 @@ export default async function AdminAnnouncementsPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Announcements</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">Create and manage announcements</p>
+        <h1 className="text-2xl font-bold text-foreground">Announcements</h1>
+        <p className="text-gray-600 dark:text-muted-foreground text-sm">Create and manage announcements</p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Create New Announcement</h2>
+      <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6 mb-8">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-foreground mb-4">Create New Announcement</h2>
         <CreateAnnouncementForm />
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">All Announcements</h2>
+      <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-foreground mb-4">All Announcements</h2>
         <AnnouncementList announcements={announcements} isAdmin={true} />
       </div>
     </div>

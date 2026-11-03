@@ -259,10 +259,10 @@ export default function NewAssessmentPage() {
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-foreground">
           Create New Assessment
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-muted-foreground mt-1">
           Build a quiz, test, exam, or assignment
         </p>
       </div>
@@ -279,7 +279,7 @@ export default function NewAssessmentPage() {
                       ? 'bg-green-500 text-white'
                       : i + 1 === step
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                      : 'bg-gray-200 dark:bg-muted text-muted-foreground'
                   }`}
                 >
                   {i + 1 < step ? <Check className="w-4 h-4" /> : i + 1}
@@ -287,8 +287,8 @@ export default function NewAssessmentPage() {
                 <span
                   className={`ml-2 text-sm hidden sm:inline ${
                     i + 1 <= step
-                      ? 'text-gray-900 dark:text-gray-100'
-                      : 'text-gray-400 dark:text-gray-500'
+                      ? 'text-foreground'
+                      : 'text-gray-400 dark:text-muted-foreground'
                   }`}
                 >
                   {label}
@@ -297,7 +297,7 @@ export default function NewAssessmentPage() {
             )
           )}
         </div>
-        <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div className="h-2 bg-gray-200 dark:bg-muted rounded-full overflow-hidden">
           <div
             className="h-full bg-blue-600 transition-all duration-300"
             style={{ width: `${(step / 4) * 100}%` }}
@@ -313,11 +313,11 @@ export default function NewAssessmentPage() {
 
       {/* Step 1: Source Chooser */}
       {step === 1 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Choose Assessment Source
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          <p className="text-muted-foreground mb-6">
             Will you build this assessment with our native question builder, or
             embed an external form?
           </p>
@@ -329,14 +329,14 @@ export default function NewAssessmentPage() {
               className={`p-6 rounded-xl border-2 text-left transition ${
                 step1.mode === 'NATIVE'
                   ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                  : 'border-border hover:border-gray-300'
               }`}
             >
               <ClipboardList className="w-8 h-8 text-blue-500 mb-3" />
-              <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+              <h3 className="font-medium text-foreground mb-1">
                 Native Builder
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Build from your question bank with multiple choice, essays,
                 matching, and more.
               </p>
@@ -348,14 +348,14 @@ export default function NewAssessmentPage() {
               className={`p-6 rounded-xl border-2 text-left transition ${
                 step1.mode === 'GOOGLE_FORM'
                   ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                  : 'border-border hover:border-gray-300'
               }`}
             >
               <ExternalLink className="w-8 h-8 text-green-500 mb-3" />
-              <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+              <h3 className="font-medium text-foreground mb-1">
                 External Form
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Embed a Google Form, Microsoft Form, or any external assessment
                 URL.
               </p>
@@ -366,14 +366,14 @@ export default function NewAssessmentPage() {
 
       {/* Step 2: Basic Info */}
       {step === 2 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Basic Information
           </h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                 Title *
               </label>
               <input
@@ -381,12 +381,12 @@ export default function NewAssessmentPage() {
                 value={step2.title}
                 onChange={(e) => setStep2({ ...step2, title: e.target.value })}
                 placeholder="e.g. Midterm Exam — Week 6"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                 Description
               </label>
               <textarea
@@ -396,13 +396,13 @@ export default function NewAssessmentPage() {
                 }
                 placeholder="Instructions for students..."
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Type *
                 </label>
                 <select
@@ -410,7 +410,7 @@ export default function NewAssessmentPage() {
                   onChange={(e) =>
                     setStep2({ ...step2, type: e.target.value as AssessmentType })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   {ASSESSMENT_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -436,13 +436,13 @@ export default function NewAssessmentPage() {
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Year *
                 </label>
                 <select
                   value={step2.year}
                   onChange={(e) => setStep2({ ...step2, year: parseInt(e.target.value), courseId: '' })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   {[1, 2, 3, 4, 5, 6, 7].map((y) => (
                     <option key={y} value={y}>Year {y}</option>
@@ -453,14 +453,14 @@ export default function NewAssessmentPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Period *
                 </label>
                 <select
                   value={step2.period}
                   onChange={(e) => setStep2({ ...step2, period: e.target.value, courseId: '' })}
                   disabled={!step2.institutionId}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
                 >
                   <option value="">Select period</option>
                   {getPeriodOptions().map((opt) => (
@@ -482,7 +482,7 @@ export default function NewAssessmentPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Time Limit (minutes)
                 </label>
                 <input
@@ -493,12 +493,12 @@ export default function NewAssessmentPage() {
                   }
                   placeholder="e.g. 60"
                   min="1"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Max Attempts
                 </label>
                 <input
@@ -508,12 +508,12 @@ export default function NewAssessmentPage() {
                     setStep2({ ...step2, attemptsMax: e.target.value })
                   }
                   min="1"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Show Answers
                 </label>
                 <select
@@ -524,7 +524,7 @@ export default function NewAssessmentPage() {
                       showAnswersAfter: e.target.value as any,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="IMMEDIATELY">Immediately</option>
                   <option value="AFTER_DEADLINE">After deadline</option>
@@ -535,7 +535,7 @@ export default function NewAssessmentPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Available From
                 </label>
                 <input
@@ -544,12 +544,12 @@ export default function NewAssessmentPage() {
                   onChange={(e) =>
                     setStep2({ ...step2, openAt: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Available Until
                 </label>
                 <input
@@ -558,7 +558,7 @@ export default function NewAssessmentPage() {
                   onChange={(e) =>
                     setStep2({ ...step2, closeAt: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -575,7 +575,7 @@ export default function NewAssessmentPage() {
               />
               <label
                 htmlFor="shuffleQs"
-                className="text-sm text-gray-700 dark:text-gray-300"
+                className="text-sm text-gray-700 dark:text-foreground"
               >
                 Shuffle questions for each student
               </label>
@@ -586,11 +586,11 @@ export default function NewAssessmentPage() {
 
       {/* Step 3a: Native Builder */}
       {step === 3 && step1.mode === 'NATIVE' && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-2">
             Select Questions
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+          <p className="text-muted-foreground mb-4 text-sm">
             Choose questions from the bank for the selected course.{' '}
             {step3a.questionIds.length} selected, {totalPoints} total points.
           </p>
@@ -604,12 +604,12 @@ export default function NewAssessmentPage() {
                   value={questionSearch}
                   onChange={(e) => setQuestionSearch(e.target.value)}
                   placeholder="Search questions..."
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <select
                   value={questionTypeFilter}
                   onChange={(e) => setQuestionTypeFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All types</option>
                   <option value="MULTIPLE_CHOICE">Multiple Choice</option>
@@ -623,7 +623,7 @@ export default function NewAssessmentPage() {
               </div>
 
               {filteredQuestions.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <div className="text-center py-8 text-muted-foreground">
                   No questions found. Create questions in the{' '}
                   <a
                     href="/admin/questions/new"
@@ -641,7 +641,7 @@ export default function NewAssessmentPage() {
                       className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${
                         step3a.questionIds.includes(q.id)
                           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                          : 'border-border hover:border-gray-300'
                       }`}
                     >
                       <input
@@ -652,18 +652,18 @@ export default function NewAssessmentPage() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-muted text-gray-600 dark:text-muted-foreground">
                             {q.type.replace(/_/g, ' ')}
                           </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                          <span className="text-xs text-muted-foreground">
                             {q.points} pts
                           </span>
-                          <span className="text-xs text-gray-400 dark:text-gray-500">
+                          <span className="text-xs text-gray-400 dark:text-muted-foreground">
                             {'★'.repeat(q.difficulty)}
                             {'☆'.repeat(5 - q.difficulty)}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-900 dark:text-gray-100 truncate">
+                        <p className="text-sm text-foreground truncate">
                           {q.prompt}
                         </p>
                       </div>
@@ -673,7 +673,7 @@ export default function NewAssessmentPage() {
               )}
             </>
           ) : (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-8 text-muted-foreground">
               Select a course in the previous step to see available questions.
             </div>
           )}
@@ -682,14 +682,14 @@ export default function NewAssessmentPage() {
 
       {/* Step 3b: External Config */}
       {step === 3 && step1.mode === 'GOOGLE_FORM' && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             External Form Configuration
           </h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                 Embed URL
               </label>
               <input
@@ -699,16 +699,16 @@ export default function NewAssessmentPage() {
                   setStep3b({ ...step3b, embedUrl: e.target.value })
                 }
                 placeholder="https://docs.google.com/forms/d/.../viewform?embedded=true"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 The URL that will be embedded in an iframe. For Google Forms,
-                append <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">?embedded=true</code> to the form URL.
+                append <code className="bg-muted px-1 rounded">?embedded=true</code> to the form URL.
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                 Form URL
               </label>
               <input
@@ -718,9 +718,9 @@ export default function NewAssessmentPage() {
                   setStep3b({ ...step3b, formUrl: e.target.value })
                 }
                 placeholder="https://forms.gle/..."
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 The direct link students can open in a new tab.
               </p>
             </div>
@@ -730,78 +730,78 @@ export default function NewAssessmentPage() {
 
       {/* Step 4: Review */}
       {step === 4 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Review & Create
           </h2>
 
           <div className="space-y-4">
-            <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+            <div className="p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+              <dt className="text-xs font-medium text-muted-foreground uppercase">
                 Title
               </dt>
-              <dd className="text-gray-900 dark:text-gray-100 font-medium mt-1">
+              <dd className="text-foreground font-medium mt-1">
                 {step2.title}
               </dd>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <div className="p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                <dt className="text-xs font-medium text-muted-foreground uppercase">
                   Type
                 </dt>
-                <dd className="text-gray-900 dark:text-gray-100 mt-1">
+                <dd className="text-foreground mt-1">
                   {step2.type.replace(/_/g, ' ')}
                 </dd>
               </div>
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <div className="p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                <dt className="text-xs font-medium text-muted-foreground uppercase">
                   Source
                 </dt>
-                <dd className="text-gray-900 dark:text-gray-100 mt-1">
+                <dd className="text-foreground mt-1">
                   {step1.mode === 'NATIVE' ? 'Native Builder' : 'External Form'}
                 </dd>
               </div>
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <div className="p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                <dt className="text-xs font-medium text-muted-foreground uppercase">
                   Course
                 </dt>
-                <dd className="text-gray-900 dark:text-gray-100 mt-1">
+                <dd className="text-foreground mt-1">
                   {step2.courseId ? `Course ID: ${step2.courseId}` : 'Not selected'}
                 </dd>
               </div>
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <div className="p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                <dt className="text-xs font-medium text-muted-foreground uppercase">
                   Time Limit
                 </dt>
-                <dd className="text-gray-900 dark:text-gray-100 mt-1">
+                <dd className="text-foreground mt-1">
                   {step2.timeLimit ? `${step2.timeLimit} min` : 'No limit'}
                 </dd>
               </div>
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <div className="p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                <dt className="text-xs font-medium text-muted-foreground uppercase">
                   Max Attempts
                 </dt>
-                <dd className="text-gray-900 dark:text-gray-100 mt-1">
+                <dd className="text-foreground mt-1">
                   {step2.attemptsMax}
                 </dd>
               </div>
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <div className="p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                <dt className="text-xs font-medium text-muted-foreground uppercase">
                   Shuffle
                 </dt>
-                <dd className="text-gray-900 dark:text-gray-100 mt-1">
+                <dd className="text-foreground mt-1">
                   {step2.shuffleQs ? 'Yes' : 'No'}
                 </dd>
               </div>
             </div>
 
             {step1.mode === 'NATIVE' && (
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <div className="p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                <dt className="text-xs font-medium text-muted-foreground uppercase">
                   Questions
                 </dt>
-                <dd className="text-gray-900 dark:text-gray-100 mt-1">
+                <dd className="text-foreground mt-1">
                   {step3a.questionIds.length} questions selected ({totalPoints}{' '}
                   total points)
                 </dd>
@@ -812,7 +812,7 @@ export default function NewAssessmentPage() {
                       return q ? (
                         <li
                           key={id}
-                          className="text-sm text-gray-600 dark:text-gray-400 truncate"
+                          className="text-sm text-gray-600 dark:text-muted-foreground truncate"
                         >
                           • {q.prompt}
                         </li>
@@ -824,11 +824,11 @@ export default function NewAssessmentPage() {
             )}
 
             {step1.mode === 'GOOGLE_FORM' && step3b.embedUrl && (
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <div className="p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                <dt className="text-xs font-medium text-muted-foreground uppercase">
                   Embed URL
                 </dt>
-                <dd className="text-gray-900 dark:text-gray-100 mt-1 break-all">
+                <dd className="text-foreground mt-1 break-all">
                   {step3b.embedUrl}
                 </dd>
               </div>
@@ -844,7 +844,7 @@ export default function NewAssessmentPage() {
             type="button"
             onClick={handleBack}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-foreground border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition disabled:opacity-50"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -852,7 +852,7 @@ export default function NewAssessmentPage() {
         ) : (
           <Link
             href="/admin/assessments"
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-foreground border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition"
           >
             <ArrowLeft className="w-4 h-4" />
             Cancel

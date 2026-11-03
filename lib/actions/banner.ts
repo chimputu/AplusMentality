@@ -30,6 +30,48 @@ async function requireAdminWithOrg() {
   return { admin, scope };
 }
 
+/**
+ * Like requireAdminWithOrg, but falls back to a minimal scope when the
+ * user's Clerk org is not linked to a University record.
+ *
+ * This allows SUPER_ADMIN to create GLOBAL/ALL banners even when their
+ * Clerk org has no matching institution row — the exact scenario that
+ * caused the 500 error: "Institution not found for Clerk org ...".
+ *
+ * For non-super-admins, the org lookup is mandatory (they need their
+ * institution scope for data isolation), so we re-throw.
+ */
+async function requireAdminWithOrgFallback() {
+  const admin = await requireAdmin();
+  try {
+    const scope = await getOrgScope();
+    return { admin, scope };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (admin.role === 'SUPER_ADMIN' && message.includes('Institution not found')) {
+      // Return a minimal scope — institutionId is empty so the admin
+      // cannot accidentally target a specific institution.
+      const { userId: clerkUserId, orgId, orgRole } = await import('@clerk/nextjs/server').then(m => m.auth());
+      return {
+        admin,
+        scope: {
+          userId: admin.id,
+          clerkUserId: clerkUserId || '',
+          clerkOrgId: orgId || '',
+          institutionId: '',
+          institutionName: '',
+          orgRole: orgRole || 'org:admin',
+          appRole: 'SUPER_ADMIN',
+          isSuperAdmin: true,
+          year: null,
+          period: null,
+        },
+      };
+    }
+    throw err;
+  }
+}
+
 // ============================================
 // Schemas
 // ============================================
@@ -69,7 +111,7 @@ export async function listBanners(filters?: {
   isActive?: boolean;
   scope?: BannerScope;
 }) {
-  const { admin, scope } = await requireAdminWithOrg();
+  const { admin, scope } = await requireAdminWithOrgFallback();
 
   const where: any = {};
 
@@ -229,9 +271,18 @@ export async function getActiveBanners(
 
 export async function createBanner(rawInput: unknown) {
   try {
-    const { admin, scope } = await requireAdminWithOrg();
+    const { admin, scope } = await requireAdminWithOrgFallback();
 
     const input = createBannerSchema.parse(rawInput);
+
+    // If SUPER_ADMIN falls back (no institution linked), they can ONLY create
+    // GLOBAL or ALL banners — not SPECIFIC, because there's no institutionId.
+    if (scope.isSuperAdmin && !scope.institutionId && input.scope === 'SPECIFIC') {
+      return {
+        success: false,
+        error: 'Your university profile is not fully synced. Create a GLOBAL or ALL banner, or contact support to link your institution.',
+      };
+    }
 
     // ADMIN can only target their own institution; SUPER_ADMIN can target any
     if (!scope.isSuperAdmin && input.scope === 'SPECIFIC') {
@@ -297,6 +348,16 @@ export async function createBanner(rawInput: unknown) {
       const message = err.errors[0]?.message || 'Invalid form data';
       return { success: false, error: message };
     }
+    // Give a user-friendly message for the "Institution not found" case
+    // that might slip through (e.g. non-super-admin)
+    const errMsg = err instanceof Error ? err.message : String(err);
+    if (errMsg.includes('Institution not found')) {
+      console.error('[createBanner] Institution lookup failed:', errMsg);
+      return {
+        success: false,
+        error: 'Your university profile is not fully synced. Please contact support.',
+      };
+    }
     console.error('[createBanner] Server error:', err);
     return { success: false, error: 'Failed to create banner' };
   }
@@ -304,7 +365,7 @@ export async function createBanner(rawInput: unknown) {
 
 export async function updateBanner(id: string, rawInput: unknown) {
   try {
-    const { admin, scope } = await requireAdminWithOrg();
+    const { admin, scope } = await requireAdminWithOrgFallback();
 
     const input = updateBannerSchema.parse(rawInput);
 
@@ -406,12 +467,16 @@ export async function updateBanner(id: string, rawInput: unknown) {
       return { success: false, error: message };
     }
     console.error('[updateBanner] Server error:', err);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    if (errMsg.includes('Institution not found')) {
+      return { success: false, error: 'Your university profile is not fully synced. Please contact support.' };
+    }
     return { success: false, error: 'Failed to update banner' };
   }
 }
 
 export async function deleteBanner(id: string) {
-  const { admin, scope } = await requireAdminWithOrg();
+  const { admin, scope } = await requireAdminWithOrgFallback();
 
   const existing = await prisma.banner.findUnique({ where: { id }, include: { targets: true } });
   if (!existing) {
@@ -442,7 +507,7 @@ export async function deleteBanner(id: string) {
 }
 
 export async function toggleBannerActive(id: string) {
-  const { admin, scope } = await requireAdminWithOrg();
+  const { admin, scope } = await requireAdminWithOrgFallback();
 
   const existing = await prisma.banner.findUnique({ where: { id }, include: { targets: true } });
   if (!existing) {

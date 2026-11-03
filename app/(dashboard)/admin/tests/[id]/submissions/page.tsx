@@ -112,10 +112,10 @@ export default function AdminTestSubmissionsPage() {
         <ArrowLeft className="w-4 h-4" /> Back to Tests
       </Link>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border p-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{test.title}</h1>
+      <div className="bg-card rounded-xl shadow-sm border p-6">
+        <h1 className="text-2xl font-bold text-foreground">{test.title}</h1>
         {test.description && (
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{test.description}</p>
+          <p className="text-gray-600 dark:text-muted-foreground mt-1">{test.description}</p>
         )}
         <div className="flex flex-wrap gap-4 mt-4 text-sm">
           <span className="text-gray-600">📄 {stats.total} submissions</span>
@@ -133,7 +133,7 @@ export default function AdminTestSubmissionsPage() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
               filter === f
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                : 'bg-muted text-gray-700 dark:text-foreground'
             }`}
           >
             {f}
@@ -142,14 +142,14 @@ export default function AdminTestSubmissionsPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border">
+        <div className="text-center py-12 bg-card rounded-xl border">
           <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500">No submissions.</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm border overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-700/50 border-b">
+            <thead className="bg-gray-50 dark:bg-muted/50 border-b">
               <tr>
                 <th className="px-4 py-3 text-left">Student</th>
                 <th className="px-4 py-3 text-left">File / Response</th>
@@ -161,7 +161,7 @@ export default function AdminTestSubmissionsPage() {
             </thead>
             <tbody className="divide-y">
               {filtered.map((sub) => (
-                <tr key={sub.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <tr key={sub.id} className="hover:bg-muted">
                   <td className="px-4 py-3">
                     <div className="font-medium">{sub.user.name || '—'}</div>
                     <div className="text-xs text-gray-500">{sub.user.email}</div>
@@ -221,10 +221,10 @@ export default function AdminTestSubmissionsPage() {
       {/* Grading Modal */}
       {grading && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6 relative">
+          <div className="bg-card rounded-2xl shadow-xl max-w-md w-full p-6 relative">
             <button
               onClick={() => setGrading(null)}
-              className="absolute top-3 right-3 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="absolute top-3 right-3 p-1 rounded hover:bg-muted"
             >
               <X className="w-4 h-4" />
             </button>
@@ -279,7 +279,7 @@ export default function AdminTestSubmissionsPage() {
               <button
                 onClick={() => setGrading(null)}
                 disabled={saving}
-                className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700"
+                className="px-4 py-2 rounded-lg bg-muted"
               >
                 Cancel
               </button>

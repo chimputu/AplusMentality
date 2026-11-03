@@ -250,20 +250,20 @@ export default function CreatePastPaperPage() {
     <div className="max-w-3xl mx-auto">
       <Link
         href="/admin/past-papers"
-        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 text-sm mb-6"
+        className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 text-sm mb-6"
       >
         <ArrowLeft className="w-4 h-4" /> Back to Past Papers
       </Link>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+      <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6 md:p-8">
+        <h1 className="text-2xl font-bold text-foreground mb-6">
           Add Past Paper
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Category picker */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-2">
               Category *
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -275,7 +275,7 @@ export default function CreatePastPaperPage() {
                   className={`p-3 rounded-lg border-2 text-sm font-medium transition ${
                     form.category === cat.value
                       ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-300'
+                      : 'border-border hover:border-gray-300 text-gray-700 dark:text-foreground'
                   }`}
                 >
                   <div className="text-xl mb-1">{cat.icon}</div>
@@ -287,7 +287,7 @@ export default function CreatePastPaperPage() {
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
               Title *
             </label>
             <input
@@ -295,35 +295,35 @@ export default function CreatePastPaperPage() {
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               required
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               placeholder="e.g. ICT411 Final Exam 2024"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
               Description
             </label>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               placeholder="Optional description..."
             />
           </div>
 
           {/* Institution */}
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <div className="border-t border-border pt-5">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-foreground mb-3">
               Academic Details *
             </h3>
 
             <div className="space-y-4">
               {/* University */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   University *
                 </label>
                 <select
@@ -335,7 +335,7 @@ export default function CreatePastPaperPage() {
                     setPeriod('');
                   }}
                   required
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 >
                   <option value="">Select university</option>
                   {universities.map((uni) => (
@@ -348,7 +348,7 @@ export default function CreatePastPaperPage() {
 
               {/* Programme */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Programme *
                 </label>
                 <select
@@ -356,7 +356,7 @@ export default function CreatePastPaperPage() {
                   onChange={(e) => setProgrammeId(e.target.value)}
                   required
                   disabled={!institutionId}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
                 >
                   <option value="">Select programme</option>
                   {programmes.map((prog) => (
@@ -366,7 +366,7 @@ export default function CreatePastPaperPage() {
                   ))}
                 </select>
                 {institutionId && programmes.length > 0 && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Showing programmes for {universities.find((u) => u.id === institutionId)?.name}
                   </p>
                 )}
@@ -374,14 +374,14 @@ export default function CreatePastPaperPage() {
 
               {/* Year */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Year *
                 </label>
                 <select
                   value={year}
                   onChange={(e) => setYear(parseInt(e.target.value))}
                   required
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 >
                   {[1, 2, 3, 4, 5, 6, 7].map((y) => (
                     <option key={y} value={y}>
@@ -393,7 +393,7 @@ export default function CreatePastPaperPage() {
 
               {/* Period */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Period *
                 </label>
                 <select
@@ -401,7 +401,7 @@ export default function CreatePastPaperPage() {
                   onChange={(e) => setPeriod(e.target.value)}
                   required
                   disabled={!institutionId}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
                 >
                   <option value="">Select period</option>
                   {getPeriodOptions().map((opt) => (
@@ -416,7 +416,7 @@ export default function CreatePastPaperPage() {
 
           {/* Course Selection */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-foreground mb-3">
               Course *
             </h3>
 
@@ -465,7 +465,7 @@ export default function CreatePastPaperPage() {
             ) : (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  <label className="block text-xs text-muted-foreground mb-1">
                     Course Code
                   </label>
                   <input
@@ -474,11 +474,11 @@ export default function CreatePastPaperPage() {
                     onChange={(e) => setNewCourseCode(e.target.value)}
                     required
                     placeholder="e.g. ICT411"
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                    className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  <label className="block text-xs text-muted-foreground mb-1">
                     Course Title
                   </label>
                   <input
@@ -487,7 +487,7 @@ export default function CreatePastPaperPage() {
                     onChange={(e) => setNewCourseTitle(e.target.value)}
                     required
                     placeholder="e.g. Advanced Networking"
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                    className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
                   />
                 </div>
               </div>
@@ -496,13 +496,13 @@ export default function CreatePastPaperPage() {
 
           {/* File upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-2">
               File (PDF, Image, or DOCX) *
             </label>
 
-            <label className="flex items-center justify-center gap-2 w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg px-4 py-8 cursor-pointer hover:border-blue-500 transition">
+            <label className="flex items-center justify-center gap-2 w-full border-2 border-dashed border-gray-300 dark:border-border rounded-lg px-4 py-8 cursor-pointer hover:border-blue-500 transition">
               <Upload className="w-5 h-5 text-gray-400" />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-gray-600 dark:text-muted-foreground">
                 Click to choose a file
               </span>
               <input
@@ -541,7 +541,7 @@ export default function CreatePastPaperPage() {
           <div className="flex justify-end gap-3 pt-4">
             <Link
               href="/admin/past-papers"
-              className="px-5 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+              className="px-5 py-2 rounded-lg bg-gray-200 dark:bg-muted text-gray-800 dark:text-foreground hover:bg-gray-300 dark:hover:bg-muted transition"
             >
               Cancel
             </Link>

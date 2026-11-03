@@ -78,32 +78,32 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
     <div className="max-w-6xl mx-auto">
       <Link
         href="/admin/courses"
-        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-6 transition"
+        className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 mb-6 transition"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Courses
       </Link>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
+      <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6 mb-8">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3">
-              <span className="text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
+              <span className="text-xs font-mono bg-muted text-gray-600 dark:text-muted-foreground px-2 py-1 rounded">
                 {course.code}
               </span>
               <span className={`text-xs px-2.5 py-1 rounded-full ${
                 course.isPublished
                   ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                  : 'bg-muted text-gray-600 dark:text-muted-foreground'
               }`}>
                 {course.isPublished ? 'Published' : 'Draft'}
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">
+            <h1 className="text-2xl font-bold text-foreground mt-2">
               {course.title}
             </h1>
             {course.description && (
-              <p className="text-gray-600 dark:text-gray-300 mt-2 max-w-2xl">
+              <p className="text-gray-600 dark:text-foreground mt-2 max-w-2xl">
                 {course.description}
               </p>
             )}
@@ -125,20 +125,20 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-gray-100 dark:border-border">
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-muted-foreground">
             <BookOpen className="w-4 h-4" />
             {course.modules.length} Modules
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-muted-foreground">
             <PlayCircle className="w-4 h-4" />
             {totalLessons} Lessons
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-muted-foreground">
             <Users className="w-4 h-4" />
             {course.enrollments.length} Students Enrolled
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-muted-foreground">
             <Calendar className="w-4 h-4" />
             Created {formatDate(course.createdAt)}
           </div>
@@ -146,7 +146,7 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Modules</h2>
+        <h2 className="text-lg font-semibold text-foreground">Modules</h2>
         <ModuleList modules={course.modules} courseId={course.id} isAdmin={true} />
       </div>
     </div>

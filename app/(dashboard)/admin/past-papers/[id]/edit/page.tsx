@@ -28,21 +28,21 @@ export default async function EditPastPaperPage({ params }: PageProps) {
     <div className="max-w-3xl mx-auto">
       <Link
         href="/admin/past-papers"
-        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 text-sm mb-6"
+        className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 text-sm mb-6"
       >
         <ArrowLeft className="w-4 h-4" /> Back to Past Papers
       </Link>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-foreground">
           Edit Past Paper
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <p className="text-gray-600 dark:text-muted-foreground text-sm">
           Editing <span className="font-semibold">{paper.title}</span>
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-8">
+      <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-6 md:p-8">
         <EditPastPaperForm
           initialData={{
             id: paper.id,

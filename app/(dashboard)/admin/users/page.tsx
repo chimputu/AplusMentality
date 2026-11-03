@@ -4,10 +4,22 @@ import UserManagement from '@/components/UserManagement';
 
 export default async function AdminUsersPage() {
   // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  const { role: userRole, user: adminUser } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+  const isSuperAdmin = userRole === 'SUPER_ADMIN';
+
   let usersData: any[] = [];
   let institutionsData: any[] = [];
   try {
+    const where: any = {};
+
+    // Strict tenant isolation: ADMIN can only see users in their own institution
+    // SUPER_ADMIN bypasses this and sees all users globally
+    if (userRole === 'ADMIN' && adminUser.institutionId) {
+      where.institutionId = adminUser.institutionId;
+    }
+
     usersData = await prisma.user.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
       include: {
         institution: {
@@ -76,9 +88,11 @@ export default async function AdminUsersPage() {
     <div className="max-w-7xl mx-auto">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">User Management</h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
-            Manage users, assign roles, update institutions, and promote students to admins
+          <h1 className="text-2xl font-bold text-foreground">User Management</h1>
+          <p className="text-gray-600 dark:text-muted-foreground text-sm">
+            {isSuperAdmin
+              ? 'Manage all platform users across all universities'
+              : 'Manage users within your university'}
           </p>
         </div>
         <a

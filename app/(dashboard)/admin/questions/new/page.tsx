@@ -7,8 +7,8 @@ export default async function NewQuestionPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">New Question</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <h1 className="text-2xl font-bold text-foreground">New Question</h1>
+        <p className="text-gray-600 dark:text-muted-foreground text-sm">
           Create a new question for the question bank
         </p>
       </div>

@@ -7,7 +7,18 @@ import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
 // POST - Bulk promote/demote users
 export async function POST(req: NextRequest) {
   try {
-    await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+    const { role: adminRole, userId: adminClerkId } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+
+    // Fetch admin's institution for tenant isolation
+    let adminInstitutionId: string | null = null;
+    if (adminRole === 'ADMIN') {
+      const adminUser = await prisma.user.findUnique({
+        where: { clerkId: adminClerkId },
+        select: { institutionId: true },
+      });
+      adminInstitutionId = adminUser?.institutionId || null;
+    }
+
     const body = await req.json();
     const { userIds, newRole } = body;
 
@@ -28,6 +39,23 @@ export async function POST(req: NextRequest) {
     }
 
     const clerkOrgRole = APP_ROLE_TO_CLERK[newRole];
+
+    // Data isolation: ADMIN can only promote users in their own institution
+    if (adminRole === 'ADMIN' && adminInstitutionId) {
+      const targetUsers = await prisma.user.findMany({
+        where: { clerkId: { in: userIds } },
+        select: { clerkId: true, institutionId: true },
+      });
+      const unauthorizedUsers = targetUsers.filter(
+        (u) => u.institutionId && u.institutionId !== adminInstitutionId
+      );
+      if (unauthorizedUsers.length > 0) {
+        return NextResponse.json(
+          { error: 'Unauthorized: You can only manage users in your own university.' },
+          { status: 403 }
+        );
+      }
+    }
 
     // Update all users in DB, then sync each to Clerk
     const updatePromises = userIds.map(async (userId) => {

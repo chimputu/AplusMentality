@@ -96,7 +96,7 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
       <div className="flex items-center gap-4">
         <Link
           href={`/admin/institutions/${institution.id}`}
-          className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
+          className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Details
@@ -104,10 +104,10 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-foreground">
           Edit Institution
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm mt-0.5">
+        <p className="text-gray-600 dark:text-muted-foreground text-sm mt-0.5">
           Update {institution.name}&apos;s information.
         </p>
       </div>
@@ -115,44 +115,44 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Information */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">
             Basic Information
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Institution Name
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Short Name
               </label>
               <input
                 type="text"
                 value={shortName}
                 onChange={(e) => setShortName(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Type
               </label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               >
                 {INSTITUTION_TYPES.map((t) => (
                   <option key={t.value} value={t.value}>
@@ -164,103 +164,103 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
               Description
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
             />
           </div>
         </div>
 
         {/* Location */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Location</h2>
+        <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Location</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Country
               </label>
               <input
                 type="text"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Province
               </label>
               <input
                 type="text"
                 value={province}
                 onChange={(e) => setProvince(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 City
               </label>
               <input
                 type="text"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               />
             </div>
           </div>
         </div>
 
         {/* Contact */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">
             Contact Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Website
               </label>
               <input
                 type="url"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Email
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Phone
               </label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               />
             </div>
           </div>
         </div>
 
         {/* Academic Structure */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">
             Academic Structure
           </h2>
           <p className="text-sm text-amber-600 dark:text-amber-400">
@@ -270,13 +270,13 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Level Type
               </label>
               <select
                 value={levelType}
                 onChange={(e) => setLevelType(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               >
                 {LEVEL_TYPES.map((lt) => (
                   <option key={lt.value} value={lt.value}>
@@ -286,7 +286,7 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Number of Levels (1-10)
               </label>
               <input
@@ -295,17 +295,17 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
                 max={10}
                 value={numLevels}
                 onChange={(e) => setNumLevels(parseInt(e.target.value) || 1)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Period Type
               </label>
               <select
                 value={periodType}
                 onChange={(e) => setPeriodType(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               >
                 {PERIOD_TYPES.map((pt) => (
                   <option key={pt.value} value={pt.value}>
@@ -315,7 +315,7 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Number of Periods (1-12)
               </label>
               <input
@@ -324,7 +324,7 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
                 max={12}
                 value={numPeriods}
                 onChange={(e) => setNumPeriods(parseInt(e.target.value) || 1)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground"
               />
             </div>
           </div>
@@ -337,7 +337,7 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
                 onChange={(e) => setHasFaculties(e.target.checked)}
                 className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">Has Faculties</span>
+              <span className="text-sm text-gray-700 dark:text-foreground">Has Faculties</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -346,7 +346,7 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
                 onChange={(e) => setHasBranches(e.target.checked)}
                 className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">Has Branches</span>
+              <span className="text-sm text-gray-700 dark:text-foreground">Has Branches</span>
             </label>
           </div>
         </div>
@@ -355,7 +355,7 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
         <div className="flex justify-end gap-3">
           <Link
             href={`/admin/institutions/${institution.id}`}
-            className="px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition"
+            className="px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-foreground bg-white dark:bg-muted border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition"
           >
             Cancel
           </Link>

@@ -41,10 +41,10 @@ export default async function AdminCoursesPage() {
         }}
       />
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
         {courses.length === 0 ? (
           <EmptyState
-            icon={<BookOpen className="w-10 h-10 text-gray-400 dark:text-gray-500" />}
+            icon={<BookOpen className="w-10 h-10 text-gray-400 dark:text-muted-foreground" />}
             title="No courses yet"
             description="Create your first course to get started!"
             action={{

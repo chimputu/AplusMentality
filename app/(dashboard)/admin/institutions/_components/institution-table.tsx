@@ -197,24 +197,24 @@ export default function InstitutionTable({ institutions, role }: { institutions:
   };
 
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div className="rounded-lg border border-border overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Institution</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Type</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Location</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Structure</th>
-              <th className="text-center px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Programmes</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Status</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Actions</th>
+            <tr className="border-b border-border bg-muted">
+              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Institution</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Type</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Location</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Structure</th>
+              <th className="text-center px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Programmes</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Status</th>
+              <th className="text-right px-4 py-3 font-medium text-gray-600 dark:text-muted-foreground">Actions</th>
             </tr>
           </thead>
           <tbody>
             {institutions.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center py-12 text-gray-500 dark:text-gray-400">
+                <td colSpan={7} className="text-center py-12 text-muted-foreground">
                   <div className="flex flex-col items-center gap-2">
                     <AlertTriangle className="w-8 h-8 text-gray-400" />
                     <p className="text-base font-medium">No institutions yet</p>
@@ -226,7 +226,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
               institutions.map((inst) => (
                 <tr
                   key={inst.id}
-                  className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition"
+                  className="border-b border-gray-100 dark:border-border hover:bg-gray-50 dark:hover:bg-gray-800/30 transition"
                 >
                   {/* Institution */}
                   <td className="px-4 py-3">
@@ -235,8 +235,8 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                         {TYPE_EMOJI[inst.type] || '🏫'}
                       </span>
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100">{inst.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="font-medium text-foreground">{inst.name}</p>
+                        <p className="text-xs text-muted-foreground">
                           {inst.shortName && <span>{inst.shortName} · </span>}
                           <span className="font-mono">{inst.slug}</span>
                         </p>
@@ -252,7 +252,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                   </td>
 
                   {/* Location */}
-                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                  <td className="px-4 py-3 text-gray-600 dark:text-muted-foreground">
                     {inst.city && <span>{inst.city}</span>
                     }{inst.city && inst.country && <span>, </span>}
                     {inst.country}
@@ -260,7 +260,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
 
                   {/* Structure */}
                   <td className="px-4 py-3">
-                    <div className="text-gray-600 dark:text-gray-400">
+                    <div className="text-gray-600 dark:text-muted-foreground">
                       <span className="text-xs">{inst._count.levels} levels</span>
                       <span className="mx-1.5 text-gray-400">·</span>
                       <span className="text-xs">{inst._count.periods} periods</span>
@@ -268,7 +268,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                   </td>
 
                   {/* Programmes */}
-                  <td className="px-4 py-3 text-center text-gray-900 dark:text-gray-100 font-medium">
+                  <td className="px-4 py-3 text-center text-foreground font-medium">
                     {inst._count.programmes}
                   </td>
 
@@ -279,7 +279,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                           inst.isVerified
                             ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                            : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                            : 'bg-gray-100 text-gray-600 dark:bg-muted dark:text-muted-foreground'
                         }`}
                       >
                         {inst.isVerified ? 'Verified' : 'Unverified'}
@@ -287,7 +287,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                           inst.isActive
-                            ? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                            ? 'bg-gray-100 text-gray-600 dark:bg-muted dark:text-muted-foreground'
                             : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
                         }`}
                       >
@@ -308,7 +308,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                           setOpenMenu(openMenu === inst.id ? null : inst.id);
                         }}
                         disabled={isPending}
-                        className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-50"
+                        className="p-1.5 rounded-md hover:bg-muted transition disabled:opacity-50"
                       >
                         <MoreHorizontal className="w-4 h-4 text-gray-500" />
                       </button>
@@ -329,7 +329,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
         return createPortal(
           <div
             ref={dropdownRef}
-            className="fixed z-50 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 text-sm"
+            className="fixed z-50 w-52 bg-card rounded-lg shadow-lg border border-border py-1 text-sm"
             style={{
               top: dropdownPosition.top,
               left: dropdownPosition.left,
@@ -339,7 +339,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
             <Link
               href={`/admin/institutions/${inst.id}`}
               onClick={() => setOpenMenu(null)}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-muted transition text-gray-700 dark:text-foreground"
             >
               <Eye className="w-4 h-4" />
               View
@@ -347,7 +347,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
             <Link
               href={`/admin/institutions/${inst.id}/edit`}
               onClick={() => setOpenMenu(null)}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-muted transition text-gray-700 dark:text-foreground"
             >
               <Pencil className="w-4 h-4" />
               Edit
@@ -359,7 +359,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                 setOpenMenu(null);
               }}
               disabled={isPending}
-              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300 disabled:opacity-50"
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-muted transition text-gray-700 dark:text-foreground disabled:opacity-50"
             >
               {inst.isVerified ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
               {inst.isVerified ? 'Unverify' : 'Verify'}
@@ -371,12 +371,12 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                 setOpenMenu(null);
               }}
               disabled={isPending}
-              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300 disabled:opacity-50"
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-muted transition text-gray-700 dark:text-foreground disabled:opacity-50"
             >
               {inst.isActive ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
               {inst.isActive ? 'Deactivate' : 'Activate'}
             </button>
-            <hr className="my-1 border-gray-200 dark:border-gray-700" />
+            <hr className="my-1 border-border" />
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -384,14 +384,14 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                 setOpenMenu(null);
               }}
               disabled={isPending}
-              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-700 dark:text-gray-300 disabled:opacity-50"
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-muted transition text-gray-700 dark:text-foreground disabled:opacity-50"
             >
               <UserPlus className="w-4 h-4" />
               Invite Admin
             </button>
             {role === 'SUPER_ADMIN' && (
               <>
-                <hr className="my-1 border-gray-200 dark:border-gray-700" />
+                <hr className="my-1 border-border" />
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -418,7 +418,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
 
         return createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full mx-4 p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-card rounded-xl shadow-2xl max-w-lg w-full mx-4 p-6 border border-border">
               {!inviteResult ? (
                 <>
                   <div className="flex items-start gap-4 mb-4">
@@ -426,16 +426,16 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                       <UserPlus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                      <h3 className="text-lg font-semibold text-foreground mb-1">
                         Invite Admin for {inst.name}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">
                         Enter an email to send an invitation, or leave blank to generate a copyable link.
                       </p>
                     </div>
                   </div>
                   <div className="mb-4">
-                    <label htmlFor="invite-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label htmlFor="invite-email" className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                       Email Address <span className="text-gray-400 font-normal">(optional)</span>
                     </label>
                     <input
@@ -444,7 +444,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
                       placeholder="admin@example.com"
-                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && inviteEmail.trim()) {
                           handleInviteSubmit(true);
@@ -456,14 +456,14 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                     <button
                       onClick={closeInviteModal}
                       disabled={invitePending}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition disabled:opacity-50"
+                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-foreground bg-white dark:bg-muted border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition disabled:opacity-50"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={() => handleInviteSubmit(false)}
                       disabled={invitePending}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition disabled:opacity-50 inline-flex items-center gap-2"
+                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-foreground bg-muted border border-gray-300 dark:border-border rounded-lg hover:bg-gray-200 dark:hover:bg-muted transition disabled:opacity-50 inline-flex items-center gap-2"
                     >
                       {invitePending ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -493,25 +493,25 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                       <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                      <h3 className="text-lg font-semibold text-foreground mb-1">
                         {inviteResult.emailSent ? 'Invitation Sent!' : 'Link Generated!'}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground mb-3">
                         {inviteResult.emailSent
                           ? `An invitation email has been sent. You can also copy the link below.`
                           : 'Copy the link and share it with the admin.'}
                       </p>
-                      <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-                        <code className="flex-1 text-xs text-gray-600 dark:text-gray-400 break-all">{inviteResult.url}</code>
+                      <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-input rounded-lg border border-border">
+                        <code className="flex-1 text-xs text-gray-600 dark:text-muted-foreground break-all">{inviteResult.url}</code>
                         <button
                           onClick={() => copyLinkToClipboard(inviteResult.url)}
-                          className="flex-shrink-0 p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                          className="flex-shrink-0 p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-muted transition"
                           title="Copy link"
                         >
                           {inviteCopied ? (
                             <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
                           ) : (
-                            <Copy className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            <Copy className="w-4 h-4 text-muted-foreground" />
                           )}
                         </button>
                       </div>
@@ -520,7 +520,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
                   <div className="flex justify-end gap-3">
                     <button
                       onClick={closeInviteModal}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition"
+                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-foreground bg-white dark:bg-muted border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition"
                     >
                       Done
                     </button>
@@ -536,19 +536,19 @@ export default function InstitutionTable({ institutions, role }: { institutions:
       {/* Delete Confirmation Dialog */}
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full mx-4 p-6 border border-gray-200 dark:border-gray-700">
+          <div className="bg-card rounded-xl shadow-2xl max-w-lg w-full mx-4 p-6 border border-border">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
                 <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
                   Delete Institution?
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                <p className="text-sm text-gray-600 dark:text-muted-foreground mb-1">
                   This will permanently delete <strong>all</strong> associated data:
                 </p>
-                <ul className="text-sm text-gray-500 dark:text-gray-400 list-disc list-inside space-y-0.5 mb-4">
+                <ul className="text-sm text-muted-foreground list-disc list-inside space-y-0.5 mb-4">
                   <li>Academic levels and periods</li>
                   <li>Faculties and programmes</li>
                   <li>Courses and content</li>
@@ -563,7 +563,7 @@ export default function InstitutionTable({ institutions, role }: { institutions:
               <button
                 onClick={() => setDeleteId(null)}
                 disabled={isPending}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-foreground bg-white dark:bg-muted border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition disabled:opacity-50"
               >
                 Cancel
               </button>

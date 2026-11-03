@@ -18,20 +18,20 @@
   --destructive-hover: #dc2626;
 }
 
-/* Dark Theme Variables */
+/* Dark Theme Variables — Premium Palette */
 .dark {
-  --background: #0f172a;
+  --background: #0a0a0a;
   --foreground: #f1f5f9;
   --primary: #3b82f6;
   --primary-hover: #60a5fa;
-  --primary-light: #1e293b;
-  --border: #334155;
-  --card: #1e293b;
-  --card-hover: #334155;
-  --input: #1e293b;
-  --muted: #334155;
-  --muted-foreground: #94a3b8;
-  --accent: #334155;
+  --primary-light: #1a1a1a;
+  --border: #262626;
+  --card: #121212;
+  --card-hover: #1e1e1e;
+  --input: #0e0e0e;
+  --muted: #1a1a1a;
+  --muted-foreground: #737373;
+  --accent: #1e1e1e;
   --destructive: #ef4444;
   --destructive-hover: #f87171;
 }

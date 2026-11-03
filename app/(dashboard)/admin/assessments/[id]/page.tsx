@@ -204,7 +204,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
   if (!assessment) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-500 dark:text-gray-400">Assessment not found</p>
+        <p className="text-muted-foreground">Assessment not found</p>
         <Link href="/admin/assessments" className="text-blue-500 hover:underline mt-2 inline-block">
           Back to assessments
         </Link>
@@ -220,7 +220,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
     SHORT_ANSWER: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
     NUMERIC: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
     MATCHING: 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
-    ESSAY: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300',
+    ESSAY: 'bg-gray-100 text-gray-800 dark:bg-input/30 dark:text-foreground',
   };
 
   return (
@@ -239,15 +239,15 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
         <div className="flex items-center gap-3">
           <Link
             href="/admin/assessments"
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            className="p-2 rounded-lg hover:bg-muted transition"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-2xl font-bold text-foreground">
               {assessment.title}
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               {assessment.course.code} — {assessment.course.title} ·{' '}
               {assessment.type.replace(/_/g, ' ')} · {assessment.mode === 'NATIVE' ? 'Native' : 'External'}
             </p>
@@ -259,7 +259,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
               Published
             </span>
           ) : (
-            <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300">
+            <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-input/30 dark:text-foreground">
               Draft
             </span>
           )}
@@ -274,25 +274,25 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
 
       {/* Quick stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Questions</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+        <div className="bg-card rounded-xl border border-border p-4">
+          <p className="text-xs text-muted-foreground uppercase">Questions</p>
+          <p className="text-2xl font-bold text-foreground mt-1">
             {assessment.questions.length}
           </p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Total Points</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{totalPoints}</p>
+        <div className="bg-card rounded-xl border border-border p-4">
+          <p className="text-xs text-muted-foreground uppercase">Total Points</p>
+          <p className="text-2xl font-bold text-foreground mt-1">{totalPoints}</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Attempts</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+        <div className="bg-card rounded-xl border border-border p-4">
+          <p className="text-xs text-muted-foreground uppercase">Attempts</p>
+          <p className="text-2xl font-bold text-foreground mt-1">
             {assessment.attempts.length}
           </p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Time Limit</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+        <div className="bg-card rounded-xl border border-border p-4">
+          <p className="text-xs text-muted-foreground uppercase">Time Limit</p>
+          <p className="text-2xl font-bold text-foreground mt-1">
             {assessment.timeLimit ? `${assessment.timeLimit}m` : '∞'}
           </p>
         </div>
@@ -321,14 +321,14 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
 
         <Link
           href={`/admin/assessments/${id}/grading`}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-foreground border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition"
         >
           <GraduationCap className="w-4 h-4" /> Grading
         </Link>
 
         <Link
           href={`/admin/assessments/${id}/analytics`}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-foreground border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition"
         >
           <BarChart3 className="w-4 h-4" /> Analytics
         </Link>
@@ -342,7 +342,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+      <div className="border-b border-border mb-6">
         <nav className="flex gap-6">
           {[
             { key: 'settings', label: 'Settings', icon: Settings },
@@ -355,7 +355,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
               className={`flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition ${
                 tab === t.key
                   ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  : 'border-transparent text-muted-foreground hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               <t.icon className="w-4 h-4" />
@@ -367,9 +367,9 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
 
       {/* Settings Tab */}
       {tab === 'settings' && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h2 className="text-lg font-semibold text-foreground">
               Assessment Settings
             </h2>
             {!editing && (
@@ -385,32 +385,32 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
           {editing ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Title
                 </label>
                 <input
                   type="text"
                   value={editData.title}
                   onChange={(e) => setEditData({ ...editData, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   Description
                 </label>
                 <textarea
                   value={editData.description}
                   onChange={(e) => setEditData({ ...editData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                     Time Limit (min)
                   </label>
                   <input
@@ -418,12 +418,12 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                     value={editData.timeLimit}
                     onChange={(e) => setEditData({ ...editData, timeLimit: e.target.value })}
                     min="1"
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                     Max Attempts
                   </label>
                   <input
@@ -431,18 +431,18 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                     value={editData.attemptsMax}
                     onChange={(e) => setEditData({ ...editData, attemptsMax: parseInt(e.target.value) || 1 })}
                     min="1"
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                     Show Answers
                   </label>
                   <select
                     value={editData.showAnswersAfter}
                     onChange={(e) => setEditData({ ...editData, showAnswersAfter: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="IMMEDIATELY">Immediately</option>
                     <option value="AFTER_DEADLINE">After deadline</option>
@@ -453,26 +453,26 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                     Available From
                   </label>
                   <input
                     type="datetime-local"
                     value={editData.openAt}
                     onChange={(e) => setEditData({ ...editData, openAt: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                     Available Until
                   </label>
                   <input
                     type="datetime-local"
                     value={editData.closeAt}
                     onChange={(e) => setEditData({ ...editData, closeAt: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -485,7 +485,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                   onChange={(e) => setEditData({ ...editData, shuffleQs: e.target.checked })}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <label htmlFor="editShuffleQs" className="text-sm text-gray-700 dark:text-gray-300">
+                <label htmlFor="editShuffleQs" className="text-sm text-gray-700 dark:text-foreground">
                   Shuffle questions for each student
                 </label>
               </div>
@@ -508,7 +508,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                 </button>
                 <button
                   onClick={() => setEditing(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-foreground border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition"
                 >
                   Cancel
                 </button>
@@ -528,29 +528,29 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                 { label: 'Open At', value: assessment.openAt ? formatDateTime(assessment.openAt) : 'Immediately' },
                 { label: 'Close At', value: assessment.closeAt ? formatDateTime(assessment.closeAt) : 'No deadline' },
               ].map(({ label, value }) => (
-                <div key={label} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <div key={label} className="p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                  <dt className="text-xs font-medium text-muted-foreground uppercase">
                     {label}
                   </dt>
-                  <dd className="text-gray-900 dark:text-gray-100 mt-1">{value}</dd>
+                  <dd className="text-foreground mt-1">{value}</dd>
                 </div>
               ))}
               {assessment.description && (
-                <div className="md:col-span-2 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <div className="md:col-span-2 p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                  <dt className="text-xs font-medium text-muted-foreground uppercase">
                     Description
                   </dt>
-                  <dd className="text-gray-900 dark:text-gray-100 mt-1 whitespace-pre-wrap">
+                  <dd className="text-foreground mt-1 whitespace-pre-wrap">
                     {assessment.description}
                   </dd>
                 </div>
               )}
               {assessment.mode === 'GOOGLE_FORM' && assessment.formUrl && (
-                <div className="md:col-span-2 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <dt className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <div className="md:col-span-2 p-4 bg-gray-50 dark:bg-muted/50 rounded-lg">
+                  <dt className="text-xs font-medium text-muted-foreground uppercase">
                     External URL
                   </dt>
-                  <dd className="text-gray-900 dark:text-gray-100 mt-1">
+                  <dd className="text-foreground mt-1">
                     <a
                       href={assessment.formUrl}
                       target="_blank"
@@ -570,9 +570,9 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
 
       {/* Questions Tab */}
       {tab === 'questions' && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h2 className="text-lg font-semibold text-foreground">
               Questions ({assessment.questions.length})
             </h2>
             {assessment.mode === 'NATIVE' && (
@@ -586,7 +586,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
           </div>
 
           {assessment.questions.length === 0 ? (
-            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-12 text-muted-foreground">
               <p className="mb-2">No questions added yet.</p>
               {assessment.mode === 'NATIVE' && (
                 <button
@@ -602,23 +602,23 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
               {assessment.questions.map((q: any, idx: number) => (
                 <div
                   key={q.id}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700"
+                  className="flex items-center gap-3 p-3 rounded-lg border border-border"
                 >
-                  <span className="text-sm font-medium text-gray-400 dark:text-gray-500 w-8 text-center">
+                  <span className="text-sm font-medium text-gray-400 dark:text-muted-foreground w-8 text-center">
                     {idx + 1}
                   </span>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleMoveQuestion(q.id, 'up')}
                       disabled={idx === 0}
-                      className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 disabled:opacity-30 transition"
+                      className="p-1 rounded hover:bg-muted text-gray-400 disabled:opacity-30 transition"
                     >
                       <ChevronUp className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleMoveQuestion(q.id, 'down')}
                       disabled={idx === assessment.questions.length - 1}
-                      className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 disabled:opacity-30 transition"
+                      className="p-1 rounded hover:bg-muted text-gray-400 disabled:opacity-30 transition"
                     >
                       <ChevronDown className="w-4 h-4" />
                     </button>
@@ -630,10 +630,10 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                   >
                     {q.type.replace(/_/g, ' ')}
                   </span>
-                  <p className="flex-1 text-sm text-gray-900 dark:text-gray-100 truncate">
+                  <p className="flex-1 text-sm text-foreground truncate">
                     {q.prompt}
                   </p>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">{q.points} pts</span>
+                  <span className="text-xs text-muted-foreground">{q.points} pts</span>
                   <button
                     onClick={() => handleRemoveQuestion(q.id)}
                     className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition"
@@ -649,51 +649,51 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
 
       {/* Attempts Tab */}
       {tab === 'attempts' && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Recent Attempts
           </h2>
 
           {assessment.attempts.length === 0 ? (
-            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-12 text-muted-foreground">
               No attempts yet.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  <tr className="border-b border-border">
+                    <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase">
                       Student
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                    <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase">
                       Score
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                    <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase">
                       Percentage
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                    <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase">
                       Submitted
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {assessment.attempts.map((attempt: any) => (
-                    <tr key={attempt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                    <tr key={attempt.id} className="hover:bg-muted">
+                      <td className="px-4 py-3 text-sm text-foreground">
                         {attempt.user?.firstName || 'Unknown'} ({attempt.user?.email || '—'})
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                      <td className="px-4 py-3 text-sm text-gray-700 dark:text-foreground">
                         {attempt.score !== null && attempt.score !== undefined
                           ? `${attempt.score}/${attempt.totalPoints}`
                           : '—'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                      <td className="px-4 py-3 text-sm text-gray-700 dark:text-foreground">
                         {attempt.percentage !== null && attempt.percentage !== undefined
                           ? `${attempt.percentage}%`
                           : '—'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="px-4 py-3 text-sm text-muted-foreground">
                         {attempt.submittedAt
                           ? formatDateTime(attempt.submittedAt)
                           : 'In progress'}
@@ -710,14 +710,14 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
       {/* Add Question Dialog */}
       {showAddDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 w-full max-w-2xl max-h-[80vh] flex flex-col m-4">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <div className="bg-card rounded-xl border border-border w-full max-w-2xl max-h-[80vh] flex flex-col m-4">
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h3 className="text-lg font-semibold text-foreground">
                 Add Question from Bank
               </h3>
               <button
                 onClick={() => setShowAddDialog(false)}
-                className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 transition"
+                className="p-1.5 rounded-md hover:bg-muted text-gray-400 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -729,13 +729,13 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                 value={questionSearch}
                 onChange={(e) => setQuestionSearch(e.target.value)}
                 placeholder="Search questions..."
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg bg-white dark:bg-muted text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {filteredBankQuestions.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <div className="text-center py-8 text-muted-foreground">
                   No questions found.{' '}
                   <Link href="/admin/questions/new" className="text-blue-500 hover:underline">
                     Create one
@@ -746,7 +746,7 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                 filteredBankQuestions.map((q) => (
                   <div
                     key={q.id}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 transition"
+                    className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-blue-300 dark:hover:border-blue-700 transition"
                   >
                     <span
                       className={`px-2 py-0.5 text-xs font-medium rounded-full ${
@@ -755,10 +755,10 @@ export default function AssessmentBuilderPage({ params }: { params: Promise<{ id
                     >
                       {q.type.replace(/_/g, ' ')}
                     </span>
-                    <p className="flex-1 text-sm text-gray-900 dark:text-gray-100 truncate">
+                    <p className="flex-1 text-sm text-foreground truncate">
                       {q.prompt}
                     </p>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">{q.points} pts</span>
+                    <span className="text-xs text-muted-foreground">{q.points} pts</span>
                     <button
                       onClick={() => handleAddQuestion(q.id)}
                       className="p-1.5 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition"

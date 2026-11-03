@@ -142,10 +142,10 @@ export default async function AdminTutorApplicationsPage({
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-2xl font-bold text-foreground">
               Tutor Applications
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-gray-600 dark:text-muted-foreground mt-1">
               Review and manage tutor applications from students.
             </p>
           </div>
@@ -167,14 +167,14 @@ export default async function AdminTutorApplicationsPage({
             <Link
               key={card.label}
               href={card.href}
-              className={`${card.bg} rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:shadow-md transition`}
+              className={`${card.bg} rounded-xl p-4 border border-border hover:shadow-md transition`}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  <p className="text-2xl font-bold text-foreground">
                     {card.count}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-muted-foreground">
                     {card.label}
                   </p>
                 </div>
@@ -192,8 +192,8 @@ export default async function AdminTutorApplicationsPage({
           href="?"
           className={`px-3 py-1.5 rounded-full text-xs font-medium ${
             !status
-              ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+              ? 'bg-gray-900 dark:bg-muted text-white dark:text-foreground'
+              : 'bg-muted text-gray-600 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-muted'
           }`}
         >
           All ({stats.total})
@@ -204,8 +204,8 @@ export default async function AdminTutorApplicationsPage({
             href={`?status=${s}`}
             className={`px-3 py-1.5 rounded-full text-xs font-medium ${
               status === s
-                ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                ? 'bg-gray-900 dark:bg-muted text-white dark:text-foreground'
+                : 'bg-muted text-gray-600 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-muted'
             }`}
           >
             {s.replace('_', ' ')} ({(stats as any)[s] || 0})
@@ -214,10 +214,10 @@ export default async function AdminTutorApplicationsPage({
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+      <div className="bg-card rounded-2xl shadow-sm border border-gray-100 dark:border-border p-4">
         {serializedApps.length === 0 ? (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-            <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+          <div className="text-center py-12 text-muted-foreground">
+            <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-muted-foreground" />
             <p>No applications found.</p>
           </div>
         ) : (
@@ -234,18 +234,18 @@ export default async function AdminTutorApplicationsPage({
           {page > 1 && (
             <Link
               href={`?page=${page - 1}${status ? `&status=${status}` : ''}`}
-              className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="px-4 py-2 text-sm bg-muted text-gray-600 dark:text-muted-foreground rounded-lg hover:bg-gray-200 dark:hover:bg-muted"
             >
               Previous
             </Link>
           )}
-          <span className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="text-sm text-muted-foreground">
             Page {page} of {Math.ceil(total / 20)}
           </span>
           {page < Math.ceil(total / 20) && (
             <Link
               href={`?page=${page + 1}${status ? `&status=${status}` : ''}`}
-              className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="px-4 py-2 text-sm bg-muted text-gray-600 dark:text-muted-foreground rounded-lg hover:bg-gray-200 dark:hover:bg-muted"
             >
               Next
             </Link>

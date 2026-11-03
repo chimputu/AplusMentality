@@ -93,8 +93,8 @@ export default function AdminAssessmentsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Assessments</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">Assessments</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {assessments.length} assessments · {totalSubmissions} total submissions
           </p>
         </div>
@@ -111,12 +111,12 @@ export default function AdminAssessmentsPage() {
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
           <Filter className="w-4 h-4 text-gray-400" />
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Filters:</span>
+          <span className="text-sm font-medium text-gray-600 dark:text-muted-foreground">Filters:</span>
         </div>
         <select
           value={filterType}
           onChange={e => setFilterType(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+          className="border rounded-lg px-3 py-2 text-sm bg-card dark:border-border dark:text-foreground"
         >
           <option value="">All Types</option>
           <option value="QUIZ">Quiz</option>
@@ -127,7 +127,7 @@ export default function AdminAssessmentsPage() {
         <select
           value={filterMode}
           onChange={e => setFilterMode(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+          className="border rounded-lg px-3 py-2 text-sm bg-card dark:border-border dark:text-foreground"
         >
           <option value="">All Modes</option>
           <option value="NATIVE">Native</option>
@@ -141,10 +141,10 @@ export default function AdminAssessmentsPage() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
         </div>
       ) : assessments.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-          <FileCheck className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-600 dark:text-gray-400">No assessments yet</h3>
-          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+        <div className="text-center py-12 bg-card rounded-xl border border-border">
+          <FileCheck className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-600 dark:text-muted-foreground">No assessments yet</h3>
+          <p className="text-sm text-gray-400 dark:text-muted-foreground mt-1">
             Create your first assessment to get started.
           </p>
         </div>
@@ -155,17 +155,17 @@ export default function AdminAssessmentsPage() {
             return (
               <div
                 key={assessment.id}
-                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between hover:shadow-sm transition"
+                className="bg-card rounded-xl border border-border p-4 flex items-center justify-between hover:shadow-sm transition"
               >
                 <div className="flex items-center space-x-4">
                   <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                     <TypeIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                    <h3 className="font-medium text-foreground">
                       {assessment.title}
                     </h3>
-                    <div className="flex items-center space-x-3 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <div className="flex items-center space-x-3 text-sm text-muted-foreground mt-1">
                       <span>{typeLabels[assessment.type]}</span>
                       <span>·</span>
                       <span>{assessment.course?.code} {assessment.course?.title}</span>
@@ -188,13 +188,13 @@ export default function AdminAssessmentsPage() {
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                     assessment.isPublished
                       ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                      : 'bg-muted text-gray-600 dark:text-muted-foreground'
                   }`}>
                     {assessment.isPublished ? 'Published' : 'Draft'}
                   </span>
 
                   {/* Submissions count */}
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                  <span className="text-sm text-muted-foreground">
                     {assessment._count.attempts + assessment._count.formResponses} submissions
                   </span>
 

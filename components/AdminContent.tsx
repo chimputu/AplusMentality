@@ -15,7 +15,7 @@ const BannerCarousel = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
+      <div className="w-full h-48 bg-gray-200 dark:bg-muted rounded-xl animate-pulse" />
     ),
   },
 );

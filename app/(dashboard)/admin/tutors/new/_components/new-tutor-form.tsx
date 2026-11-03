@@ -111,7 +111,7 @@ export default function NewTutorForm() {
       <div className="flex items-center gap-4">
         <Link
           href="/admin/tutors"
-          className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
+          className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Tutors
@@ -119,8 +119,8 @@ export default function NewTutorForm() {
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Add New Tutor</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm mt-0.5">
+        <h1 className="text-2xl font-bold text-foreground">Add New Tutor</h1>
+        <p className="text-gray-600 dark:text-muted-foreground text-sm mt-0.5">
           Create a new tutor profile with academic affiliation and course specialties.
         </p>
       </div>
@@ -128,14 +128,14 @@ export default function NewTutorForm() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Personal Information */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">
             Personal Information
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Full Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -143,13 +143,13 @@ export default function NewTutorForm() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Dr. John Banda"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Email <span className="text-red-500">*</span>
               </label>
               <input
@@ -157,48 +157,48 @@ export default function NewTutorForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="john.banda@unza.zm"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Phone
               </label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="+260 97 0000000"
               />
             </div>
 
             <div>
-              <p className="text-xs text-gray-400 dark:text-gray-500">
+              <p className="text-xs text-gray-400 dark:text-muted-foreground">
                 Profile photos can be uploaded after creating the tutor.
               </p>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
               Bio
             </label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={3}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Brief biography, qualifications, and teaching experience..."
             />
           </div>
         </div>
 
         {/* Academic Affiliation */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">
             Academic Affiliation
           </h2>
 
@@ -228,7 +228,7 @@ export default function NewTutorForm() {
             />
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Years of Experience
               </label>
               <input
@@ -237,27 +237,27 @@ export default function NewTutorForm() {
                 max={60}
                 value={yearsExperience}
                 onChange={(e) => setYearsExperience(parseInt(e.target.value) || 0)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
         </div>
 
         {/* Availability & Mode */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">
             Availability & Mode
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Tutoring Mode
               </label>
               <select
                 value={mode}
                 onChange={(e) => setMode(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 {TUTOR_MODES.map((m) => (
                   <option key={m.value} value={m.value}>
@@ -268,13 +268,13 @@ export default function NewTutorForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Contact Via
               </label>
               <select
                 value={contactVia}
                 onChange={(e) => setContactVia(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 {CONTACT_VIA.map((c) => (
                   <option key={c.value} value={c.value}>
@@ -285,14 +285,14 @@ export default function NewTutorForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
                 Availability
               </label>
               <input
                 type="text"
                 value={availability}
                 onChange={(e) => setAvailability(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Mon-Fri, 9AM-5PM"
               />
             </div>
@@ -300,11 +300,11 @@ export default function NewTutorForm() {
         </div>
 
         {/* Course Specialties */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">
             Course Specialties
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-muted-foreground">
             Select the courses this tutor can teach. These will appear as their specialties.
           </p>
 
@@ -331,7 +331,7 @@ export default function NewTutorForm() {
             </div>
           )}
 
-          <div className="max-h-60 overflow-y-auto space-y-2 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+          <div className="max-h-60 overflow-y-auto space-y-2 border border-border rounded-lg p-3">
             {coursesLoading ? (
               <p className="text-sm text-gray-400 text-center py-4">Loading courses...</p>
             ) : courses.length === 0 ? (
@@ -340,7 +340,7 @@ export default function NewTutorForm() {
               courses.map((course) => (
                 <label
                   key={course.id}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted cursor-pointer"
                 >
                   <input
                     type="checkbox"
@@ -348,10 +348,10 @@ export default function NewTutorForm() {
                     onChange={() => toggleCourse(course.id)}
                     className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-sm font-mono text-gray-500 dark:text-gray-400 shrink-0">
+                  <span className="text-sm font-mono text-muted-foreground shrink-0">
                     {course.code}
                   </span>
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{course.title}</span>
+                  <span className="text-sm text-gray-700 dark:text-foreground">{course.title}</span>
                 </label>
               ))
             )}
@@ -359,8 +359,8 @@ export default function NewTutorForm() {
         </div>
 
         {/* Status */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Status</h2>
+        <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Status</h2>
 
           <div className="flex gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
@@ -370,7 +370,7 @@ export default function NewTutorForm() {
                 onChange={(e) => setIsActive(e.target.checked)}
                 className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">Active</span>
+              <span className="text-sm text-gray-700 dark:text-foreground">Active</span>
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -380,7 +380,7 @@ export default function NewTutorForm() {
                 onChange={(e) => setIsVerified(e.target.checked)}
                 className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">Verified</span>
+              <span className="text-sm text-gray-700 dark:text-foreground">Verified</span>
             </label>
           </div>
         </div>
@@ -389,7 +389,7 @@ export default function NewTutorForm() {
         <div className="flex justify-end gap-3">
           <Link
             href="/admin/tutors"
-            className="px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition"
+            className="px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-foreground bg-white dark:bg-muted border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-muted transition"
           >
             Cancel
           </Link>

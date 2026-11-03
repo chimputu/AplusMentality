@@ -72,7 +72,7 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <Link
           href="/admin/lecture-slides"
-          className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
+          className="inline-flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 transition text-sm"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Slides
         </Link>
@@ -112,7 +112,7 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
             <a
               href={downloadUrl}
               download
-              className="inline-flex items-center justify-center gap-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
+              className="inline-flex items-center justify-center gap-1.5 bg-gray-200 dark:bg-muted hover:bg-gray-300 dark:hover:bg-muted text-gray-800 dark:text-foreground px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium transition w-full sm:w-auto"
             >
               <Download className="w-4 h-4" /> Download
             </a>
@@ -121,16 +121,16 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
       </div>
 
       {/* Slide metadata */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6">
+        <h1 className="text-2xl font-bold text-foreground">
           {s.title}
         </h1>
         {s.description && (
-          <p className="text-gray-600 dark:text-gray-300 mt-2">
+          <p className="text-gray-600 dark:text-foreground mt-2">
             {s.description}
           </p>
         )}
-        <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex flex-wrap gap-4 mt-4 text-sm text-muted-foreground">
           {s.category && <span>Category: {s.category}</span>}
           {s.course && (
             <span>
@@ -144,8 +144,8 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
       </div>
 
       {/* Content preview */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="aspect-video w-full bg-gray-100 dark:bg-gray-700">
+      <div className="bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border overflow-hidden">
+        <div className="aspect-video w-full bg-muted">
           {previewUrl ? (
             <iframe
               src={previewUrl}
@@ -154,7 +154,7 @@ export default async function AdminLectureSlidePage({ params }: PageProps) {
               title={s.title}
             />
           ) : (
-            <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-center h-full text-muted-foreground">
               No content available for preview. Please use the "Open" or "Download" buttons above.
             </div>
           )}

@@ -61,6 +61,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Data isolation: ADMIN can only promote users in their own institution
+    if (adminUser.role === 'ADMIN' && adminUser.institutionId) {
+      if (targetUser.institutionId && targetUser.institutionId !== adminUser.institutionId) {
+        return NextResponse.json(
+          { error: 'Unauthorized: You can only manage users in your own university.' },
+          { status: 403 }
+        );
+      }
+    }
+
     // Update user role in DB
     const updatedUser = await prisma.user.update({
       where: { clerkId: targetUserId },

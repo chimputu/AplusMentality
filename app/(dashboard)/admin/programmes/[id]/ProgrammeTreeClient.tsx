@@ -123,21 +123,21 @@ export default function ProgrammeTreeClient({
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tree.programme.name}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{tree.programme.name}</h1>
           {tree.programme.code && (
             <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">
               {tree.programme.code}
             </span>
           )}
         </div>
-        {tree.institution && <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{tree.institution.name}</p>}
+        {tree.institution && <p className="text-gray-600 dark:text-muted-foreground text-sm mt-1">{tree.institution.name}</p>}
       </div>
 
-      <div className="flex gap-1 mb-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex gap-1 mb-6 border-b border-border">
         {(['overview', 'courses', 'students'] as const).map((tab) => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition ${
-              activeTab === tab ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              activeTab === tab ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-muted-foreground hover:text-gray-700 dark:hover:text-gray-300'
             }`}>
             {tab === 'overview' ? 'Overview' : tab === 'courses' ? 'Courses by Year' : 'Students'}
           </button>
@@ -148,16 +148,16 @@ export default function ProgrammeTreeClient({
       {error && <div className="mb-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm whitespace-pre-line">{error}</div>}
 
       {activeTab === 'overview' && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Programme Overview</h3>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Programme Overview</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tree.levels.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Years</p>
+            <div className="bg-gray-50 dark:bg-muted rounded-lg p-4">
+              <p className="text-2xl font-bold text-foreground">{tree.levels.length}</p>
+              <p className="text-sm text-muted-foreground">Years</p>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tree.levels.reduce((acc, l) => acc + l.courses.length, 0)}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Courses</p>
+            <div className="bg-gray-50 dark:bg-muted rounded-lg p-4">
+              <p className="text-2xl font-bold text-foreground">{tree.levels.reduce((acc, l) => acc + l.courses.length, 0)}</p>
+              <p className="text-sm text-muted-foreground">Total Courses</p>
             </div>
           </div>
         </div>
@@ -171,24 +171,24 @@ export default function ProgrammeTreeClient({
               <Plus className="w-4 h-4" /> Add Course
             </button>
             <button onClick={() => { if (tree.levels.length > 0) setBulkLevelId(tree.levels[0].id); setShowBulkDialog(true); }}
-              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-muted transition">
               Bulk Add
             </button>
           </div>
 
           {tree.levels.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-              <BookOpen className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No academic levels found</h3>
-              <p className="text-gray-500 dark:text-gray-400">Set up academic levels for this institution first.</p>
+            <div className="text-center py-16 bg-card rounded-xl border border-border">
+              <BookOpen className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No academic levels found</h3>
+              <p className="text-muted-foreground">Set up academic levels for this institution first.</p>
             </div>
           ) : (
             tree.levels.map((level) => (
-              <div key={level.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <div key={level.id} className="bg-card rounded-xl border border-border overflow-hidden">
+                <div className="px-4 py-3 bg-gray-50 dark:bg-muted/50 border-b border-border flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">{level.name}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{level.courses.length} course{level.courses.length !== 1 ? 's' : ''}</p>
+                    <h3 className="font-semibold text-foreground">{level.name}</h3>
+                    <p className="text-sm text-muted-foreground">{level.courses.length} course{level.courses.length !== 1 ? 's' : ''}</p>
                   </div>
                   <button onClick={() => { setAddCourseLevelId(level.id); setShowAddDialog(true); }}
                     className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-md transition">
@@ -196,26 +196,26 @@ export default function ProgrammeTreeClient({
                   </button>
                 </div>
                 {level.courses.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-gray-400 dark:text-gray-500 text-sm">No courses yet for this year</div>
+                  <div className="px-4 py-8 text-center text-gray-400 dark:text-muted-foreground text-sm">No courses yet for this year</div>
                 ) : (
                   <>
                     {/* Desktop: native table */}
                     <div className="hidden md:block overflow-x-auto">
                       <table className="w-full">
                         <thead>
-                          <tr className="border-b border-gray-100 dark:border-gray-700">
-                            <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Code</th>
-                            <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
-                            <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Period</th>
-                            <th className="text-right px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                          <tr className="border-b border-gray-100 dark:border-border">
+                            <th className="text-left px-4 py-2 text-xs font-medium text-muted-foreground uppercase">Code</th>
+                            <th className="text-left px-4 py-2 text-xs font-medium text-muted-foreground uppercase">Name</th>
+                            <th className="text-left px-4 py-2 text-xs font-medium text-muted-foreground uppercase">Period</th>
+                            <th className="text-right px-4 py-2 text-xs font-medium text-muted-foreground uppercase">Actions</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
                           {level.courses.map((course) => (
-                            <tr key={course.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                              <td className="px-4 py-2 text-sm font-mono text-gray-700 dark:text-gray-300">{course.code}</td>
-                              <td className="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{course.name}</td>
-                              <td className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">{course.period?.name || '—'}</td>
+                            <tr key={course.id} className="hover:bg-muted">
+                              <td className="px-4 py-2 text-sm font-mono text-gray-700 dark:text-foreground">{course.code}</td>
+                              <td className="px-4 py-2 text-sm text-foreground">{course.name}</td>
+                              <td className="px-4 py-2 text-sm text-muted-foreground">{course.period?.name || '—'}</td>
                               <td className="px-4 py-2 text-right">
                                 <button onClick={() => handleDeleteCourse(course.id)}
                                   // 44px minimum tap target on mobile, 40px on desktop
@@ -236,11 +236,11 @@ export default function ProgrammeTreeClient({
                         <div key={course.id} className="px-4 py-3 flex items-center justify-between">
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-mono text-gray-700 dark:text-gray-300">{course.code}</span>
-                              <span className="text-sm text-gray-900 dark:text-gray-100 truncate">{course.name}</span>
+                              <span className="text-sm font-mono text-gray-700 dark:text-foreground">{course.code}</span>
+                              <span className="text-sm text-foreground truncate">{course.name}</span>
                             </div>
                             {course.period?.name && (
-                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{course.period.name}</div>
+                              <div className="text-xs text-muted-foreground mt-0.5">{course.period.name}</div>
                             )}
                           </div>
                           <button onClick={() => handleDeleteCourse(course.id)}
@@ -260,7 +260,7 @@ export default function ProgrammeTreeClient({
       )}
 
       {activeTab === 'students' && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-center text-gray-400 dark:text-gray-500">
+        <div className="bg-card rounded-xl border border-border p-6 text-center text-gray-400 dark:text-muted-foreground">
           Student enrollment data coming soon.
         </div>
       )}
@@ -268,47 +268,47 @@ export default function ProgrammeTreeClient({
       {/* Add Course Dialog */}
       {showAddDialog && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 w-full max-w-md">
+          <div className="bg-card rounded-xl border border-border p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Course</h3>
-              <button onClick={() => setShowAddDialog(false)} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"><X className="w-5 h-5" /></button>
+              <h3 className="text-lg font-semibold text-foreground">Add Course</h3>
+              <button onClick={() => setShowAddDialog(false)} className="p-1 rounded-md hover:bg-muted text-gray-400"><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleAddCourse} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Year</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Year</label>
                 <select value={addCourseLevelId} onChange={(e) => setAddCourseLevelId(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm">
                   {tree.levels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Period (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Period (optional)</label>
                 <select value={newPeriodId} onChange={(e) => setNewPeriodId(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm">
                   <option value="">No period</option>
                   {periods.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Course Code</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Course Code</label>
                 <input type="text" required value={newCode} onChange={(e) => setNewCode(e.target.value.toUpperCase())}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" placeholder="CS101" />
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm" placeholder="CS101" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Course Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Course Name</label>
                 <input type="text" required value={newName} onChange={(e) => setNewName(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" placeholder="Introduction to CS" />
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm" placeholder="Introduction to CS" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Description (optional)</label>
                 <textarea rows={2} value={newDescription} onChange={(e) => setNewDescription(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm resize-none" />
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm resize-none" />
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={loading} className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg text-sm font-medium transition">
                   {loading ? 'Adding...' : 'Add Course'}
                 </button>
-                <button type="button" onClick={() => setShowAddDialog(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">Cancel</button>
+                <button type="button" onClick={() => setShowAddDialog(false)} className="px-4 py-2 border border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-muted transition">Cancel</button>
               </div>
             </form>
           </div>
@@ -318,38 +318,38 @@ export default function ProgrammeTreeClient({
       {/* Bulk Add Dialog */}
       {showBulkDialog && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 w-full max-w-md">
+          <div className="bg-card rounded-xl border border-border p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Bulk Add Courses</h3>
-              <button onClick={() => setShowBulkDialog(false)} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"><X className="w-5 h-5" /></button>
+              <h3 className="text-lg font-semibold text-foreground">Bulk Add Courses</h3>
+              <button onClick={() => setShowBulkDialog(false)} className="p-1 rounded-md hover:bg-muted text-gray-400"><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleBulkAdd} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Year</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Year</label>
                 <select value={bulkLevelId} onChange={(e) => setBulkLevelId(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm">
                   {tree.levels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Period (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Period (optional)</label>
                 <select value={bulkPeriodId} onChange={(e) => setBulkPeriodId(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm">
                   <option value="">No period</option>
                   {periods.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Courses (one per line: CODE, Name)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Courses (one per line: CODE, Name)</label>
                 <textarea required rows={6} value={bulkText} onChange={(e) => setBulkText(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm resize-none font-mono"
+                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-muted text-foreground text-sm resize-none font-mono"
                   placeholder={'CS101, Intro to CS\nCS102, Programming Basics'} />
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={loading} className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg text-sm font-medium transition">
                   {loading ? 'Adding...' : 'Add All'}
                 </button>
-                <button type="button" onClick={() => setShowBulkDialog(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">Cancel</button>
+                <button type="button" onClick={() => setShowBulkDialog(false)} className="px-4 py-2 border border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-muted transition">Cancel</button>
               </div>
             </form>
           </div>

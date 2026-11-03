@@ -40,17 +40,17 @@ export default function NewProgrammeForm() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <div className="mb-6">
         <Link
           href="/admin/programmes"
-          className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mb-4"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-gray-700 dark:hover:text-gray-200 mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Programmes
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Add Programme</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-foreground">Add Programme</h1>
+        <p className="text-gray-600 dark:text-muted-foreground text-sm mt-1">
           Create a new academic programme for an institution.
         </p>
       </div>
@@ -76,7 +76,7 @@ export default function NewProgrammeForm() {
 
         {/* Programme Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
             <GraduationCap className="w-4 h-4 inline mr-1" />
             Programme Name <span className="text-red-500">*</span>
           </label>
@@ -87,13 +87,13 @@ export default function NewProgrammeForm() {
             required
             disabled={isPending}
             placeholder="e.g. BSc Computer Science"
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+            className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground disabled:opacity-50"
           />
         </div>
 
         {/* Short Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
             Short Name
           </label>
           <input
@@ -102,13 +102,13 @@ export default function NewProgrammeForm() {
             onChange={(e) => setShortName(e.target.value)}
             disabled={isPending}
             placeholder="e.g. BSc CS"
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+            className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground disabled:opacity-50"
           />
         </div>
 
         {/* Code */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+          <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1.5">
             Code
           </label>
           <input
@@ -117,18 +117,18 @@ export default function NewProgrammeForm() {
             onChange={(e) => setCode(e.target.value)}
             disabled={isPending}
             placeholder="e.g. BSC-CS"
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+            className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground disabled:opacity-50"
           />
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Must be unique within the selected institution.
           </p>
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex justify-end gap-3 pt-4 border-t border-border">
           <Link
             href="/admin/programmes"
-            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-border text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-muted transition"
           >
             Cancel
           </Link>

@@ -41,8 +41,8 @@ export default function AdminTutorRequestsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Tutor Requests</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">Tutor Requests</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Student requests for tutoring sessions
           </p>
         </div>
@@ -51,7 +51,7 @@ export default function AdminTutorRequestsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+            className="border border-gray-300 dark:border-border rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-input text-foreground"
           >
             <option value="">All Status</option>
             <option value="PENDING">Pending</option>
@@ -66,29 +66,29 @@ export default function AdminTutorRequestsPage() {
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="animate-pulse bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+              className="animate-pulse bg-card rounded-xl border border-border p-5"
             >
-              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/3" />
+              <div className="h-4 bg-gray-300 dark:bg-muted rounded w-1/3" />
             </div>
           ))}
         </div>
       ) : requests.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-12 text-center">
-          <p className="text-gray-500 dark:text-gray-400">No tutor requests yet.</p>
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
+          <p className="text-muted-foreground">No tutor requests yet.</p>
         </div>
       ) : (
         <div className="space-y-3">
           {requests.map((req) => (
             <div
               key={req.id}
-              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm"
+              className="bg-card rounded-xl border border-border p-5 shadow-sm"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                  <h3 className="font-semibold text-foreground">
                     {req.studentName}
                   </h3>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Mail className="w-3 h-3" />
                       {req.studentEmail}
@@ -107,7 +107,7 @@ export default function AdminTutorRequestsPage() {
                       ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                       : req.status === 'CONTACTED'
                       ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                      : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                      : 'bg-gray-100 text-gray-600 dark:bg-muted dark:text-muted-foreground'
                   }`}
                 >
                   {req.status}
@@ -116,26 +116,26 @@ export default function AdminTutorRequestsPage() {
 
               <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Tutor:</span>{' '}
-                  <span className="text-gray-900 dark:text-gray-100">{req.tutor.fullName}</span>
+                  <span className="text-muted-foreground">Tutor:</span>{' '}
+                  <span className="text-foreground">{req.tutor.fullName}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Course:</span>{' '}
-                  <span className="text-gray-900 dark:text-gray-100">{req.courseNeeded || 'N/A'}</span>
+                  <span className="text-muted-foreground">Course:</span>{' '}
+                  <span className="text-foreground">{req.courseNeeded || 'N/A'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Type:</span>{' '}
-                  <span className="text-gray-900 dark:text-gray-100">{req.sessionType}</span>
+                  <span className="text-muted-foreground">Type:</span>{' '}
+                  <span className="text-foreground">{req.sessionType}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Rate:</span>{' '}
-                  <span className="text-gray-900 dark:text-gray-100">
+                  <span className="text-muted-foreground">Rate:</span>{' '}
+                  <span className="text-foreground">
                     {req.quotedRate ? `${req.quotedRate} ZMW` : 'Not specified'}
                   </span>
                 </div>
               </div>
 
-              <p className="mt-3 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+              <p className="mt-3 text-sm text-gray-600 dark:text-muted-foreground bg-gray-50 dark:bg-muted/50 rounded-lg p-3">
                 {req.message}
               </p>
 
