@@ -37,7 +37,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
               "media-src 'self' https://res.cloudinary.com https://www.youtube.com https://youtube.com",
-              "connect-src 'self' https://*.clerk.accounts.dev https://cdn.protect.clerk.com https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io https://docs.google.com https://api.emailjs.com https://openrouter.ai",
+              "connect-src 'self' https://clerk.com https://*.clerk.com https://*.clerk.accounts.dev https://clerk-telemetry.com https://cdn.protect.clerk.com https://api.clerk.com https://api.cloudinary.com https://*.sentry.io https://*.ingest.sentry.io https://docs.google.com https://api.emailjs.com https://openrouter.ai",
               "frame-src 'self' https://*.clerk.accounts.dev https://www.youtube.com https://youtube.com https://docs.google.com",
               "worker-src 'self' blob: https://bm-smrwsawvav22aok.public.bumpl.cloud",
               "frame-ancestors 'self'",

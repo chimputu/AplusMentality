@@ -157,7 +157,7 @@ function FeatureCardsMarquee() {
             key={idx}
             className="flex-shrink-0 w-[280px] sm:w-[320px]"
           >
-            <div className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-48 sm:h-56 cursor-pointer">
+            <div className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-48 sm:h-56 cursor-pointer border border-transparent dark:border-neutral-800">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-blue-400">
                 <Image
                   src={item.image}
@@ -832,7 +832,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="w-full py-12 bg-gray-50 dark:bg-[#0a0a0a]"
+        className="w-full py-12 bg-gray-50 dark:bg-neutral-950 transition-colors"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-12">
@@ -1201,7 +1201,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-blue-600 dark:bg-blue-900/80 text-white"
+        className="py-10 sm:py-12 bg-blue-600 dark:bg-blue-950/50 border border-transparent dark:border-blue-900/50 text-white"
       >
         <div className="w-full px-3 sm:px-4 text-center">
           <Heart className="w-12 h-12 mx-auto mb-4 text-blue-200 dark:text-blue-300" />
