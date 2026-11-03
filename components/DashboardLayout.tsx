@@ -1286,6 +1286,7 @@ export default function DashboardLayout({
               )}
             </div>
           </div>
+          </div>
         </LiquidGlass>
       </aside>
 
