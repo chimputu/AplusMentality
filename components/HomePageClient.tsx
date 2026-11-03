@@ -120,17 +120,17 @@ function UniversitiesCarousel() {
             key={idx}
             className="flex-shrink-0 w-[200px] sm:w-[240px]"
           >
-            <div className="bg-white rounded-xl border border-border p-4 text-center hover:shadow-lg hover:border-blue-300 transition-all duration-300 h-full flex flex-col items-center justify-center shadow-sm">
+            <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl p-4 text-center hover:shadow-md transition-shadow h-full flex flex-col items-center justify-center shadow-sm">
               <InstitutionLogo
                 name={inst.name}
                 shortName={inst.shortName}
                 logoUrl={inst.logoUrl}
                 size="md"
               />
-              <p className="mt-3 text-sm font-semibold text-foreground leading-tight">
+              <p className="mt-3 text-sm font-semibold text-gray-900 dark:text-white leading-tight">
                 {inst.name}
               </p>
-              <p className="text-[10px] text-muted-foreground mt-1">
+              <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
                 Zambian Institution
               </p>
             </div>
@@ -170,7 +170,7 @@ function FeatureCardsMarquee() {
                     e.currentTarget.style.display = 'none';
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
               </div>
 
               <div className="relative h-full flex flex-col justify-end p-5">
@@ -833,7 +833,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="w-full py-12 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-muted dark:to-background"
+        className="w-full py-12 bg-white dark:bg-neutral-950"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-12">
@@ -1233,14 +1233,14 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-muted"
+        className="py-10 sm:py-12 bg-gray-50 dark:bg-neutral-950"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               Aligned with Zambia's University Curriculum
             </h2>
-            <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
+            <p className="mt-2 text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
               Supporting students across Zambia's leading academic institutions
             </p>
           </div>
