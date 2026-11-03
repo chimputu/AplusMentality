@@ -124,9 +124,7 @@ export async function POST(req: Request) {
         },
       });
 
-      console.log(
-        `✅ User ${id} synced (username: ${normalizedUsername ?? 'none'})`
-      );
+      // User synced successfully
     } catch (error) {
       console.error('Error processing user:', error);
       return new Response('Error processing user', { status: 500 });
@@ -139,7 +137,7 @@ export async function POST(req: Request) {
       await prisma.user.delete({
         where: { clerkId: data.id },
       });
-      console.log(`🗑️  User ${data.id} deleted from database`);
+      // User deleted from database
     } catch (error) {
       // Ignore "not found" — user may never have been synced
       console.warn(`Could not delete user ${data.id}:`, error);
@@ -157,9 +155,9 @@ export async function POST(req: Request) {
         where: { id: institution.id },
         data: { clerkOrgId: id, clerkOrgSlug: slug },
       });
-      console.log(`✅ Organization linked to institution: ${slug}`);
+      // Organization linked to institution
     } else {
-      console.warn(`⚠️ Organization created without matching institution: ${slug}`);
+      // Organization created without matching institution — skip
     }
   }
 
@@ -183,7 +181,7 @@ export async function POST(req: Request) {
       where: { clerkOrgId: id, status: 'active' },
       data: { status: 'revoked', revokedAt: new Date() },
     });
-    console.log(`🗑️  Organization ${id} deleted — links nullified, memberships revoked`);
+    // Organization deleted — links nullified, memberships revoked
   }
 
   // 9. Handle organizationMembership.created — upsert membership record
@@ -224,7 +222,7 @@ export async function POST(req: Request) {
         where: { id: user.id },
         data: { clerkOrgId: organization.id, clerkOrgRole: role, role: appRole },
       });
-      console.log(`✅ Membership created: ${user.email} → ${organization.slug} (${role}, app role: ${appRole})`);
+      // Membership created and role synced
     }
   }
 
@@ -251,7 +249,7 @@ export async function POST(req: Request) {
       where: { id: user.id },
       data: { clerkOrgRole: role, role: appRole },
     });
-    console.log(`✅ Membership updated: ${user.email} → ${role} (app role: ${appRole}) in ${organization.slug}`);
+    // Membership updated and role synced
   }
 
   // 11. Handle organizationMembership.deleted — revoke membership

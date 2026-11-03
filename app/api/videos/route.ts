@@ -231,6 +231,13 @@ export async function POST(req: NextRequest) {
 
       resolvedCourseId = existingCourse.id;
     } else if (courseMode === 'new') {
+      if (auth.user.role === 'TUTOR') {
+        return NextResponse.json(
+            { error: 'Tutors cannot create new courses. Contact an admin or lecturer.' },
+            { status: 403 }
+        );
+      }
+
       if (!newCourseCode || !newCourseTitle) {
         return NextResponse.json(
             { error: 'New course code and title are required' },

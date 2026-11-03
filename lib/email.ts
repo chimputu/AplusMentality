@@ -20,16 +20,11 @@ export interface TutorApplicationEmail {
 export async function sendTutorApplicationEmail(email: TutorApplicationEmail) {
   const { to, subject, body, type } = email;
 
-  // Log the email for tracking
-  console.log(`[Email] ${type.toUpperCase()} — To: ${to}, Subject: ${subject}`);
-
   // Send via Brevo
   const result = await sendEmail({ to, subject, html: body });
 
-  if (result.success) {
-    console.log(`[Email] ${type.toUpperCase()} sent successfully to ${to}`);
-  } else {
-    console.error(`[Email] ${type.toUpperCase()} failed to send to ${to}:`, result.error);
+  if (!result.success) {
+    console.error(`[Email] ${type.toUpperCase()} failed:`, result.error);
   }
 
   return result;

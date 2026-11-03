@@ -29,7 +29,6 @@ const isOnboardingRoute = createRouteMatcher(['/onboarding(.*)']);
 // Protected dashboard routes — require auth + org
 const isProtectedRoute = createRouteMatcher([
   '/admin(.*)',
-  '/super-admin(.*)',
   '/tutor(.*)',
   '/lecturer(.*)',
   '/student(.*)',
@@ -40,7 +39,6 @@ const isProtectedRoute = createRouteMatcher([
 // SECURITY: TUTOR and LECTURER are NOT interchangeable — each has their own dashboard
 const routeRoleRequirements: Record<string, string[]> = {
   '/admin': ['ADMIN', 'SUPER_ADMIN'],
-  '/super-admin': ['SUPER_ADMIN'],
   '/tutor': ['TUTOR'],
   '/lecturer': ['LECTURER'],
   '/student': ['STUDENT'],

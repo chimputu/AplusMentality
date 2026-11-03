@@ -3,7 +3,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath, updateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 import { BannerVariant, BannerPlacement, BannerScope } from '../../generated/prisma/client';
 import { getOrgScope } from '@/lib/auth/org-scope';
 
@@ -228,168 +228,186 @@ export async function getActiveBanners(
 }
 
 export async function createBanner(rawInput: unknown) {
-  const { admin, scope } = await requireAdminWithOrg();
+  try {
+    const { admin, scope } = await requireAdminWithOrg();
 
-  const input = createBannerSchema.parse(rawInput);
+    const input = createBannerSchema.parse(rawInput);
 
-  // ADMIN can only target their own institution; SUPER_ADMIN can target any
-  if (!scope.isSuperAdmin && input.scope === 'SPECIFIC') {
-    const allowedIds = input.institutionIds.filter((id) => id === scope.institutionId);
-    if (allowedIds.length === 0) {
-      return { success: false, error: 'Can only create banners for your institution' };
+    // ADMIN can only target their own institution; SUPER_ADMIN can target any
+    if (!scope.isSuperAdmin && input.scope === 'SPECIFIC') {
+      const allowedIds = input.institutionIds.filter((id) => id === scope.institutionId);
+      if (allowedIds.length === 0) {
+        return { success: false, error: 'Can only create banners for your institution' };
+      }
+      // Restrict to only the admin's institution
+      (input as any).institutionIds = allowedIds;
     }
-    // Restrict to only the admin's institution
-    (input as any).institutionIds = allowedIds;
-  }
 
-  const startsAt = typeof input.startsAt === 'string' ? new Date(input.startsAt) : input.startsAt;
-  const endsAt = input.endsAt
-    ? typeof input.endsAt === 'string'
-      ? new Date(input.endsAt)
-      : input.endsAt
-    : null;
-
-  // Determine institutionId for backward compat
-  const institutionId =
-    input.scope === 'SPECIFIC' && input.institutionIds.length === 1
-      ? input.institutionIds[0]
+    const startsAt = typeof input.startsAt === 'string' ? new Date(input.startsAt) : input.startsAt;
+    const endsAt = input.endsAt
+      ? typeof input.endsAt === 'string'
+        ? new Date(input.endsAt)
+        : input.endsAt
       : null;
 
-  const banner = await prisma.banner.create({
-    data: {
-      title: input.title,
-      message: input.message,
-      ctaLabel: input.ctaLabel,
-      ctaUrl: input.ctaUrl,
-      imageUrl: input.imageUrl,
-      variant: input.variant,
-      placement: input.placement,
-      scope: input.scope,
-      startsAt,
-      endsAt,
-      isActive: input.isActive,
-      priority: input.priority,
-      institutionId,
-      ...(input.scope === 'SPECIFIC' && input.institutionIds.length > 0
-        ? {
-            targets: {
-              create: input.institutionIds.map((instId) => ({
-                institutionId: instId,
-              })),
-            },
-          }
-        : {}),
-    },
-    include: {
-      targets: true,
-    },
-  });
+    // Determine institutionId for backward compat
+    const institutionId =
+      input.scope === 'SPECIFIC' && input.institutionIds.length === 1
+        ? input.institutionIds[0]
+        : null;
 
-  revalidatePath('/');
-  revalidatePath('/dashboard');
-  revalidatePath('/admin/banners');
-  updateTag('banners');
+    const banner = await prisma.banner.create({
+      data: {
+        title: input.title,
+        message: input.message,
+        ctaLabel: input.ctaLabel,
+        ctaUrl: input.ctaUrl,
+        imageUrl: input.imageUrl,
+        variant: input.variant,
+        placement: input.placement,
+        scope: input.scope,
+        startsAt,
+        endsAt,
+        isActive: input.isActive,
+        priority: input.priority,
+        institutionId,
+        ...(input.scope === 'SPECIFIC' && input.institutionIds.length > 0
+          ? {
+              targets: {
+                create: input.institutionIds.map((instId) => ({
+                  institutionId: instId,
+                })),
+              },
+            }
+          : {}),
+      },
+      include: {
+        targets: true,
+      },
+    });
 
-  return { success: true, bannerId: banner.id };
+    revalidatePath('/');
+    revalidatePath('/dashboard');
+    revalidatePath('/admin/banners');
+    updateTag('banners');
+
+    return { success: true, bannerId: banner.id };
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const message = err.errors[0]?.message || 'Invalid form data';
+      return { success: false, error: message };
+    }
+    console.error('[createBanner] Server error:', err);
+    return { success: false, error: 'Failed to create banner' };
+  }
 }
 
 export async function updateBanner(id: string, rawInput: unknown) {
-  const { admin, scope } = await requireAdminWithOrg();
+  try {
+    const { admin, scope } = await requireAdminWithOrg();
 
-  const input = updateBannerSchema.parse(rawInput);
+    const input = updateBannerSchema.parse(rawInput);
 
-  const existing = await prisma.banner.findUnique({ where: { id }, include: { targets: true } });
-  if (!existing) {
-    throw new Error('Banner not found');
-  }
-
-  // ADMIN can only update banners for their own institution
-  if (!scope.isSuperAdmin) {
-    const bannerTargetsOwnOrg =
-      existing.scope === 'GLOBAL' ||
-      existing.scope === 'ALL' ||
-      existing.institutionId === scope.institutionId;
-
-    // Also check if any target matches the admin's institution
-    const hasTargetMatch = existing.targets?.some(
-      (t: any) => t.institutionId === scope.institutionId
-    );
-
-    if (!bannerTargetsOwnOrg && !hasTargetMatch) {
-      return { success: false, error: 'Can only update banners for your institution' };
+    const existing = await prisma.banner.findUnique({ where: { id }, include: { targets: true } });
+    if (!existing) {
+      return { success: false, error: 'Banner not found' };
     }
 
-    // Restrict institutionIds to admin's institution
-    if (input.scope === 'SPECIFIC' && input.institutionIds) {
-      (input as any).institutionIds = input.institutionIds.filter(
-        (id) => id === scope.institutionId
+    // ADMIN can only update banners for their own institution
+    if (!scope.isSuperAdmin) {
+      const bannerTargetsOwnOrg =
+        existing.scope === 'GLOBAL' ||
+        existing.scope === 'ALL' ||
+        existing.institutionId === scope.institutionId;
+
+      // Also check if any target matches the admin's institution
+      const hasTargetMatch = existing.targets?.some(
+        (t: any) => t.institutionId === scope.institutionId
       );
+
+      if (!bannerTargetsOwnOrg && !hasTargetMatch) {
+        return { success: false, error: 'Can only update banners for your institution' };
+      }
+
+      // Restrict institutionIds to admin's institution
+      if (input.scope === 'SPECIFIC' && input.institutionIds) {
+        (input as any).institutionIds = input.institutionIds.filter(
+          (id) => id === scope.institutionId
+        );
+      }
     }
-  }
 
-  const startsAt = input.startsAt
-    ? typeof input.startsAt === 'string'
-      ? new Date(input.startsAt)
-      : input.startsAt
-    : undefined;
-
-  const endsAt = input.endsAt !== undefined
-    ? input.endsAt === null
-      ? null
-      : typeof input.endsAt === 'string'
-        ? new Date(input.endsAt)
-        : input.endsAt
-    : undefined;
-
-  // Determine institutionId for backward compat
-  const institutionId =
-    input.scope !== undefined && input.scope === 'SPECIFIC' && input.institutionIds && input.institutionIds.length === 1
-      ? input.institutionIds[0]
+    const startsAt = input.startsAt
+      ? typeof input.startsAt === 'string'
+        ? new Date(input.startsAt)
+        : input.startsAt
       : undefined;
 
-  const banner = await prisma.banner.update({
-    where: { id },
-    data: {
-      title: input.title,
-      message: input.message,
-      ctaLabel: input.ctaLabel,
-      ctaUrl: input.ctaUrl,
-      imageUrl: input.imageUrl,
-      variant: input.variant,
-      placement: input.placement,
-      scope: input.scope,
-      startsAt,
-      endsAt,
-      isActive: input.isActive,
-      priority: input.priority,
-      institutionId,
-    },
-  });
+    const endsAt = input.endsAt !== undefined
+      ? input.endsAt === null
+        ? null
+        : typeof input.endsAt === 'string'
+          ? new Date(input.endsAt)
+          : input.endsAt
+      : undefined;
 
-  // Handle targets update
-  if (input.scope === 'SPECIFIC' && input.institutionIds) {
-    // Delete existing targets
-    await prisma.bannerTarget.deleteMany({ where: { bannerId: id } });
-    // Create new targets
-    if (input.institutionIds.length > 0) {
-      await prisma.bannerTarget.createMany({
-        data: input.institutionIds.map((instId) => ({
-          bannerId: id,
-          institutionId: instId,
-        })),
-      });
+    // Determine institutionId for backward compat
+    const institutionId =
+      input.scope !== undefined && input.scope === 'SPECIFIC' && input.institutionIds && input.institutionIds.length === 1
+        ? input.institutionIds[0]
+        : undefined;
+
+    const banner = await prisma.banner.update({
+      where: { id },
+      data: {
+        title: input.title,
+        message: input.message,
+        ctaLabel: input.ctaLabel,
+        ctaUrl: input.ctaUrl,
+        imageUrl: input.imageUrl,
+        variant: input.variant,
+        placement: input.placement,
+        scope: input.scope,
+        startsAt,
+        endsAt,
+        isActive: input.isActive,
+        priority: input.priority,
+        institutionId,
+      },
+    });
+
+    // Handle targets update
+    if (input.scope === 'SPECIFIC' && input.institutionIds) {
+      // Delete existing targets
+      await prisma.bannerTarget.deleteMany({ where: { bannerId: id } });
+      // Create new targets
+      if (input.institutionIds.length > 0) {
+        await prisma.bannerTarget.createMany({
+          data: input.institutionIds.map((instId) => ({
+            bannerId: id,
+            institutionId: instId,
+          })),
+        });
+      }
+    } else if (input.scope === 'GLOBAL' || input.scope === 'ALL') {
+      // Delete all targets when switching to GLOBAL or ALL
+      await prisma.bannerTarget.deleteMany({ where: { bannerId: id } });
     }
-  } else if (input.scope === 'GLOBAL' || input.scope === 'ALL') {
-    // Delete all targets when switching to GLOBAL or ALL
-    await prisma.bannerTarget.deleteMany({ where: { bannerId: id } });
+
+    revalidatePath('/');
+    revalidatePath('/dashboard');
+    revalidatePath('/admin/banners');
+    updateTag('banners');
+
+    return { success: true, bannerId: banner.id };
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const message = err.errors[0]?.message || 'Invalid form data';
+      return { success: false, error: message };
+    }
+    console.error('[updateBanner] Server error:', err);
+    return { success: false, error: 'Failed to update banner' };
   }
-
-  revalidatePath('/');
-  revalidatePath('/dashboard');
-  revalidatePath('/admin/banners');
-  updateTag('banners');
-
-  return { success: true, bannerId: banner.id };
 }
 
 export async function deleteBanner(id: string) {

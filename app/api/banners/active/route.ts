@@ -89,8 +89,6 @@ export async function GET(request: NextRequest) {
       targets: b.targets.map((t) => t.institution),
     }));
 
-    console.log(`[banners] Fetched ${result.length} banners for placement=${placement} institution=${institutionId ?? 'none'}`);
-
     return NextResponse.json({ banners: result, count: result.length });
   } catch (error) {
     console.error('[banners] Error:', error);

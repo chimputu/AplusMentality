@@ -77,9 +77,7 @@ export async function PATCH(req: Request) {
           console.error('[Onboarding] Failed to add user to Clerk org:', err);
         });
 
-        console.log(
-          `[Onboarding] User ${userId} added to Clerk org ${clerkOrgId} as ${clerkRole}`
-        );
+        // User added to Clerk org on onboarding completion
       }
     }
 

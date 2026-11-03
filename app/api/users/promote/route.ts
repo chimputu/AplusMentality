@@ -15,8 +15,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { targetUserId, newRole } = body;
 
-    console.log('🔵 Promotion request:', { targetUserId, newRole, adminId: adminUser.clerkId });
-
     // Validate input
     if (!targetUserId) {
       return NextResponse.json(
@@ -57,7 +55,6 @@ export async function POST(req: NextRequest) {
     });
 
     if (!targetUser) {
-      console.log('❌ Target user not found:', targetUserId);
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -85,8 +82,6 @@ export async function POST(req: NextRequest) {
     }
 
     const action = `role changed to ${newRole}`;
-
-    console.log('✅ User updated:', updatedUser);
 
     return NextResponse.json({
       success: true,

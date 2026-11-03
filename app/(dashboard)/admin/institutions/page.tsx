@@ -4,7 +4,7 @@ import PageHeader from '@/components/PageHeader';
 import InstitutionTable from './_components/institution-table';
 
 export default async function InstitutionsPage() {
-  await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+  const { role } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
   const institutions = await listInstitutions();
 
   return (
@@ -14,7 +14,7 @@ export default async function InstitutionsPage() {
         description="Manage universities, colleges, polytechnics, and other academic institutions."
       />
 
-      <InstitutionTable institutions={institutions} />
+      <InstitutionTable institutions={institutions} role={role} />
     </div>
   );
 }

@@ -59,7 +59,7 @@ interface InstitutionRow {
   };
 }
 
-export default function InstitutionTable({ institutions }: { institutions: InstitutionRow[] }) {
+export default function InstitutionTable({ institutions, role }: { institutions: InstitutionRow[]; role?: string }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -389,19 +389,23 @@ export default function InstitutionTable({ institutions }: { institutions: Insti
               <UserPlus className="w-4 h-4" />
               Invite Admin
             </button>
-            <hr className="my-1 border-gray-200 dark:border-gray-700" />
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(inst.id);
-                setOpenMenu(null);
-              }}
-              disabled={isPending}
-              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-red-600 dark:text-red-400 disabled:opacity-50"
-            >
-              <Trash2 className="w-4 h-4" />
-              Delete
-            </button>
+            {role === 'SUPER_ADMIN' && (
+              <>
+                <hr className="my-1 border-gray-200 dark:border-gray-700" />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(inst.id);
+                    setOpenMenu(null);
+                  }}
+                  disabled={isPending}
+                  className="w-full flex items-center gap-2 px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-red-600 dark:text-red-400 disabled:opacity-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </button>
+              </>
+            )}
           </div>,
           document.body
         );

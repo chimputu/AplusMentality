@@ -151,9 +151,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
-
-    console.log(`📝 Admin ${user.email} creating course`);
+    const { userId, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN', 'LECTURER']);
 
     const body = await req.json();
 
@@ -196,6 +194,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
           { error: 'Programme not found' },
           { status: 404 }
+      );
+    }
+
+    // LECTURER can only create courses within their own institution
+    if (user.role === 'LECTURER' && user.institutionId && programme.institutionId !== user.institutionId) {
+      return NextResponse.json(
+          { error: 'Forbidden: You can only create courses in your own institution' },
+          { status: 403 }
       );
     }
 

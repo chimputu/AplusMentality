@@ -254,7 +254,7 @@ export async function updateInstitution(id: string, rawInput: unknown) {
 }
 
 export async function deleteInstitution(id: string) {
-  await requireAdmin();
+  await requireSuperAdmin();
 
   await prisma.university.delete({ where: { id } });
 

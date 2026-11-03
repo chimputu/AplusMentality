@@ -48,9 +48,7 @@ export async function sendEmail({
 }: SendEmailOptions) {
   // If no API key, log and return gracefully — never crash the caller
   if (!process.env.BREVO_API_KEY) {
-    console.warn('[email] BREVO_API_KEY missing. Skipping send to:', to);
-    console.log('[email] Subject:', subject);
-    console.log('[email] HTML preview:', html.slice(0, 200) + '...');
+    console.warn('[email] BREVO_API_KEY missing. Skipping send.');
     return { success: false, error: 'BREVO_API_KEY missing' };
   }
 
@@ -71,12 +69,7 @@ export async function sendEmail({
       },
     });
 
-    console.log(
-      '[email] Sent via Brevo:',
-      result.messageId,
-      'to:',
-      Array.isArray(to) ? to.join(', ') : to
-    );
+    // Email sent successfully — no need to log recipient addresses in production
 
     return { success: true, id: result.messageId };
   } catch (err: any) {

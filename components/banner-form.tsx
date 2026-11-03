@@ -150,13 +150,22 @@ export default function BannerForm({ bannerId, initialData, isSuperAdmin = false
         institutionIds: formData.scope === 'SPECIFIC' ? formData.institutionIds : [],
       };
 
-      if (bannerId) {
-        await updateBanner(bannerId, payload);
-        toast.success('Banner updated', { description: 'The banner has been updated successfully' });
-      } else {
-        await createBanner(payload);
-        toast.success('Banner created', { description: 'The banner will appear shortly' });
+      const result = bannerId
+        ? await updateBanner(bannerId, payload)
+        : await createBanner(payload);
+
+      if (result && result.success === false) {
+        const errorMsg = result.error || 'Failed to save banner';
+        setError(errorMsg);
+        toast.error('Failed to save banner', { description: errorMsg });
+        return;
       }
+
+      toast.success(bannerId ? 'Banner updated' : 'Banner created', {
+        description: bannerId
+          ? 'The banner has been updated successfully'
+          : 'The banner will appear shortly',
+      });
       router.push('/admin/banners');
     } catch (err: any) {
       console.error('[banner-form] Submit error:', err);
