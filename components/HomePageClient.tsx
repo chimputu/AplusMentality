@@ -20,6 +20,7 @@ import {
 import { CourseCard } from '@/components/course-card';
 import { InstitutionLogo } from '@/components/institution-logo';
 import ThemeToggle from '@/components/ThemeToggle';
+import LiquidGlassHeroDemo from '@/components/liquid-glass-hero-demo';
 
 // Dynamically import heavy components to reduce initial bundle and TBT
 const BannerCarouselLazy = dynamic(
@@ -767,125 +768,8 @@ export default function HomePageClient() {
         )}
       </nav>
 
-      {/* ===== HERO – BACKGROUND IMAGE ===== */}
-      <section className="relative min-h-[85vh] md:min-h-screen flex items-center overflow-hidden">
-        {/* Background image */}
-        <Image
-          src="/mmst-grad-group.png"
-          alt=""
-          fill
-          priority
-          quality={85}
-          sizes="100vw"
-          className="object-cover object-center"
-          aria-hidden="true"
-        />
-
-        {/* Dark overlay for text contrast */}
-        <div className="absolute inset-0 bg-black/60" />
-
-        {/* Content */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-
-            {/* LEFT: Headline + CTAs */}
-            <div className="text-center lg:text-left space-y-6">
-              {/* Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
-                <span className="block">Your Goal.</span>
-                <span className="block text-blue-500 mt-2">
-                  Our tools.
-                </span>
-                <span className="block mt-2">
-                  Your{' '}
-                  <span className="text-blue-500">A+</span>{' '}
-                  result.
-                </span>
-              </h1>
-
-              {/* Description */}
-              <p className="text-base sm:text-lg text-gray-200 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                A+ Mentality helps students study smarter, stay organized, and track progress so you can achieve more and stress less.
-              </p>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                <Link
-                  href="/sign-up"
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full font-medium transition-colors shadow-lg hover:shadow-xl"
-                >
-                  Get Started Free
-                </Link>
-                <Link
-                  href="#explore"
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium transition-colors border border-white/40"
-                >
-                  Explore Features
-                </Link>
-              </div>
-
-              {/* Trust indicators */}
-              <div className="flex flex-wrap gap-x-6 gap-y-3 justify-center lg:justify-start text-sm text-gray-300 pt-4">
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-gray-200" />
-                  Free to start
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-gray-200" />
-                  Learn offline
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-gray-200" />
-                  Mentors available
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4 text-gray-200" />
-                  Built for Zambians
-                </span>
-              </div>
-            </div>
-
-            {/* RIGHT: Blur Box Card (No Video) */}
-            <div className="flex justify-center lg:justify-end w-full">
-              <div className="relative w-full max-w-md">
-                
-                {/* Subtle glow behind card */}
-                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-emerald-500/20 rounded-3xl blur-3xl" />
-                
-                {/* The Blur Box Card */}
-                <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-2xl text-center">
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    Built for Zambian Students
-                  </h3>
-                  <p className="text-gray-200 text-sm mb-6">
-                    By Zambians, for Zambians
-                  </p>
-                  <div className="flex justify-center gap-6 text-sm mb-8">
-                    <div>
-                      <p className="font-bold text-white text-lg">Quality</p>
-                      <p className="text-gray-300 text-xs">Content</p>
-                    </div>
-                    <div>
-                      <p className="font-bold text-white text-lg">Expert</p>
-                      <p className="text-gray-300 text-xs">Mentors</p>
-                    </div>
-                    <div>
-                      <p className="font-bold text-white text-lg">Learn</p>
-                      <p className="text-gray-300 text-xs">Offline</p>
-                    </div>
-                  </div>
-                  <div className="pt-6 border-t border-white/20">
-                    <p className="text-xs text-gray-300">
-                      Join the A+ Mentality community today
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
+      {/* ===== HERO — LIQUID GLASS ===== */}
+      <LiquidGlassHeroDemo />
 
       {/* ===== FOUR PILLARS ===== */}
       <motion.section
