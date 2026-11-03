@@ -1,5 +1,3 @@
-'use client';
-
 // Breadcrumbs component — shows navigation path on detail pages
 import Link from 'next/link';
 import { ChevronRight, Home } from 'lucide-react';

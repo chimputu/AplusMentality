@@ -58,10 +58,7 @@ async function requireAdminWithOrg() {
 
 export async function submitTutorApplication(rawInput: unknown) {
   try {
-    console.log('[submitTutorApplication] Starting submission...');
-
     const user = await requireAuth();
-    console.log('[submitTutorApplication] Authenticated user:', user.id);
 
     let input: any;
     try {
@@ -74,7 +71,6 @@ export async function submitTutorApplication(rawInput: unknown) {
       const firstError = validationErr.errors?.[0]?.message ?? validationErr.message ?? 'Invalid application data';
       return { success: false, error: firstError };
     }
-    console.log('[submitTutorApplication] Validation passed');
 
     // Check if user already has an active application
     const existing = await withRetry(
@@ -84,7 +80,6 @@ export async function submitTutorApplication(rawInput: unknown) {
       }),
       { attempts: 3, delayMs: 500 }
     );
-    console.log('[submitTutorApplication] Existing application check:', existing ? `found (${existing.status})` : 'none');
 
     if (existing && existing.status !== 'REJECTED' && existing.status !== 'WITHDRAWN') {
       return { success: false, error: 'You already have a pending or approved application' };
@@ -93,7 +88,6 @@ export async function submitTutorApplication(rawInput: unknown) {
     let application;
 
     if (existing) {
-      console.log('[submitTutorApplication] Updating existing application:', existing.id);
       await withRetry(
         async () => prisma.tutorReference.deleteMany({ where: { tutorApplicationId: existing.id } }),
         { attempts: 3, delayMs: 500 }
@@ -171,7 +165,6 @@ export async function submitTutorApplication(rawInput: unknown) {
         });
       }, { attempts: 3, delayMs: 500 });
     } else {
-      console.log('[submitTutorApplication] Creating new application for user:', user.id);
       application = await withRetry(async () => {
         return prisma.tutorApplication.create({
           data: {
@@ -237,8 +230,6 @@ export async function submitTutorApplication(rawInput: unknown) {
       }, { attempts: 3, delayMs: 500 });
     }
 
-    console.log('[submitTutorApplication] Application saved:', application.id);
-
     // Send email notification to admins (non-blocking)
     const admins = await withRetry(
       async () => prisma.user.findMany({
@@ -250,7 +241,6 @@ export async function submitTutorApplication(rawInput: unknown) {
       console.error('[submitTutorApplication] Failed to fetch admins:', e?.message);
       return [] as Array<{ email: string }>;
     });
-    console.log('[submitTutorApplication] Found admins to notify:', admins.length);
     for (const admin of admins) {
       const email = createSubmittedEmail(admin.email, input.fullName, input.email);
       await sendTutorApplicationEmail(email).catch((e) =>
@@ -259,7 +249,6 @@ export async function submitTutorApplication(rawInput: unknown) {
     }
 
     revalidatePath('/apply-as-tutor');
-    console.log('[submitTutorApplication] Submission completed successfully');
     return { success: true, applicationId: application.id };
   } catch (err: any) {
     // Log full error details for debugging

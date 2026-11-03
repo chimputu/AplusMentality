@@ -1,4 +1,5 @@
 'use client';
+import dynamic from 'next/dynamic';
 import { Megaphone, Video, Users, Settings, BookOpen, FileText, GraduationCap, ListTodo } from 'lucide-react';
 import CreateAnnouncementForm from './CreateAnnouncementForm';
 import AnnouncementList from './AnnouncementList';
@@ -6,8 +7,18 @@ import VideoUploadForm from './VideoUploadForm';
 import VideoList from './VideoList';
 import UserManagement from '@/components/UserManagement';
 import Link from 'next/link';
-import BannerCarousel from '@/components/banner-carousel';
 import type { Role } from '@/generated/prisma/client';
+
+// Dynamically import banner carousel — Embla carousel is ~150KB and is below the fold
+const BannerCarousel = dynamic(
+  () => import('@/components/banner-carousel'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
+    ),
+  },
+);
 
 interface Announcement {
   id: string;

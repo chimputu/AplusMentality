@@ -7,6 +7,19 @@ import Link from 'next/link';
 import { ArrowLeft, Upload, Loader2, FileText, Image as ImageIcon, File } from 'lucide-react';
 import { CourseSelect } from '@/components/ui/selects/course-select';
 
+interface University {
+  id: string;
+  name: string;
+  code: string;
+  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
+}
+
+interface Programme {
+  id: string;
+  name: string;
+  shortName: string | null;
+}
+
 const CATEGORIES = [
   { value: 'test', label: 'Test', icon: '📝' },
   { value: 'quiz', label: 'Quiz', icon: '❓' },
@@ -36,6 +49,69 @@ export default function CreatePastPaperPage() {
   const [courseId, setCourseId] = useState('');
   const [newCourseCode, setNewCourseCode] = useState('');
   const [newCourseTitle, setNewCourseTitle] = useState('');
+
+  // Academic scoping data
+  const [universities, setUniversities] = useState<University[]>([]);
+  const [programmes, setProgrammes] = useState<Programme[]>([]);
+
+  // Load universities
+  useEffect(() => {
+    async function loadUniversities() {
+      try {
+        const res = await fetch('/api/admin/universities');
+        if (res.ok) {
+          const data = await res.json();
+          setUniversities(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
+        }
+      } catch {
+        console.error('Failed to load universities');
+      }
+    }
+    loadUniversities();
+  }, []);
+
+  // Load programmes when institution changes
+  useEffect(() => {
+    if (!institutionId) {
+      setProgrammes([]);
+      return;
+    }
+    async function loadProgrammes() {
+      try {
+        const res = await fetch(`/api/admin/programmes?universityId=${institutionId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
+        }
+      } catch {
+        console.error('Failed to load programmes');
+      }
+    }
+    loadProgrammes();
+  }, [institutionId]);
+
+  // Get period options based on selected university's academic system
+  const getPeriodOptions = () => {
+    const uni = universities.find((u) => u.id === institutionId);
+    if (!uni) return [];
+    switch (uni.academicSystem) {
+      case 'YEARLY':
+        return [{ value: '', label: 'Full Year' }];
+      case 'SEMESTERLY':
+        return [
+          { value: '1', label: 'Semester 1' },
+          { value: '2', label: 'Semester 2' },
+        ];
+      case 'TRIMESTERLY':
+        return [
+          { value: '1', label: 'Trimester 1' },
+          { value: '2', label: 'Trimester 2' },
+          { value: '3', label: 'Trimester 3' },
+        ];
+      default:
+        return [];
+    }
+  };
 
   const [form, setForm] = useState({
     title: '',
@@ -238,8 +314,108 @@ export default function CreatePastPaperPage() {
             />
           </div>
 
-          {/* Course Selection — Single dropdown replaces Institution → Programme → Level → Period chain */}
+          {/* Institution */}
           <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Academic Details *
+            </h3>
+
+            <div className="space-y-4">
+              {/* University */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  University *
+                </label>
+                <select
+                  value={institutionId}
+                  onChange={(e) => {
+                    setInstitutionId(e.target.value);
+                    setProgrammes([]);
+                    setProgrammeId('');
+                    setPeriod('');
+                  }}
+                  required
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                >
+                  <option value="">Select university</option>
+                  {universities.map((uni) => (
+                    <option key={uni.id} value={uni.id}>
+                      {uni.name} ({uni.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Programme */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Programme *
+                </label>
+                <select
+                  value={programmeId}
+                  onChange={(e) => setProgrammeId(e.target.value)}
+                  required
+                  disabled={!institutionId}
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+                >
+                  <option value="">Select programme</option>
+                  {programmes.map((prog) => (
+                    <option key={prog.id} value={prog.id}>
+                      {prog.shortName || prog.name}
+                    </option>
+                  ))}
+                </select>
+                {institutionId && programmes.length > 0 && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Showing programmes for {universities.find((u) => u.id === institutionId)?.name}
+                  </p>
+                )}
+              </div>
+
+              {/* Year */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Year *
+                </label>
+                <select
+                  value={year}
+                  onChange={(e) => setYear(parseInt(e.target.value))}
+                  required
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                >
+                  {[1, 2, 3, 4, 5, 6, 7].map((y) => (
+                    <option key={y} value={y}>
+                      Year {y}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Period */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Period *
+                </label>
+                <select
+                  value={period}
+                  onChange={(e) => setPeriod(e.target.value)}
+                  required
+                  disabled={!institutionId}
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+                >
+                  <option value="">Select period</option>
+                  {getPeriodOptions().map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Course Selection */}
+          <div>
             <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Course *
             </h3>

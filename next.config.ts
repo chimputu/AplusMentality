@@ -14,7 +14,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '50mb',
     },
-    optimizePackageImports: ['framer-motion'],
+    optimizePackageImports: ['framer-motion', 'recharts'],
   },
   // ✅ Silence the Turbopack warning
   turbopack: {},
@@ -69,9 +69,9 @@ const nextConfig = {
     ];
   },
   // ✅ Allow external images (required for Unsplash & Google thumbnails)
-  // ⚠️ unoptimized: true — Render does not support Edge image optimization
+  // Vercel supports Edge image optimization — enable AVIF/WebP for smaller payloads
   images: {
-    unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
     qualities: [75, 85],
     remotePatterns: [
       {

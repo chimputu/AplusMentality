@@ -1182,6 +1182,7 @@ export default function DashboardLayout({
               </div>
               <OrganizationSwitcher
                 hidePersonal={true}
+                createOrganizationUrl={role === 'SUPER_ADMIN' ? '/admin/organizations' : ''}
                 appearance={{
                   elements: {
                     OrganizationSwitcherTrigger: 'w-full',

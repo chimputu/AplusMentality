@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { getAuthUser, requireAuth } from '@/lib/auth';
+import { isResourceInFullScopeFromUser } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 // GET - Get a single assignment
@@ -8,7 +9,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }  // ✅ Promise
 ) {
   try {
-    await requireAuth();
+    const auth = await getAuthUser();
+    if (!auth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     const { id } = await params;  // ✅ Await
 
     const assignment = await prisma.assignment.findUnique({
@@ -16,6 +20,15 @@ export async function GET(
       include: {
         creator: {
           select: { name: true, email: true },
+        },
+        course: {
+          select: {
+            year: true,
+            period: true,
+            programme: {
+              select: { institutionId: true },
+            },
+          },
         },
         submissions: {
           include: {
@@ -32,6 +45,11 @@ export async function GET(
         { error: 'Assignment not found' },
         { status: 404 }
       );
+    }
+
+    // IDOR protection: verify the user has access to this assignment's course
+    if (!isResourceInFullScopeFromUser(auth.user, assignment.course)) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     return NextResponse.json(assignment);

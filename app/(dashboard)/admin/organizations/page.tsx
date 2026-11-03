@@ -54,7 +54,9 @@ function SyncAllButton({ notLinkedCount }: { notLinkedCount: number }) {
 }
 
 export default async function OrganizationsPage() {
-  // Auth handled by layout (ADMIN + SUPER_ADMIN) - SUPER_ADMIN only page
+  // Only SUPER_ADMIN can access this page - prevent org:admin privilege escalation
+  await requireAuth(['SUPER_ADMIN']);
+
   let institutions: any[] = [];
   let usersWithoutMemberships = 0;
   try {

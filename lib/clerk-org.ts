@@ -58,14 +58,12 @@ export async function addUserToClerkOrg(
       const errorText = await response.text();
       // 409 means already a member — treat as success
       if (response.status === 409) {
-        console.log(`[Clerk Org] User ${userClerkId} is already a member of org ${orgId}`);
         return { success: true, alreadyMember: true };
       }
       console.error(`[Clerk Org] Failed to add user to org: ${response.status} ${errorText}`);
       return { success: false, error: errorText };
     }
 
-    console.log(`[Clerk Org] Successfully added user ${userClerkId} to org ${orgId} as ${role}`);
     return { success: true };
   } catch (error) {
     console.error('[Clerk Org] Error adding user to org:', error);
@@ -97,7 +95,6 @@ export async function removeUserFromClerkOrg(userClerkId: string, orgId: string)
       return { success: false, error: errorText };
     }
 
-    console.log(`[Clerk Org] Successfully removed user ${userClerkId} from org ${orgId}`);
     return { success: true };
   } catch (error) {
     console.error('[Clerk Org] Error removing user from org:', error);
@@ -138,9 +135,6 @@ export async function updateUserClerkOrgRole(
       const errorText = await response.text();
       // 404 means user is not a member — fall back to adding them
       if (response.status === 404) {
-        console.log(
-          `[Clerk Org] User ${userClerkId} is not a member of org ${orgId}, adding them`,
-        );
         return addUserToClerkOrg(userClerkId, orgId, role);
       }
       console.error(
@@ -149,9 +143,6 @@ export async function updateUserClerkOrgRole(
       return { success: false, error: errorText };
     }
 
-    console.log(
-      `[Clerk Org] Successfully updated user ${userClerkId} role to ${role} in org ${orgId}`,
-    );
     return { success: true };
   } catch (error) {
     console.error('[Clerk Org] Error updating user role:', error);
@@ -183,7 +174,6 @@ export async function createClerkOrg(name: string, slug: string) {
       const errorText = await response.text();
       // 409 means org already exists
       if (response.status === 409) {
-        console.log(`[Clerk Org] Organization ${slug} already exists`);
         return { success: true, alreadyExists: true };
       }
       console.error(`[Clerk Org] Failed to create org: ${response.status} ${errorText}`);
@@ -191,7 +181,6 @@ export async function createClerkOrg(name: string, slug: string) {
     }
 
     const data = await response.json();
-    console.log(`[Clerk Org] Created organization: ${slug} (id: ${data.id})`);
     return { success: true, orgId: data.id };
   } catch (error) {
     console.error('[Clerk Org] Error creating org:', error);

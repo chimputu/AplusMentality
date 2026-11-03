@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, getAuthUser } from '@/lib/auth';
-import { isUserAuthorizedForCourse } from '@/lib/auth/scope';
+import { isUserAuthorizedForCourse, buildCourseResourceScopeWhereFromUser } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -36,6 +36,12 @@ export async function GET(req: NextRequest) {
       where.course = {
         programme: { institutionId: universityId },
       };
+    }
+
+    // Apply academic scope filtering based on user's institution, year, and period
+    const scopeWhere = buildCourseResourceScopeWhereFromUser(auth.user);
+    if (scopeWhere.course) {
+      where.course = { ...where.course, ...scopeWhere.course };
     }
 
     const assignments = await prisma.assignment.findMany({

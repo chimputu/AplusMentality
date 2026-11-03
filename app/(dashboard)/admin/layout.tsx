@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { requireAuth } from '@/lib/auth';
 import DashboardLayout from '@/components/DashboardLayout';
-import { AIAssistantWrapper } from '@/components/ai/ai-assistant-wrapper';
+import { AIAssistantLazy } from '@/components/ai/ai-assistant-lazy';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -20,8 +20,8 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <div className="w-full">
         {children}
       </div>
-      {/* Wrap AIAssistant in error boundary to prevent crashes from affecting the admin dashboard */}
-      <AIAssistantWrapper
+      {/* AI assistant is dynamically loaded to avoid blocking initial page render (~500KB AI SDK) */}
+      <AIAssistantLazy
         userFirstName={u.firstName ?? null}
         userRole={u.role ?? null}
         userInstitution={institutionName}

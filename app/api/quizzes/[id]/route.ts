@@ -1,6 +1,7 @@
 // app/api/quizzes/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
+import { isResourceInFullScopeFromUser } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 // GET - Fetch a single quiz
@@ -22,6 +23,15 @@ export async function GET(
         creator: {
           select: { name: true, email: true },
         },
+        course: {
+          select: {
+            year: true,
+            period: true,
+            programme: {
+              select: { institutionId: true },
+            },
+          },
+        },
         submissions: {
           include: {
             user: {
@@ -34,6 +44,11 @@ export async function GET(
 
     if (!quiz) {
       return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
+    }
+
+    // IDOR protection: verify the user has access to this quiz's course
+    if (!isResourceInFullScopeFromUser(auth.user, quiz.course)) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     return NextResponse.json(quiz);

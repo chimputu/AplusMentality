@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
-import { isUserAuthorizedForCourse } from '@/lib/auth/scope';
+import { isUserAuthorizedForCourse, buildCourseResourceScopeWhereFromUser } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -37,9 +37,13 @@ export async function GET(req: NextRequest) {
       // TUTOR/LECTURER can only see quizzes they created
       where.createdBy = user.clerkId;
     } else {
-      // STUDENT: only see published quizzes for courses they're enrolled in
+      // STUDENT: only see published quizzes for their own institution/year/period
       where.isPublished = true;
       where.isPreview = false;
+      const scopeWhere = buildCourseResourceScopeWhereFromUser(user);
+      if (scopeWhere.course) {
+        where.course = { ...where.course, ...scopeWhere.course };
+      }
     }
 
     if (courseId) where.courseId = courseId;

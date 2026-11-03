@@ -4,6 +4,19 @@ import { useRouter } from 'next/navigation';
 import { Upload, Loader2, CheckCircle, XCircle, Film } from 'lucide-react';
 import { CourseSelect } from '@/components/ui/selects/course-select';
 
+interface University {
+  id: string;
+  name: string;
+  code: string;
+  academicSystem: 'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY';
+}
+
+interface Programme {
+  id: string;
+  name: string;
+  shortName: string | null;
+}
+
 interface VideoUploadFormProps {
   universities?: Array<{ id: string; name: string }>;
 }
@@ -30,30 +43,51 @@ export default function VideoUploadForm({ universities }: VideoUploadFormProps) 
   const [newCourseTitle, setNewCourseTitle] = useState('');
   const [order, setOrder] = useState(1);
 
-  // Load academic system for period options
-  const [academicSystem, setAcademicSystem] = useState<'YEARLY' | 'SEMESTERLY' | 'TRIMESTERLY' | null>(null);
+  // Academic scoping data
+  const [universitiesList, setUniversitiesList] = useState<University[]>([]);
+  const [programmes, setProgrammes] = useState<Programme[]>([]);
+
+  // Load universities
+  useEffect(() => {
+    async function loadUniversities() {
+      try {
+        const res = await fetch('/api/admin/universities');
+        if (res.ok) {
+          const data = await res.json();
+          setUniversitiesList(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
+        }
+      } catch {
+        console.error('Failed to load universities');
+      }
+    }
+    loadUniversities();
+  }, []);
+
+  // Load programmes when university changes
   useEffect(() => {
     if (!universityId) {
-      setAcademicSystem(null);
-      setPeriod('');
+      setProgrammes([]);
       return;
     }
-    fetch(`/api/institutions/picker`)
-      .then((res) => res.json())
-      .then((json) => {
-        const data = json.data || [];
-        const uni = data.find((u: any) => u.id === universityId);
-        if (uni) {
-          setAcademicSystem(uni.academicSystem || 'SEMESTERLY');
+    async function loadProgrammes() {
+      try {
+        const res = await fetch(`/api/admin/programmes?universityId=${universityId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
         }
-      })
-      .catch(() => setAcademicSystem('SEMESTERLY'));
+      } catch {
+        console.error('Failed to load programmes');
+      }
+    }
+    loadProgrammes();
   }, [universityId]);
 
-  // Get period options based on academic system
+  // Get period options based on selected university's academic system
   const getPeriodOptions = () => {
-    if (!academicSystem) return [];
-    switch (academicSystem) {
+    const uni = universitiesList.find((u) => u.id === universityId);
+    if (!uni) return [];
+    switch (uni.academicSystem) {
       case 'YEARLY':
         return [{ value: '', label: 'Full Year' }];
       case 'SEMESTERLY':
@@ -320,8 +354,106 @@ export default function VideoUploadForm({ universities }: VideoUploadFormProps) 
         </div>
       )}
 
-      {/* Course Selection — Single dropdown replaces University → Programme → Year → Period chain */}
+      {/* Academic Details */}
       <div className="border-t border-border pt-4">
+        <h3 className="text-sm font-medium text-foreground mb-3">Academic Details *</h3>
+
+        <div className="space-y-3">
+          {/* University */}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              University *
+            </label>
+            <select
+              value={universityId}
+              onChange={(e) => {
+                setUniversityId(e.target.value);
+                setProgrammes([]);
+                setProgrammeId('');
+                setPeriod('');
+              }}
+              required
+              className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            >
+              <option value="">Select university</option>
+              {universitiesList.map((uni) => (
+                <option key={uni.id} value={uni.id}>
+                  {uni.name} ({uni.code})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Programme */}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              Programme *
+            </label>
+            <select
+              value={programmeId}
+              onChange={(e) => setProgrammeId(e.target.value)}
+              required
+              disabled={!universityId}
+              className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+            >
+              <option value="">Select programme</option>
+              {programmes.map((prog) => (
+                <option key={prog.id} value={prog.id}>
+                  {prog.shortName || prog.name}
+                </option>
+              ))}
+            </select>
+            {universityId && programmes.length > 0 && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Showing programmes for {universitiesList.find((u) => u.id === universityId)?.name}
+              </p>
+            )}
+          </div>
+
+          {/* Year */}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              Year *
+            </label>
+            <select
+              value={year}
+              onChange={(e) => setYear(parseInt(e.target.value))}
+              required
+              className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            >
+              {[1, 2, 3, 4, 5, 6, 7].map((y) => (
+                <option key={y} value={y}>
+                  Year {y}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Period */}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              Period *
+            </label>
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value)}
+              required
+              disabled={!universityId}
+              className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50"
+            >
+              <option value="">Select period</option>
+              {getPeriodOptions().map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Course Selection */}
+      <div>
         <h3 className="text-sm font-medium text-foreground mb-3">Course *</h3>
 
         <div className="flex gap-4 mb-3">
