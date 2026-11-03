@@ -29,13 +29,13 @@ export default function LiquidGlassHeroDemo() {
 
   return (
     <section className="relative isolate flex min-h-[44rem] w-full flex-col overflow-hidden px-4 text-white">
-      {/* Background image — Zambian university campus / education scene */}
+      {/* Background image — MMST graduation group photo */}
       <img
-        src="https://images.unsplash.com/photo-1523050854058-8df90110c8f1?w=1920&q=80"
+        src="/mmst-grad-group.png"
         alt=""
-        className="absolute inset-0 -z-10 size-full object-cover object-[center_40%]"
+        className="absolute inset-0 -z-10 size-full object-cover object-center"
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
 
       {/* ---- Liquid Glass Navbar ---- */}
       <LiquidGlass
