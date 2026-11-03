@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 // GET — list faculties for dropdown (admin only)
 export async function GET(req: NextRequest) {
-  const admin = await getAuthUser(['ADMIN']);
+  const admin = await getAuthUser(['ADMIN', 'SUPER_ADMIN']);
   if (!admin) {
     return NextResponse.json({ error: 'Unauthorized', data: [], count: 0 }, { status: 401 });
   }

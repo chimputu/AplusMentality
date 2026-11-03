@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useClerk } from '@clerk/nextjs';
 import { Loader2, GraduationCap, Lock } from 'lucide-react';
 import { completeOnboarding } from '@/lib/actions/user-admin';
 import { InstitutionSelect } from '@/components/ui/selects/institution-select';
@@ -50,6 +51,7 @@ export default function OnboardingForm({
   lockedInstitutionDetails,
 }: OnboardingFormProps) {
   const router = useRouter();
+  const clerk = useClerk();
   const [isPending, startTransition] = useTransition();
 
   const [institutionId, setInstitutionId] = useState(lockedInstitutionId || '');
@@ -132,6 +134,17 @@ export default function OnboardingForm({
 
         if (result.error) {
           throw new Error(result.error);
+        }
+
+        // Activate the Clerk org in the session so the middleware sees orgId
+        if (result.clerkOrgId) {
+          try {
+            await clerk.setActive({
+              organization: result.clerkOrgId,
+            });
+          } catch (err) {
+            console.warn('[Onboarding] Failed to activate org session:', err);
+          }
         }
 
         // Redirect based on role

@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     let role: string;
 
     if (hasFilters) {
-      const auth = await getAuthUser(['ADMIN']);
+      const auth = await getAuthUser(['ADMIN', 'SUPER_ADMIN']);
       if (!auth) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }

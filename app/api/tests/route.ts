@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN']);
+    const auth = await getAuthUser(['TUTOR', 'LECTURER', 'ADMIN', 'SUPER_ADMIN']);
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    await requireAuth(['TUTOR', 'LECTURER', 'ADMIN']);
+    await requireAuth(['TUTOR', 'LECTURER', 'ADMIN', 'SUPER_ADMIN']);
     const body = await req.json();
 
     const {
@@ -226,7 +226,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    await requireAuth(['TUTOR', 'LECTURER', 'ADMIN']);
+    await requireAuth(['TUTOR', 'LECTURER', 'ADMIN', 'SUPER_ADMIN']);
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');

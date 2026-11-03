@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
 // POST - Create a new lesson
 export async function POST(req: NextRequest) {
   try {
-    const auth = await getAuthUser(['ADMIN']);
+    const auth = await getAuthUser(['ADMIN', 'SUPER_ADMIN']);
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
 // PUT - Update a lesson
 export async function PUT(req: NextRequest) {
   try {
-    const auth = await getAuthUser(['ADMIN']);
+    const auth = await getAuthUser(['ADMIN', 'SUPER_ADMIN']);
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -162,7 +162,7 @@ export async function PUT(req: NextRequest) {
 // DELETE - Delete a lesson
 export async function DELETE(req: NextRequest) {
   try {
-    const auth = await getAuthUser(['ADMIN']);
+    const auth = await getAuthUser(['ADMIN', 'SUPER_ADMIN']);
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

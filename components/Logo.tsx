@@ -8,7 +8,7 @@ interface LogoProps {
 
 export function Logo({ className = "", showText = true, variant = "default" }: LogoProps) {
   const textColor =
-    variant === "dark" ? "text-black" : "text-gray-900 dark:text-white";
+    variant === "dark" ? "text-white" : "text-gray-900 dark:text-white";
 
   return (
     <Link href="/" className={`flex items-center gap-2.5 ${className}`}>

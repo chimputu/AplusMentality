@@ -80,7 +80,7 @@ const bannerBaseSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
   message: z.string().min(3, 'Message must be at least 3 characters'),
   ctaLabel: z.string().optional(),
-  ctaUrl: z.string().url('Must be a valid URL').or(z.string().startsWith('/')).optional(),
+  ctaUrl: z.string().url('Must be a valid URL').or(z.string().startsWith('/')).or(z.literal('')).optional(),
   imageUrl: z.string().optional(),
   variant: z.nativeEnum(BannerVariant),
   placement: z.nativeEnum(BannerPlacement),

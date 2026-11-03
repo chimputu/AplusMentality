@@ -128,26 +128,17 @@ export default function NewCoursePage() {
               onChange={setSelectedPeriodId}
               label="Period (optional)"
               fetchFn={async () => {
-                if (!selectedProgrammeId) return [];
-                const res = await fetch(`/api/programmes/${selectedProgrammeId}/tree`);
+                if (!institutionId) return [];
+                const res = await fetch(`/api/admin/periods?institutionId=${encodeURIComponent(institutionId)}`);
                 if (!res.ok) throw new Error('Failed to fetch');
-                const data = await res.json();
-                // Extract unique periods from courses
-                const periodMap = new Map<string, { id: string; name: string }>();
-                for (const level of data.levels || []) {
-                  for (const course of level.courses || []) {
-                    if (course.period?.id && !periodMap.has(course.period.id)) {
-                      periodMap.set(course.period.id, { id: course.period.id, name: course.period.name });
-                    }
-                  }
-                }
-                return Array.from(periodMap.values());
+                const json = await res.json();
+                return Array.isArray(json.data) ? json.data : [];
               }}
-              dependencies={[selectedProgrammeId, selectedLevelId]}
+              dependencies={[institutionId, selectedProgrammeId]}
               getValue={(p: any) => p.id}
               getLabel={(p: any) => p.name}
               placeholder="No period"
-              emptyMessage="No periods defined yet."
+              emptyMessage="No periods defined for this institution."
               errorMessage="Couldn't load periods."
             />
             <div className="flex gap-3">

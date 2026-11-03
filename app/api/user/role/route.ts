@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const { user } = await requireAuth();
     const hasInstitution = !!user.institutionId;
-    return NextResponse.json({ role: user.role, hasInstitution });
+    return NextResponse.json({ role: user.role, hasInstitution, onboarded: user.onboarded });
   } catch (error) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

@@ -95,6 +95,28 @@ export const proxy = clerkMiddleware(async (auth, request) => {
       return NextResponse.next();
     }
 
+    // Check if the user is already onboarded in Prisma. If so, let them through
+    // even without an active org session — this breaks the redirect loop on mobile
+    // where the Clerk org may not be activated in the session after onboarding.
+    try {
+      const baseUrl = request.nextUrl.origin;
+      const cookieHeader = request.headers.get('cookie') || '';
+      const roleRes = await fetch(`${baseUrl}/api/user/role`, {
+        headers: { cookie: cookieHeader },
+        cache: 'no-store',
+      });
+      if (roleRes.ok) {
+        const roleData = await roleRes.json();
+        if (roleData?.onboarded === true) {
+          // User is onboarded but has no active org in session — allow through
+          // The role check at step 5 will still enforce proper route access
+          return NextResponse.next();
+        }
+      }
+    } catch (err) {
+      console.error('[Proxy] Onboarded check failed:', err);
+    }
+
     const onboardingUrl = new URL('/onboarding', request.url);
     return NextResponse.redirect(onboardingUrl);
   }

@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 // POST — create a programme (admin only)
 export async function POST(req: NextRequest) {
   try {
-    const auth = await getAuthUser(['ADMIN']);
+    const auth = await getAuthUser(['ADMIN', 'SUPER_ADMIN']);
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

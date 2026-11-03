@@ -1004,7 +1004,7 @@ export default function DashboardLayout({
           <ThemeToggle />
           <NotificationBell role={role} />
           <span className="text-xs md:text-sm text-muted-foreground hidden md:block">
-            {role === 'ADMIN' ? 'Admin' : role === 'TUTOR' ? 'Tutor' : role === 'LECTURER' ? 'Lecturer' : 'Student'}
+            {roleLabel(role)}
           </span>
           <div className="min-w-[44px] min-h-[44px] flex items-center justify-center">
             <UserButton

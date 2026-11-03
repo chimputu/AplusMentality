@@ -557,7 +557,7 @@ export async function completeOnboarding(rawInput: unknown) {
   });
 
   revalidatePath('/student');
-  return { success: true, institutionName: institution.name };
+  return { success: true, institutionName: institution.name, clerkOrgId: institution.clerkOrgId || null };
 }
 
 /**
