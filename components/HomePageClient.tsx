@@ -1202,12 +1202,12 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-blue-600 text-white"
+        className="py-10 sm:py-12 bg-blue-600 dark:bg-blue-900/80 text-white"
       >
         <div className="w-full px-3 sm:px-4 text-center">
-          <Heart className="w-12 h-12 mx-auto mb-4 text-blue-200" />
+          <Heart className="w-12 h-12 mx-auto mb-4 text-blue-200 dark:text-blue-300" />
           <h2 className="text-2xl sm:text-3xl font-bold">You Are Capable of Great Things</h2>
-          <p className="mt-4 text-base sm:text-lg text-blue-100">
+          <p className="mt-4 text-base sm:text-lg text-blue-100 dark:text-blue-200">
             Every expert was once a beginner. Keep learning, keep growing, and never give up.
             Your future is bright, and we're here to help you shine.
           </p>

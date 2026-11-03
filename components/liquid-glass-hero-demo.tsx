@@ -5,11 +5,11 @@ import Link from "next/link";
 import { motion, useReducedMotion, AnimatePresence } from "motion/react";
 import {
   IconArrowRight,
-  IconSchool,
   IconMenu2,
   IconX,
 } from "@tabler/icons-react";
 import { LiquidGlass } from "@/components/ui/liquid-glass";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const NAV_LINKS = [
   { label: "Pricing", href: "/pricing" },
@@ -46,9 +46,9 @@ export default function LiquidGlassHeroDemo() {
         contentClassName="flex items-center justify-between py-2 pr-2 pl-5"
       >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <IconSchool className="size-5" stroke={1.75} />
-          A+ Mentality
+        <Link href="/" className="flex items-center gap-1 font-semibold">
+          <span className="text-blue-400 font-bold">A+</span>
+          <span className="text-white font-semibold">Mentality</span>
         </Link>
 
         {/* Center links — hidden on mobile */}
@@ -78,6 +78,9 @@ export default function LiquidGlassHeroDemo() {
           >
             Sign in
           </Link>
+          <div className="hidden sm:block">
+            <ThemeToggle />
+          </div>
           <motion.a
             {...interaction}
             href="/sign-up"
@@ -144,6 +147,9 @@ export default function LiquidGlassHeroDemo() {
               >
                 Sign in
               </Link>
+              <div className="rounded-lg px-3 py-2">
+                <ThemeToggle />
+              </div>
               <Link
                 href="/sign-up"
                 className="mt-1 rounded-full bg-white px-4 py-2 text-center text-sm font-medium text-neutral-900"
