@@ -2,7 +2,7 @@
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "app.vercel.aplus_mentality.twa",
+    "package_name": "app.vercel.aplusmentality.twa",
     "sha256_cert_fingerprints": ["17:A5:01:0A:5C:A0:20:C0:2A:AD:8A:4F:FA:1A:D7:C9:25:39:9C:14:EB:03:33:BA:BB:0C:37:97:25:BC:D5:78"]
   }
 }]

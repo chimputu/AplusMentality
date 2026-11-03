@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { CourseCard } from '@/components/course-card';
 import { InstitutionLogo } from '@/components/institution-logo';
+import { Logo } from '@/components/Logo';
 import LiquidGlassHeroDemo from '@/components/liquid-glass-hero-demo';
 
 // Dynamically import heavy components to reduce initial bundle and TBT
@@ -1225,6 +1226,33 @@ export default function HomePageClient() {
         </div>
       </motion.section>
 
+      {/* ===== NEED HELP? READ OUR DOCS ===== */}
+      <section className="py-8 px-4">
+        <div className="max-w-3xl mx-auto">
+          <div className="rounded-2xl border border-blue-200 dark:border-blue-500/30 bg-gradient-to-r from-blue-50 to-white dark:from-blue-500/5 dark:to-neutral-900 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500 text-white">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                  Need Help?
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Explore our documentation for guides on getting started, booking tutors, and more.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/docs"
+              className="shrink-0 inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2.5 rounded-full font-semibold text-sm transition shadow-md hover:shadow-lg"
+            >
+              Read Our Docs
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ===== PARTNER INSTITUTIONS — HORIZONTAL CAROUSEL ===== */}
       <motion.section
         initial="hidden"
@@ -1261,12 +1289,7 @@ export default function HomePageClient() {
         <div className="w-full px-3 sm:px-4 py-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
             <div>
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">A+</span>
-                </div>
-                <span className="text-xl font-bold text-white">Mentality</span>
-              </Link>
+              <Logo variant="dark" />
               <p className="mt-4 text-sm text-gray-400">
                 Empowering Zambian lifelong learners through curated content, mentorship, and community support.
               </p>
@@ -1283,6 +1306,7 @@ export default function HomePageClient() {
                 <li><Link href="https://smartcorp.example.com" className="text-gray-400 hover:text-white transition">About Us</Link></li>
                 <li><Link href="https://smartcorp.example.com/contact" className="text-gray-400 hover:text-white transition">Contact</Link></li>
                 <li><Link href="/download" className="text-gray-400 hover:text-white transition inline-flex items-center gap-1.5"><Download className="w-3.5 h-3.5" /> Download App</Link></li>
+                <li><Link href="/docs" className="text-gray-400 hover:text-white transition">Documentation</Link></li>
               </ul>
             </div>
             <div>
