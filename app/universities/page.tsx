@@ -2,6 +2,16 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Building2, MapPin, Globe, ArrowRight } from 'lucide-react';
 
+type UniversityData = {
+  id: string;
+  name: string;
+  shortName?: string | null;
+  type?: string | null;
+  city?: string | null;
+  province?: string | null;
+  website?: string | null;
+};
+
 export const metadata: Metadata = {
   title: 'Universities',
   description: 'Explore Zambian universities and academic institutions supported by A+ Mentality.',
@@ -9,7 +19,7 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-async function getUniversities() {
+async function getUniversities(): Promise<UniversityData[]> {
   try {
     const res = await fetch('http://localhost:3000/api/universities', {
       cache: 'no-store',
@@ -21,7 +31,7 @@ async function getUniversities() {
   }
 }
 
-const institutionTypeLabels = {
+const institutionTypeLabels: Record<string, string> = {
   UNIVERSITY: 'University',
   POLYTECHNIC: 'Polytechnic',
   COLLEGE: 'College',

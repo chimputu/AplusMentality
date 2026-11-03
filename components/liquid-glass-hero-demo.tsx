@@ -9,7 +9,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { LiquidGlass } from "@/components/ui/liquid-glass";
-import ThemeToggle from "@/components/ThemeToggle";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const NAV_LINKS = [
   { label: "Pricing", href: "/pricing" },

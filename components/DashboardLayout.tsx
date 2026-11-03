@@ -39,7 +39,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
-import ThemeToggle from './ThemeToggle';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import MobileTabBar from './mobile-tab-bar';
 import { OfflineDetector } from './offline-detector';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
