@@ -26,9 +26,7 @@ const BannerCarouselLazy = dynamic(
   () => import('@/components/banner-carousel'),
   {
     ssr: false,
-    loading: () => (
-      <div className="w-full h-48 bg-gray-200 dark:bg-muted rounded-xl animate-pulse" />
-    ),
+    loading: () => null,
   },
 );
 
@@ -170,12 +168,12 @@ function FeatureCardsMarquee() {
                     e.currentTarget.style.display = 'none';
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10" />
               </div>
 
-              <div className="relative h-full flex flex-col justify-end p-5">
+              <div className="relative z-20 h-full flex flex-col justify-end p-5">
                 <h3 className="text-lg font-bold text-white">{item.title}</h3>
-                <p className="text-sm text-gray-100 mt-1">{item.description}</p>
+                <p className="text-sm text-gray-200 mt-1">{item.description}</p>
               </div>
             </div>
           </div>
@@ -833,7 +831,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={staggerContainer}
-        className="w-full py-12 bg-white dark:bg-neutral-950"
+        className="w-full py-12 bg-gray-50 dark:bg-[#0a0a0a]"
       >
         <div className="w-full px-3 sm:px-4">
           <motion.div variants={fadeInUp} className="text-center mb-12">
@@ -1399,6 +1397,10 @@ export default function HomePageClient() {
         }
         .animate-feature-marquee:hover {
           animation-play-state: paused;
+        }
+        @media (max-width: 768px) {
+          .animate-marquee { animation-duration: 10s; }
+          .animate-feature-marquee { animation-duration: 12s; }
         }
       `}</style>
 

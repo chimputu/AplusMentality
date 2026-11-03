@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Shield, Lock, Mail, Phone, MapPin, Cookie, Scale, Heart } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 
 const trustBadges = [
   {
@@ -37,8 +38,13 @@ const platformLinks = [
 export default function AppFooter() {
   return (
     <footer className="bg-neutral-950 border-t border-neutral-800">
-      {/* Trust badges */}
       <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* Logo */}
+        <div className="mb-8">
+          <Logo variant="dark" />
+        </div>
+
+        {/* Trust badges */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {trustBadges.map((badge) => (
             <div

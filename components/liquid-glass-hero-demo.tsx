@@ -10,6 +10,7 @@ import {
 } from "@tabler/icons-react";
 import { LiquidGlass } from "@/components/ui/liquid-glass";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Logo } from "@/components/Logo";
 
 const NAV_LINKS = [
   { label: "Pricing", href: "/pricing" },
@@ -46,10 +47,7 @@ export default function LiquidGlassHeroDemo() {
         contentClassName="flex items-center justify-between py-2 pr-2 pl-5"
       >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-1 font-semibold">
-          <span className="text-blue-400 font-bold">A+</span>
-          <span className="text-white font-semibold">Mentality</span>
-        </Link>
+        <Logo variant="dark" />
 
         {/* Center links — hidden on mobile */}
         <nav className="hidden items-center gap-7 text-sm text-white/80 lg:flex">

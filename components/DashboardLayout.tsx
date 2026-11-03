@@ -43,6 +43,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import MobileTabBar from './mobile-tab-bar';
 import { OfflineDetector } from './offline-detector';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
+import { Logo } from '@/components/Logo';
 import type { Role } from '@/generated/prisma/client';
 
 interface DashboardLayoutProps {
@@ -663,14 +664,7 @@ export default function DashboardLayout({
           >
             <Menu className="w-5 h-5 text-muted-foreground" />
           </button>
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-sm">A+</span>
-            </div>
-            <span className="text-base md:text-xl font-bold text-foreground">
-              Mentality
-            </span>
-          </Link>
+          <Logo />
           <div className="h-6 w-px border-border bg-border hidden lg:block" />
           <h1 className="text-sm md:text-lg font-semibold text-foreground hidden lg:block truncate max-w-[200px]">
             {navItems.find(item => item.href === pathname || (item.href.includes('#') && pathname === item.href.split('#')[0]))?.label || 'Dashboard'}
