@@ -42,6 +42,7 @@ import NotificationBell from './NotificationBell';
 import ThemeToggle from './ThemeToggle';
 import MobileTabBar from './mobile-tab-bar';
 import { OfflineDetector } from './offline-detector';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 import type { Role } from '@/generated/prisma/client';
 
 interface DashboardLayoutProps {
@@ -649,8 +650,10 @@ export default function DashboardLayout({
       {/* Offline Detection Banner */}
       <OfflineDetector />
 
-      {/* Top Navbar — sticky on mobile, fixed on desktop */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-16 flex items-center justify-between px-4 lg:px-6" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      {/* Top Navbar — liquid glass on mobile, fixed on desktop */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+        <LiquidGlass radius={24} bevelDepth={10} scale={28} tint={0.35} className="w-full liquid-glass-fallback shadow-[0_4px_20px_rgb(0_0_0/0.08),inset_0_1px_0_rgb(255_255_255/0.6)]">
+          <div className="flex items-center justify-between px-4 lg:px-6 h-16">
         {/* Left Section - Logo & Hamburger (mobile only) */}
         <div className="flex items-center space-x-3 md:space-x-4">
           <button
@@ -1020,7 +1023,9 @@ export default function DashboardLayout({
               }}
             />
           </div>
-        </div>
+          </div>
+          </div>
+        </LiquidGlass>
       </header>
 
       {/* Mobile Search Overlay */}
@@ -1283,8 +1288,8 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main Content — no sidebar margin on mobile, proper padding for bottom tab bar */}
-      <div className="pt-16 pb-20 md:pb-0 transition-all duration-300 md:ml-64">
+      {/* Main Content — no sidebar margin on mobile, proper padding for floating bottom tab bar */}
+      <div className="pt-16 pb-28 md:pb-0 transition-all duration-300 md:ml-64">
         <main className="p-4 lg:p-8">
           {children}
         </main>

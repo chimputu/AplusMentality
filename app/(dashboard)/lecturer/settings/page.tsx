@@ -211,7 +211,7 @@ export default async function LecturerSettingsPage() {
             href="/lecturer/announcements"
             className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
-            <Megaphone className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <Megaphone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <div>
               <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">Announcements</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Post to students</p>

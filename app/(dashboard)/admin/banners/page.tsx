@@ -125,7 +125,7 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
   const variantColors: Record<string, string> = {
     INFO: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
     SUCCESS: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-    WARNING: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+    WARNING: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
     DANGER: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
     PROMO: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
   };
@@ -139,7 +139,7 @@ function BannersTable({ banners, scopeFilter }: { banners: any[]; scopeFilter?: 
   const getTargetBadge = (banner: any) => {
     if (banner.scope === 'GLOBAL') {
       return (
-        <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+        <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
           🌍 Global
         </span>
       );

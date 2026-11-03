@@ -59,7 +59,7 @@ const TYPE_CONFIG: Record<
   },
   institution_change: {
     icon: School,
-    color: 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
+    color: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
     label: 'Institution Change',
   },
   tutor_application: {

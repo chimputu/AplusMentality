@@ -169,7 +169,7 @@ export default function AssessmentRunner({
                 secondsLeft < 300
                   ? 'text-red-600 dark:text-red-400'
                   : secondsLeft < 600
-                    ? 'text-amber-600 dark:text-amber-400'
+                    ? 'text-blue-600 dark:text-blue-400'
                     : 'text-gray-700 dark:text-gray-300'
               }`}
             >

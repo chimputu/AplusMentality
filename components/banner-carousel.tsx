@@ -49,10 +49,10 @@ const variantStyles: Record<string, { bg: string; border: string; text: string; 
     cta: 'bg-green-600 hover:bg-green-700 text-foreground',
   },
   WARNING: {
-    bg: 'bg-amber-50 dark:bg-amber-900/30',
-    border: 'border-l-amber-500',
-    text: 'text-amber-800 dark:text-amber-200',
-    cta: 'bg-amber-600 hover:bg-amber-700 text-foreground',
+    bg: 'bg-blue-50 dark:bg-blue-900/30',
+    border: 'border-l-blue-500',
+    text: 'text-blue-800 dark:text-blue-200',
+    cta: 'bg-blue-600 hover:bg-blue-700 text-foreground',
   },
   DANGER: {
     bg: 'bg-red-50 dark:bg-red-900/30',

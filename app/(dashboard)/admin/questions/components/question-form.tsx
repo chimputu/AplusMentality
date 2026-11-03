@@ -377,7 +377,7 @@ export function QuestionForm({ question, onSubmit }: QuestionFormProps) {
       )}
 
       {type === 'ESSAY' && (
-        <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm text-amber-700 dark:text-amber-300">
+        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-700 dark:text-blue-300">
           ⚠️ Essay questions require manual grading. Students will see a text area to write their response.
         </div>
       )}

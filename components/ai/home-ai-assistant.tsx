@@ -213,7 +213,7 @@ export function HomeAIAssistant() {
       {/* Floating button — blue-500 message icon */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-500 text-white shadow-lg flex items-center justify-center hover:bg-blue-600 transition active:scale-95"
+        className="fixed bottom-20 right-6 z-50 w-14 h-14 rounded-full bg-blue-500 text-white shadow-lg flex items-center justify-center hover:bg-blue-600 transition active:scale-95 md:bottom-6"
         aria-label="Open AI assistant"
         title="A+ AI Assistant"
       >
@@ -233,7 +233,7 @@ export function HomeAIAssistant() {
             onClick={() => setOpen(false)}
           />
 
-          <div className="fixed z-50 flex flex-col bottom-16 right-0 left-0 h-[calc(70dvh-4rem)] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-card shadow-2xl border border-border">
+          <div className="fixed z-40 flex flex-col bottom-20 right-0 left-0 md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] h-[calc(100dvh-180px)] rounded-t-2xl md:rounded-xl bg-card shadow-2xl border border-border">
             {/* Header — blue-500 */}
             <div className="p-4 border-b border-border bg-blue-500 text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
               <div>
@@ -266,7 +266,7 @@ export function HomeAIAssistant() {
             </div>
 
             {/* Messages area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+            <div className="flex-1 overflow-y-auto p-4 pb-6 space-y-3 min-h-0">
               {messages.map((m, i) => (
                 <div
                   key={i}

@@ -87,8 +87,8 @@ export default function LecturerContent({
           icon={<ClipboardList className="w-5 h-5" />}
           label="Submissions"
           value={stats.submissions}
-          color="text-amber-600"
-          bgColor="bg-amber-50 dark:bg-amber-900/20"
+          color="text-blue-600"
+          bgColor="bg-blue-50 dark:bg-blue-900/20"
         />
       </div>
 

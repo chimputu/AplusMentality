@@ -139,7 +139,7 @@ export function DataSelect<T>({
             <option value="">{prerequisiteMessage}</option>
           </select>
           <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
+            <AlertTriangle className="h-4 w-4 text-blue-500" />
           </div>
         </div>
       </div>
@@ -227,14 +227,14 @@ export function DataSelect<T>({
 
       {/* Empty state with CTA */}
       {!error && !isLoading && filteredItems.length === 0 && (
-        <div className="mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
-          <p className="text-amber-700 dark:text-amber-400 mb-2">
+        <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm">
+          <p className="text-blue-700 dark:text-blue-400 mb-2">
             {search && search.trim() !== '' ? 'No matches found.' : emptyMessage}
           </p>
           {emptyAction && (
             <Link
               href={emptyAction.href}
-              className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-card border border-amber-200 dark:border-amber-700 rounded-md text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-card border border-blue-200 dark:border-blue-700 rounded-md text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
             >
               <Plus className="h-3 w-3" />
               {emptyAction.label}

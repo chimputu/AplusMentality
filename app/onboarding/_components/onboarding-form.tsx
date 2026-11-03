@@ -213,8 +213,8 @@ export default function OnboardingForm({
                 ))}
               </select>
             ) : (
-              <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
-                <p className="text-amber-700 dark:text-amber-400">
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm">
+                <p className="text-blue-700 dark:text-blue-400">
                   No academic levels defined for this institution yet.
                 </p>
               </div>
@@ -247,8 +247,8 @@ export default function OnboardingForm({
                 ))}
               </select>
             ) : (
-              <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm">
-                <p className="text-amber-700 dark:text-amber-400">
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm">
+                <p className="text-blue-700 dark:text-blue-400">
                   No periods defined for this institution yet.
                 </p>
               </div>

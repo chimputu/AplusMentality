@@ -104,7 +104,7 @@ export default async function TutorRequestsPage({
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <StatCard icon={<Clock className="w-5 h-5" />} label="Pending" value={pendingCount} color="text-amber-600" bgColor="bg-amber-50 dark:bg-amber-900/20" />
+        <StatCard icon={<Clock className="w-5 h-5" />} label="Pending" value={pendingCount} color="text-blue-600" bgColor="bg-blue-50 dark:bg-blue-900/20" />
         <StatCard icon={<CheckCircle className="w-5 h-5" />} label="Accepted" value={acceptedCount} color="text-green-600" bgColor="bg-green-50 dark:bg-green-900/20" />
         <StatCard icon={<XCircle className="w-5 h-5" />} label="Rejected" value={rejectedCount} color="text-red-600" bgColor="bg-red-50 dark:bg-red-900/20" />
         <StatCard icon={<Users className="w-5 h-5" />} label="Completed" value={completedCount} color="text-blue-600" bgColor="bg-blue-50 dark:bg-blue-900/20" />
@@ -234,7 +234,7 @@ function StatCard({ icon, label, value, color, bgColor }: {
 function getStatusStyle(status: string) {
   switch (status) {
     case 'PENDING':
-      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300';
+      return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300';
     case 'ACCEPTED':
       return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300';
     case 'REJECTED':

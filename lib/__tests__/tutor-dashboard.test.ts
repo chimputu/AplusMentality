@@ -450,7 +450,7 @@ describe('Tutor dashboard — status style helper', () => {
   function getStatusStyle(status: string) {
     switch (status) {
       case 'PENDING':
-        return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300';
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300';
       case 'ACCEPTED':
         return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300';
       case 'REJECTED':
@@ -462,8 +462,8 @@ describe('Tutor dashboard — status style helper', () => {
     }
   }
 
-  it('returns amber style for PENDING', () => {
-    expect(getStatusStyle('PENDING')).toContain('amber');
+  it('returns blue style for PENDING', () => {
+    expect(getStatusStyle('PENDING')).toContain('blue');
   });
 
   it('returns green style for ACCEPTED', () => {

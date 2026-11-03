@@ -32,7 +32,7 @@ export default function Error({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-6 text-center bg-gray-50">
-      <AlertTriangle className="h-16 w-16 text-amber-500" />
+      <AlertTriangle className="h-16 w-16 text-blue-500" />
       <div className="space-y-2">
         <h1 className="text-2xl font-bold text-gray-900">Loading...</h1>
         <p className="text-gray-600 max-w-md">

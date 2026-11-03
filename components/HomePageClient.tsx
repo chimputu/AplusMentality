@@ -9,7 +9,7 @@ import { useUser } from '@clerk/nextjs';
 import * as Sentry from '@sentry/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Menu, X, Mail, Phone, MapPin, Send,
+  Mail, Phone, MapPin, Send,
   Share2, Globe, AtSign, Link as LinkIcon,
   Users, BookOpen, Award, Heart,
   GraduationCap, Target, Users as UsersIcon, CheckCircle,
@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { CourseCard } from '@/components/course-card';
 import { InstitutionLogo } from '@/components/institution-logo';
-import ThemeToggle from '@/components/ThemeToggle';
 import LiquidGlassHeroDemo from '@/components/liquid-glass-hero-demo';
 
 // Dynamically import heavy components to reduce initial bundle and TBT
@@ -245,16 +244,16 @@ function GradingCycle() {
                 {/* Distinction */}
                 <div className="relative rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-2 sm:gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-emerald-600 flex items-center justify-center">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-blue-500 flex items-center justify-center">
                       <span className="text-white font-bold text-sm sm:text-lg">★</span>
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 text-[10px] sm:text-xs font-semibold">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 text-[10px] sm:text-xs font-semibold">
                           Distinction
                         </span>
                       </div>
-                      <p className="text-sm sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1">
+                      <p className="text-sm sm:text-xl font-bold text-blue-500 dark:text-blue-400 mt-0.5 sm:mt-1">
                         40 Points and above
                       </p>
                     </div>
@@ -264,7 +263,7 @@ function GradingCycle() {
                 {/* Merit */}
                 <div className="relative rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-2 sm:gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-blue-600 flex items-center justify-center">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-blue-500 flex items-center justify-center">
                       <span className="text-white font-bold text-sm sm:text-lg">◆</span>
                     </div>
                     <div className="min-w-0">
@@ -273,7 +272,7 @@ function GradingCycle() {
                           Merit
                         </span>
                       </div>
-                      <p className="text-sm sm:text-xl font-bold text-blue-600 dark:text-blue-400 mt-0.5 sm:mt-1">
+                      <p className="text-sm sm:text-xl font-bold text-blue-500 dark:text-blue-400 mt-0.5 sm:mt-1">
                         30-39.9 Points
                       </p>
                     </div>
@@ -283,16 +282,16 @@ function GradingCycle() {
                 {/* Credit */}
                 <div className="relative rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-2 sm:gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-amber-600 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm sm:text-lg">●</span>
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gray-600 dark:bg-gray-400 flex items-center justify-center">
+                      <span className="text-white dark:text-gray-900 font-bold text-sm sm:text-lg">●</span>
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 text-[10px] sm:text-xs font-semibold">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 text-[10px] sm:text-xs font-semibold">
                           Credit
                         </span>
                       </div>
-                      <p className="text-sm sm:text-xl font-bold text-amber-600 dark:text-amber-400 mt-0.5 sm:mt-1">
+                      <p className="text-sm sm:text-xl font-bold text-gray-600 dark:text-gray-400 mt-0.5 sm:mt-1">
                         20-29.9 Points
                       </p>
                     </div>
@@ -302,16 +301,16 @@ function GradingCycle() {
                 {/* Pass */}
                 <div className="relative rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-2 sm:gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-rose-600 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm sm:text-lg">○</span>
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center">
+                      <span className="text-white dark:text-gray-900 font-bold text-sm sm:text-lg">○</span>
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300 text-[10px] sm:text-xs font-semibold">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 text-[10px] sm:text-xs font-semibold">
                           Pass
                         </span>
                       </div>
-                      <p className="text-sm sm:text-xl font-bold text-rose-600 dark:text-rose-400 mt-0.5 sm:mt-1">
+                      <p className="text-sm sm:text-xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1">
                         Less than 20 Points
                       </p>
                     </div>
@@ -337,19 +336,15 @@ function GradingCycle() {
               {/* Color legend */}
               <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 mb-2 sm:mb-6 text-sm font-medium text-gray-600 dark:text-muted-foreground">
                 <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-3 h-3 rounded-full bg-emerald-600" />
-                  <span>Distinction</span>
+                  <span className="inline-block w-3 h-3 rounded-full bg-blue-500" />
+                  <span>Distinction / Merit</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-3 h-3 rounded-full bg-blue-600" />
-                  <span>Merit / Credit</span>
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-3 h-3 rounded-full bg-amber-600" />
+                  <span className="inline-block w-3 h-3 rounded-full bg-gray-500" />
                   <span>Pass</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-3 h-3 rounded-full bg-rose-600" />
+                  <span className="inline-block w-3 h-3 rounded-full bg-gray-900 dark:bg-white" />
                   <span>Fail</span>
                 </span>
               </div>
@@ -359,11 +354,11 @@ function GradingCycle() {
                 {/* A+ */}
                 <div className="group rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-2 sm:p-4 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-emerald-600 text-white text-sm sm:text-lg font-bold">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-blue-500 text-white text-sm sm:text-lg font-bold">
                       A+
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 text-[10px] sm:text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 text-[10px] sm:text-xs font-semibold">
                         Upper Distinction
                       </span>
                     </div>
@@ -375,7 +370,7 @@ function GradingCycle() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Points</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">2.5</span>
+                      <span className="font-bold text-blue-500 dark:text-blue-400">2.5</span>
                     </div>
                   </div>
                 </div>
@@ -383,11 +378,11 @@ function GradingCycle() {
                 {/* A */}
                 <div className="group rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-2 sm:p-4 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-emerald-600 text-white text-sm sm:text-lg font-bold">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-blue-500 text-white text-sm sm:text-lg font-bold">
                       A
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 text-[10px] sm:text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 text-[10px] sm:text-xs font-semibold">
                         Distinction
                       </span>
                     </div>
@@ -399,7 +394,7 @@ function GradingCycle() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Points</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">2.0</span>
+                      <span className="font-bold text-blue-500 dark:text-blue-400">2.0</span>
                     </div>
                   </div>
                 </div>
@@ -407,7 +402,7 @@ function GradingCycle() {
                 {/* B+ */}
                 <div className="group rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-2 sm:p-4 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-blue-600 text-white text-sm sm:text-lg font-bold">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-blue-500 text-white text-sm sm:text-lg font-bold">
                       B+
                     </span>
                     <div>
@@ -423,7 +418,7 @@ function GradingCycle() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Points</span>
-                      <span className="font-bold text-blue-600 dark:text-blue-400">1.5</span>
+                      <span className="font-bold text-blue-500 dark:text-blue-400">1.5</span>
                     </div>
                   </div>
                 </div>
@@ -431,7 +426,7 @@ function GradingCycle() {
                 {/* B */}
                 <div className="group rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-2 sm:p-4 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-blue-600 text-white text-sm sm:text-lg font-bold">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-blue-500 text-white text-sm sm:text-lg font-bold">
                       B
                     </span>
                     <div>
@@ -447,7 +442,7 @@ function GradingCycle() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Points</span>
-                      <span className="font-bold text-blue-600 dark:text-blue-400">1.0</span>
+                      <span className="font-bold text-blue-500 dark:text-blue-400">1.0</span>
                     </div>
                   </div>
                 </div>
@@ -455,11 +450,11 @@ function GradingCycle() {
                 {/* C+ */}
                 <div className="group rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-2 sm:p-4 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-amber-600 text-white text-sm sm:text-lg font-bold">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-gray-500 text-white text-sm sm:text-lg font-bold">
                       C+
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 text-[10px] sm:text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 text-[10px] sm:text-xs font-semibold">
                         Clear Pass
                       </span>
                     </div>
@@ -471,7 +466,7 @@ function GradingCycle() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Points</span>
-                      <span className="font-bold text-amber-600 dark:text-amber-400">0.5</span>
+                      <span className="font-bold text-gray-500 dark:text-gray-400">0.5</span>
                     </div>
                   </div>
                 </div>
@@ -479,11 +474,11 @@ function GradingCycle() {
                 {/* C */}
                 <div className="group rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-2 sm:p-4 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-amber-600 text-white text-sm sm:text-lg font-bold">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-gray-500 text-white text-sm sm:text-lg font-bold">
                       C
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 text-[10px] sm:text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 text-[10px] sm:text-xs font-semibold">
                         Bare Pass
                       </span>
                     </div>
@@ -495,7 +490,7 @@ function GradingCycle() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Points</span>
-                      <span className="font-bold text-amber-600 dark:text-amber-400">0.25</span>
+                      <span className="font-bold text-gray-500 dark:text-gray-400">0.25</span>
                     </div>
                   </div>
                 </div>
@@ -503,11 +498,11 @@ function GradingCycle() {
                 {/* D+ */}
                 <div className="group rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-2 sm:p-4 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-rose-600 text-white text-sm sm:text-lg font-bold">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm sm:text-lg font-bold">
                       D+
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300 text-[10px] sm:text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 text-[10px] sm:text-xs font-semibold">
                         Bare Fail
                       </span>
                     </div>
@@ -519,7 +514,7 @@ function GradingCycle() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Points</span>
-                      <span className="font-bold text-rose-600 dark:text-rose-400">0</span>
+                      <span className="font-bold text-gray-900 dark:text-white">0</span>
                     </div>
                   </div>
                 </div>
@@ -527,11 +522,11 @@ function GradingCycle() {
                 {/* D */}
                 <div className="group rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-2 sm:p-4 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-rose-600 text-white text-sm sm:text-lg font-bold">
+                    <span className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm sm:text-lg font-bold">
                       D
                     </span>
                     <div>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300 text-[10px] sm:text-xs font-semibold">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 text-[10px] sm:text-xs font-semibold">
                         Fail
                       </span>
                     </div>
@@ -543,7 +538,7 @@ function GradingCycle() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Points</span>
-                      <span className="font-bold text-rose-600 dark:text-rose-400">0</span>
+                      <span className="font-bold text-gray-900 dark:text-white">0</span>
                     </div>
                   </div>
                 </div>
@@ -594,7 +589,6 @@ export default function HomePageClient() {
     return () => { cancelled = true; };
   }, [isSignedIn]);
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -608,9 +602,9 @@ export default function HomePageClient() {
   const exploreItems = [
     { icon: <TrendingUp className="w-6 h-6" />, title: 'Trending Now', description: 'Discover what\'s popular among Zambian learners.', color: 'hover:bg-primary-light hover:border-blue-300' },
     { icon: <PlayCircle className="w-6 h-6" />, title: 'Watch Videos', description: 'Access educational videos aligned with the Zambian curriculum.', color: 'hover:bg-primary-light hover:border-blue-300' },
-    { icon: <Compass className="w-6 h-6" />, title: 'Course Pathways', description: 'Explore Natural Sciences and Computer Science.', color: 'hover:bg-emerald-50 hover:border-emerald-300' },
+    { icon: <Compass className="w-6 h-6" />, title: 'Course Pathways', description: 'Explore Natural Sciences and Computer Science.', color: 'hover:bg-primary-light hover:border-blue-300' },
     { icon: <Megaphone className="w-6 h-6" />, title: 'Advertise with Us', description: 'Reach students across Zambia.', color: 'hover:bg-primary-light hover:border-blue-300' },
-    { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-emerald-50 hover:border-emerald-300' },
+    { icon: <Briefcase className="w-6 h-6" />, title: 'Career Guidance', description: 'Get expert advice on Zambian career opportunities.', color: 'hover:bg-primary-light hover:border-blue-300' },
   ];
 
   // ============================================================
@@ -703,71 +697,6 @@ export default function HomePageClient() {
       {/* ===== BANNERS — MUST BE FIRST so they appear above the navbar ===== */}
       <BannerCarouselLazy placement="HOMEPAGE" institutionId={institutionId} />
 
-      {/* ===== NAVBAR — sticky (sticks when scrolled to, sits below banner) ===== */}
-      <nav className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
-        <div className="w-full px-2 sm:px-4">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
-              <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A+</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">Mentality</span>
-            </Link>
-
-            <div className="hidden md:flex items-center space-x-2">
-              <Link href="/sign-in" className="text-sm font-medium text-foreground hover:text-blue-600 transition focus-visible:ring-2 focus-visible:ring-blue-500 rounded">
-                Sign In
-              </Link>
-              <Link
-                href="/sign-up"
-                className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm focus-visible:ring-2 focus-visible:ring-blue-500"
-              >
-                Get Started
-              </Link>
-              <Link
-                href="/download"
-                className="inline-flex items-center gap-1.5 border border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950 rounded-md px-3 py-1.5 text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
-              >
-                <Download className="w-4 h-4" />
-                Download App
-              </Link>
-              <ThemeToggle />
-              <span className="w-px h-5 border-border mx-1"></span>
-              <Link href="https://smartcorp.example.com">
-                <div className="bg-muted text-foreground text-[10px] font-medium px-2.5 py-1 rounded-full border border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.5),0_0_30px_rgba(147,51,234,0.3)] animate-pulse">
-                  Owned by SmartCorp
-                </div>
-              </Link>
-            </div>
-
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 rounded-lg hover:bg-muted transition" aria-label="Toggle menu">
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-        {isMenuOpen && (
-          <div className="md:hidden bg-card border-b border-border px-2 py-4 space-y-3">
-            <div className="flex items-center justify-between px-2">
-              <span className="text-sm text-muted-foreground">Theme</span>
-              <ThemeToggle />
-            </div>
-            <Link href="/sign-in" className="block text-sm font-medium text-foreground hover:text-blue-600 transition focus-visible:ring-2 focus-visible:ring-blue-500 rounded" onClick={() => setIsMenuOpen(false)}>
-              Sign In
-            </Link>
-            <Link href="/sign-up" className="block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition text-center focus-visible:ring-2 focus-visible:ring-blue-500" onClick={() => setIsMenuOpen(false)}>
-              Get Started
-            </Link>
-            <Link href="/download" className="flex items-center gap-2 text-sm font-medium text-blue-500 hover:text-blue-600 transition focus-visible:ring-2 focus-visible:ring-blue-500 rounded" onClick={() => setIsMenuOpen(false)}>
-              <Download className="w-4 h-4" />
-              Download App
-            </Link>
-            <Link href="https://smartcorp.example.com">
-            <div className="text-xs text-muted-foreground text-center">Owned by SmartCorp</div>
-            </Link>
-          </div>
-        )}
-      </nav>
-
       {/* ===== HERO — LIQUID GLASS ===== */}
       <LiquidGlassHeroDemo />
 
@@ -788,14 +717,14 @@ export default function HomePageClient() {
               <h3 className="font-bold text-foreground text-sm">Study Smarter</h3>
             </motion.div>
             <motion.div variants={fadeInUp} className="text-center p-4">
-              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <TrendingUp className="w-7 h-7 text-emerald-600" />
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <TrendingUp className="w-7 h-7 text-blue-600" />
               </div>
               <h3 className="font-bold text-foreground text-sm">Track Progress</h3>
             </motion.div>
             <motion.div variants={fadeInUp} className="text-center p-4">
-              <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Target className="w-7 h-7 text-amber-600" />
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Target className="w-7 h-7 text-blue-600" />
               </div>
               <h3 className="font-bold text-foreground text-sm">Reach Your Goals</h3>
             </motion.div>
@@ -1033,7 +962,7 @@ export default function HomePageClient() {
           <motion.div variants={fadeInUp} className="mb-12">
             <div className="flex flex-wrap items-center justify-between mb-4">
               <div>
-                <span className="inline-block bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">
+                <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 2 - Semester 1
                 </span>
                 <h3 className="text-xl sm:text-2xl font-bold text-foreground mt-1">Computer Science Foundation</h3>
@@ -1048,18 +977,18 @@ export default function HomePageClient() {
                   description={course.description}
                   image={course.image}
                   category="Computer Science"
-                  variant="emerald"
+                  variant="blue"
                   onEnroll={() => handleEnroll(course.code)}
                 />
               ))}
             </div>
           </motion.div>
 
-          {/* ===== YEAR 2 - Semester 2 ===== */}
+          {/* ===== YEAR 2 - Semester 2 =====*/}
           <motion.div variants={fadeInUp}>
             <div className="flex flex-wrap items-center justify-between mb-4">
               <div>
-                <span className="inline-block bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">
+                <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Year 2 - Semester 2
                 </span>
                 <h3 className="text-xl sm:text-2xl font-bold text-foreground mt-1">Computer Science Advanced</h3>
@@ -1074,7 +1003,7 @@ export default function HomePageClient() {
                   description={course.description}
                   image={course.image}
                   category="Computer Science"
-                  variant="emerald"
+                  variant="blue"
                   onEnroll={() => handleEnroll(course.code)}
                 />
               ))}
@@ -1116,7 +1045,7 @@ export default function HomePageClient() {
         whileInView="visible"
         viewport={{ once: true, amount: 0 }}
         variants={fadeInUp}
-        className="py-10 sm:py-12 bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-muted dark:to-background"
+        className="py-10 sm:py-12 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-muted dark:to-background"
       >
         <div className="w-full px-3 sm:px-4">
           <div className="bg-card rounded-2xl shadow-xl border border-border p-6 sm:p-8 md:p-12 text-center max-w-4xl mx-auto">

@@ -529,7 +529,7 @@ export function AIAssistant({
             onClick={() => setOpen(false)}
           />
 
-          <div className="fixed z-50 flex flex-col bottom-0 right-0 left-0 h-[70dvh] rounded-t-2xl md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] md:rounded-xl bg-card shadow-2xl border border-border">
+          <div className="fixed z-40 flex flex-col bottom-20 right-0 left-0 md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] h-[calc(100dvh-180px)] rounded-t-2xl md:rounded-xl bg-card shadow-2xl border border-border">
             {/* Header */}
             <div className="p-4 border-b border-border bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
               <div>
@@ -572,7 +572,7 @@ export function AIAssistant({
             </div>
 
             {/* Messages area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+            <div className="flex-1 overflow-y-auto p-4 pb-6 space-y-3 min-h-0">
               {messages.map((m, i) => (
                 <div
                   key={i}

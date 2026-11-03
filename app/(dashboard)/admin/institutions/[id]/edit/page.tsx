@@ -263,7 +263,7 @@ function EditInstitutionPage({ institution }: EditInstitutionPageProps) {
           <h2 className="text-lg font-semibold text-foreground">
             Academic Structure
           </h2>
-          <p className="text-sm text-amber-600 dark:text-amber-400">
+          <p className="text-sm text-blue-600 dark:text-blue-400">
             ⚠️ Changing the level type, number of levels, period type, or number of periods will
             regenerate all academic levels and periods.
           </p>

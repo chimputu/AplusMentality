@@ -16,7 +16,7 @@ export default function QuestionError({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
-      <AlertTriangle className="w-16 h-16 text-amber-500 mb-4" />
+      <AlertTriangle className="w-16 h-16 text-blue-500 mb-4" />
       <h2 className="text-2xl font-bold text-foreground mb-2">
         Could not load questions
       </h2>

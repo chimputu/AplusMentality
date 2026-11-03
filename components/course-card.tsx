@@ -10,7 +10,7 @@ interface CourseCardProps {
   description: string;
   image?: string | null;
   category?: string;
-  variant?: 'blue' | 'emerald';
+  variant?: 'blue';
   onEnroll?: () => void;
 }
 
@@ -25,13 +25,11 @@ export function CourseCard({
 }: CourseCardProps) {
   const [imgError, setImgError] = useState(false);
 
-  const badgeBg = variant === 'blue' ? 'bg-blue-600' : 'bg-emerald-600';
-  const buttonBg = variant === 'blue'
-    ? 'bg-blue-600 hover:bg-blue-700'
-    : 'bg-emerald-600 hover:bg-emerald-700';
-  const gradientFrom = variant === 'blue' ? 'from-blue-100 to-blue-200' : 'from-emerald-100 to-emerald-200';
-  const gradientTo = variant === 'blue' ? 'to-blue-200' : 'to-emerald-200';
-  const fallbackIconColor = variant === 'blue' ? 'text-blue-600' : 'text-emerald-600';
+  const badgeBg = 'bg-blue-600';
+  const buttonBg = 'bg-blue-600 hover:bg-blue-700';
+  const gradientFrom = 'from-blue-100 to-blue-200';
+  const gradientTo = 'to-blue-200';
+  const fallbackIconColor = 'text-blue-600';
 
   return (
     <div

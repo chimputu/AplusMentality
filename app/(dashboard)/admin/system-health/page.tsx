@@ -170,14 +170,14 @@ export default function SystemHealthPage() {
 
           {/* Warnings */}
           {data.warnings.length > 0 && (
-            <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-              <h2 className="text-sm font-semibold text-amber-800 dark:text-amber-400 mb-2 flex items-center gap-2">
+            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <h2 className="text-sm font-semibold text-blue-800 dark:text-blue-400 mb-2 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" />
                 Warnings ({data.warnings.length})
               </h2>
               <ul className="space-y-1">
                 {data.warnings.map((w, i) => (
-                  <li key={i} className="text-sm text-amber-700 dark:text-amber-400">
+                  <li key={i} className="text-sm text-blue-700 dark:text-blue-400">
                     • {w}
                   </li>
                 ))}

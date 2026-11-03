@@ -445,8 +445,8 @@ export default function AdminSettingsClient({ institutionSlug, institutionId, un
             </div>
           </div>
         ) : (
-          <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-            <p className="text-sm text-amber-700 dark:text-amber-400">
+          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <p className="text-sm text-blue-700 dark:text-blue-400">
               No join slug configured yet. Contact the Super Admin to set up your institution&apos;s join link.
             </p>
           </div>

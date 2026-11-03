@@ -32,7 +32,7 @@ export default function Error({
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="text-center max-w-md">
-        <AlertTriangle className="h-16 w-16 text-amber-500 mx-auto mb-4" />
+        <AlertTriangle className="h-16 w-16 text-blue-500 mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Loading...</h1>
         <p className="text-gray-600 mb-6">
           We&apos;re reconnecting. This usually takes a couple of seconds.

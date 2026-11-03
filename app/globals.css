@@ -644,3 +644,24 @@ select:focus {
   background: var(--card) !important;
   border-color: var(--border) !important;
 }
+
+/* ===== Liquid Glass Fallback ===== */
+/* For browsers that do not support backdrop-filter, provide a frosted-glass fallback */
+.liquid-glass-fallback {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dark .liquid-glass-fallback {
+  background: rgba(18, 18, 18, 0.6);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .liquid-glass-fallback {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  .dark .liquid-glass-fallback {
+    background: rgba(18, 18, 18, 0.3);
+  }
+}

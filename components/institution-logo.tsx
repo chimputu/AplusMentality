@@ -21,8 +21,8 @@ const sizeMap = {
 function getColorFromName(name: string): string {
   const colors = [
     'bg-blue-600',
-    'bg-emerald-600',
-    'bg-amber-600',
+    'bg-blue-500',
+    'bg-blue-700',
     'bg-indigo-600',
     'bg-red-600',
     'bg-teal-600',

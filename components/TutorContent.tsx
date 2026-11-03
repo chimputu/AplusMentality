@@ -73,13 +73,13 @@ export default function TutorContent({
 
       {/* Application Status Banner */}
       {application && application.status === 'PENDING' && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-semibold text-amber-800 dark:text-amber-300">
+            <h3 className="font-semibold text-blue-800 dark:text-blue-300">
               Application Under Review
             </h3>
-            <p className="text-sm text-amber-700 dark:text-amber-400 mt-0.5">
+            <p className="text-sm text-blue-700 dark:text-blue-400 mt-0.5">
               Your tutor application is currently being reviewed. You&apos;ll be notified once it&apos;s approved.
             </p>
           </div>
@@ -106,8 +106,8 @@ export default function TutorContent({
           icon={<MessageSquare className="w-5 h-5" />}
           label="Pending Requests"
           value={stats.pendingRequests}
-          color="text-amber-600"
-          bgColor="bg-amber-50 dark:bg-amber-900/20"
+          color="text-blue-600"
+          bgColor="bg-blue-50 dark:bg-blue-900/20"
         />
         <StatCard
           icon={<CheckCircle className="w-5 h-5" />}
@@ -303,7 +303,7 @@ function QuickActionCard({ icon, title, description, href }: {
 function getStatusStyle(status: string) {
   switch (status) {
     case 'PENDING':
-      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300';
+      return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300';
     case 'ACCEPTED':
       return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300';
     case 'REJECTED':

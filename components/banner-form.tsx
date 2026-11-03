@@ -52,9 +52,9 @@ const variantStyles: Record<string, { bg: string; border: string; text: string }
     text: 'text-green-800 dark:text-green-200',
   },
   WARNING: {
-    bg: 'bg-amber-50 dark:bg-amber-900/30',
-    border: 'border-l-amber-500',
-    text: 'text-amber-800 dark:text-amber-200',
+    bg: 'bg-blue-50 dark:bg-blue-900/30',
+    border: 'border-l-blue-500',
+    text: 'text-blue-800 dark:text-blue-200',
   },
   DANGER: {
     bg: 'bg-red-50 dark:bg-red-900/30',

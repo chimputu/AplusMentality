@@ -3,6 +3,8 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Home, PlayCircle, GraduationCap, Search, User } from 'lucide-react';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
+import { motion } from 'motion/react';
 
 const tabs = [
   { href: '/student', label: 'Home', icon: Home },
@@ -24,29 +26,40 @@ export default function MobileTabBar() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-[60] md:hidden bg-white dark:bg-input border-t border-gray-200 dark:border-border"
+      className="fixed bottom-4 left-4 right-4 z-[60] md:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      <div className="flex items-center justify-around h-16" style={{ height: 'max(4rem, calc(4rem + env(safe-area-inset-bottom, 0px)))' }}>
-        {tabs.map((tab) => {
-          const active = isActive(tab.href);
-          const Icon = tab.icon;
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={`flex flex-col items-center justify-center gap-0.5 w-full h-full min-h-[48px] min-w-[48px] transition-colors ${
-                active
-                  ? 'text-blue-600 dark:text-blue-400'
-                  : 'text-muted-foreground hover:text-gray-700 dark:hover:text-gray-300'
-              }`}
-            >
-              <Icon className="w-6 h-6" />
-              <span className="text-xs font-medium">{tab.label}</span>
-            </Link>
-          );
-        })}
-      </div>
+      <LiquidGlass radius={999} bevelDepth={10} scale={28} aberration={2} tint={0.55} className="liquid-glass-fallback">
+        <div className="flex items-center justify-around" style={{ height: 'max(3.5rem, calc(3.5rem + env(safe-area-inset-bottom, 0px)))' }}>
+          {tabs.map((tab) => {
+            const active = isActive(tab.href);
+            const Icon = tab.icon;
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                className={`relative flex flex-col items-center justify-center gap-0.5 w-full h-full min-h-[48px] min-w-[48px] transition-colors ${
+                  active
+                    ? 'text-neutral-900 dark:text-white'
+                    : 'text-muted-foreground'
+                }`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="liquid-glass-tab"
+                    className="absolute inset-1 bg-white/40 dark:bg-white/15 rounded-full"
+                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  />
+                )}
+                <span className="relative z-10">
+                  <Icon className="w-6 h-6" />
+                </span>
+                <span className="relative z-10 text-xs font-medium">{tab.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </LiquidGlass>
     </nav>
   );
 }

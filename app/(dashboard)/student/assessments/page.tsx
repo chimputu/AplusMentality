@@ -166,7 +166,7 @@ export default function StudentAssessmentsPage() {
                       <div className="text-right mr-3">
                         {bestAttempt.percentage !== null && (
                           <div className="flex items-center space-x-1 text-sm">
-                            <Award className="w-4 h-4 text-amber-500" />
+                            <Award className="w-4 h-4 text-blue-500" />
                             <span className={`font-semibold ${
                               bestAttempt.passed
                                 ? 'text-green-600 dark:text-green-400'

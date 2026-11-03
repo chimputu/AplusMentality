@@ -61,19 +61,19 @@ export default async function CoursePreviewPage({ params }: PageProps) {
 
       {/* Exploration banner */}
       {isExploring && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-start gap-3">
-          <BookOpen className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex items-start gap-3">
+          <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+            <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
               You&apos;re exploring {course.institution.shortName || course.institution.name}
             </p>
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
               You&apos;re viewing preview content from another institution. Only materials marked as preview are visible.
             </p>
           </div>
           <Link
             href="/student"
-            className="text-xs text-amber-700 dark:text-amber-300 hover:underline flex-shrink-0"
+            className="text-xs text-blue-700 dark:text-blue-300 hover:underline flex-shrink-0"
           >
             Exit exploration
           </Link>

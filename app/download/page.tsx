@@ -66,7 +66,7 @@ export default async function DownloadPage() {
             Download APK
           </a>
         ) : (
-          <div className="inline-flex items-center gap-3 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 px-8 py-4 rounded-xl border border-amber-200 dark:border-amber-800">
+          <div className="inline-flex items-center gap-3 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-8 py-4 rounded-xl border border-blue-200 dark:border-blue-800">
             <AlertCircle className="w-6 h-6" />
             APK Coming Soon
           </div>

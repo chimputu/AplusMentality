@@ -36,7 +36,7 @@ export default async function AssessmentResultPage({
       ? attempt.percentage >= 80
         ? 'text-green-600 dark:text-green-400'
         : attempt.percentage >= 50
-          ? 'text-amber-600 dark:text-amber-400'
+          ? 'text-blue-600 dark:text-blue-400'
           : 'text-red-600 dark:text-red-400'
       : 'text-gray-600 dark:text-gray-400';
 

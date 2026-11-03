@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, useReducedMotion, AnimatePresence } from "motion/react";
 import {
   IconArrowRight,
-  IconGraduationCap,
+  IconSchool,
   IconMenu2,
   IconX,
 } from "@tabler/icons-react";
@@ -47,7 +47,7 @@ export default function LiquidGlassHeroDemo() {
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <IconGraduationCap className="size-5" stroke={1.75} />
+          <IconSchool className="size-5" stroke={1.75} />
           A+ Mentality
         </Link>
 

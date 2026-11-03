@@ -112,7 +112,7 @@ export default async function LecturerCoursesPage() {
                   </div>
 
                   <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center gap-3">
-                    <span className={`text-xs font-medium ${course.isPublished ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                    <span className={`text-xs font-medium ${course.isPublished ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400'}`}>
                       {course.isPublished ? 'Published' : 'Draft'}
                     </span>
                   </div>

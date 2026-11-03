@@ -7,7 +7,7 @@ import { QuestionType } from '@/generated/prisma/client';
 const typeColors: Record<string, string> = {
   MULTIPLE_CHOICE: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
   TRUE_FALSE: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-  FILL_IN_BLANK: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+  FILL_IN_BLANK: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
   SHORT_ANSWER: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
   NUMERIC: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
   MATCHING: 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',

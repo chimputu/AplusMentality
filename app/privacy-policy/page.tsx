@@ -147,11 +147,11 @@ export default function PrivacyPolicyPage() {
         </div>
 
         {/* Data Retention */}
-        <div className="mt-6 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl p-6 sm:p-8">
-          <h2 className="text-xl font-semibold text-amber-800 dark:text-amber-300 mb-3">
+        <div className="mt-6 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-2xl p-6 sm:p-8">
+          <h2 className="text-xl font-semibold text-blue-800 dark:text-blue-300 mb-3">
             Data Retention
           </h2>
-          <p className="text-amber-700 dark:text-amber-400 text-sm leading-relaxed">
+          <p className="text-blue-700 dark:text-blue-400 text-sm leading-relaxed">
             We retain your personal data for as long as your account is active or as needed to
             provide our services. When you delete your account, we will remove your personal data
             within 30 days, except where we are required to retain certain information for legal
