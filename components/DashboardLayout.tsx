@@ -1159,16 +1159,17 @@ export default function DashboardLayout({
         </div>
       )}
 
-      {/* Sidebar — hidden on mobile, slide-in drawer when toggled; persistent on desktop */}
+      {/* Sidebar — liquid glass on desktop, hidden on mobile */}
       <aside
         className={`
-          fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] bg-card border-r border-border
+          fixed top-16 left-0 z-40 h-[calc(100vh-4rem)]
           transition-all duration-300 ease-in-out
           hidden md:block
           ${isCollapsed ? 'md:w-16' : 'md:w-64'}
         `}
       >
-        <div className="flex flex-col h-full">
+        <LiquidGlass radius={0} bevelDepth={6} scale={20} tint={0.5} className="h-full liquid-glass-fallback">
+          <div className="flex flex-col h-full">
           {/* Role Badge */}
           <div className={`px-4 py-4 border-b border-border ${isCollapsed ? 'flex justify-center' : ''}`}>
             <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
@@ -1285,11 +1286,11 @@ export default function DashboardLayout({
               )}
             </div>
           </div>
-        </div>
+        </LiquidGlass>
       </aside>
 
-      {/* Main Content — no sidebar margin on mobile, proper padding for floating bottom tab bar */}
-      <div className="pt-16 pb-28 md:pb-0 transition-all duration-300 md:ml-64">
+      {/* Main Content — solid background so glass sidebar has something to blur against */}
+      <div className="pt-16 pb-28 md:pb-0 transition-all duration-300 md:ml-64 bg-gray-50 dark:bg-[#0a0a0a]">
         <main className="p-4 lg:p-8">
           {children}
         </main>

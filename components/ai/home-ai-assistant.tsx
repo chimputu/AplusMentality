@@ -11,6 +11,7 @@ import { createConversation, getConversation } from '@/lib/actions/chat';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 
 interface Message {
   id: string;
@@ -233,7 +234,7 @@ export function HomeAIAssistant() {
             onClick={() => setOpen(false)}
           />
 
-          <div className="fixed z-40 flex flex-col bottom-20 right-0 left-0 md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] h-[calc(100dvh-180px)] rounded-t-2xl md:rounded-xl bg-card shadow-2xl border border-border">
+          <LiquidGlass radius={24} bevelDepth={10} scale={28} tint={0.6} className="fixed z-40 flex flex-col bottom-20 right-0 left-0 md:right-6 md:left-auto md:bottom-24 md:w-96 md:h-[500px] h-[calc(100dvh-180px)] rounded-t-2xl md:rounded-xl liquid-glass-fallback shadow-2xl">
             {/* Header — blue-500 */}
             <div className="p-4 border-b border-border bg-blue-500 text-white rounded-t-2xl md:rounded-t-xl flex items-center justify-between flex-shrink-0">
               <div>
@@ -367,7 +368,7 @@ export function HomeAIAssistant() {
                 <Send className="w-4 h-4" />
               </button>
             </div>
-          </div>
+          </LiquidGlass>
         </>
       )}
 
