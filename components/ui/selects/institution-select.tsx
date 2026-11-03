@@ -40,7 +40,6 @@ export function InstitutionSelect({
       getLabel={(i: any) => `${i.name}${i.shortName ? ` (${i.shortName})` : ''}`}
       placeholder="Select university"
       emptyMessage="No universities available."
-      emptyAction={{ label: 'Create university', href: '/admin/institutions/new' }}
       errorMessage="Couldn't load universities."
     />
   );
