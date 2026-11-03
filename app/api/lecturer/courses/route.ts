@@ -59,6 +59,10 @@ export async function POST(req: Request) {
     if (!checkLecturerAuth(user)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+    // At this point checkLecturerAuth guarantees user is non-null
+    if (!user) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const body = await req.json();
     const { code, title, description, category, level, year, period, programmeId } = body;
@@ -69,7 +73,7 @@ export async function POST(req: Request) {
 
     // SECURITY: Scope lecturer-created courses to their institution
     // If the lecturer has a programme, use it; otherwise require explicit programmeId
-    const finalProgrammeId = programmeId || user.programmeId;
+    const finalProgrammeId = programmeId || (user?.programmeId ?? null);
 
     if (user.role === 'LECTURER') {
       if (!finalProgrammeId) {
