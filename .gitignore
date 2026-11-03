@@ -55,3 +55,6 @@ build-output.txt
 
 # Junie AI planning folder (may contain secrets)
 .junie/
+
+# Android keystore (contains sensitive signing keys)
+android.keystore
