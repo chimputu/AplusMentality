@@ -17,11 +17,28 @@ import {
   Compass, TrendingUp, PlayCircle, Megaphone, UserPlus,
   Download,
 } from 'lucide-react';
-import BannerCarousel from '@/components/banner-carousel';
 import { CourseCard } from '@/components/course-card';
 import { InstitutionLogo } from '@/components/institution-logo';
-import { HomeAIAssistantWrapper } from '@/components/ai/home-ai-assistant-wrapper';
 import ThemeToggle from '@/components/ThemeToggle';
+
+// Dynamically import heavy components to reduce initial bundle and TBT
+const BannerCarouselLazy = dynamic(
+  () => import('@/components/banner-carousel'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
+    ),
+  },
+);
+
+const HomeAIAssistantWrapperLazy = dynamic(
+  () => import('@/components/ai/home-ai-assistant-wrapper').then(mod => ({ default: mod.HomeAIAssistantWrapper })),
+  {
+    ssr: false,
+    loading: () => null, // AI assistant is non-critical, no skeleton needed
+  },
+);
 
 // Lazy load heavy below-the-fold components for faster initial page load
 const WorldMapDemoLazy = dynamic(() => import('@/components/world-map-demo'), {
@@ -683,7 +700,7 @@ export default function HomePageClient() {
   return (
     <div className="min-h-screen bg-muted overflow-x-hidden">
       {/* ===== BANNERS — MUST BE FIRST so they appear above the navbar ===== */}
-      <BannerCarousel placement="HOMEPAGE" institutionId={institutionId} />
+      <BannerCarouselLazy placement="HOMEPAGE" institutionId={institutionId} />
 
       {/* ===== NAVBAR — sticky (sticks when scrolled to, sits below banner) ===== */}
       <nav className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
@@ -1585,8 +1602,8 @@ export default function HomePageClient() {
         </svg>
       </a>
 
-      {/* ===== AI ASSISTANT (AWS-style floating widget) ===== */}
-      <HomeAIAssistantWrapper />
+      {/* ===== AI ASSISTANT (AWS-style floating widget) — dynamically loaded ===== */}
+      <HomeAIAssistantWrapperLazy />
     </div>
   );
 }
