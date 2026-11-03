@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma7 generate && next build",
+    "build:push": "prisma7 generate && next build && git add -A && git commit -m 'chore: build and push' --trailer 'Co-authored-by: Junie <junie@jetbrains.com>' && git push origin main",
     "start": "next start -p $PORT",
     "lint": "eslint",
     "postinstall": "prisma7 generate",
