@@ -222,6 +222,12 @@ export default function DashboardLayout({
       section: 'Management'
     },
     { 
+      href: '/admin/lecturers', 
+      label: 'Lecturers', 
+      icon: GraduationCap,
+      section: 'Management'
+    },
+    { 
       href: '/admin/tutor-requests', 
       label: 'Tutor Requests', 
       icon: MessageSquare,
