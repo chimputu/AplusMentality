@@ -196,7 +196,7 @@ export async function DELETE(
     if (role === 'ADMIN') {
       const targetUser = await prisma.user.findUnique({
         where: { clerkId: id },
-        select: { institutionId: true },
+        select: { institutionId: true, role: true },
       });
       const adminUser = await prisma.user.findUnique({
         where: { clerkId: userId },
@@ -208,6 +208,16 @@ export async function DELETE(
           { error: 'Unauthorized: You can only manage users in your own university.' },
           { status: 403 }
         );
+      }
+      // Role hierarchy check: prevent Admins from deleting peers or higher-privilege users
+      if (targetUser) {
+        const hierarchyCheck = checkRoleHierarchy(role, targetUser.role, targetUser.role);
+        if (!hierarchyCheck.allowed) {
+          return NextResponse.json(
+            { error: hierarchyCheck.reason },
+            { status: 403 }
+          );
+        }
       }
     }
 

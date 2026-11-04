@@ -21,6 +21,7 @@ import {
   X,
   Check,
   RefreshCw,
+  UserPlus,
 } from 'lucide-react';
 import { formatDate } from '@/lib/formatDate';
 import { toast } from 'sonner';
@@ -71,6 +72,7 @@ interface UserManagementProps {
   users: User[];
   institutions?: Institution[];
   adminRole?: Role;
+  showInviteButton?: boolean;
 }
 
 /** Consistent display name with fallback chain: username → name → email prefix */
@@ -100,7 +102,7 @@ function canModifyUser(adminRole: Role | undefined, targetRole: Role): boolean {
   return adminIndex > targetIndex;
 }
 
-export default function UserManagement({ users, institutions = [], adminRole }: UserManagementProps) {
+export default function UserManagement({ users, institutions = [], adminRole, showInviteButton }: UserManagementProps) {
   const router = useRouter();
   const [updating, setUpdating] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -112,6 +114,10 @@ export default function UserManagement({ users, institutions = [], adminRole }: 
   const [pendingRoleChange, setPendingRoleChange] = useState<{ userId: string; role: Role; displayName: string } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<{ userId: string; displayName: string } | null>(null);
   const [syncing, setSyncing] = useState<string | null>(null);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<Role>('STUDENT');
+  const [invitePending, setInvitePending] = useState(false);
 
   const safeUsers = users ?? [];
 
@@ -193,6 +199,33 @@ export default function UserManagement({ users, institutions = [], adminRole }: 
       toast.error('An error occurred');
     } finally {
       setSyncing(null);
+    }
+  };
+
+  const handleInviteUser = async () => {
+    if (!inviteEmail || !inviteRole) return;
+    setInvitePending(true);
+    try {
+      const res = await fetch('/api/users/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: inviteEmail, role: inviteRole }),
+      });
+
+      if (res.ok) {
+        toast.success('Invitation sent successfully');
+        setShowInviteModal(false);
+        setInviteEmail('');
+        setInviteRole('STUDENT');
+      } else {
+        const error = await res.json();
+        toast.error(error.error || 'Failed to send invitation');
+      }
+    } catch (error) {
+      console.error('Invite error:', error);
+      toast.error('An error occurred');
+    } finally {
+      setInvitePending(false);
     }
   };
 
@@ -279,6 +312,18 @@ export default function UserManagement({ users, institutions = [], adminRole }: 
 
   return (
     <div className="space-y-4">
+      {/* Header with Invite Button */}
+      {showInviteButton && (
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowInviteModal(true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
+          >
+            <UserPlus className="w-4 h-4" />
+            Invite User
+          </button>
+        </div>
+      )}
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-card rounded-xl shadow-sm border border-border p-4">
@@ -461,17 +506,17 @@ export default function UserManagement({ users, institutions = [], adminRole }: 
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-                <button
-                  onClick={() => handleEditUser(user)}
-                  className="flex-1 flex items-center justify-center gap-1 text-xs px-3 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg transition"
-                  aria-label={`Edit ${displayName}`}
-                >
-                  <Pencil className="w-3 h-3" />
-                  Edit
-                </button>
-                {canModifyUser(adminRole, user.role) && (
-                  user.role === 'ADMIN' ? (
+              {canModifyUser(adminRole, user.role) && (
+                <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                  <button
+                    onClick={() => handleEditUser(user)}
+                    className="flex-1 flex items-center justify-center gap-1 text-xs px-3 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg transition"
+                    aria-label={`Edit ${displayName}`}
+                  >
+                    <Pencil className="w-3 h-3" />
+                    Edit
+                  </button>
+                  {user.role === 'ADMIN' ? (
                     <button
                       onClick={() => handleRoleChangeClick(user, 'STUDENT')}
                       disabled={updating === user.clerkId}
@@ -489,15 +534,15 @@ export default function UserManagement({ users, institutions = [], adminRole }: 
                       <Award className="w-3 h-3" />
                       Promote
                     </button>
-                  )
-                )}
-                <button
-                  onClick={() => handleDeleteUserClick(user)}
-                  className="flex items-center justify-center px-3 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </button>
-              </div>
+                  )}
+                  <button
+                    onClick={() => handleDeleteUserClick(user)}
+                    className="flex items-center justify-center px-3 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
@@ -609,17 +654,17 @@ export default function UserManagement({ users, institutions = [], adminRole }: 
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditUser(user)}
-                          className="flex items-center gap-1 text-xs px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg transition"
-                          aria-label={`Edit ${getDisplayName(user)}`}
-                        >
-                          <Pencil className="w-3 h-3" />
-                          Edit
-                        </button>
-                        {canModifyUser(adminRole, user.role) && (
-                          user.role === 'ADMIN' ? (
+                      {canModifyUser(adminRole, user.role) ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditUser(user)}
+                            className="flex items-center gap-1 text-xs px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg transition"
+                            aria-label={`Edit ${getDisplayName(user)}`}
+                          >
+                            <Pencil className="w-3 h-3" />
+                            Edit
+                          </button>
+                          {user.role === 'ADMIN' ? (
                             <button
                               onClick={() => handleRoleChangeClick(user, 'STUDENT')}
                               disabled={updating === user.clerkId}
@@ -637,23 +682,23 @@ export default function UserManagement({ users, institutions = [], adminRole }: 
                               <Award className="w-3 h-3" />
                               Promote
                             </button>
-                          )
-                        )}
-                        <button
-                          onClick={() => handleSyncRole(user)}
-                          disabled={syncing === user.clerkId}
-                          className="flex items-center gap-1 text-xs px-3 py-1.5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-lg transition disabled:opacity-50"
-                          title="Sync role to Clerk"
-                        >
-                          <RefreshCw className={`w-3 h-3 ${syncing === user.clerkId ? 'animate-spin' : ''}`} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUserClick(user)}
-                          className="flex items-center gap-1 text-xs px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      </div>
+                          )}
+                          <button
+                            onClick={() => handleSyncRole(user)}
+                            disabled={syncing === user.clerkId}
+                            className="flex items-center gap-1 text-xs px-3 py-1.5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-lg transition disabled:opacity-50"
+                            title="Sync role to Clerk"
+                          >
+                            <RefreshCw className={`w-3 h-3 ${syncing === user.clerkId ? 'animate-spin' : ''}`} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUserClick(user)}
+                            className="flex items-center gap-1 text-xs px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : null}
                     </td>
                   </tr>
                 );
@@ -784,6 +829,89 @@ export default function UserManagement({ users, institutions = [], adminRole }: 
         variant="destructive"
         onConfirm={handleDeleteUserConfirm}
       />
+
+      {/* Invite User Modal */}
+      {showInviteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setShowInviteModal(false)}
+        >
+          <div
+            className="bg-card rounded-xl shadow-xl max-w-md w-full p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-foreground">Invite User</h2>
+              <button
+                onClick={() => setShowInviteModal(false)}
+                className="p-2 hover:bg-muted rounded-lg transition"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="user@example.com"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
+                  Role
+                </label>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value as Role)}
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {adminRole === 'SUPER_ADMIN' && (
+                    <>
+                      <option value="STUDENT">Student</option>
+                      <option value="TUTOR">Tutor</option>
+                      <option value="LECTURER">Lecturer</option>
+                      <option value="ADMIN">Admin</option>
+                    </>
+                  )}
+                  {adminRole === 'ADMIN' && (
+                    <>
+                      <option value="STUDENT">Student</option>
+                      <option value="TUTOR">Tutor</option>
+                      <option value="LECTURER">Lecturer</option>
+                    </>
+                  )}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowInviteModal(false)}
+                className="flex-1 px-4 py-2 text-sm font-medium bg-muted text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-200 dark:hover:bg-muted transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleInviteUser}
+                disabled={invitePending || !inviteEmail || !inviteRole}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+              >
+                <UserPlus className="w-4 h-4" />
+                {invitePending ? 'Sending...' : 'Send Invite'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

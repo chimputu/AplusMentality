@@ -16,6 +16,9 @@ export default async function AdminUsersPage() {
     // SUPER_ADMIN bypasses this and sees all users globally
     if (userRole === 'ADMIN' && adminUser.institutionId) {
       where.institutionId = adminUser.institutionId;
+      // Role hierarchy: ADMIN cannot see peers (ADMIN) or higher (SUPER_ADMIN)
+      // Only show users with roles strictly below ADMIN
+      where.role = { in: ['STUDENT', 'TUTOR', 'LECTURER'] };
     }
 
     usersData = await prisma.user.findMany({
@@ -95,14 +98,16 @@ export default async function AdminUsersPage() {
               : 'Manage users within your university'}
           </p>
         </div>
-        <a
-          href="/api/export/students"
-          className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
-        >
-          Export Students
-        </a>
+        <div className="flex items-center gap-3">
+          <a
+            href="/api/export/students"
+            className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+          >
+            Export Students
+          </a>
+        </div>
       </div>
-      <UserManagement users={users} institutions={institutionsData} adminRole={userRole} />
+      <UserManagement users={users} institutions={institutionsData} adminRole={userRole} showInviteButton />
     </div>
   );
 }
