@@ -194,12 +194,17 @@ export async function createInstitution(rawInput: unknown) {
 }
 
 export async function updateInstitution(id: string, rawInput: unknown) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   const input = updateInstitutionSchema.parse(rawInput);
 
   const institution = await prisma.university.findUnique({ where: { id } });
   if (!institution) throw new Error('Institution not found');
+
+  // Tenant isolation: ADMIN can only update their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && institution.id !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage your own university.');
+  }
 
   // Detect structural changes
   const structuralChanged =
@@ -264,10 +269,15 @@ export async function deleteInstitution(id: string) {
 }
 
 export async function toggleInstitutionActive(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   const institution = await prisma.university.findUnique({ where: { id } });
   if (!institution) throw new Error('Institution not found');
+
+  // Tenant isolation: ADMIN can only toggle their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && institution.id !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage your own university.');
+  }
 
   const updated = await prisma.university.update({
     where: { id },
@@ -280,10 +290,15 @@ export async function toggleInstitutionActive(id: string) {
 }
 
 export async function toggleInstitutionVerified(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   const institution = await prisma.university.findUnique({ where: { id } });
   if (!institution) throw new Error('Institution not found');
+
+  // Tenant isolation: ADMIN can only verify their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && institution.id !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage your own university.');
+  }
 
   const updated = await prisma.university.update({
     where: { id },
@@ -362,7 +377,12 @@ export async function getInstitution(id: string) {
 }
 
 export async function updateInstitutionSlug(institutionId: string, slug: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+
+  // Tenant isolation: ADMIN can only update their own institution's slug
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage your own university.');
+  }
 
   const slugSchema = z.string().min(3).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be lowercase alphanumeric with hyphens');
   const parsed = slugSchema.parse(slug);
@@ -383,7 +403,12 @@ export async function updateInstitutionSlug(institutionId: string, slug: string)
 }
 
 export async function updateUniversityJoinSlug(universityId: string, joinSlug: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+
+  // Tenant isolation: ADMIN can only update their own institution's join slug
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && universityId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage your own university.');
+  }
 
   const slugSchema = z.string().min(3).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug must be lowercase alphanumeric with hyphens');
   const parsed = slugSchema.parse(joinSlug);
@@ -409,10 +434,15 @@ export async function updateUniversityJoinSlug(universityId: string, joinSlug: s
 }
 
 export async function inviteAdmin(institutionId: string, emailAddress?: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   const institution = await prisma.university.findUnique({ where: { id: institutionId } });
   if (!institution) throw new Error('Institution not found');
+
+  // Tenant isolation: ADMIN can only invite to their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only invite users to your own university.');
+  }
 
   // Auto-create Clerk org if missing
   let orgId = institution.clerkOrgId;

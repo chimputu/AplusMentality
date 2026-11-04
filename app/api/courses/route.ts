@@ -31,6 +31,20 @@ export async function GET(req: NextRequest) {
 
       userId = auth.userId;
       role = auth.role;
+
+      // Tenant isolation: ADMIN can only query their own institution
+      if (role === 'ADMIN' && institutionId) {
+        if (institutionId !== auth.user.institutionId) {
+          return NextResponse.json(
+            { error: 'Forbidden: You can only query courses in your own institution' },
+            { status: 403 }
+          );
+        }
+      }
+      // Default ADMIN to their own institution if no institutionId provided
+      if (role === 'ADMIN' && auth.user.institutionId && !institutionId) {
+        where.programme = { institutionId: auth.user.institutionId };
+      }
     } else {
       const authResult = await requireAuth();
       userId = authResult.userId;
@@ -277,7 +291,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    const { userId, role } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+    const { userId, role, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
     const body = await req.json();
 
     const {
@@ -303,7 +317,10 @@ export async function PUT(req: NextRequest) {
 
     const existingCourse = await prisma.course.findUnique({
       where: { id },
-      select: { createdBy: true },
+      select: {
+        createdBy: true,
+        programme: { select: { institutionId: true } },
+      },
     });
 
     if (!existingCourse) {
@@ -318,6 +335,17 @@ export async function PUT(req: NextRequest) {
           { error: 'You can only edit your own courses' },
           { status: 403 }
       );
+    }
+
+    // Tenant isolation: ADMIN can only edit courses in their own institution
+    if (role === 'ADMIN' && user.institutionId) {
+      const courseInstitutionId = existingCourse.programme?.institutionId;
+      if (courseInstitutionId && courseInstitutionId !== user.institutionId) {
+        return NextResponse.json(
+            { error: 'Forbidden: You can only manage courses in your own institution' },
+            { status: 403 }
+        );
+      }
     }
 
     const course = await prisma.course.update({
@@ -359,7 +387,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { userId, role } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+    const { userId, role, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
@@ -373,7 +401,10 @@ export async function DELETE(req: NextRequest) {
 
     const existingCourse = await prisma.course.findUnique({
       where: { id },
-      select: { createdBy: true },
+      select: {
+        createdBy: true,
+        programme: { select: { institutionId: true } },
+      },
     });
 
     if (!existingCourse) {
@@ -388,6 +419,17 @@ export async function DELETE(req: NextRequest) {
           { error: 'You can only delete your own courses' },
           { status: 403 }
       );
+    }
+
+    // Tenant isolation: ADMIN can only delete courses in their own institution
+    if (role === 'ADMIN' && user.institutionId) {
+      const courseInstitutionId = existingCourse.programme?.institutionId;
+      if (courseInstitutionId && courseInstitutionId !== user.institutionId) {
+        return NextResponse.json(
+            { error: 'Forbidden: You can only manage courses in your own institution' },
+            { status: 403 }
+        );
+      }
     }
 
     await prisma.course.delete({

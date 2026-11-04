@@ -675,7 +675,7 @@ export default function UserManagement({ users, institutions = [], adminRole, sh
                             </button>
                           ) : (
                             <button
-                              onClick={() => handleRoleChangeClick(user, 'ADMIN')}
+                              onClick={() => handleRoleChangeClick(user, adminRole === 'ADMIN' ? 'LECTURER' : 'ADMIN')}
                               disabled={updating === user.clerkId}
                               className="flex items-center gap-1 text-xs px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-lg transition disabled:opacity-50"
                             >
@@ -698,7 +698,9 @@ export default function UserManagement({ users, institutions = [], adminRole, sh
                             <Trash2 className="w-3 h-3" />
                           </button>
                         </div>
-                      ) : null}
+                      ) : (
+                        <span className="text-gray-400 dark:text-gray-500 text-xs italic">Restricted</span>
+                      )}
                     </td>
                   </tr>
                 );

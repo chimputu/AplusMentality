@@ -103,6 +103,9 @@ export async function listUsers(filters?: {
   // SUPER_ADMIN bypasses this and sees all users globally
   if (adminUser.role === 'ADMIN' && adminUser.institutionId) {
     where.institutionId = adminUser.institutionId;
+    // Role hierarchy: ADMIN cannot see peers (ADMIN) or higher (SUPER_ADMIN)
+    // Only show users with roles strictly below ADMIN
+    where.role = { in: ['STUDENT', 'TUTOR', 'LECTURER'] };
   }
   // SUPER_ADMIN: no institution filter — full global visibility
 
@@ -155,11 +158,15 @@ export async function getUser(id: string) {
   // The id parameter is a Prisma user id, not clerkId — need to look up clerkId first
   const targetUser = await prisma.user.findUnique({
     where: { id },
-    select: { clerkId: true, institutionId: true },
+    select: { clerkId: true, institutionId: true, role: true },
   });
   if (!targetUser) throw new Error('User not found');
   if (adminUser.role === 'ADMIN' && adminUser.institutionId && targetUser.institutionId !== adminUser.institutionId) {
     throw new Error('Unauthorized: You can only manage users in your own university.');
+  }
+  // Role hierarchy: ADMIN cannot view or manage SUPER_ADMIN or peer ADMIN
+  if (adminUser.role === 'ADMIN' && (targetUser.role === 'SUPER_ADMIN' || targetUser.role === 'ADMIN')) {
+    throw new Error('Unauthorized: You do not have permission to manage this user.');
   }
 
   const user = await prisma.user.findUnique({
@@ -248,11 +255,15 @@ export async function reassignUserAcademic(id: string, rawInput: unknown) {
 
   const targetUser = await prisma.user.findUnique({
     where: { id },
-    select: { clerkId: true, institutionId: true },
+    select: { clerkId: true, institutionId: true, role: true },
   });
   if (!targetUser) throw new Error('User not found');
   if (adminUser.role === 'ADMIN' && adminUser.institutionId && targetUser.institutionId !== adminUser.institutionId) {
     throw new Error('Unauthorized: You can only manage users in your own university.');
+  }
+  // Role hierarchy: ADMIN cannot reassign academic profile of SUPER_ADMIN or peer ADMIN
+  if (adminUser.role === 'ADMIN' && (targetUser.role === 'SUPER_ADMIN' || targetUser.role === 'ADMIN')) {
+    throw new Error('Unauthorized: You do not have permission to manage this user.');
   }
 
   const input = reassignUserAcademicSchema.parse(rawInput);
@@ -292,6 +303,10 @@ export async function deactivateUser(id: string) {
   if (adminUser.role === 'ADMIN' && adminUser.institutionId && user.institutionId !== adminUser.institutionId) {
     throw new Error('Unauthorized: You can only manage users in your own university.');
   }
+  // Role hierarchy: ADMIN cannot deactivate SUPER_ADMIN or peer ADMIN
+  if (adminUser.role === 'ADMIN' && (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN')) {
+    throw new Error('Unauthorized: You do not have permission to manage this user.');
+  }
 
   // Ban user in Clerk (revokes sessions and prevents sign-in)
   try {
@@ -330,6 +345,10 @@ export async function reactivateUser(id: string) {
   if (adminUser.role === 'ADMIN' && adminUser.institutionId && user.institutionId !== adminUser.institutionId) {
     throw new Error('Unauthorized: You can only manage users in your own university.');
   }
+  // Role hierarchy: ADMIN cannot reactivate SUPER_ADMIN or peer ADMIN
+  if (adminUser.role === 'ADMIN' && (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN')) {
+    throw new Error('Unauthorized: You do not have permission to manage this user.');
+  }
 
   // Unban user in Clerk (allows sign-in again)
   try {
@@ -353,6 +372,10 @@ export async function deleteUser(id: string) {
   // Data isolation: University admins can only delete users in their own institution
   if (adminUser.role === 'ADMIN' && adminUser.institutionId && user.institutionId !== adminUser.institutionId) {
     throw new Error('Unauthorized: You can only manage users in your own university.');
+  }
+  // Role hierarchy: ADMIN cannot delete SUPER_ADMIN or peer ADMIN
+  if (adminUser.role === 'ADMIN' && (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN')) {
+    throw new Error('Unauthorized: You do not have permission to manage this user.');
   }
 
   // Delete from Clerk

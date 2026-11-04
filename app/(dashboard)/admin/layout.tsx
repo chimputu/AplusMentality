@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { requireAuth } from '@/lib/auth';
+import { getActiveGlobalAnnouncement } from '@/lib/actions/banner';
 import DashboardLayout from '@/components/DashboardLayout';
 import { AIAssistantLazy } from '@/components/ai/ai-assistant-lazy';
 
@@ -15,8 +16,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   // Handle missing institution gracefully
   const institutionName = u.institution?.shortName ?? u.institution?.name ?? null;
 
+  // Fetch active global announcement for StickyBanner
+  const announcement = await getActiveGlobalAnnouncement();
+
   return (
-    <DashboardLayout role={role}>
+    <DashboardLayout role={role} announcement={announcement}>
       <div className="w-full">
         {children}
       </div>

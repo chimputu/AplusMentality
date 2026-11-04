@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { getActiveGlobalAnnouncement } from '@/lib/actions/banner';
 import DashboardLayout from '@/components/DashboardLayout';
 import { getTutors } from '@/lib/actions/tutor-directory';
 import TutorCard from '@/components/TutorCard';
@@ -39,9 +40,10 @@ export default async function FindTutorPage({
 
   const result = await getTutors(filters);
   const tutors = 'tutors' in result ? (result.tutors ?? []) : [];
+  const announcement = await getActiveGlobalAnnouncement();
 
   return (
-    <DashboardLayout role={user?.role || 'STUDENT'}>
+    <DashboardLayout role={user?.role || 'STUDENT'} announcement={announcement}>
       <div className="p-4 lg:p-6 max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">

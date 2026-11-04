@@ -44,13 +44,24 @@ import MobileTabBar from './mobile-tab-bar';
 import { OfflineDetector } from './offline-detector';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { Logo } from '@/components/Logo';
+import { StickyBanner } from '@/components/ui/sticky-banner';
 import type { Role } from '@/generated/prisma/client';
+
+interface AnnouncementData {
+  id: string;
+  title: string;
+  message: string;
+  ctaLabel?: string | null;
+  ctaUrl?: string | null;
+  variant: string;
+}
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
   role: Role;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  announcement?: AnnouncementData | null;
 }
 
 interface NavItem {
@@ -66,6 +77,7 @@ export default function DashboardLayout({
   role,
   searchQuery = '',
   onSearchChange,
+  announcement,
 }: DashboardLayoutProps) {
   const pathname = usePathname();
   const { user } = useUser();
@@ -1295,6 +1307,32 @@ export default function DashboardLayout({
         </LiquidGlass>
       </aside>
 
+      {/* Sticky Banner — only renders when a GLOBAL announcement exists */}
+      {announcement && (
+        <StickyBanner
+          className={`${getBannerVariantBg(announcement.variant)} border-b ${getBannerVariantBorder(announcement.variant)}`}
+        >
+          <div className="max-w-4xl w-full flex items-center justify-center gap-3 text-sm text-white">
+            {announcement.title && (
+              <span className="font-semibold">{announcement.title}</span>
+            )}
+            {announcement.message && (
+              <span className="opacity-90">{announcement.message}</span>
+            )}
+            {announcement.ctaLabel && announcement.ctaUrl && (
+              <a
+                href={announcement.ctaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline font-medium hover:opacity-100 opacity-80 transition-opacity whitespace-nowrap"
+              >
+                {announcement.ctaLabel}
+              </a>
+            )}
+          </div>
+        </StickyBanner>
+      )}
+
       {/* Main Content — solid background so glass sidebar has something to blur against */}
       <div className="pt-16 pb-28 md:pb-0 transition-all duration-300 md:ml-64 bg-gray-50 dark:bg-[#0a0a0a]">
         <main className="p-4 lg:p-8">
@@ -1356,4 +1394,25 @@ export default function DashboardLayout({
       )}
     </div>
   );
+}
+
+// Banner variant styling helpers for StickyBanner
+function getBannerVariantBg(variant: string): string {
+  switch (variant) {
+    case 'SUCCESS': return 'bg-green-600';
+    case 'WARNING': return 'bg-amber-600';
+    case 'DANGER': return 'bg-red-600';
+    case 'PROMO': return 'bg-purple-600';
+    default: return 'bg-blue-600';
+  }
+}
+
+function getBannerVariantBorder(variant: string): string {
+  switch (variant) {
+    case 'SUCCESS': return 'border-green-500';
+    case 'WARNING': return 'border-amber-500';
+    case 'DANGER': return 'border-red-500';
+    case 'PROMO': return 'border-purple-500';
+    default: return 'border-blue-500';
+  }
 }

@@ -25,6 +25,30 @@ async function requireAdmin() {
   return user;
 }
 
+/**
+ * Enforce tenant isolation on assessments: ensure the assessment's course
+ * belongs to the admin's institution. SUPER_ADMIN bypasses this check.
+ */
+async function requireAssessmentInScope(adminUser: Awaited<ReturnType<typeof requireAdmin>>, assessmentId: string) {
+  if (adminUser.role === 'SUPER_ADMIN') return;
+
+  const assessment = await prisma.assessment.findUnique({
+    where: { id: assessmentId },
+    include: {
+      course: {
+        select: {
+          programme: { select: { institutionId: true } },
+        },
+      },
+    },
+  });
+  if (!assessment) throw new Error('Assessment not found');
+  const courseInstitutionId = assessment.course?.programme?.institutionId;
+  if (adminUser.institutionId && courseInstitutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage assessments in your own university.');
+  }
+}
+
 // ============================================
 // Schemas
 // ============================================
@@ -59,9 +83,17 @@ export async function listAssessments(filters?: {
   published?: boolean;
   courseId?: string;
 }) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   const where: any = {};
+
+  // Tenant isolation: ADMIN can only see assessments in their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId) {
+    where.course = {
+      programme: { institutionId: adminUser.institutionId },
+    };
+  }
+
   if (filters?.search) {
     where.title = { contains: filters.search, mode: 'insensitive' };
   }
@@ -87,7 +119,8 @@ export async function listAssessments(filters?: {
 }
 
 export async function getAssessment(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+  await requireAssessmentInScope(adminUser, id);
 
   const assessment = await prisma.assessment.findUnique({
     where: { id },
@@ -121,6 +154,18 @@ export async function createAssessment(rawInput: unknown) {
   const admin = await requireAdmin();
 
   const input = assessmentSchema.parse(rawInput);
+
+  // Tenant isolation: verify the course belongs to the admin's institution
+  if (admin.role === 'ADMIN' && admin.institutionId) {
+    const course = await prisma.course.findUnique({
+      where: { id: input.courseId },
+      include: { programme: { select: { institutionId: true } } },
+    });
+    if (!course) throw new Error('Course not found');
+    if (course.programme?.institutionId !== admin.institutionId) {
+      throw new Error('Unauthorized: You can only create assessments in your own university.');
+    }
+  }
 
   const assessment = await prisma.assessment.create({
     data: {
@@ -169,7 +214,8 @@ export async function createAssessment(rawInput: unknown) {
 }
 
 export async function updateAssessment(id: string, rawInput: unknown) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+  await requireAssessmentInScope(adminUser, id);
 
   const input = assessmentSchema.partial().parse(rawInput);
 
@@ -201,7 +247,8 @@ export async function updateAssessment(id: string, rawInput: unknown) {
 }
 
 export async function deleteAssessment(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+  await requireAssessmentInScope(adminUser, id);
 
   await prisma.assessment.delete({ where: { id } });
 

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { getAuthUser } from '@/lib/auth';
 
 // GET: Search across courses, past papers, lecture slides, videos, and announcements
 export async function GET(req: Request) {
@@ -11,10 +12,32 @@ export async function GET(req: Request) {
       return NextResponse.json({ results: [] });
     }
 
+    // SECURITY: Require authentication for search to enforce tenant isolation
+    const auth = await getAuthUser();
+    if (!auth) {
+      return NextResponse.json({ results: [] });
+    }
+
+    const role = auth.role;
+    const institutionId = auth.user.institutionId;
+    const isSuperAdmin = role === 'SUPER_ADMIN';
+    const isAdmin = role === 'ADMIN' || isSuperAdmin;
+
+    // Build institution scope filter for non-super-admin users
+    // ADMIN can only search within their own institution
+    // Students can only search within their own institution
+    const institutionFilter = isSuperAdmin
+      ? {}
+      : institutionId
+        ? { programme: { institutionId } }
+        : {};
+
     const [courses, pastPapers, slides, videos, announcements] = await Promise.all([
       // Courses
       prisma.course.findMany({
         where: {
+          ...institutionFilter,
+          ...(isAdmin ? {} : { isPublished: true }),
           OR: [
             { title: { contains: q, mode: 'insensitive' } },
             { code: { contains: q, mode: 'insensitive' } },
@@ -27,6 +50,7 @@ export async function GET(req: Request) {
       // Past papers
       prisma.pastPaper.findMany({
         where: {
+          course: { ...institutionFilter },
           OR: [
             { title: { contains: q, mode: 'insensitive' } },
             { description: { contains: q, mode: 'insensitive' } },
@@ -38,6 +62,7 @@ export async function GET(req: Request) {
       // Lecture slides
       prisma.lectureSlide.findMany({
         where: {
+          course: { ...institutionFilter },
           OR: [
             { title: { contains: q, mode: 'insensitive' } },
             { description: { contains: q, mode: 'insensitive' } },
@@ -49,6 +74,7 @@ export async function GET(req: Request) {
       // Videos
       prisma.video.findMany({
         where: {
+          course: { ...institutionFilter },
           OR: [
             { title: { contains: q, mode: 'insensitive' } },
             { description: { contains: q, mode: 'insensitive' } },
@@ -60,6 +86,7 @@ export async function GET(req: Request) {
       // Announcements
       prisma.announcement.findMany({
         where: {
+          ...(isAdmin ? {} : {}),
           OR: [
             { title: { contains: q, mode: 'insensitive' } },
             { content: { contains: q, mode: 'insensitive' } },

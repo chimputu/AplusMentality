@@ -114,9 +114,14 @@ export async function getProgramme(id: string) {
 }
 
 export async function createProgramme(rawInput: unknown) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   const input = createProgrammeSchema.parse(rawInput);
+
+  // Tenant isolation: ADMIN can only create programmes in their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && input.institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage programmes in your own university.');
+  }
 
   // Check code uniqueness within institution
   if (input.code) {
@@ -146,7 +151,14 @@ export async function createProgramme(rawInput: unknown) {
 }
 
 export async function updateProgramme(id: string, rawInput: unknown) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+
+  // Tenant isolation: verify the programme belongs to the admin's institution
+  const current = await prisma.programme.findUnique({ where: { id } });
+  if (!current) throw new Error('Programme not found');
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && current.institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage programmes in your own university.');
+  }
 
   const input = updateProgrammeSchema.parse(rawInput);
 
@@ -182,7 +194,7 @@ export async function updateProgramme(id: string, rawInput: unknown) {
 }
 
 export async function deleteProgramme(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
 
   // Check if programme has dependent records
   const counts = await prisma.programme.findUnique({
@@ -193,6 +205,11 @@ export async function deleteProgramme(id: string) {
   });
 
   if (!counts) throw new Error('Programme not found');
+
+  // Tenant isolation: ADMIN can only delete programmes in their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId && counts.institutionId !== adminUser.institutionId) {
+    throw new Error('Unauthorized: You can only manage programmes in your own university.');
+  }
 
   const totalDependents =
     counts._count.branches + counts._count.courses + counts._count.tutors + counts._count.users;

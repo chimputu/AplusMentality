@@ -23,7 +23,7 @@ export async function GET(
     if (role === 'ADMIN') {
       const targetUser = await prisma.user.findUnique({
         where: { clerkId: id },
-        select: { institutionId: true },
+        select: { institutionId: true, role: true },
       });
       const adminUser = await prisma.user.findUnique({
         where: { clerkId: userId },
@@ -33,6 +33,13 @@ export async function GET(
         && targetUser.institutionId !== adminUser.institutionId) {
         return NextResponse.json(
           { error: 'Unauthorized: You can only manage users in your own university.' },
+          { status: 403 }
+        );
+      }
+      // Role hierarchy: ADMIN cannot view SUPER_ADMIN or peer ADMIN
+      if (targetUser && (targetUser.role === 'SUPER_ADMIN' || targetUser.role === 'ADMIN')) {
+        return NextResponse.json(
+          { error: 'Unauthorized: You do not have permission to view this user.' },
           { status: 403 }
         );
       }
@@ -96,7 +103,7 @@ export async function PUT(
     if (role === 'ADMIN') {
       const targetUser = await prisma.user.findUnique({
         where: { clerkId: id },
-        select: { institutionId: true },
+        select: { institutionId: true, role: true },
       });
       const adminUser = await prisma.user.findUnique({
         where: { clerkId: userId },
@@ -106,6 +113,13 @@ export async function PUT(
         && targetUser.institutionId !== adminUser.institutionId) {
         return NextResponse.json(
           { error: 'Unauthorized: You can only manage users in your own university.' },
+          { status: 403 }
+        );
+      }
+      // Role hierarchy: ADMIN cannot modify SUPER_ADMIN or peer ADMIN (even without role change)
+      if (targetUser && (targetUser.role === 'SUPER_ADMIN' || targetUser.role === 'ADMIN')) {
+        return NextResponse.json(
+          { error: 'Unauthorized: You do not have permission to manage this user.' },
           { status: 403 }
         );
       }
