@@ -70,6 +70,7 @@ interface Institution {
 interface UserManagementProps {
   users: User[];
   institutions?: Institution[];
+  adminRole?: Role;
 }
 
 /** Consistent display name with fallback chain: username → name → email prefix */
@@ -88,7 +89,18 @@ function getSecondaryName(user: User): string | null {
   return null;
 }
 
-export default function UserManagement({ users, institutions = [] }: UserManagementProps) {
+/** Role hierarchy from lowest to highest privilege (mirrors lib/auth.ts) */
+const ROLE_HIERARCHY: Role[] = ['STUDENT', 'TUTOR', 'LECTURER', 'ADMIN', 'SUPER_ADMIN'];
+
+/** Returns true if the admin can promote/demote this user (target role is strictly lower) */
+function canModifyUser(adminRole: Role | undefined, targetRole: Role): boolean {
+  if (!adminRole || adminRole === 'SUPER_ADMIN') return true;
+  const adminIndex = ROLE_HIERARCHY.indexOf(adminRole);
+  const targetIndex = ROLE_HIERARCHY.indexOf(targetRole);
+  return adminIndex > targetIndex;
+}
+
+export default function UserManagement({ users, institutions = [], adminRole }: UserManagementProps) {
   const router = useRouter();
   const [updating, setUpdating] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -458,24 +470,26 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                   <Pencil className="w-3 h-3" />
                   Edit
                 </button>
-                {user.role === 'ADMIN' ? (
-                  <button
-                    onClick={() => handleRoleChangeClick(user, 'STUDENT')}
-                    disabled={updating === user.clerkId}
-                    className="flex-1 flex items-center justify-center gap-1 text-xs px-3 py-2 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-lg transition disabled:opacity-50"
-                  >
-                    <UserX className="w-3 h-3" />
-                    Demote
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleRoleChangeClick(user, 'ADMIN')}
-                    disabled={updating === user.clerkId}
-                    className="flex-1 flex items-center justify-center gap-1 text-xs px-3 py-2 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-lg transition disabled:opacity-50"
-                  >
-                    <Award className="w-3 h-3" />
-                    Promote
-                  </button>
+                {canModifyUser(adminRole, user.role) && (
+                  user.role === 'ADMIN' ? (
+                    <button
+                      onClick={() => handleRoleChangeClick(user, 'STUDENT')}
+                      disabled={updating === user.clerkId}
+                      className="flex-1 flex items-center justify-center gap-1 text-xs px-3 py-2 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-lg transition disabled:opacity-50"
+                    >
+                      <UserX className="w-3 h-3" />
+                      Demote
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleRoleChangeClick(user, 'ADMIN')}
+                      disabled={updating === user.clerkId}
+                      className="flex-1 flex items-center justify-center gap-1 text-xs px-3 py-2 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-lg transition disabled:opacity-50"
+                    >
+                      <Award className="w-3 h-3" />
+                      Promote
+                    </button>
+                  )
                 )}
                 <button
                   onClick={() => handleDeleteUserClick(user)}
@@ -604,24 +618,26 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                           <Pencil className="w-3 h-3" />
                           Edit
                         </button>
-                        {user.role === 'ADMIN' ? (
-                          <button
-                            onClick={() => handleRoleChangeClick(user, 'STUDENT')}
-                            disabled={updating === user.clerkId}
-                            className="flex items-center gap-1 text-xs px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 rounded-lg transition disabled:opacity-50"
-                          >
-                            <UserX className="w-3 h-3" />
-                            Demote
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleRoleChangeClick(user, 'ADMIN')}
-                            disabled={updating === user.clerkId}
-                            className="flex items-center gap-1 text-xs px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-lg transition disabled:opacity-50"
-                          >
-                            <Award className="w-3 h-3" />
-                            Promote
-                          </button>
+                        {canModifyUser(adminRole, user.role) && (
+                          user.role === 'ADMIN' ? (
+                            <button
+                              onClick={() => handleRoleChangeClick(user, 'STUDENT')}
+                              disabled={updating === user.clerkId}
+                              className="flex items-center gap-1 text-xs px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 rounded-lg transition disabled:opacity-50"
+                            >
+                              <UserX className="w-3 h-3" />
+                              Demote
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleRoleChangeClick(user, 'ADMIN')}
+                              disabled={updating === user.clerkId}
+                              className="flex items-center gap-1 text-xs px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-lg transition disabled:opacity-50"
+                            >
+                              <Award className="w-3 h-3" />
+                              Promote
+                            </button>
+                          )
                         )}
                         <button
                           onClick={() => handleSyncRole(user)}
@@ -681,11 +697,22 @@ export default function UserManagement({ users, institutions = [] }: UserManagem
                   onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
                   className="w-full px-3 py-2 border border-border rounded-lg bg-white dark:bg-input text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="STUDENT">Student</option>
-                  <option value="ADMIN">Admin</option>
-                  <option value="SUPER_ADMIN">Super Admin</option>
-                  <option value="LECTURER">Lecturer</option>
-                  <option value="TUTOR">Tutor</option>
+                  {adminRole === 'SUPER_ADMIN' && (
+                    <>
+                      <option value="STUDENT">Student</option>
+                      <option value="ADMIN">Admin</option>
+                      <option value="SUPER_ADMIN">Super Admin</option>
+                      <option value="LECTURER">Lecturer</option>
+                      <option value="TUTOR">Tutor</option>
+                    </>
+                  )}
+                  {adminRole === 'ADMIN' && (
+                    <>
+                      <option value="STUDENT">Student</option>
+                      <option value="LECTURER">Lecturer</option>
+                      <option value="TUTOR">Tutor</option>
+                    </>
+                  )}
                 </select>
               </div>
 

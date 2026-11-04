@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { Role } from '../../generated/prisma/client';
 import { clerkClient } from '@clerk/nextjs/server';
 import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK, addUserToClerkOrg } from '@/lib/clerk-org';
+import { checkRoleHierarchy } from '@/lib/auth';
 
 // ============================================
 // Internal Helpers
@@ -199,7 +200,7 @@ export async function updateUserRole(id: string, rawInput: unknown) {
 
   const targetUser = await prisma.user.findUnique({
     where: { id },
-    select: { clerkId: true, institutionId: true },
+    select: { clerkId: true, institutionId: true, role: true },
   });
   if (!targetUser) throw new Error('User not found');
   if (adminUser.role === 'ADMIN' && adminUser.institutionId && targetUser.institutionId !== adminUser.institutionId) {
@@ -207,6 +208,12 @@ export async function updateUserRole(id: string, rawInput: unknown) {
   }
 
   const input = updateUserRoleSchema.parse(rawInput);
+
+  // Role hierarchy check: prevent privilege escalation
+  const hierarchyCheck = checkRoleHierarchy(adminUser.role, targetUser.role, input.role);
+  if (!hierarchyCheck.allowed) {
+    throw new Error(hierarchyCheck.reason);
+  }
 
   const user = await prisma.user.update({
     where: { id },

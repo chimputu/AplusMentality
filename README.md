@@ -1,81 +1,41 @@
 # A+ Mentality
 
-> A multi-tenant learning management system and tutor marketplace for Zambian higher education.
-
-[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
-[![React](https://img.shields.io/badge/React-19-61dafb)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org)
-[![Prisma](https://img.shields.io/badge/Prisma-7.8-2d3748)](https://prisma.io)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8)](https://tailwindcss.com)
-[![License](https://img.shields.io/badge/License-Proprietary-red)](#license)
+> A learning management system and tutor marketplace for Zambian higher education.
 
 ---
 
 ## About
 
-**A+ Mentality** is a multi-tenant Learning Management System (LMS) and tutor marketplace built for Zambian higher education institutions. It connects students, lecturers, tutors, and administrators in a unified platform for course delivery, content sharing, assessments, and peer tutoring — accessible from any device, even offline.
+**A+ Mentality** is a platform built for Zambian higher education institutions. It connects students, lecturers, tutors, and administrators in a unified system for course delivery, content sharing, assessments, and peer tutoring — accessible from any device, even offline.
 
 The platform supports **multiple universities** with full data isolation, a **5-tier role system** with granular permissions, and a **tutor marketplace** where students can discover and book qualified tutors.
 
-**Live Demo:** [aplusmentality.com](https://aplusmentality.com)
+**Live Site:** [aplusmentality.com](https://aplusmentality.com)
 
 ---
 
 ## Table of Contents
 
-- [Roles & Permissions](#roles--permissions)
+- [User Roles](#user-roles)
 - [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Architecture](#architecture)
-- [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Database Schema](#database-schema)
-- [Project Structure](#project-structure)
-- [API Overview](#api-overview)
-- [Security](#security)
-- [Security Audit](SECURITY_AUDIT.md)
-- [Testing](#testing)
-- [Testing Report](TESTING_REPORT.md)
 - [Deployment](#deployment)
-- [Contributing](#contributing)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
-- [Author](#author)
-- [Acknowledgments](#acknowledgments)
 
 ---
 
-## Roles & Permissions
+## User Roles
 
-A+ Mentality uses a **5-tier role-based access control (RBAC)** system enforced at the middleware, API, and UI levels:
+A+ Mentality supports five user roles, each with specific capabilities:
 
-| Role | Description | Key Capabilities |
-|------|-------------|-----------------|
-| **SUPER_ADMIN** | Platform owner with global access | Manage all institutions, organizations, users; bypass all data filters; system health monitoring |
-| **ADMIN** | University-level administrator | Manage users, courses, programmes, tutors, and content within their institution; approve tutor applications |
-| **LECTURER** | Faculty member | Create and manage courses; upload videos, slides, past papers; create assignments, quizzes, and tests; grade submissions |
-| **TUTOR** | Peer tutor | Upload content to assigned courses; manage tutor profile, specialties, and offerings; receive reviews and requests |
-| **STUDENT** | Learner | Browse and enroll in courses; watch videos; take assessments; submit assignments; find and book tutors |
-
-### Route Protection
-
-Middleware (`proxy.ts`) enforces role-based route access:
-
-- `/admin/*` → ADMIN, SUPER_ADMIN
-- `/lecturer/*` → LECTURER
-- `/tutor/*` → TUTOR
-- `/student/*` → STUDENT
-- `/explore/*` → STUDENT
-
-Unauthorized access redirects users to their role-appropriate dashboard or `/unauthorized`.
-
-### Data Isolation
-
-- **SUPER_ADMIN**: Sees all data across all institutions
-- **ADMIN**: Scoped to their own institution only
-- **LECTURER/TUTOR**: Can only write to courses they are assigned to (via course ownership or TutorSpecialty)
-- **STUDENT**: Read-only access to published content within their institution
+| Role | Description |
+|------|-------------|
+| **Super Admin** | Platform owner with global access to manage all institutions and users |
+| **Admin** | University-level administrator who manages users, courses, and content within their institution |
+| **Lecturer** | Faculty member who creates and manages courses, uploads content, and grades submissions |
+| **Tutor** | Peer tutor who offers tutoring sessions and manages their profile and availability |
+| **Student** | Learner who browses courses, watches videos, takes assessments, and books tutors |
 
 ---
 
@@ -83,242 +43,74 @@ Unauthorized access redirects users to their role-appropriate dashboard or `/una
 
 ### Learning Management
 
-- **Courses & Programmes**: Hierarchical structure — institutions → programmes → courses → modules → lessons
-- **Video Lessons**: Upload to Cloudinary or embed YouTube links, organized by course
-- **Lecture Slides**: Upload and view PDF, PowerPoint, and other presentation formats
-- **Past Exam Papers**: Browse and download by course, year, and semester
-- **Assignments**: File-based submissions with grading workflow (pending → graded → returned)
-- **Quizzes**: Create and take quizzes with automatic or manual grading
-- **Tests**: Timed assessments with score tracking and result pages
-- **Progress Tracking**: Lesson completion and course enrollment progress
-- **Announcements**: Institution-wide announcements with read-tracking notifications
-- **Zambian Grading System**: Built-in reference for Mulungushi University grading bands and degree classification
+- **Courses & Programmes**: Browse courses organized by institution, programme, year, and semester
+- **Video Lessons**: Watch uploaded or embedded video content
+- **Lecture Slides**: View PDF and presentation materials
+- **Past Exam Papers**: Browse and download past papers by course, year, and semester
+- **Assignments**: Submit assignments and receive graded feedback
+- **Quizzes & Tests**: Take timed assessments with score tracking
+- **Progress Tracking**: Track lesson completion and course enrollment progress
+- **Announcements**: Stay updated with institution-wide announcements
+- **Zambian Grading System**: Built-in reference for university grading bands and degree classification
 
 ### Tutor Marketplace
 
-- **Tutor Applications**: Students apply to become tutors; admins review and approve
-- **Tutor Profiles**: Tutors manage specialties, offerings, availability, and ratings
-- **Find a Tutor**: Students browse tutors by specialty, rating, and availability
-- **Tutor Requests**: Students can request tutoring sessions
-- **Reviews & Ratings**: Students rate tutors after sessions
-- **Institution Change Requests**: Tutors can request to switch institutions
+- **Tutor Applications**: Apply to become a tutor
+- **Tutor Profiles**: Browse tutors by specialty, rating, and availability
+- **Tutor Requests**: Request tutoring sessions
+- **Reviews & Ratings**: Rate tutors after sessions
 
 ### AI Study Assistant
 
-- **AI Chat**: Powered by OpenRouter with multiple AI model providers (Google, Groq)
-- **Context-Aware**: Landing page chat answers platform questions; logged-in chat provides institution-specific study help
-- **Smart Caching**: Redis (Upstash) caches AI responses for fast repeat queries
+- **AI Chat**: Get study help powered by AI
+- **Context-Aware**: Platform questions on the landing page; institution-specific help when logged in
 
 ### User Experience
 
-- **Authentication**: Clerk-powered with social login and webhook-based user sync
-- **Dark/Light/System Theme**: Persistent theme preference synced to database
-- **PWA**: Installable on mobile devices with offline support (Serwist)
-- **Responsive Design**: Mobile-first layout with collapsible navigation and animated transitions (Framer Motion)
-- **Search**: Real-time search across courses, videos, announcements, and more
-- **Notifications**: Announcement read-tracking with notification bell
-- **E-Book Library**: Browse, read, and save books from public-domain sources
-
-### Landing Page
-
-The public homepage (`/`) showcases the platform to prospective users before they sign in:
-
-- **Hero Section**: Animated headline, tagline, and call-to-action buttons (Sign In / Sign Up)
-- **Four Pillars**: Study Smarter, Track Progress, Reach Your Goals, Build an A+ Mindset
-- **Top Zambian Universities**: Logo cards for UNZA, CBU, Mulungushi, Nkrumah, and Chalimbana
-- **World Map**: Interactive visualization connecting Zambia to the global education network
-- **Must Explore**: Curated highlights of platform features
-- **What We Offer**: Feature overview cards with animated marquee
-- **Our Aim**: Mission statement and community values
-- **Your Course Journey**: Browseable course catalog organized by year and semester (Natural Sciences → Computer Science)
-- **Zambian University Grading System**: Interactive cycling view between:
-  - **Degree Classification**: Distinction (40+ pts), Merit (30-39.9), Credit (20-29.9), Pass (<20 pts)
-  - **Grade Bands**: A+ through D with percentage ranges and points awarded
-- **Become a Tutor**: Call-to-action with contact options (Phone, WhatsApp, Email)
-- **Advertise With Us**: Advertising inquiry CTA with contact dropdown
-- **Footer**: Quick links, social media, and copyright
-
-### Admin & Analytics
-
-- **User Management**: List, promote, and manage users with bulk operations
-- **Institution Management**: Create and configure universities, colleges, and programmes
-- **Content Analytics**: View submission analytics and grade distributions
-- **Export Tools**: Export institutions, users, students, gradebooks, and tutor data
-- **Banner Management**: Create and manage promotional banners
-- **Health Checks**: System health monitoring endpoints
-
----
-
-## Technology Stack
-
-### Frontend
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Next.js** | 16.x | App Router, Server/Client Components, API Routes |
-| **React** | 19.x | UI library |
-| **TypeScript** | 5.9 | Type safety |
-| **Tailwind CSS** | 4.x | Utility-first styling |
-| **Framer Motion** | 12.x | Animations |
-| **Recharts** | 2.x | Data visualization |
-| **Sonner** | 1.x | Toast notifications |
-| **Tabler Icons** | 3.x | Icon library |
-| **Lucide React** | 1.x | Icon library |
-
-### Backend & Infrastructure
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Prisma** | 7.x | ORM with PostgreSQL |
-| **PostgreSQL** | 16+ | Primary database |
-| **Clerk** | — | Authentication and user management |
-| **Cloudinary** | 2.x | Video and file storage |
-| **Upstash Redis** | 1.x | Caching layer |
-| **OpenRouter AI** | — | AI model provider |
-| **Vercel AI SDK** | 7.x | AI streaming |
-| **Resend** | 6.x | Email delivery |
-| **Brevo** | 6.x | Email marketing |
-| **Sentry** | 11.x | Error tracking and monitoring |
-| **Serwist** | 9.x | PWA service worker |
-
-### Development & Testing
-
-| Technology | Purpose |
-|------------|---------|
-| **Vitest** | Unit and integration testing |
-| **Testing Library** | React component testing |
-| **ESLint** | Code linting |
-| **Husky** | Git hooks |
-| **jsdom** | DOM simulation for tests |
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Client (Browser / PWA)                       │
-├─────────────────────────────────────────────────────────────────┤
-│                  Next.js 16 App Router                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐         │
-│  │   Server     │  │   Client     │  │   API Routes │         │
-│  │  Components  │  │  Components  │  │  (REST)      │         │
-│  └──────────────┘  └──────────────┘  └──────────────┘         │
-├─────────────────────────────────────────────────────────────────┤
-│              Middleware (proxy.ts + Clerk)                       │
-│         Role-based route protection & auth                      │
-├─────────────────────────────────────────────────────────────────┤
-│              Scope Enforcement Layer                             │
-│    (lib/auth/scope.ts — institution + course-assignment checks)  │
-├─────────────────────────────────────────────────────────────────┤
-│              Caching Layer (Upstash Redis)                       │
-├─────────────────────────────────────────────────────────────────┤
-│              Database Layer (Prisma + PostgreSQL)                │
-├─────────────────────────────────────────────────────────────────┤
-│              Storage Layer (Cloudinary)                          │
-├─────────────────────────────────────────────────────────────────┤
-│              AI Layer (OpenRouter + Vercel AI SDK)              │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Dashboard Layout
-
-Four distinct dashboards, each with role-specific navigation:
-
-- **Admin Dashboard** (24 pages): Institutions, organizations, programmes, courses, users, tutor applications, tutor requests, tutors, assessments, assignments, quizzes, tests, submissions, analytics, announcements, banners, change requests, lecture slides, past papers, questions, settings, system health, uploads, videos
-- **Lecturer Dashboard** (11 pages): Courses, videos, lecture slides, past papers, assignments, quizzes, tests, enrollments, student grades, announcements, settings
-- **Tutor Dashboard** (13 pages): Tutor requests, specialties, offerings, reviews, courses, videos, lecture slides, past papers, assignments, quizzes, tests, announcements, settings
-- **Student Dashboard** (18 pages): Courses, videos, lecture slides, materials, assessments, assignments, quizzes, tests, past papers, e-books, saved books, find tutor, tutors, results, lessons, announcements, AI chat, profile, settings
-
-### Public Pages
-
-- **Landing Page** (`/`): Hero, four pillars, universities, world map, grading system, course journey, tutor CTA, advertising CTA
-- **About** (`/about`): Platform information
-- **Sign In / Sign Up**: Clerk-powered authentication
-- **Join** (`/join`): Institution join pages
-- **Explore** (`/explore`): Public institution explorer with courses and programmes
-- **Apply as Tutor** (`/apply-as-tutor`): Tutor application form
-- **Onboarding** (`/onboarding`): New user onboarding flow
-- **Search** (`/search`): Content search results
-- **Download** (`/download`): App download page
-- **Offline** (`/offline`): Offline fallback page
-- **Unauthorized** (`/unauthorized`): Access denied page
-- **Privacy Policy** (`/privacy-policy`)
-- **Terms of Service** (`/terms-of-service`)
-
----
-
-## Prerequisites
-
-| Tool | Version | Purpose |
-|------|---------|---------|
-| **Node.js** | 22.x | JavaScript runtime |
-| **npm** | 10.x+ | Package manager |
-| **PostgreSQL** | 16+ | Database |
-| **Git** | Latest | Version control |
-| **Docker** | Latest (optional) | Local database container |
-
-### Required Accounts
-
-- [**Clerk**](https://clerk.com) — Authentication
-- [**Cloudinary**](https://cloudinary.com) — Media storage
-- [**Upstash**](https://upstash.com) — Redis caching
-- [**OpenRouter**](https://openrouter.ai) — AI chat
-- [**Resend**](https://resend.com) — Email delivery
-- [**Brevo**](https://brevo.com) — Email marketing (optional)
-- [**Sentry**](https://sentry.io) — Error tracking (optional)
-- [**Neon**](https://neon.tech) or [**Supabase**](https://supabase.com) — Database hosting (optional)
+- **Authentication**: Social login support
+- **Dark/Light Mode**: Persistent theme preference
+- **PWA**: Installable on mobile devices with offline support
+- **Responsive Design**: Mobile-first layout optimized for all screen sizes
+- **Search**: Find courses, videos, and announcements quickly
+- **Notifications**: Stay informed with announcement updates
+- **E-Book Library**: Browse and read public-domain books
 
 ---
 
 ## Getting Started
 
-### 1. Clone the Repository
+### Prerequisites
+
+| Tool | Version |
+|------|---------|
+| **Node.js** | 22.x |
+| **npm** | 10.x+ |
+| **PostgreSQL** | 16+ |
+| **Git** | Latest |
+
+### Installation
 
 ```bash
 git clone https://github.com/chimputu/AplusMentality.git
 cd AplusMentality
-```
-
-### 2. Install Dependencies
-
-```bash
 npm install
 ```
 
-### 3. Configure Environment
+### Configuration
 
 ```bash
 cp .env.example .env
 ```
 
-Fill in all required credentials. See [Environment Variables](#-environment-variables).
+Fill in the required environment variables in `.env`.
 
-### 4. Set Up the Database
-
-#### Option A: Local PostgreSQL (Docker)
-
-```bash
-docker run --name amentality-postgres \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=your_password \
-  -e POSTGRES_DB=amentality \
-  -p 5432:5432 \
-  -v amentality-data:/var/lib/postgresql/data \
-  -d postgres:17
-```
-
-#### Option B: Cloud Database
-
-Set `DATABASE_URL` to your Neon, Supabase, or other PostgreSQL connection string.
-
-#### Push the Schema
+### Database Setup
 
 ```bash
 npm run db:push
 ```
 
-### 5. Run the Development Server
+### Run Locally
 
 ```bash
 npm run dev
@@ -326,585 +118,14 @@ npm run dev
 
 The app starts at `http://localhost:3000`.
 
-### 6. (Optional) Seed the Database
-
-```bash
-npm run db:seed
-```
-
 ### Useful Commands
 
 ```bash
 npm run build          # Production build
 npm start              # Start production server
-npm run test           # Run all tests
-npm run test:watch     # Watch mode
-npm run test:coverage  # Test coverage report
+npm run test           # Run tests
 npx prisma studio      # Database GUI
 ```
-
----
-
-## Environment Variables
-
-See `.env.example` for the complete template.
-
-### Required
-
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
-| `CLERK_SECRET_KEY` | Clerk secret key |
-| `CLERK_WEBHOOK_SECRET` | Clerk webhook signing secret |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
-| `CLOUDINARY_API_KEY` | Cloudinary API key |
-| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
-| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST URL |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis token |
-| `OPENROUTER_API_KEY` | OpenRouter API key for AI chat |
-
-### Recommended
-
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_SITE_URL` | Your app's public URL |
-| `RESEND_API_KEY` | Resend API key for email |
-| `BREVO_API_KEY` | Brevo API key for email marketing |
-| `SENTRY_DSN` | Sentry error tracking DSN |
-
----
-
-## Database Schema
-
-The database models a complete multi-tenant LMS:
-
-### Core Entities
-
-| Model | Description |
-|-------|-------------|
-| **User** | Authenticated users with 5-tier roles, Clerk ID, institution, and theme |
-| **Institution** | Universities, colleges, polytechnics with academic system config |
-| **Organisation** | Sub-units within institutions (faculties, departments) |
-| **Programme** | Academic programmes (degrees, diplomas) with hierarchical structure |
-| **Course** | Courses with code, title, category, level, year, and period |
-
-### Content
-
-| Model | Description |
-|-------|-------------|
-| **Module** | Modules within courses, ordered sequentially |
-| **Lesson** | Lessons within modules, linked to videos, slides, or quizzes |
-| **Video** | Uploaded or embedded videos (Cloudinary/YouTube) |
-| **LectureSlide** | Uploaded lecture slides (PDF, PPT, etc.) |
-| **PastPaper** | Past exam papers with course, year, and semester |
-| **Book** | E-books from public-domain sources |
-
-### Assessments
-
-| Model | Description |
-|-------|-------------|
-| **Assignment** | File-based assignments with due dates |
-| **AssignmentSubmission** | Student submissions with grading |
-| **Quiz** | Quizzes with questions and auto/manual grading |
-| **QuizSubmission** | Student quiz responses with scores |
-| **Test** | Timed assessments |
-| **TestSubmission** | Student test responses |
-| **Question** | Reusable question bank (MC, true/false, essay, etc.) |
-
-### Tutor Marketplace
-
-| Model | Description |
-|-------|-------------|
-| **Tutor** | Tutor profiles linked to User accounts |
-| **TutorSpecialty** | Tutor-course assignments and specialties |
-| **TutorOffering** | Tutor availability and pricing |
-| **TutorApplication** | Pending tutor applications for admin approval |
-| **TutorRequest** | Student requests for tutoring |
-| **TutorReview** | Student ratings and reviews of tutors |
-
-### Engagement
-
-| Model | Description |
-|-------|-------------|
-| **Enrollment** | Student-course enrollment with progress |
-| **LessonCompletion** | Per-lesson completion tracking |
-| **Announcement** | Institution-wide announcements |
-| **NotificationSeen** | Read-tracking for announcements |
-| **SavedBook** | Student's bookmarked e-books |
-
----
-
-## Project Structure
-
-```
-AplusMentality/
-├── app/
-│   ├── (dashboard)/           # Role-based dashboards
-│   │   ├── admin/             # Admin dashboard (24 pages)
-│   │   │   ├── analytics/     # Analytics dashboard
-│   │   │   ├── announcements/ # Announcement management
-│   │   │   ├── assessments/   # Assessment engine
-│   │   │   ├── assignments/   # Assignment management
-│   │   │   ├── banners/       # Banner management
-│   │   │   ├── change-requests/ # Institution change requests
-│   │   │   ├── courses/       # Course CRUD
-│   │   │   ├── institutions/  # Institution management
-│   │   │   ├── lecture-slides/# Slide management
-│   │   │   ├── organizations/ # Organization management
-│   │   │   ├── past-papers/   # Past paper management
-│   │   │   ├── programmes/    # Programme management
-│   │   │   ├── questions/     # Question bank
-│   │   │   ├── quizzes/       # Quiz management
-│   │   │   ├── settings/      # Admin settings
-│   │   │   ├── submissions/   # All submissions overview
-│   │   │   ├── system-health/ # System health monitoring
-│   │   │   ├── tests/         # Test management
-│   │   │   ├── tutor-applications/ # Tutor approval workflow
-│   │   │   ├── tutor-requests/    # Tutor request management
-│   │   │   ├── tutors/        # Tutor management
-│   │   │   ├── uploads/       # Upload management
-│   │   │   ├── users/         # User management
-│   │   │   └── videos/        # Video management
-│   │   ├── lecturer/          # Lecturer dashboard (11 pages)
-│   │   │   ├── announcements/ # Announcement management
-│   │   │   ├── assignments/   # Assignment creation
-│   │   │   ├── courses/       # Course creation and management
-│   │   │   ├── enrollments/   # Enrollment management
-│   │   │   ├── grades/        # Student grading
-│   │   │   ├── lecture-slides/# Slide uploads
-│   │   │   ├── past-papers/   # Past paper uploads
-│   │   │   ├── quizzes/       # Quiz creation
-│   │   │   ├── settings/      # Lecturer settings
-│   │   │   ├── tests/         # Test creation
-│   │   │   └── videos/        # Video uploads
-│   │   ├── tutor/             # Tutor dashboard (13 pages)
-│   │   │   ├── announcements/ # Announcement management
-│   │   │   ├── assignments/   # Assignment creation
-│   │   │   ├── courses/       # Assigned courses
-│   │   │   ├── lecture-slides/# Slide uploads
-│   │   │   ├── offerings/     # Availability and pricing
-│   │   │   ├── past-papers/   # Past paper uploads
-│   │   │   ├── quizzes/       # Quiz creation
-│   │   │   ├── requests/      # Tutoring requests
-│   │   │   ├── reviews/       # Student reviews
-│   │   │   ├── settings/      # Tutor settings
-│   │   │   ├── specialties/   # Specialty management
-│   │   │   ├── tests/         # Test creation
-│   │   │   └── videos/        # Video uploads
-│   │   ├── student/           # Student dashboard (18 pages)
-│   │   │   ├── ai/            # AI study assistant
-│   │   │   ├── announcements/ # View announcements
-│   │   │   ├── assessments/   # Take assessments
-│   │   │   ├── assignments/   # Submit assignments
-│   │   │   ├── books/         # E-book library
-│   │   │   │   └── saved/     # Saved/bookmarked books
-│   │   │   ├── courses/       # Browse and enroll
-│   │   │   ├── find-tutor/    # Find and book tutors
-│   │   │   ├── lecture-slides/# View lecture slides
-│   │   │   ├── lessons/       # Lesson progress
-│   │   │   ├── materials/     # All materials by category
-│   │   │   ├── past-papers/   # Browse past papers
-│   │   │   ├── profile/       # User profile
-│   │   │   ├── quizzes/       # Take quizzes
-│   │   │   ├── results/       # Grades and results
-│   │   │   ├── settings/      # Student settings
-│   │   │   ├── tests/         # Take tests
-│   │   │   ├── tutors/        # Browse tutors
-│   │   │   └── videos/        # Watch videos
-│   │   └── explore/           # Public institution explorer
-│   │       └── [slug]/        # Institution pages
-│   │           ├── courses/   # Browse courses
-│   │           └── programmes/# Browse programmes
-│   ├── api/                   # REST API endpoints (98 routes)
-│   │   ├── admin/             # Admin-specific endpoints
-│   │   │   ├── assessments/   # Assessment management
-│   │   │   ├── branches/      # Branch data
-│   │   │   ├── faculties/     # Faculty data
-│   │   │   ├── levels/        # Academic levels
-│   │   │   ├── periods/       # Academic periods
-│   │   │   ├── programmes/    # Programme data
-│   │   │   ├── students/      # Student data
-│   │   │   ├── tutor-requests/# Tutor requests
-│   │   │   ├── tutors/        # Tutor management
-│   │   │   ├── universities/  # University data
-│   │   │   └── uploads/       # Upload management
-│   │   ├── ai/                # AI endpoints
-│   │   │   ├── chat/          # AI chat
-│   │   │   └── insights/      # AI-powered insights
-│   │   ├── announcements/     # Announcement CRUD
-│   │   ├── assignments/       # Assignment CRUD + submissions
-│   │   ├── analytics/         # Analytics data
-│   │   ├── attempts/          # Assessment attempts
-│   │   ├── banners/           # Banner endpoints
-│   │   ├── books/             # E-book browsing
-│   │   ├── chat/              # Public AI chat
-│   │   ├── courses/           # Course CRUD
-│   │   ├── enrollments/       # Enrollment management
-│   │   ├── export/            # Data export endpoints
-│   │   ├── health/            # Health check endpoints
-│   │   ├── institution-change-request/ # Institution switch requests
-│   │   ├── institutions/      # Institution data
-│   │   ├── lecture-slides/    # Slide CRUD
-│   │   ├── lecturer/          # Lecturer-specific endpoints
-│   │   ├── lessons/           # Lesson endpoints
-│   │   ├── modules/           # Module CRUD
-│   │   ├── notifications/     # Notification management
-│   │   ├── past-papers/       # Past paper CRUD
-│   │   ├── programmes/        # Programme CRUD
-│   │   ├── questions/         # Question bank
-│   │   ├── quizzes/           # Quiz CRUD + submissions
-│   │   ├── search/            # Search endpoint
-│   │   ├── student/           # Student-specific endpoints
-│   │   │   ├── assessments/   # Student assessment actions
-│   │   │   └── tutors/        # Student tutor requests
-│   │   ├── submissions/       # Submission endpoints
-│   │   ├── subscribe/         # Email subscription
-│   │   ├── tests/             # Test CRUD + submissions
-│   │   ├── tutors/            # Tutor marketplace
-│   │   ├── universities/      # University data
-│   │   ├── upload/            # File upload endpoints
-│   │   ├── user/              # User role endpoint
-│   │   ├── users/             # User management
-│   │   ├── videos/            # Video CRUD
-│   │   └── webhooks/clerk/    # Clerk webhook
-│   ├── page.tsx               # Public landing page (redirects authenticated users)
-│   ├── sign-in/               # Authentication pages
-│   ├── join/                  # Institution join pages
-│   ├── about/                 # About page
-│   ├── dashboard/             # Dashboard redirect
-│   ├── download/              # App download page
-│   ├── offline/               # Offline fallback page
-│   ├── onboarding/            # New user onboarding
-│   ├── search/                # Search results page
-│   ├── unauthorized/          # Access denied page
-│   ├── privacy-policy/        # Privacy policy
-│   ├── terms-of-service/      # Terms of service
-│   ├── sitemap.ts             # SEO sitemap
-│   ├── sw.ts                  # PWA service worker
-│   ├── providers.tsx          # Root providers
-│   └── layout.tsx             # Root layout with providers
-├── components/                # Reusable UI components (86 total)
-│   ├── HomePageClient.tsx     # Public landing page with animated sections
-│   ├── DashboardLayout.tsx    # Role-based dashboard layout
-│   ├── SimpleChat.tsx         # AI chat widget
-│   ├── ThemeToggle.tsx        # Theme switcher
-│   ├── NotificationBell.tsx   # Notification bell
-│   ├── BannerCarousel.tsx     # Promotional banner carousel
-│   ├── CookieConsentModal.tsx # Cookie consent banner
-│   ├── DownloadBanner.tsx     # App download CTA banner
-│   ├── HeroVideoFacade.tsx    # Hero video component
-│   ├── UniversitySwitcher.tsx # Institution switcher dropdown
-│   ├── mobile-tab-bar.tsx     # Mobile bottom navigation
-│   ├── offline-detector.tsx   # PWA offline status indicator
-│   ├── ai/                    # AI assistant components
-│   │   ├── ai-assistant.tsx
-│   │   ├── ai-assistant-lazy.tsx
-│   │   ├── ai-assistant-page.tsx
-│   │   ├── ai-assistant-wrapper.tsx
-│   │   ├── home-ai-assistant.tsx
-│   │   └── home-ai-assistant-wrapper.tsx
-│   ├── books/                 # E-book library components
-│   │   ├── BookCard.tsx
-│   │   ├── BookDetails.tsx
-│   │   ├── BookGrid.tsx
-│   │   ├── BookSearchBar.tsx
-│   │   ├── LegalAccessLinks.tsx
-│   │   └── SaveBookButton.tsx
-│   ├── tutor-application/     # Tutor application components
-│   │   └── image-uploader.tsx
-│   ├── ui/                    # Shared UI components
-│   │   ├── LoadingSkeleton.tsx
-│   │   ├── academic-selector.tsx
-│   │   ├── animated-testimonials.tsx
-│   │   ├── confirm-modal.tsx
-│   │   ├── data-select.tsx
-│   │   ├── world-map.tsx
-│   │   └── selects/           # Dropdown selects
-│   │       ├── branch-select.tsx
-│   │       ├── course-select.tsx
-│   │       ├── faculty-select.tsx
-│   │       ├── institution-select.tsx
-│   │       ├── level-select.tsx
-│   │       ├── period-select.tsx
-│   │       ├── programme-select.tsx
-│   │       ├── question-select.tsx
-│   │       ├── student-select.tsx
-│   │       └── tutor-select.tsx
-│   └── ... (86 components total)
-├── lib/                       # Shared utilities
-│   ├── auth/                  # Authentication and authorization
-│   │   ├── scope.ts           # Role-based scope enforcement
-│   │   ├── org-scope.ts       # Organization-level scoping
-│   │   └── api-auth.ts        # API route auth helpers
-│   ├── actions/               # Server actions
-│   │   ├── institution-crud.ts
-│   │   ├── tutor-application.ts
-│   │   ├── tutor-crud.ts
-│   │   ├── user-admin.ts
-│   │   └── ...
-│   ├── prisma.ts              # Prisma client
-│   ├── cache.ts               # Redis client
-│   ├── cloudinary.ts          # Cloudinary config
-│   └── ...
-├── prisma/
-│   └── schema.prisma          # Database schema
-├── proxy.ts                   # Middleware for auth and RBAC
-├── public/                    # Static assets and PWA manifest
-├── .env.example               # Environment variable template
-├── next.config.ts             # Next.js configuration
-├── package.json               # Dependencies and scripts
-└── tsconfig.json              # TypeScript configuration
-```
-
----
-
-## API Overview
-
-All API routes require authentication unless noted. Role requirements are enforced at the route level. The app contains **98 API route handlers**.
-
-### Content Management
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/courses` | All | List published courses (scoped by role) |
-| `POST /api/courses` | ADMIN, SUPER_ADMIN, LECTURER | Create course (LECTURER scoped to own institution) |
-| `GET /api/courses/[id]` | All | Get course details |
-| `POST /api/lecturer/courses` | LECTURER, ADMIN | Lecturer course creation (institution-scoped) |
-| `GET /api/videos` | All | List videos (scoped by role) |
-| `POST /api/videos` | TUTOR, LECTURER, ADMIN | Upload video (course-assignment verified) |
-| `GET /api/videos/[id]` | All | Get video details |
-| `GET /api/lecture-slides` | All | List lecture slides |
-| `POST /api/lecture-slides` | TUTOR, LECTURER, ADMIN | Upload slide (course-assignment verified) |
-| `GET /api/lecture-slides/[id]` | All | Get slide details |
-| `GET /api/past-papers` | All | List past papers |
-| `POST /api/past-papers` | TUTOR, LECTURER, ADMIN | Upload past paper (course-assignment verified) |
-| `GET /api/past-papers/[id]` | All | Get past paper details |
-| `GET /api/modules` | All | List modules |
-| `POST /api/modules` | LECTURER, ADMIN | Create module |
-| `GET /api/lessons` | All | List lessons |
-| `POST /api/lessons` | LECTURER, ADMIN | Create lesson |
-| `GET /api/programmes` | All | List programmes |
-| `GET /api/programmes/[id]/tree` | All | Get programme hierarchy tree |
-| `GET /api/universities` | All | List universities |
-| `GET /api/institutions/[id]/programmes` | All | Get institution programmes |
-| `GET /api/institutions/picker` | Authenticated | Institution picker data |
-
-### Assessments
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/assignments` | All | List assignments |
-| `POST /api/assignments` | TUTOR, LECTURER, ADMIN | Create assignment |
-| `GET /api/assignments/[id]` | All | Get assignment details |
-| `POST /api/assignments/[id]/submit` | STUDENT | Submit assignment |
-| `GET /api/assignments/[id]/submissions` | LECTURER, ADMIN | View submissions |
-| `POST /api/assignments/submissions/[id]/grade` | LECTURER, ADMIN | Grade submission |
-| `GET /api/quizzes` | All | List quizzes |
-| `POST /api/quizzes` | TUTOR, LECTURER, ADMIN | Create quiz |
-| `GET /api/quizzes/[id]` | All | Get quiz details |
-| `POST /api/quizzes/[id]/submit` | STUDENT | Submit quiz |
-| `GET /api/quizzes/[id]/submissions` | LECTURER, ADMIN | View quiz submissions |
-| `POST /api/quizzes/submissions/[id]/grade` | LECTURER, ADMIN | Grade quiz submission |
-| `GET /api/tests` | All | List tests |
-| `POST /api/tests` | TUTOR, LECTURER, ADMIN | Create test |
-| `GET /api/tests/[id]` | All | Get test details |
-| `POST /api/tests/[id]/submit` | STUDENT | Submit test |
-| `GET /api/tests/[id]/submissions` | LECTURER, ADMIN | View test submissions |
-| `POST /api/tests/submissions/[id]/grade` | LECTURER, ADMIN | Grade test submission |
-| `GET /api/questions` | All | List questions |
-| `POST /api/questions` | LECTURER, ADMIN | Create question |
-| `POST /api/attempts/answer` | STUDENT | Submit assessment answer |
-| `GET /api/submissions` | LECTURER, ADMIN | List all submissions |
-| `GET /api/student/assessments` | STUDENT | List student assessments |
-| `POST /api/student/assessments/[id]/start` | STUDENT | Start assessment attempt |
-| `POST /api/student/assessments/[id]/submit` | STUDENT | Submit assessment attempt |
-| `GET /api/lecturer/quizzes` | LECTURER | Lecturer quiz management |
-
-### Admin API
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/admin/universities` | ADMIN, SUPER_ADMIN | List universities |
-| `GET /api/admin/programmes` | ADMIN, SUPER_ADMIN | List programmes |
-| `GET /api/admin/faculties` | ADMIN, SUPER_ADMIN | List faculties |
-| `GET /api/admin/branches` | ADMIN, SUPER_ADMIN | List branches |
-| `GET /api/admin/levels` | ADMIN, SUPER_ADMIN | List academic levels |
-| `GET /api/admin/periods` | ADMIN, SUPER_ADMIN | List academic periods |
-| `GET /api/admin/students` | ADMIN, SUPER_ADMIN | List students |
-| `GET /api/admin/tutors` | ADMIN, SUPER_ADMIN | List tutors |
-| `GET /api/admin/tutors/[id]` | ADMIN, SUPER_ADMIN | Get tutor details |
-| `GET /api/admin/tutor-requests` | ADMIN | View tutor requests |
-| `GET /api/admin/assessments` | ADMIN, SUPER_ADMIN | List assessments |
-| `GET /api/admin/assessments/[id]` | ADMIN, SUPER_ADMIN | Get assessment details |
-| `GET /api/admin/assessments/[id]/submissions` | ADMIN, SUPER_ADMIN | View assessment submissions |
-| `GET /api/admin/uploads` | ADMIN, SUPER_ADMIN | List uploads |
-| `GET /api/admin/uploads/[id]` | ADMIN, SUPER_ADMIN | Get upload details |
-| `POST /api/admin/uploads/[id]/tag` | ADMIN, SUPER_ADMIN | Tag upload |
-
-### Tutor Marketplace
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/tutors` | All | Browse tutors |
-| `POST /api/tutors/upload` | TUTOR | Upload tutor content |
-| `POST /api/upload/tutor-document` | TUTOR | Upload tutor document |
-| `GET /api/student/tutors` | STUDENT | Browse tutors (student view) |
-| `POST /api/student/tutors/[id]/request` | STUDENT | Request tutoring session |
-| `GET /api/institution-change-request/admin` | ADMIN | View change requests |
-| `POST /api/institution-change-request` | TUTOR | Request institution change |
-
-### User Management
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/users` | ADMIN, SUPER_ADMIN | List users (scoped by role) |
-| `GET /api/users/[id]` | ADMIN, SUPER_ADMIN | Get user details |
-| `GET /api/users/me` | Authenticated | Get current user profile |
-| `PATCH /api/users/me/theme` | Authenticated | Update theme preference |
-| `POST /api/users/promote` | ADMIN, SUPER_ADMIN | Change user role |
-| `POST /api/users/promote/bulk` | ADMIN, SUPER_ADMIN | Bulk role changes |
-| `GET /api/users/role` | Authenticated | Get current user role |
-| `GET /api/user/role` | Authenticated | Get current user role (alias) |
-| `POST /api/users/sync-role` | Authenticated | Sync role from Clerk |
-
-### E-Books
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/books` | All | Browse e-books |
-| `GET /api/books/[id]` | All | Get book details |
-| `GET /api/books/search` | All | Search books |
-| `GET /api/books/saved` | STUDENT | List saved books |
-| `POST /api/books/saved/[bookId]` | STUDENT | Save/bookmark book |
-| `DELETE /api/books/saved/[bookId]` | STUDENT | Remove saved book |
-
-### Announcements & Notifications
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/announcements` | All | List announcements |
-| `POST /api/announcements` | ADMIN, LECTURER | Create announcement |
-| `GET /api/announcements/[id]` | All | Get announcement details |
-| `GET /api/notifications` | Authenticated | List notifications |
-| `POST /api/notifications/mark-seen` | Authenticated | Mark notification as seen |
-| `POST /api/notifications/mark-all-seen` | Authenticated | Mark all notifications as seen |
-
-### Enrollments & Progress
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/enrollments` | All | List enrollments |
-| `POST /api/enrollments` | STUDENT | Enroll in course |
-| `GET /api/enrollments/progress` | STUDENT | Get enrollment progress |
-
-### Export Tools
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/export/institutions` | ADMIN, SUPER_ADMIN | Export institutions data |
-| `GET /api/export/users` | ADMIN, SUPER_ADMIN | Export users data |
-| `GET /api/export/students` | ADMIN, SUPER_ADMIN | Export students data |
-| `GET /api/export/gradebook` | ADMIN, SUPER_ADMIN | Export gradebook |
-| `GET /api/export/tutors` | ADMIN, SUPER_ADMIN | Export tutor data |
-
-### Banners
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/banners/active` | Public | Get active banners |
-
-### AI & Search
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `POST /api/chat` | Public (rate-limited) | AI chat with caching |
-| `POST /api/ai/chat` | Authenticated | AI chat (authenticated) |
-| `GET /api/ai/insights` | Authenticated | AI-powered insights |
-| `GET /api/search?q=` | Authenticated | Search content |
-
-### Health & System
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/health` | Public | Health check |
-| `GET /api/health/detailed` | ADMIN, SUPER_ADMIN | Detailed health check |
-
-### Upload
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `POST /api/upload` | Authenticated | Generic file upload |
-
-### Webhooks
-
-| Endpoint | Description |
-|----------|-------------|
-| `POST /api/webhooks/clerk` | Clerk authentication webhook |
-
-### Analytics
-
-| Endpoint | Roles | Description |
-|----------|-------|-------------|
-| `GET /api/analytics` | ADMIN, SUPER_ADMIN | Analytics data |
-
-### Subscribe
-
-| Endpoint | Description |
-|----------|-------------|
-| `POST /api/subscribe` | Email subscription |
-
----
-
-## Security
-
-### Role-Based Access Control
-
-- **Middleware** (`proxy.ts`): DB-first role lookup with fail-closed behavior; role-based route protection
-- **Scope Enforcement** (`lib/auth/scope.ts`): Institution-level data isolation with course-assignment verification for write operations
-- **API Routes**: Granular role checks on every endpoint; `isUserAuthorizedForCourse` verifies TUTOR/LECTURER assignment before writes
-
-### Data Isolation
-
-- SUPER_ADMIN bypasses all institution filters
-- ADMIN is scoped to their own institution
-- LECTURER/TUTOR can only write to courses they own or are assigned to
-- STUDENT has read-only access within their institution
-
-### Security Headers
-
-Configured in `next.config.ts`:
-
-- `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: DENY`
-- `X-XSS-Protection: 1; mode=block`
-- `Referrer-Policy: strict-origin-when-cross-origin`
-
-### Error Tracking
-
-Sentry integration for production error monitoring and performance tracking.
-
----
-
-## Testing
-
-The project uses **Vitest** with **React Testing Library** and **jsdom**.
-
-```bash
-npm run test           # Run all tests
-npm run test:watch     # Watch mode for TDD
-npm run test:coverage  # Generate coverage report
-```
-
-Test files are co-located with source files and cover:
-
-- Middleware role verification
-- Authentication and authorization
-- Scope enforcement and data isolation
-- Server actions
-- API route role checks
-- Tutor CRUD operations
-- Role sync between Clerk and Prisma
 
 ---
 
@@ -916,48 +137,13 @@ Test files are co-located with source files and cover:
 - **PostgreSQL** database
 - All environment variables configured
 
-### Deploy to Render (Recommended)
+### Deploy to Vercel or Render
 
-1. Create a [Render](https://render.com) account and a new Web Service
-2. Connect your GitHub repository
-3. Configure:
-   - **Build Command**: `npm run build`
-   - **Start Command**: `npm start`
-   - **Environment**: Node 22
+1. Connect your repository to your hosting platform
+2. Configure build command: `npm run build`
+3. Configure start command: `npm start`
 4. Add all environment variables from `.env.example`
-5. Push to `main` to trigger deployment
-
-### Environment Checklist
-
-For production, ensure:
-
-- Clerk uses `pk_live_` / `sk_live_` keys
-- Database URL points to a production PostgreSQL instance
-- Redis uses production Upstash credentials
-- `NEXT_PUBLIC_SITE_URL` matches your deployment URL
-
----
-
-## Contributing
-
-1. **Fork** the repository
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Commit** your changes: `git commit -m 'Add amazing feature'`
-4. **Push** to the branch: `git push origin feature/amazing-feature`
-5. **Open a Pull Request**
-
-### Coding Standards
-
-- Use TypeScript for all new code
-- Follow Next.js App Router patterns
-- Write tests for new features
-- Handle errors gracefully
-- Respect role-based access boundaries
-- Scope data queries to the user's institution
-
-### Pre-Commit Hooks
-
-Husky runs ESLint on every commit. Fix lint errors before committing.
+5. Deploy
 
 ---
 
@@ -966,57 +152,15 @@ Husky runs ESLint on every commit. Fix lint errors before committing.
 | Issue | Solution |
 |-------|----------|
 | **Can't reach database** | Verify `DATABASE_URL` and network connectivity |
-| **Unique constraint on clerkId** | User already exists; check Clerk sync |
-| **CLERK_WEBHOOK_SECRET not set** | Add to `.env` from Clerk dashboard |
-| **Cloudinary upload failed** | Verify credentials and folder permissions |
 | **SSL connection error** | Add `?sslmode=require` to `DATABASE_URL` |
-| **Redis connection error** | Verify Upstash URL and token |
-| **Role not recognized** | Check Prisma `role` enum matches Clerk metadata |
-
-### Quick Fixes
-
-```bash
-npx prisma generate      # Regenerate Prisma client
-npx prisma db push       # Sync schema to database
-rm -rf .next             # Clear Next.js cache
-npm run dev              # Restart development server
-```
+| **Build fails** | Run `npx prisma generate` and `npx prisma db push` |
+| **Cache issues** | Run `rm -rf .next` and restart the dev server |
 
 ---
 
 ## License
 
 This project is proprietary and confidential. Unauthorized copying, distribution, or use of this software is strictly prohibited.
-
----
-
-## Author
-
-**Kafiswe George Chimputu**
-
-- 📧 kafiswegchimputu@gmail.com
-- 💻 [GitHub](https://github.com/chimputu)
-
----
-
-## Acknowledgments
-
-- [Next.js](https://nextjs.org) — React Framework
-- [Clerk](https://clerk.com) — Authentication
-- [Prisma](https://prisma.io) — ORM
-- [Tailwind CSS](https://tailwindcss.com) — Styling
-- [Cloudinary](https://cloudinary.com) — Media Storage
-- [Upstash](https://upstash.com) — Redis Caching
-- [OpenRouter](https://openrouter.ai) — AI Models
-- [Vercel AI SDK](https://sdk.vercel.ai) — AI Streaming
-- [Framer Motion](https://www.framer.com/motion) — Animations
-- [Serwist](https://serwist.pages.dev) — PWA
-- [Sentry](https://sentry.io) — Error Tracking
-- [Recharts](https://recharts.org) — Data Visualization
-- [Resend](https://resend.com) — Email Delivery
-- [Brevo](https://brevo.com) — Email Marketing
-- [Tabler Icons](https://tabler.io/icons) — Icons
-- [Lucide Icons](https://lucide.dev) — Icons
 
 ---
 

@@ -20,6 +20,39 @@ export interface AuthResult {
 /** Return type for API routes — nullable when unauthenticated */
 export type ApiAuthResult = AuthResult | null;
 
+// Role hierarchy from lowest to highest privilege
+export const ROLE_HIERARCHY: Role[] = ['STUDENT', 'TUTOR', 'LECTURER', 'ADMIN', 'SUPER_ADMIN'];
+
+/**
+ * Enforce role hierarchy: a user can only modify users with strictly lower roles.
+ * SUPER_ADMIN bypasses all checks.
+ * Returns { allowed: true } or { allowed: false, reason: string }.
+ */
+export function checkRoleHierarchy(
+  requesterRole: Role,
+  targetRole: Role,
+  newRole: Role
+): { allowed: boolean; reason?: string } {
+  // SUPER_ADMIN can do anything
+  if (requesterRole === 'SUPER_ADMIN') return { allowed: true };
+
+  const requesterIndex = ROLE_HIERARCHY.indexOf(requesterRole);
+  const targetIndex = ROLE_HIERARCHY.indexOf(targetRole);
+  const newIndex = ROLE_HIERARCHY.indexOf(newRole);
+
+  // Cannot modify users with equal or higher role
+  if (requesterIndex <= targetIndex) {
+    return { allowed: false, reason: 'You cannot modify a user with equal or higher privileges.' };
+  }
+
+  // Cannot promote to a role equal to or higher than your own
+  if (newIndex >= requesterIndex) {
+    return { allowed: false, reason: 'You cannot promote a user to a role equal to or higher than your own.' };
+  }
+
+  return { allowed: true };
+}
+
 // Map Prisma roles to default dashboard paths
 const ROLE_TO_DEFAULT_DASHBOARD: Record<string, string> = {
   STUDENT: '/student',

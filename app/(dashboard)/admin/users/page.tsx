@@ -102,7 +102,7 @@ export default async function AdminUsersPage() {
           Export Students
         </a>
       </div>
-      <UserManagement users={users} institutions={institutionsData} />
+      <UserManagement users={users} institutions={institutionsData} adminRole={userRole} />
     </div>
   );
 }

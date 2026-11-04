@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, checkRoleHierarchy } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
 
@@ -108,6 +108,23 @@ export async function PUT(
           { error: 'Unauthorized: You can only manage users in your own university.' },
           { status: 403 }
         );
+      }
+    }
+
+    // Role hierarchy check: prevent privilege escalation
+    if (body.role) {
+      const targetUser = await prisma.user.findUnique({
+        where: { clerkId: id },
+        select: { role: true },
+      });
+      if (targetUser) {
+        const hierarchyCheck = checkRoleHierarchy(role, targetUser.role, body.role);
+        if (!hierarchyCheck.allowed) {
+          return NextResponse.json(
+            { error: hierarchyCheck.reason },
+            { status: 403 }
+          );
+        }
       }
     }
 

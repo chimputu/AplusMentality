@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireApiAuth, requireApiRole } from '@/lib/auth/api-auth';
+import { checkRoleHierarchy } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Role } from '@/generated/prisma/client';
 import { updateUserClerkOrgRole, APP_ROLE_TO_CLERK } from '@/lib/clerk-org';
@@ -39,15 +40,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // SECURITY: Only SUPER_ADMIN can grant SUPER_ADMIN
-    if (newRole === 'SUPER_ADMIN' && adminUser.role !== 'SUPER_ADMIN') {
-      console.warn('[Promote] ADMIN attempted to grant SUPER_ADMIN to %s — denied', targetUserId);
-      return NextResponse.json(
-        { error: 'Only SUPER_ADMIN can grant SUPER_ADMIN role' },
-        { status: 403 }
-      );
-    }
-
     // Check if target user exists
     const targetUser = await prisma.user.findUnique({
       where: { clerkId: targetUserId },
@@ -58,6 +50,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
+      );
+    }
+
+    // Role hierarchy check: prevent privilege escalation
+    const hierarchyCheck = checkRoleHierarchy(adminUser.role, targetUser.role, newRole);
+    if (!hierarchyCheck.allowed) {
+      console.warn('[Promote] %s attempted to change %s (%s → %s) — denied: %s', adminUser.clerkId, targetUserId, targetUser.role, newRole, hierarchyCheck.reason);
+      return NextResponse.json(
+        { error: hierarchyCheck.reason },
+        { status: 403 }
       );
     }
 

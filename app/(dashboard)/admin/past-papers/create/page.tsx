@@ -53,9 +53,46 @@ export default function CreatePastPaperPage() {
   // Academic scoping data
   const [universities, setUniversities] = useState<University[]>([]);
   const [programmes, setProgrammes] = useState<Programme[]>([]);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [lockedUniversityName, setLockedUniversityName] = useState<string>('');
 
-  // Load universities
+  // Check user role and load user's institution if not super admin
   useEffect(() => {
+    async function checkRole() {
+      try {
+        const res = await fetch('/api/users/me');
+        if (res.ok) {
+          const data = await res.json();
+          const role = data.role || data.user?.role;
+          const institutionId = data.institutionId || data.user?.institutionId;
+          const isSuper = role === 'SUPER_ADMIN';
+          setIsSuperAdmin(isSuper);
+
+          if (!isSuper && institutionId) {
+            // Lock to user's own institution
+            const uniRes = await fetch('/api/admin/universities');
+            if (uniRes.ok) {
+              const uniData = await uniRes.json();
+              const unis = Array.isArray(uniData) ? uniData : (Array.isArray(uniData?.data) ? uniData.data : []);
+              const lockedUni = unis.find((u: University) => u.id === institutionId);
+              if (lockedUni) {
+                setLockedUniversityName(lockedUni.name);
+                setInstitutionId(lockedUni.id);
+                setUniversities([lockedUni]);
+              }
+            }
+          }
+        }
+      } catch {
+        console.error('Failed to check user role');
+      }
+    }
+    checkRole();
+  }, []);
+
+  // Load universities for super admins
+  useEffect(() => {
+    if (!isSuperAdmin) return; // Already handled by role check above
     async function loadUniversities() {
       try {
         const res = await fetch('/api/admin/universities');
@@ -68,7 +105,7 @@ export default function CreatePastPaperPage() {
       }
     }
     loadUniversities();
-  }, []);
+  }, [isSuperAdmin]);
 
   // Load programmes when institution changes
   useEffect(() => {
@@ -78,7 +115,7 @@ export default function CreatePastPaperPage() {
     }
     async function loadProgrammes() {
       try {
-        const res = await fetch(`/api/admin/programmes?universityId=${institutionId}`);
+        const res = await fetch(`/api/admin/programmes?institutionId=${institutionId}`);
         if (res.ok) {
           const data = await res.json();
           setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
@@ -326,24 +363,31 @@ export default function CreatePastPaperPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">
                   University *
                 </label>
-                <select
-                  value={institutionId}
-                  onChange={(e) => {
-                    setInstitutionId(e.target.value);
-                    setProgrammes([]);
-                    setProgrammeId('');
-                    setPeriod('');
-                  }}
-                  required
-                  className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                >
-                  <option value="">Select university</option>
-                  {universities.map((uni) => (
-                    <option key={uni.id} value={uni.id}>
-                      {uni.name} ({uni.code})
-                    </option>
-                  ))}
-                </select>
+                {isSuperAdmin ? (
+                  <select
+                    value={institutionId}
+                    onChange={(e) => {
+                      setInstitutionId(e.target.value);
+                      setProgrammes([]);
+                      setProgrammeId('');
+                      setPeriod('');
+                    }}
+                    required
+                    className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-white dark:bg-input text-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  >
+                    <option value="">Select university</option>
+                    {universities.map((uni) => (
+                      <option key={uni.id} value={uni.id}>
+                        {uni.name} ({uni.code})
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="w-full border border-gray-300 dark:border-border rounded-lg px-3 py-2 bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-gray-300">
+                    {lockedUniversityName || 'Loading...'}
+                    <input type="hidden" name="institutionId" value={institutionId} />
+                  </div>
+                )}
               </div>
 
               {/* Programme */}

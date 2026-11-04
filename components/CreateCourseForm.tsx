@@ -41,6 +41,8 @@ export default function CreateCourseForm({
   const [loading, setLoading] = useState(false);
   const [universities, setUniversities] = useState<University[]>(initialUniversities || []);
   const [programmes, setProgrammes] = useState<Programme[]>([]);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [lockedUniversityName, setLockedUniversityName] = useState<string>('');
 
   const [formData, setFormData] = useState({
     code: initialData?.code || '',
@@ -54,8 +56,43 @@ export default function CreateCourseForm({
     period: '',
   });
 
+  // Check user role and load user's institution if not super admin
+  useEffect(() => {
+    async function checkRole() {
+      try {
+        const res = await fetch('/api/users/me');
+        if (res.ok) {
+          const data = await res.json();
+          const role = data.role || data.user?.role;
+          const institutionId = data.institutionId || data.user?.institutionId;
+          const isSuper = role === 'SUPER_ADMIN';
+          setIsSuperAdmin(isSuper);
+
+          if (!isSuper && institutionId) {
+            // Lock to user's own institution
+            const uniRes = await fetch(`/api/admin/universities`);
+            if (uniRes.ok) {
+              const uniData = await uniRes.json();
+              const unis = Array.isArray(uniData) ? uniData : (Array.isArray(uniData?.data) ? uniData.data : []);
+              const lockedUni = unis.find((u: University) => u.id === institutionId);
+              if (lockedUni) {
+                setLockedUniversityName(lockedUni.name);
+                setFormData((prev) => ({ ...prev, universityId: lockedUni.id }));
+                setUniversities([lockedUni]);
+              }
+            }
+          }
+        }
+      } catch {
+        console.error('Failed to check user role');
+      }
+    }
+    checkRole();
+  }, []);
+
   // Load universities server-side passed as props, fallback to client-side fetch
   useEffect(() => {
+    if (!isSuperAdmin) return; // Already handled by role check above
     if (universities.length > 0) return; // Already loaded from server
     async function loadUniversities() {
       try {
@@ -69,9 +106,9 @@ export default function CreateCourseForm({
       }
     }
     loadUniversities();
-  }, [universities.length]);
+  }, [universities.length, isSuperAdmin]);
 
-  // Load programmes when university changes
+  // Load programmes when university changes, or auto-load for locked admins
   useEffect(() => {
     if (!formData.universityId) {
       setProgrammes([]);
@@ -91,6 +128,24 @@ export default function CreateCourseForm({
     }
     loadProgrammes();
   }, [formData.universityId]);
+
+  // Auto-load programmes for locked admins when they become available
+  useEffect(() => {
+    if (!isSuperAdmin && formData.universityId && programmes.length === 0) {
+      async function loadProgrammes() {
+        try {
+          const res = await fetch(`/api/admin/programmes?institutionId=${formData.universityId}`);
+          if (res.ok) {
+            const data = await res.json();
+            setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
+          }
+        } catch {
+          console.error('Failed to load programmes');
+        }
+      }
+      loadProgrammes();
+    }
+  }, [isSuperAdmin, formData.universityId, programmes.length]);
 
   // Get period options based on selected university's academic system
   const getPeriodOptions = () => {
@@ -163,19 +218,26 @@ export default function CreateCourseForm({
         <label className="block text-sm font-medium text-foreground mb-1">
           University *
         </label>
-        <select
-          value={formData.universityId}
-          onChange={(e) => setFormData({ ...formData, universityId: e.target.value, programmeId: '', period: '' })}
-          required
-          className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-        >
-          <option value="">Select university</option>
-          {universities.map((uni) => (
-            <option key={uni.id} value={uni.id}>
-              {uni.name} ({uni.code})
-            </option>
-          ))}
-        </select>
+        {isSuperAdmin ? (
+          <select
+            value={formData.universityId}
+            onChange={(e) => setFormData({ ...formData, universityId: e.target.value, programmeId: '', period: '' })}
+            required
+            className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          >
+            <option value="">Select university</option>
+            {universities.map((uni) => (
+              <option key={uni.id} value={uni.id}>
+                {uni.name} ({uni.code})
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div className="w-full border border-border rounded-lg px-4 py-2 bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-gray-300">
+            {lockedUniversityName || 'Loading...'}
+            <input type="hidden" name="universityId" value={formData.universityId} />
+          </div>
+        )}
       </div>
 
       {/* Programme */}

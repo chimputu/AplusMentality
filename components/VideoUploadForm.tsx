@@ -46,9 +46,46 @@ export default function VideoUploadForm({ universities }: VideoUploadFormProps) 
   // Academic scoping data
   const [universitiesList, setUniversitiesList] = useState<University[]>([]);
   const [programmes, setProgrammes] = useState<Programme[]>([]);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [lockedUniversityName, setLockedUniversityName] = useState<string>('');
 
-  // Load universities
+  // Check user role and load user's institution if not super admin
   useEffect(() => {
+    async function checkRole() {
+      try {
+        const res = await fetch('/api/users/me');
+        if (res.ok) {
+          const data = await res.json();
+          const role = data.role || data.user?.role;
+          const institutionId = data.institutionId || data.user?.institutionId;
+          const isSuper = role === 'SUPER_ADMIN';
+          setIsSuperAdmin(isSuper);
+
+          if (!isSuper && institutionId) {
+            // Lock to user's own institution
+            const uniRes = await fetch('/api/admin/universities');
+            if (uniRes.ok) {
+              const uniData = await uniRes.json();
+              const unis = Array.isArray(uniData) ? uniData : (Array.isArray(uniData?.data) ? uniData.data : []);
+              const lockedUni = unis.find((u: University) => u.id === institutionId);
+              if (lockedUni) {
+                setLockedUniversityName(lockedUni.name);
+                setUniversityId(lockedUni.id);
+                setUniversitiesList([lockedUni]);
+              }
+            }
+          }
+        }
+      } catch {
+        console.error('Failed to check user role');
+      }
+    }
+    checkRole();
+  }, []);
+
+  // Load universities for super admins
+  useEffect(() => {
+    if (!isSuperAdmin) return; // Already handled by role check above
     async function loadUniversities() {
       try {
         const res = await fetch('/api/admin/universities');
@@ -61,7 +98,7 @@ export default function VideoUploadForm({ universities }: VideoUploadFormProps) 
       }
     }
     loadUniversities();
-  }, []);
+  }, [isSuperAdmin]);
 
   // Load programmes when university changes
   useEffect(() => {
@@ -71,7 +108,7 @@ export default function VideoUploadForm({ universities }: VideoUploadFormProps) 
     }
     async function loadProgrammes() {
       try {
-        const res = await fetch(`/api/admin/programmes?universityId=${universityId}`);
+        const res = await fetch(`/api/admin/programmes?institutionId=${universityId}`);
         if (res.ok) {
           const data = await res.json();
           setProgrammes(Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []));
@@ -364,24 +401,31 @@ export default function VideoUploadForm({ universities }: VideoUploadFormProps) 
             <label className="block text-sm font-medium text-foreground mb-1">
               University *
             </label>
-            <select
-              value={universityId}
-              onChange={(e) => {
-                setUniversityId(e.target.value);
-                setProgrammes([]);
-                setProgrammeId('');
-                setPeriod('');
-              }}
-              required
-              className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-            >
-              <option value="">Select university</option>
-              {universitiesList.map((uni) => (
-                <option key={uni.id} value={uni.id}>
-                  {uni.name} ({uni.code})
-                </option>
-              ))}
-            </select>
+            {isSuperAdmin ? (
+              <select
+                value={universityId}
+                onChange={(e) => {
+                  setUniversityId(e.target.value);
+                  setProgrammes([]);
+                  setProgrammeId('');
+                  setPeriod('');
+                }}
+                required
+                className="w-full border border-border rounded-lg px-4 py-2 bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              >
+                <option value="">Select university</option>
+                {universitiesList.map((uni) => (
+                  <option key={uni.id} value={uni.id}>
+                    {uni.name} ({uni.code})
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="w-full border border-border rounded-lg px-4 py-2 bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-gray-300">
+                {lockedUniversityName || 'Loading...'}
+                <input type="hidden" name="universityId" value={universityId} />
+              </div>
+            )}
           </div>
 
           {/* Programme */}

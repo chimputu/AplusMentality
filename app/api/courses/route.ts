@@ -205,6 +205,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // ADMIN can only create courses within their own institution (SUPER_ADMIN bypasses this)
+    if (user.role === 'ADMIN' && user.institutionId && programme.institutionId !== user.institutionId) {
+      return NextResponse.json(
+          { error: 'Forbidden: You can only create courses in your own institution' },
+          { status: 403 }
+      );
+    }
+
     if (institutionId && programme.institutionId !== institutionId) {
       return NextResponse.json(
           { error: 'Programme does not belong to the selected institution' },
