@@ -546,39 +546,44 @@ export async function toggleBannerActive(id: string) {
  * Returns null when no active announcement exists.
  */
 export async function getActiveGlobalAnnouncement() {
-  const now = new Date();
+  try {
+    const now = new Date();
 
-  const where: any = {
-    scope: 'GLOBAL',
-    isActive: true,
-    startsAt: { lte: now },
-    endsAt: {
-      or: [
-        { equals: null },
-        { gte: now },
+    const where: any = {
+      scope: 'GLOBAL',
+      isActive: true,
+      startsAt: { lte: now },
+      endsAt: {
+        or: [
+          { equals: null },
+          { gte: now },
+        ],
+      },
+      OR: [
+        { placement: 'DASHBOARD' },
+        { placement: 'BOTH' },
       ],
-    },
-    OR: [
-      { placement: 'DASHBOARD' },
-      { placement: 'BOTH' },
-    ],
-  };
+    };
 
-  const banner = await prisma.banner.findFirst({
-    where,
-    orderBy: { priority: 'desc' },
-  });
+    const banner = await prisma.banner.findFirst({
+      where,
+      orderBy: { priority: 'desc' },
+    });
 
-  if (!banner) return null;
+    if (!banner) return null;
 
-  return {
-    id: banner.id,
-    title: banner.title,
-    message: banner.message,
-    ctaLabel: banner.ctaLabel,
-    ctaUrl: banner.ctaUrl,
-    imageUrl: banner.imageUrl,
-    variant: banner.variant,
-    priority: banner.priority,
-  };
+    return {
+      id: banner.id,
+      title: banner.title,
+      message: banner.message,
+      ctaLabel: banner.ctaLabel,
+      ctaUrl: banner.ctaUrl,
+      imageUrl: banner.imageUrl,
+      variant: banner.variant,
+      priority: banner.priority,
+    };
+  } catch (err) {
+    console.error('[getActiveGlobalAnnouncement] Failed to fetch announcement:', err);
+    return null;
+  }
 }
