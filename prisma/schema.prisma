@@ -172,6 +172,7 @@ model User {
   name           String?
   imageUrl       String?
   role           Role           @default(STUDENT)
+  /// @deprecated Use role === 'SUPER_ADMIN' instead. This field is kept for backward compatibility and will be removed in a future release.
   isSuperAdmin   Boolean        @default(false)
   isVerifiedTutor Boolean       @default(false)
   theme          String?        @default("system")

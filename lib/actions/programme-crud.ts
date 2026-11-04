@@ -51,13 +51,18 @@ export async function listProgrammes(options?: {
   page?: number;
   pageSize?: number;
 }) {
+  const adminUser = await requireAdmin();
+
   const page = options?.page ?? 1;
   const pageSize = options?.pageSize ?? 10;
   const skip = (page - 1) * pageSize;
 
   const where: any = {};
 
-  if (options?.institutionId) {
+  // Tenant isolation: ADMIN can only see programmes in their own institution
+  if (adminUser.role === 'ADMIN' && adminUser.institutionId) {
+    where.institutionId = adminUser.institutionId;
+  } else if (options?.institutionId) {
     where.institutionId = options.institutionId;
   }
   if (options?.search) {
@@ -100,6 +105,8 @@ export async function listProgrammes(options?: {
 }
 
 export async function getProgramme(id: string) {
+  const adminUser = await requireAdmin();
+
   const programme = await prisma.programme.findUnique({
     where: { id },
     include: {

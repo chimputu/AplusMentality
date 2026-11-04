@@ -257,7 +257,8 @@ export async function deleteAssessment(id: string) {
 }
 
 export async function publishAssessment(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+  await requireAssessmentInScope(adminUser, id);
 
   await prisma.assessment.update({
     where: { id },
@@ -269,7 +270,8 @@ export async function publishAssessment(id: string) {
 }
 
 export async function unpublishAssessment(id: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+  await requireAssessmentInScope(adminUser, id);
 
   await prisma.assessment.update({
     where: { id },
@@ -281,7 +283,8 @@ export async function unpublishAssessment(id: string) {
 }
 
 export async function addQuestionToAssessment(assessmentId: string, questionId: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+  await requireAssessmentInScope(adminUser, assessmentId);
 
   const assessment = await prisma.assessment.findUnique({
     where: { id: assessmentId },
@@ -317,7 +320,8 @@ export async function addQuestionToAssessment(assessmentId: string, questionId: 
 }
 
 export async function removeQuestionFromAssessment(assessmentId: string, questionId: string) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+  await requireAssessmentInScope(adminUser, assessmentId);
 
   await prisma.question.deleteMany({
     where: {
@@ -334,7 +338,8 @@ export async function reorderAssessmentQuestions(
   assessmentId: string,
   orderedQuestionIds: string[]
 ) {
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+  await requireAssessmentInScope(adminUser, assessmentId);
 
   for (let i = 0; i < orderedQuestionIds.length; i++) {
     await prisma.question.updateMany({

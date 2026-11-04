@@ -1334,7 +1334,7 @@ export default function DashboardLayout({
       )}
 
       {/* Main Content — solid background so glass sidebar has something to blur against */}
-      <div className="pt-16 pb-28 md:pb-0 transition-all duration-300 md:ml-64 bg-gray-50 dark:bg-[#0a0a0a]">
+      <div className="pb-28 md:pb-0 transition-all duration-300 md:ml-64 bg-gray-50 dark:bg-[#0a0a0a]">
         <main className="p-4 lg:p-8">
           {children}
         </main>
