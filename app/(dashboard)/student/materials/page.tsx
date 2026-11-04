@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // app/(dashboard)/student/materials/page.tsx
 import { requireAuth } from '@/lib/auth';
 import Link from 'next/link';

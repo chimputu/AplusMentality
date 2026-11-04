@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // app/(dashboard)/student/materials/[category]/[courseId]/page.tsx
 import { requireAuth } from '@/lib/auth';
 import { getMaterialsForCourse } from '@/lib/actions/materials';

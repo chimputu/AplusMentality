@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { requireAuth } from '@/lib/auth';
 import { getVideosForCourse } from '@/lib/actions/video-course';
 import { notFound } from 'next/navigation';

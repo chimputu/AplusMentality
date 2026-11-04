@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // app/(dashboard)/admin/past-papers/[id]/edit/page.tsx
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';

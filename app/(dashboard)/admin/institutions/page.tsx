@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { listInstitutions } from '@/lib/actions/institution-crud';
 import { requireAuth } from '@/lib/auth';
 import PageHeader from '@/components/PageHeader';

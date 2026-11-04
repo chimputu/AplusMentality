@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // app/(dashboard)/student/books/[id]/page.tsx
 import { notFound } from 'next/navigation';
 import Link from 'next/link';

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { requireAuth } from '@/lib/auth';
 import { notFound } from 'next/navigation';
 import { getAssessmentForStudent } from '@/lib/actions/attempts';

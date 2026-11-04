@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Settings, User, Mail, Phone, MapPin, GraduationCap, CheckCircle, AlertCircle } from 'lucide-react';

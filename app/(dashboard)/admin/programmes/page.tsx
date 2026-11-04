@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { listProgrammes } from '@/lib/actions/programme-crud';
 import { prisma } from '@/lib/prisma';
 import PageHeader from '@/components/PageHeader';

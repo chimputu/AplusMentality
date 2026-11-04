@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { requireAuth } from '@/lib/auth';
 import { getScopeContext, isResourceInScope } from '@/lib/auth/scope';
 import { prisma } from '@/lib/prisma';

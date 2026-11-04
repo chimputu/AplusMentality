@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // Embed page for external assessments (Google Forms, MS Forms, etc.)
 // Shows 404 for NATIVE assessments, full-height iframe for external
 import { notFound } from 'next/navigation';

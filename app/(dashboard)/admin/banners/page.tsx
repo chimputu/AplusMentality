@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Suspense } from 'react';
 import { unstable_cache } from 'next/cache';
 import { requireAuth } from '@/lib/auth';

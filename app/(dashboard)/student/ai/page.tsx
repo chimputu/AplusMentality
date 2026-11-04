@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { requireAuth } from '@/lib/auth';
 import { AIAssistantPage } from '@/components/ai/ai-assistant-page';
 import { redirect } from 'next/navigation';

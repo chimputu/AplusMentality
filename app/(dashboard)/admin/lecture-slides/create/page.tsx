@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import LectureSlideForm from '@/components/LectureSlideForm';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';

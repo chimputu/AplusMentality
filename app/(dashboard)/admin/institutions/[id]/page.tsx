@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getInstitution } from '@/lib/actions/institution-crud';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';

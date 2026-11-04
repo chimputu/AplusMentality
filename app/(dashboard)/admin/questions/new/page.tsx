@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { redirect } from 'next/navigation';
 import { createQuestion } from '@/lib/actions/questions';
 import { QuestionForm } from '@/app/(dashboard)/admin/questions/components/question-form';

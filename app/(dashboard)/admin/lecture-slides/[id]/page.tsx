@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // app/(dashboard)/admin/lecture-slides/[id]/page.tsx
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';

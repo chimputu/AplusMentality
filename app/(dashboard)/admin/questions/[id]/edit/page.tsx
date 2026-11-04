@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { requireAuth } from '@/lib/auth';
 import { notFound, redirect } from 'next/navigation';
 import { getQuestion, updateQuestion } from '@/lib/actions/questions';

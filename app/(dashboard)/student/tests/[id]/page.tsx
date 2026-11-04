@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // app/(dashboard)/student/tests/[id]/page.tsx
 import { requireAuth } from '@/lib/auth';
 import { getScopeContext, isResourceInScope } from '@/lib/auth/scope';

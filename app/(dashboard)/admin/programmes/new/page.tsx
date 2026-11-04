@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import NewProgrammeForm from './_components/new-programme-form';
 
 export default function NewProgrammePage() {

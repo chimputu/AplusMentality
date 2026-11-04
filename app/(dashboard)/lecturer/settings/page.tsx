@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { User, Mail, MapPin, BookOpen, Video, Presentation, FileText, FileQuestion, Megaphone, Users, ClipboardList } from 'lucide-react';
