@@ -65,7 +65,7 @@ export default function RootLayout({
       }}
     >
       <html lang="en" suppressHydrationWarning className="font-inter">
-        <body className="font-sans antialiased">
+        <body className="font-sans antialiased bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-white">
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 z-[100] bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium"

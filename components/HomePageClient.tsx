@@ -647,11 +647,7 @@ export default function HomePageClient() {
   };
 
   const handleExplore = () => {
-    if (!isSignedIn) {
-      router.push('/sign-up');
-    } else {
-      router.push('/student');
-    }
+    router.push('/explore');
   };
 
   const handleViewAllCourses = () => {

@@ -21,6 +21,8 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks(.*)',
   '/api/health(.*)',
   '/api/institutions(.*)',
+  '/api/user/role(.*)',
+  '/api/users/me(.*)',
 ]);
 
 // Onboarding route — accessible without org, but requires auth
@@ -65,6 +67,11 @@ function getRouteRoleRequirement(pathname: string): string[] | null {
 export const proxy = clerkMiddleware(async (auth, request) => {
   const pathname = request.nextUrl.pathname;
 
+  // Bypass all redirect logic for internal middleware fetches to prevent recursion
+  if (request.headers.get('x-middleware-internal') === 'true') {
+    return NextResponse.next();
+  }
+
   // Let Clerk handshake URLs pass through
   if (request.nextUrl.searchParams.has('__clerk_handshake')) {
     return NextResponse.next();
@@ -82,6 +89,8 @@ export const proxy = clerkMiddleware(async (auth, request) => {
 
   const authObj = await auth();
   const { userId, orgId } = authObj;
+
+  console.log(`[MIDDLEWARE] Path: ${pathname} | User: ${userId} | Org: ${orgId}`);
 
   // 2. If not logged in, redirect to sign-in
   if (!userId) {
@@ -102,7 +111,7 @@ export const proxy = clerkMiddleware(async (auth, request) => {
       const baseUrl = request.nextUrl.origin;
       const cookieHeader = request.headers.get('cookie') || '';
       const roleRes = await fetch(`${baseUrl}/api/user/role`, {
-        headers: { cookie: cookieHeader },
+        headers: { cookie: cookieHeader, 'x-middleware-internal': 'true' },
         cache: 'no-store',
       });
       if (roleRes.ok) {
@@ -135,7 +144,7 @@ export const proxy = clerkMiddleware(async (auth, request) => {
       const baseUrl = request.nextUrl.origin;
       const cookieHeader = request.headers.get('cookie') || '';
       const dbRoleRes = await fetch(`${baseUrl}/api/user/role`, {
-        headers: { cookie: cookieHeader },
+        headers: { cookie: cookieHeader, 'x-middleware-internal': 'true' },
         cache: 'no-store',
       });
       if (dbRoleRes.ok) {
@@ -173,7 +182,7 @@ export const config = {
     // Clerk auto-proxy path
     '/(__clerk)(.*)',
     // All non-static file routes, excluding public auth pages
-    '/((?!_next|sign-in|sign-up|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/((?!_next|sign-in|sign-up|onboarding|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
     // API and tRPC routes
     '/(api|trpc)(.*)',
   ],

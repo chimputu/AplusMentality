@@ -1187,6 +1187,11 @@ export default function DashboardLayout({
                   elements: {
                     OrganizationSwitcherTrigger: 'w-full',
                     OrganizationSwitcherOrganizationIcon: 'w-6 h-6',
+                    // Hide "Create organization" button for non-super-admins
+                    'organizationSwitcherPopoverActionButton__createOrganization':
+                      role === 'SUPER_ADMIN' ? undefined : { display: 'none' },
+                    'organizationSwitcherPopoverActionButton__createOrganization__iconBox':
+                      role === 'SUPER_ADMIN' ? undefined : { display: 'none' },
                   },
                 }}
               />
