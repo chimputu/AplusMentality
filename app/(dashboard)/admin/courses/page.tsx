@@ -1,13 +1,22 @@
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 import { BookOpen } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import EmptyState from '@/components/EmptyState';
 import CourseList from '@/components/CourseList';
 
 export default async function AdminCoursesPage() {
+  const { role, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+
   let coursesData: any[] = [];
   try {
+    const where: any = {};
+    // Tenant isolation: ADMIN can only see courses in their own institution
+    if (role === 'ADMIN' && user.institutionId) {
+      where.programme = { institutionId: user.institutionId };
+    }
     coursesData = await prisma.course.findMany({
+      where,
       include: {
         creator: {
           select: { name: true },

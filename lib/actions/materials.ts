@@ -61,8 +61,15 @@ export async function getCoursesWithMaterials(
 
   const courseWhere: Record<string, unknown> = {};
 
+  // Tenant isolation: ADMIN can only see courses in their own institution
+  if (user.role === 'ADMIN' && user.institutionId) {
+    courseWhere.programme = {
+      institutionId: user.institutionId,
+    };
+  }
+
   // Non-admins are scoped to their institution/year/period
-  if (!isAdmin) {
+  if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
     courseWhere.isPublished = true;
 
     if (user.institutionId) {
@@ -197,8 +204,12 @@ export async function getMaterialsForCourse(category: string, courseId: string) 
     return null;
   }
 
-  // IDOR check: block if the course belongs to a different institution
-  if (!isAdmin && user.institutionId && course.programme?.institutionId !== user.institutionId) {
+  // IDOR check: ADMIN can only access materials from their own institution
+  if (user.role === 'ADMIN' && user.institutionId && course.programme?.institutionId !== user.institutionId) {
+    return null;
+  }
+  // Non-admins are also blocked from cross-institution access
+  if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' && user.institutionId && course.programme?.institutionId !== user.institutionId) {
     return null;
   }
 

@@ -37,8 +37,15 @@ export async function getCoursesWithVideos(
 
   const where: Record<string, unknown> = {};
 
+  // Tenant isolation: ADMIN can only see courses in their own institution
+  if (user.role === 'ADMIN' && user.institutionId) {
+    where.programme = {
+      institutionId: user.institutionId,
+    };
+  }
+
   // Non-admins are scoped to their institution/year/period
-  if (!isAdmin) {
+  if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
     where.isPublished = true;
 
     if (user.institutionId) {
@@ -56,8 +63,8 @@ export async function getCoursesWithVideos(
     }
   }
 
-  // Optional filter by institution (for exploring other institutions)
-  if (institutionId && isAdmin) {
+  // Optional filter by institution (SUPER_ADMIN only, not ADMIN)
+  if (institutionId && user.role === 'SUPER_ADMIN') {
     where.programme = {
       institutionId,
     };
@@ -138,8 +145,12 @@ export async function getVideosForCourse(courseId: string) {
     return null;
   }
 
-  // IDOR check: block if the course belongs to a different institution
-  if (!isAdmin && user.institutionId && course.programme?.institutionId !== user.institutionId) {
+  // IDOR check: ADMIN can only access videos from their own institution
+  if (user.role === 'ADMIN' && user.institutionId && course.programme?.institutionId !== user.institutionId) {
+    return null;
+  }
+  // Non-admins are also blocked from cross-institution access
+  if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' && user.institutionId && course.programme?.institutionId !== user.institutionId) {
     return null;
   }
 

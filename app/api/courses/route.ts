@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
 
     let userId: string;
     let role: string;
+    let adminUser: any = null;
 
     if (hasFilters) {
       const auth = await getAuthUser(['ADMIN', 'SUPER_ADMIN']);
@@ -31,20 +32,7 @@ export async function GET(req: NextRequest) {
 
       userId = auth.userId;
       role = auth.role;
-
-      // Tenant isolation: ADMIN can only query their own institution
-      if (role === 'ADMIN' && institutionId) {
-        if (institutionId !== auth.user.institutionId) {
-          return NextResponse.json(
-            { error: 'Forbidden: You can only query courses in your own institution' },
-            { status: 403 }
-          );
-        }
-      }
-      // Default ADMIN to their own institution if no institutionId provided
-      if (role === 'ADMIN' && auth.user.institutionId && !institutionId) {
-        where.programme = { institutionId: auth.user.institutionId };
-      }
+      adminUser = auth.user;
     } else {
       const authResult = await requireAuth();
       userId = authResult.userId;
@@ -52,6 +40,20 @@ export async function GET(req: NextRequest) {
     }
 
     const where: any = role === 'ADMIN' ? {} : { isPublished: true };
+
+    // Tenant isolation: ADMIN can only query their own institution
+    if (hasFilters && role === 'ADMIN' && adminUser) {
+      if (institutionId && institutionId !== adminUser.institutionId) {
+        return NextResponse.json(
+          { error: 'Forbidden: You can only query courses in your own institution' },
+          { status: 403 }
+        );
+      }
+      // Default ADMIN to their own institution if no institutionId provided
+      if (adminUser.institutionId && !institutionId) {
+        where.programme = { institutionId: adminUser.institutionId };
+      }
+    }
 
     if (institutionId) {
       where.programme = {

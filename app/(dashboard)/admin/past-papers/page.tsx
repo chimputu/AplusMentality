@@ -21,10 +21,17 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default async function AdminPastPapersPage() {
-  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  const { role, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+
   let papers: any[] = [];
   try {
+    const where: any = {};
+    // Tenant isolation: ADMIN can only see papers in their own institution
+    if (role === 'ADMIN' && user.institutionId) {
+      where.course = { programme: { institutionId: user.institutionId } };
+    }
     papers = await prisma.pastPaper.findMany({
+      where,
       include: {
         creator: { select: { name: true } },
       },

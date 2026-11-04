@@ -37,16 +37,28 @@ export async function GET(req: NextRequest) {
         if (courseId) where.courseId = courseId;
         if (category) where.category = category;
 
-        if (institutionId) {
+        // Tenant isolation: ADMIN can only query their own institution
+        const finalInstitutionId = institutionId || universityId;
+        if (scope.role === 'ADMIN' && finalInstitutionId) {
+            if (finalInstitutionId !== scope.institutionId) {
+                return NextResponse.json(
+                    { error: 'Forbidden: You can only query slides in your own institution' },
+                    { status: 403 }
+                );
+            }
+        }
+
+        if (finalInstitutionId) {
             where.course = {
                 programme: {
-                    institutionId,
+                    institutionId: finalInstitutionId,
                 },
             };
-        } else if (universityId) {
-            where.course = {
-                programme: { institutionId: universityId },
-            };
+        }
+
+        // Default ADMIN to their own institution if no institutionId provided
+        if (scope.role === 'ADMIN' && scope.institutionId && !finalInstitutionId) {
+            where.course = { programme: { institutionId: scope.institutionId } };
         }
 
         // Apply scope filtering for non-admin users

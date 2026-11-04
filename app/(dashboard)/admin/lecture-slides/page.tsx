@@ -36,10 +36,17 @@ function getSlideOpenUrl(slide: {
 }
 
 export default async function AdminLectureSlidesPage() {
-  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  const { role, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
+
   let slides: any[] = [];
   try {
+    const where: any = {};
+    // Tenant isolation: ADMIN can only see slides in their own institution
+    if (role === 'ADMIN' && user.institutionId) {
+      where.course = { programme: { institutionId: user.institutionId } };
+    }
     slides = await prisma.lectureSlide.findMany({
+      where,
       include: {
         creator: { select: { name: true } },
         course: { select: { id: true, title: true, code: true } },

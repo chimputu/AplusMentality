@@ -27,13 +27,16 @@ interface PageProps {
 }
 
 export default async function AdminCourseDetailPage({ params }: PageProps) {
-  // Auth handled by layout (ADMIN + SUPER_ADMIN)
+  const { role, user } = await requireAuth(['ADMIN', 'SUPER_ADMIN']);
   const { courseId } = await params;
 
   // Fetch course with all related data
   const courseData = await prisma.course.findUnique({
     where: { id: courseId },
     include: {
+      programme: {
+        select: { institutionId: true },
+      },
       modules: {
         orderBy: { order: 'asc' },
         include: {
@@ -63,6 +66,14 @@ export default async function AdminCourseDetailPage({ params }: PageProps) {
   // Handle course not found
   if (!courseData) {
     notFound();
+  }
+
+  // Tenant isolation: ADMIN can only view courses in their own institution
+  if (role === 'ADMIN' && user.institutionId) {
+    const courseInstitutionId = courseData.programme?.institutionId;
+    if (courseInstitutionId && courseInstitutionId !== user.institutionId) {
+      return notFound();
+    }
   }
   const cd = courseData!;
 
